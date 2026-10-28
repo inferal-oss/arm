@@ -191,12 +191,12 @@ func (m *Manager) gradleStorageIdle(id string) error {
 	if err != nil {
 		return err
 	}
-	if m.storage == nil || store.Artifact == nil || store.Artifact.Phase != "owned" {
+	if m.providerFor(store) == nil || store.Artifact == nil || store.Artifact.Phase != "owned" {
 		return model.Err("needs_attention", "managed Gradle workspace ownership is unavailable")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	survey, err := m.storage.Survey(ctx, *store.Artifact)
+	survey, err := m.providerFor(store).Survey(ctx, *store.Artifact)
 	if err != nil || len(survey.Active) != 0 {
 		return model.Err("needs_attention", fmt.Sprintf("managed Gradle workspace remains active or uncertain (observation: %v, active PIDs: %v)", err, survey.Active))
 	}

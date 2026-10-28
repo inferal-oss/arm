@@ -34,3 +34,18 @@ test('server custom aliases outrank configured pool names while invalid optional
  for(const display_name of [undefined,'','  ',42])assert.equal(resourcePresentation({...resource,display_name},{}).label,'Configured permits');
  assert.equal(resourcePresentation({id:'exact-only',unit:'permits'},{}).label,'exact-only');
 });
+
+test('storage pools show disk topology and actual performance rather than trusting tiers',()=>{
+ const storage={name:'scratch',tier:'build',enabled:true,location:{path:'/scratch',mount:'/scratch',filesystem:'apfs',source:'/dev/disk7s4',backing_pool:'container-b',devices:[{device:'/dev/disk6',model:'External SSD',transport:'USB',solid_state:true,internal:false}]},budget:{known:true,stale:false,age_ns:0,stale_after_ns:3000000000,capacity_bytes:100,available_bytes:90,reserved_bytes:10,deficit_bytes:0,observation:{total_bytes:200,available_bytes:100}},performance:{at:'2026-10-28T00:00:00Z',write_bytes_per_second:100000000,read_bytes_per_second:200000000,random_read_iops:1000,random_read_latency_ns:1000000,method:'F_NOCACHE'},performance_stale:true};
+ const m=resourcePresentation({id:'storage/scratch',kind:'storage',unit:'bytes',storage,reserved:10},{});
+ assert.equal(m.label,'scratch · Storage');assert.match(m.storageSummary,/Write .*\/s · Read .*\/s/);
+ assert.match(m.notes.join(' '),/disk6.*External SSD.*USB/);assert.match(m.notes.join(' '),/Tier: build \(operator label\)/);assert.match(m.notes.join(' '),/Shared backing pool views overlap/);
+ assert.match(m.warnings.join(' '),/Performance measurement is stale/);
+ assert.equal(resourcePresentation({id:'s',kind:'storage',unit:'bytes',storage:{...storage,performance:null}},{}).storageSummary,'Performance unmeasured');
+});
+
+test('held named storage budgets age without using remote wall clocks',()=>{
+ const r={id:'storage',kind:'storage',unit:'bytes',reserved:10,storage:{name:'scratch',enabled:true,budget:{known:true,stale:false,age_ns:0,stale_after_ns:3000000000,capacity_bytes:100,available_bytes:90,reserved_bytes:10,deficit_bytes:0}}};
+ const p=resourcePresentation(r,{viewOptions:{connected:true,elapsedMS:3001}});
+ assert.match(p.available[1],/unavailable/);assert.match(p.commitment[1],/^10/);assert.match(p.warnings.join(' '),/waiting for fresh availability/);
+});

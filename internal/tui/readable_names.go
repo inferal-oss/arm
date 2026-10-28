@@ -170,6 +170,9 @@ func resourceFallback(id, kind string) string {
 }
 func poolDisplayName(p model.Pool) string { return readableLabel(readablename.Pool, p.ID, p.Name) }
 func (m *dashboardModel) resourceDisplayName(r model.ResourceView) string {
+	if r.Storage != nil {
+		return safe(r.Storage.Name)
+	}
 	host := r.Host
 	if host == "" {
 		host = m.data.status.Host

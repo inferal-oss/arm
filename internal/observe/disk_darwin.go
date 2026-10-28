@@ -11,7 +11,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func DiskAvailability(ctx context.Context, path string) model.DiskAvailability {
+func NativeDiskAvailability(ctx context.Context, path string) model.DiskAvailability {
 	at := time.Now().UTC()
 	r := model.DiskAvailability{At: at, Scope: "state-filesystem", Path: path, Method: "statfs:f_bavail", Quality: "unavailable", Detail: "Filesystem availability is unavailable"}
 	if ctx.Err() != nil {
@@ -27,6 +27,11 @@ func DiskAvailability(ctx context.Context, path string) model.DiskAvailability {
 		return r
 	}
 	r = diskCounters(absolute, fmt.Sprintf("fsid:%x", st.Fsid.Val), unix.ByteSliceToString(st.Fstypename[:]), st.Blocks, st.Bfree, st.Bavail, uint64(st.Bsize), at)
+	return r
+}
+
+func DiskAvailability(ctx context.Context, path string) model.DiskAvailability {
+	r := NativeDiskAvailability(ctx, path)
 	if r.Filesystem != "apfs" || r.Available == nil {
 		return r
 	}
@@ -34,6 +39,10 @@ func DiskAvailability(ctx context.Context, path string) model.DiskAvailability {
 	r.Detail += " APFS shared-container identity is not established by statfs alone."
 	optional, cancel := context.WithTimeout(ctx, 200*time.Millisecond)
 	defer cancel()
+	var st unix.Statfs_t
+	if unix.Statfs(r.Path, &st) != nil {
+		return r
+	}
 	device := unix.ByteSliceToString(st.Mntfromname[:])
 	data, err := command(optional, "/usr/sbin/diskutil", "info", "-plist", device)
 	if err != nil {

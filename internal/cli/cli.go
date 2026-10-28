@@ -529,6 +529,10 @@ func (a *app) acquire(command string, args []string) (int, error) {
 	project := f.String("project", "", "project attribution")
 	agent := f.String("agent", "", "registered agent contact for attribution")
 	storageLease, portLease, cwd := new(string), new(string), new(string)
+	storagePool := new(string)
+	if command == "storage" {
+		f.StringVar(storagePool, "storage-pool", "", "named storage location (default: state filesystem)")
+	}
 	serviceLease, detach := new(string), new(bool)
 	quiet := new(bool)
 	var usagePolicy model.UsagePolicy
@@ -659,6 +663,7 @@ func (a *app) acquire(command string, args []string) (int, error) {
 			return 2, fmt.Errorf("usage options require --usage-policy warn or revoke")
 		}
 	}
+	r.StoragePool = *storagePool
 	r.Pools = poolClaims
 	r.StorageLease = *storageLease
 	r.ServiceLease = *serviceLease
@@ -937,10 +942,9 @@ func (a *app) daemon(command string, args []string) (int, error) {
 	if *expectConfig != "" && *expectConfig != resolved.SettingsSHA256 {
 		return 2, model.Err("configuration_changed", "resolved startup settings differ from --expect-config; review arm config show before retrying")
 	}
-	capacity := resolved.Settings.Resources
 	*listen = resolved.Settings.Listen
 	if action == "serve" {
-		return 0, server.Serve(a.ctx, a.home, *listen, capacity)
+		return 0, server.ServeConfigured(a.ctx, a.home, resolved.Settings)
 	}
 	if action != "start" {
 		return 2, fmt.Errorf("unknown daemon action")

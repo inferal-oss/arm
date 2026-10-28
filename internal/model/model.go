@@ -45,6 +45,7 @@ type Request struct {
 	Queue             bool                  `json:"queue"`
 	Profile           string                `json:"profile,omitempty"`
 	Kind              string                `json:"kind,omitempty"`
+	StoragePool       string                `json:"storage_pool,omitempty"`
 	StorageLease      string                `json:"storage_lease,omitempty"`
 	ServiceLease      string                `json:"service_lease,omitempty"`
 	Ports             []PortClaim           `json:"ports,omitempty"`
@@ -65,6 +66,7 @@ type ForwardSourceBinding struct {
 }
 
 type Lease struct {
+	StorageBinding *StoragePoolBinding    `json:"storage_binding,omitempty"`
 	Clock          *leaseclock.Deadline   `json:"elapsed_deadline,omitempty"`
 	Cargo          *CargoBinding          `json:"cargo,omitempty"`
 	PoolBinding    *PoolClaimBinding      `json:"pool_binding,omitempty"`
@@ -143,6 +145,7 @@ type ResourceUse struct {
 	Relationship  string      `json:"relationship,omitempty"`
 }
 type ResourceView struct {
+	Storage           *StoragePoolView     `json:"storage,omitempty"`
 	AvailabilityKnown *bool                `json:"availability_known,omitempty"`
 	Stale             bool                 `json:"stale,omitempty"`
 	ID                string               `json:"id"`

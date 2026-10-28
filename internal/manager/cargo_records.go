@@ -275,7 +275,7 @@ func (m *Manager) cargoStorageParent(r model.Request, expires *leaseclock.Deadli
 	if parent.Request.Kind != "storage" || parent.Owner != m.owner || parent.Host != m.host || parent.State != "active" || parent.Expires == nil || !covered || parent.Artifact == nil || parent.Artifact.Phase != "owned" || parent.Artifact.Identity == nil || !parent.Artifact.Identity.BirthKnown || parent.Artifact.Identity.Inode == 0 || !filepath.IsAbs(parent.ManagedDir) {
 		return parent, model.Err("storage_unavailable", "managed Cargo storage must be active/owned and outlast the command's TTL")
 	}
-	if m.storage == nil || m.storageErr != nil {
+	if m.providerFor(parent) == nil {
 		return parent, model.Err("storage_unavailable", "managed storage provider is unavailable")
 	}
 	if export, e := m.storageExportBusy(parent.ID); e != nil {

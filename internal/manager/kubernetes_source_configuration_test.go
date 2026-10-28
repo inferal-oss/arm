@@ -2,6 +2,7 @@ package manager
 
 import (
 	"path/filepath"
+	"reflect"
 	"sync"
 	"testing"
 
@@ -21,7 +22,7 @@ func TestConfiguredKubernetesSourceEndJoinsAndRetainsStorageDebt(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = m.Close() })
 	journal := daemonJournal(t, m)
-	if len(journal) != 1 || journal[0].Settings != settings || m.capacity != settings.Resources {
+	if len(journal) != 1 || !reflect.DeepEqual(journal[0].Settings, settings) || m.capacity != settings.Resources {
 		t.Fatal("configured admission preceded its durable startup decision", journal, m.capacity)
 	}
 	// Use the existing controlled admission fixture. The files and their native

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "scope": "fixture-data normalization only; no production change",
+  "parent_commit": "8c7d839a5568695690de61e350fa9587db548e09",
+  "fixture_file": "internal/observe/storage_association_test.go",
+  "fixture_sha256": "49c8e36503015086aaeafebe24e858e2e5efa2081745bb0a1268c113504eea9c",
+  "unchanged_production_sha256": {
+    "internal/observe/storage_association.go": "b58d73084a95840e4d6a5e385d9ce92c5ab1b432c6e60d52d4c361019630c079",
+    "internal/observe/storage_association_linux.go": "d2744e9d1af2d3b6bb66d331598f16b178d42e83cf1f987bf60c7c78b0d4f2be",
+    "internal/observe/storage_location_linux.go": "5e87940a66e68702a531bfb87ef774d441cf4c8e6599ab6db07709e18af35b3b",
+    "internal/storage/provider_filesystem.go": "8b6c3aad67edfc511884f371799051f0e030ae09843fe36533812a186c62555c",
+    "internal/manager/storage_pools.go": "93c8b3090d3e7c383dbe78068ef5cd71f1b90af6f869916ab0cfc29e4f1f05c5"
+  },
+  "fixture_policy": "Malformed UUIDs and membership ranges derive entirely from the synthetic fixture UUID; source/subvolume/sysfs labels are synthetic. Raw diagnostic identities remain outside version control.",
+  "checks": {
+    "normal_named_nodes": 61,
+    "failures": 0,
+    "skips": 0
+  },
+  "prior_evidence": "Earlier normal/race/custody/compile evidence retains its original input hashes; this fixture-only source check does not relabel those runs.",
+  "runtime_scope": "No native workloads, filesystem setup or performance samples executed."
+}

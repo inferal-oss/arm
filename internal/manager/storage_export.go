@@ -182,7 +182,7 @@ func (m *Manager) exportSource(request model.StorageExportRequest) (model.Lease,
 	if unresolved >= 32 {
 		return l, model.Err("operation_busy", "resolve or explicitly hand off existing uncertain exports before creating more")
 	}
-	if l.Request.Kind != "storage" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || !m.leaseLive(l) || l.Artifact == nil || l.Artifact.Phase != "owned" || m.storage == nil {
+	if l.Request.Kind != "storage" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || !m.leaseLive(l) || l.Artifact == nil || l.Artifact.Phase != "owned" || m.providerFor(l) == nil {
 		return l, model.Err("storage_unavailable", "export requires active verified managed storage owned by this host/user")
 	}
 	if request.Revision != 0 && request.Revision != l.Revision {
@@ -225,7 +225,7 @@ func (m *Manager) StorageExportPreview(ctx context.Context, request model.Storag
 	}
 	m.mu.Lock()
 	l, err := m.exportSource(request)
-	p := m.storage
+	p := m.providerFor(l)
 	if err == nil {
 		m.wg.Add(1)
 	}
@@ -255,7 +255,7 @@ func (m *Manager) StorageExportCreate(ctx context.Context, request model.Storage
 		return prior, err
 	}
 	l, err := m.exportSource(request)
-	p := m.storage
+	p := m.providerFor(l)
 	if err == nil {
 		m.wg.Add(1)
 	}
@@ -404,7 +404,12 @@ func (m *Manager) StorageExportReconcile(ctx context.Context, id string) (model.
 		m.mu.Unlock()
 		return operation, model.Err("operation_busy", "wait for the active export or backend shutdown before reconciliation")
 	}
-	p := m.storage
+	sourceLease, sourceErr := m.get(operation.Request.Lease)
+	if sourceErr != nil {
+		m.mu.Unlock()
+		return operation, sourceErr
+	}
+	p := m.providerFor(sourceLease)
 	if p == nil {
 		m.mu.Unlock()
 		return operation, model.Err("storage_unavailable", "verified managed provider is unavailable")
@@ -495,10 +500,10 @@ func (m *Manager) StorageRetain(id string, revision int, ttl time.Duration, reas
 	if l.Request.Kind != "storage" || l.State != "active" || l.Artifact == nil || l.Artifact.Phase != "owned" || l.Expires == nil || !m.leaseLive(l) || l.Owner != m.owner || l.Host != m.host {
 		return l, model.Err("storage_unavailable", "retention changes require active owned managed storage")
 	}
-	if m.storage == nil {
+	if m.providerFor(l) == nil {
 		return l, model.Err("storage_unavailable", "verified storage provider is unavailable")
 	}
-	if err := m.storage.Check(*l.Artifact); err != nil {
+	if err := m.providerFor(l).Check(*l.Artifact); err != nil {
 		return l, model.Err("storage_unavailable", err.Error())
 	}
 	sample, clockErr := m.readLeaseClock()

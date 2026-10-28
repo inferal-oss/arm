@@ -431,6 +431,9 @@ func (m *meshService) dispatch(ctx context.Context, peer mesh.Peer, request mesh
 		status = m.owner.withServerCapabilities(status)
 		resources := make([]map[string]any, 0, len(status.Resources))
 		for _, resource := range status.Resources {
+			if resource.Storage != nil {
+				continue
+			} // Named locations expose private paths/names only to the local owner.
 			summary := map[string]any{"id": resource.ID, "host": resource.Host, "kind": resource.Kind, "unit": resource.Unit, "budget_total": resource.BudgetTotal, "reserved": resource.Reserved, "available": resource.Available}
 			// Labels derive only from fields already in this grant's allowlist.
 			// Do not expose private pool or port names through observe-host.

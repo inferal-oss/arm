@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "status": "candidate: named-provider custody source checks passed; independent composed acceptance pending",
+  "parent_commit": "2b16fd8e0bfb7361547782803b8c119259892d30",
+  "source_files_sha256": {
+    "internal/storage/provider_filesystem.go": "8b6c3aad67edfc511884f371799051f0e030ae09843fe36533812a186c62555c",
+    "internal/storage/provider_filesystem_test.go": "bcb32b8db3a72b6e4c8de182355bd93188a7b5d6cc7bcb13abefd3eadb56805d",
+    "internal/manager/manager.go": "23ba1518704b3acf038c9d9ff4c88b50c4ee605b28c280c8671d213159fc5f92",
+    "internal/manager/storage_pools.go": "93c8b3090d3e7c383dbe78068ef5cd71f1b90af6f869916ab0cfc29e4f1f05c5",
+    "internal/manager/storage_pool_custody_test.go": "556e9e6f893dfef9292a3a4ac4403dfb3dad5cd6ec64a0e523880e37a3f13e0d"
+  },
+  "unchanged_interfaces_and_contracts_sha256": {
+    "internal/storage/provider.go": "57f79ea198429983fa1bf5224b4e59bd1b698260c1e1d0b49eda3a9274a5165a",
+    "internal/storage/platform_darwin.go": "9baf88410fa2d69891daa680e76d23f3829e698f24a8b9fb9ae51f9adddb6e2e",
+    "internal/storage/platform_linux.go": "4912f9886ed58c42c7647b34300722d665339c3f653b386f5f025ea18ac843c4",
+    "internal/storage/source_directory.go": "ab4e4c404a542e926e55791e5b646b9ac2bf3ae7420d46c31e2e2f596f058faa",
+    "internal/storage/source_mount_darwin.go": "e9749265bd528619607edc1ec244eb6c17c14bc25b06b9e1c72cfe19335e046c",
+    "internal/storage/source_mount_linux.go": "532bad02d03df0d6fc0f0339e2e99ca393e272392f8456c5a4ab0516e59a10f8",
+    "internal/observe/storage_association.go": "b58d73084a95840e4d6a5e385d9ce92c5ab1b432c6e60d52d4c361019630c079",
+    "internal/observe/storage_association_linux.go": "d2744e9d1af2d3b6bb66d331598f16b178d42e83cf1f987bf60c7c78b0d4f2be",
+    "internal/observe/storage_location_linux.go": "5e87940a66e68702a531bfb87ef774d441cf4c8e6599ab6db07709e18af35b3b",
+    "internal/observe/cpu_linux.go": "ad6b5b1696cee56792b0629bd188aa282166e837c786cc83595bd3fff85a5339",
+    "internal/observe/availability_linux.go": "17ea4869691a874f655bd04b56924f6a0beec0f0b4e593504471a5ae1ca64170",
+    "internal/model/storage_pool.go": "6cb48db9f0ff943416c3e9ee24d01a0d5c0a2a8e6e2f912d035f37e697b715ee",
+    "internal/database/workspace_format.go": "3e64485eb1aaf2b7a3250d10325d451b48d286ee6479b66dd9a1aa12a7db6f9a"
+  },
+  "finding": {
+    "priority": 1,
+    "cause": "Path-based first-provider mkdir was not bound to the freshly observed filesystem and could follow a replaced parent.",
+    "correction": "Additional OpenOnFilesystem holds a bounded no-follow parent FD and checks native FilesystemID before mkdirat/openat. Root filesystem and exact birth/type/private-mode/owner identity are checked before publication. Both named create and reopen use it."
+  },
+  "public_compatibility": "storage.Open and existing signatures/implementation remain byte-identical. Original Open identities successfully reopen through the additive checked path. Default callers are unchanged.",
+  "bounds": {
+    "absolute_path_bytes": 4096,
+    "parent_components": 128,
+    "provider_name_bytes": 255,
+    "expected_native_filesystem_id_bytes": 128
+  },
+  "custody": "Creation occurs relative to the checked held parent FD. Current-parent/name checks before publication supplement that custody; later path observation is not the basis for safe creation. Provider root FD remains held on success.",
+  "failure_semantics": "No delete/adopt on refusal. Existing names require the exact recorded identity. Unknown created/unpublished roots remain untouched and original storage promises remain charged. Failed metadata publication restores the prior in-memory root record.",
+  "checks": {
+    "normal_named_nodes": 26,
+    "race_named_nodes": 26,
+    "failures": 0,
+    "skips": 0,
+    "native_storage_and_manager_vet": "passed",
+    "linux_arm64_storage_and_manager_vet": "passed",
+    "native_cli_compile": "passed",
+    "linux_arm64_cli_storage_test_manager_test_compile": "passed; no execution"
+  },
+  "test_roster": [
+    "TestStoragePoolBenchmarkCancellationJoinsBeforeCapacityReturns",
+    "TestStoragePoolBenchmarkWriteIntentSurvivesEmptyNamespaceCleanup",
+    "TestStoragePoolExistingRootMismatchNeverAdopts",
+    "TestStoragePoolFirstProviderMatchingFilesystemAndReopen",
+    "TestStoragePoolFirstProviderRejectsMismatchedFilesystemBeforeMkdir",
+    "TestStoragePoolObservationParentReplacementCannotRedirectMkdir",
+    "TestStoragePoolPlacementSharedAliasesAndCeiling",
+    "TestStoragePoolProviderPublicationFailurePreservesUnknownNamespaceAndPromise",
+    "TestStoragePoolRestartRetainsProviderAndDisabledObligations",
+    "TestStoragePoolReviewQueuedGrantsShareOneBackingSnapshot",
+    "TestStorageQueueSameTickDiskAccounting",
+    "TestStorageQueueSameTickDiskAccounting/default-alias",
+    "TestStorageQueueSameTickDiskAccounting/default-ceiling",
+    "TestStorageQueueSameTickDiskAccounting/default-headroom",
+    "TestStorageQueueSameTickDiskAccounting/named-aliases",
+    "TestStorageQueueSameTickDiskAccounting/named-ceiling",
+    "TestProviderFilesystemExistingRootMismatchPreservesSentinel",
+    "TestProviderFilesystemHeldParentMatchingAndReopen",
+    "TestProviderFilesystemHeldParentRenameCannotRedirectCreation",
+    "TestProviderFilesystemMismatchBeforeMkdir",
+    "TestProviderFilesystemRejectsSymlinkParentsAndBounds",
+    "TestProviderFilesystemReopenRefusesChangedPrivateMode",
+    "TestProviderFilesystemReopensOriginalOpenIdentity",
+    "TestReplacedRootAndArtifactArePreserved",
+    "TestReplacedRootAndArtifactArePreserved/artifact",
+    "TestReplacedRootAndArtifactArePreserved/root"
+  ],
+  "causal_control": {
+    "outcome": "expected failure retained",
+    "overlay": "Only replace the final first-provider checked call with legacy storage.Open.",
+    "overlay_source_sha256": "8a9bffc44dede6be286a3a764d91434eb502754dd40f3ab7dab9dc749add2c8a",
+    "observed": "stale-filesystem fixture returns active with the old call"
+  },
+  "fixture_policy_correction": "Early post-change tests attempted ordinary End on needs_attention; production correctly refused. The test now verifies that refusal and uses explicit cleanup retry, preserving the charge. Those original failed receipts are not relabeled passes.",
+  "compiled_artifacts_sha256": {
+    "macos_cli": "bb9b6eebf4002864d9852744429d6cf719392442af4dc38bf217fe97126f40e5",
+    "linux_arm64_cli": "4b563babe1ae588c316c56acd61b766b33d8ccd6eb0b0141c3b57278fa0c6f9b",
+    "linux_arm64_storage_test": "73cc5be6775a9a846c097659fcd14c04bdab0667bd5d3ea86ad70ae421549b25",
+    "linux_arm64_manager_test": "5a37150599dc10cb0703cd23aa45b0c9710875f321c162aa51fe597531233bc8"
+  },
+  "limitations": [
+    "Finite native operations do not guarantee syscall completion time or future namespace stability",
+    "No mount manipulation, privileged changes or throughput samples were used",
+    "Observed parent replacement refuses publication and may leave a created root on the original held parent; it is not deleted/adopted or credited",
+    "Corrected Linux startup/pool/topology and workload gates remain unverified pending separate review/grant; initial-cgroup authority unchanged",
+    "Earlier macOS performance at e6bd73a and UI at 23116bf keep their original source scope"
+  ],
+  "privacy": "Only wholly owned temporary fixtures and normalized identities are committed. Original receipts, contacts and native paths remain private."
+}

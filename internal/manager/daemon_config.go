@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"reflect"
 	"time"
 	"unicode/utf8"
 
@@ -79,7 +80,15 @@ func configObject(raw []byte, keys ...string) (map[string]json.RawMessage, error
 }
 
 func configSettingsShape(raw []byte) error {
-	fields, err := configObject(raw, "resources", "listen")
+	var shape map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &shape); err != nil {
+		return err
+	}
+	keys := []string{"resources", "listen"}
+	if _, ok := shape["storage_pools"]; ok {
+		keys = append(keys, "storage_pools")
+	}
+	fields, err := configObject(raw, keys...)
 	if err != nil {
 		return err
 	}
@@ -128,7 +137,7 @@ func (m *Manager) applyStartupConfiguration(settings daemonconfig.Settings) erro
 		CASE WHEN typeof(at)='text' AND length(CAST(at AS BLOB))<=64 THEN at ELSE '' END,
 		typeof(type)='text' AND typeof(data)='text' AND typeof(entity)='text' AND typeof(at)='text',
 		length(CAST(data AS BLOB)),
-		CASE WHEN typeof(data)='text' AND length(CAST(data AS BLOB))<=8192 THEN data ELSE '' END
+		CASE WHEN typeof(data)='text' AND length(CAST(data AS BLOB))<=32768 THEN data ELSE '' END
 		FROM events WHERE CAST(type AS BLOB)=CAST(? AS BLOB) ORDER BY sequence DESC LIMIT 1`, daemonConfigEvent).Scan(&sequence, &entity, &stamp, &textFields, &size, &raw)
 	var previous *daemonconfig.Settings
 	revision := int64(1)
@@ -139,8 +148,8 @@ func (m *Manager) applyStartupConfiguration(settings daemonconfig.Settings) erro
 		if !textFields || sequence < 1 || parseErr != nil || envelopeAt.IsZero() {
 			return model.Err("invalid_config_journal", "last configuration event has an invalid SQL sequence/type/timestamp envelope")
 		}
-		if size <= 0 || size > 8192 {
-			return model.Err("invalid_config_journal", "last configuration event exceeds its 8 KiB bound")
+		if size <= 0 || size > 32768 {
+			return model.Err("invalid_config_journal", "last configuration event exceeds its 32 KiB bound")
 		}
 		if err = decodeDaemonConfig(raw, &old); err != nil {
 			return model.Err("invalid_config_journal", "last configuration event is malformed; inspect retained evidence before restart: "+err.Error())
@@ -154,7 +163,7 @@ func (m *Manager) applyStartupConfiguration(settings daemonconfig.Settings) erro
 	} else if !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
-	if previous == nil || *previous != settings {
+	if previous == nil || !reflect.DeepEqual(*previous, settings) {
 		change := daemonConfigTransition{Schema: 1, Revision: revision, Host: m.host, Actor: m.owner, At: time.Now().UTC(), Operation: operation, Previous: previous, Settings: settings}
 		data, err := json.Marshal(change)
 		if err != nil {

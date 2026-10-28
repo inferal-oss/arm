@@ -50,6 +50,39 @@ Earlier portfolio rows below retain their recorded technical limits. Their old
 assignments do not establish current owner activity or readiness; obtain a fresh
 handoff before scheduling or integrating additional source.
 
+## Mount-aware storage pools — in progress
+
+Owner: `codex/storage-performance-pools`. Add explicitly configured host storage
+locations, native filesystem/backing-device discovery on macOS and Linux,
+conservative shared-capacity admission, exact managed placement, bounded opt-in
+performance profiles, and CLI/web/terminal pool visibility. Validate two distinct
+native macOS filesystems, accounting aliases, unavailable/replaced mounts,
+restart retention, benchmark cancellation/cleanup and Linux compilation. Device
+metadata and benchmark results are observations, not throughput guarantees or
+physical quotas. Normal/race safety, configuration/format fences, UI models,
+embedded frontend build, vet and macOS/Linux ARM64 builds pass at candidate source.
+Native macOS/Linux measurement and independent integration review remain pending;
+no acceptance or main integration is claimed. Named storage opts into format 3;
+ordinary ledgers retain format 1. Independent external-root strict reset remains
+unsupported and refuses. Automatic tier selection and I/O enforcement remain separate.
+Independent review found a P1 same-tick queue over-admission bug in default and
+named/shared disk accounting. The focused correction and normal/race queue
+regressions pass locally; composed re-review and the deferred native measurement
+windows remain required. A separate P2 review correction requires current-volume
+confirmation before retained profiles appear fresh; normal/race replacement-view
+regressions pass locally and await composed re-review.
+A further P2 correction handles Btrfs synthetic device IDs only after exact
+block/sysfs/UUID association and stable bounded pre/post facts. The 61-case normal
+and race source rosters, native/Linux vet and Linux builds pass; corrected Linux
+configured read-only verification awaits a separate reviewed window. Prior native
+and UI scopes remain tied to their original sources. Original Linux positive
+workload/performance gates remain refused and unverified.
+A separate P1 named-provider custody correction checks and holds the native
+parent FD before root creation, verifies root identity/filesystem before
+publication and preserves failed-publication obligations. Its 26-node normal
+and race scopes, native/Linux vet and native/Linux compilation pass locally;
+composed acceptance and affected native boundaries remain pending.
+
 ## Accepted recent milestones
 
 | Area | Integrated commit | Supported boundary |

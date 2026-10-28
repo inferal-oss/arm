@@ -54,3 +54,7 @@ func DiskAvailability(ctx context.Context, path string) model.DiskAvailability {
 	}
 	return r
 }
+
+func NativeDiskAvailability(ctx context.Context, path string) model.DiskAvailability {
+	return DiskAvailability(ctx, path)
+}

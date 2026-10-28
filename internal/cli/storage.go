@@ -12,6 +12,9 @@ func (a *app) storage(args []string) (int, error) {
 		return 2, fmt.Errorf("storage requires a command; use arm storage --help for create, list, inspect, export, exports, retain, cleanup and handoff")
 	}
 	action, args := args[0], args[1:]
+	if action == "pools" || action == "benchmark" {
+		return a.storagePoolsCommand(action, args)
+	}
 	if action == "create" {
 		return a.acquire("storage", args)
 	}
@@ -70,6 +73,36 @@ func (a *app) storage(args []string) (int, error) {
 		}
 	default:
 		return 2, fmt.Errorf("unknown storage action %q", action)
+	}
+	return 0, a.print(result)
+}
+
+func (a *app) storagePoolsCommand(action string, args []string) (int, error) {
+	f := a.flags("storage " + action)
+	f.Bool("json", false, "JSON output")
+	size, reason, agent := new(string), new(string), new(string)
+	if action == "benchmark" {
+		f.StringVar(size, "size", "256MiB", "benchmark scratch size (8MiB..1GiB, whole MiB)")
+		f.StringVar(reason, "reason", "", "purpose for opt-in performance testing")
+		f.StringVar(agent, "agent", "", "registered agent contact")
+	}
+	if err := a.parse(f, args, false); err != nil {
+		return 2, err
+	}
+	if action == "pools" {
+		var result []model.StoragePoolView
+		if err := a.call("storage_pools", nil, &result); err != nil {
+			return 1, err
+		}
+		return 0, a.print(result)
+	}
+	bytes, err := bytesValue(*size)
+	if err != nil {
+		return 2, err
+	}
+	var result model.StorageBenchmarkResult
+	if err = a.call("storage_benchmark", map[string]any{"name": f.Arg(0), "bytes": bytes, "reason": *reason, "agent": *agent}, &result); err != nil {
+		return 1, err
 	}
 	return 0, a.print(result)
 }

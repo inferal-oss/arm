@@ -6783,6 +6783,110 @@ display and gallery controls still require the client. Coordinator review,
 composed Linux capture and publication are recorded in the integration acceptance
 above.
 
+## Named storage pool candidate and configuration editing
+
+The current candidate passes focused normal/race tests across daemonconfig,
+manager, CLI, database and terminal packages for selected pool placement,
+independent/default/shared capacity, per-location ceilings, stale/missing
+locations, restart with disabled obligations, cancelled/invalid benchmarks,
+original-worker cancellation/join holds, corrupt records, mixed/downgraded
+workspace markers, configuration journals, atomic file edits and agent/help
+retrieval. The latest composed native race command runs the StoragePool,
+WorkspaceFormat, ConfigEdits, ConfigCLI, LiveDisk, DaemonConfiguration,
+ResolvedConfig, AgentCard and HelpOnlyListsOptions selections. Affected observe,
+daemonconfig, manager, CLI, server, terminal and database vet passes, along with
+resource presentation/metric-help Node tests. The embedded dashboard build and
+native macOS/Linux ARM64 CLI builds pass; the selected Linux manager test binary
+is compiled, not yet executed on Linux.
+
+Review fixes include Cargo/Gradle's remaining default-provider references,
+independent pool ceiling handling, cancellation/expiry retention until positive
+worker join, immediate shutdown cancellation, original backing-binding checks,
+unknown-default-topology refusal, queue resource identity, locally aged named
+pool observations, conservative unresolved Linux device-mapper handling and
+remote privacy/claim fences. Actual backend startup review also found that the old capacity-only server
+constructor dropped parsed storage locations. The CLI now calls the complete
+configured constructor; a real server test verifies pool/resource API visibility
+and the exact persisted startup hash. Fresh mesh inspection binds the full
+configuration and refuses changed pool policy before native child launch.
+A format-1 writer could otherwise drop the new
+selector on queued recovery; named-pool persistence now commits its format-3
+fence and metadata together. Removing/forging either marker refuses restart.
+An actual rebuilt-CLI smoke creates config through ARM commands, starts a private
+backend, verifies pool/resource API visibility and stops it. After preserving
+that fixture's new config/launch hints separately, the installed format-1 writer
+refuses the retained format-3 ledger. This isolates the ledger guard from an
+otherwise earlier unknown-config-field refusal; the original earlier assertion
+failed and is not counted as a fence pass. Exact default/shared-overlap bindings
+also receive a forged-flag refusal regression.
+
+An earlier 8MiB native observation/benchmark check confirmed positive metrics and
+exact scratch cleanup at its earlier source. It is not relabeled as current-source
+throughput acceptance. Earlier help selection failed because a substring check
+mistook --storage-pool for --storage, and two existing broad help tests used
+symlinked temporary roots refused by the private-config reader. The option check
+is corrected; focused canonical-path CLI/configuration checks pass. Initial
+compile and controlled-fixture failures remain failed at their original sources.
+
+The opt-in native harness stages a fresh private authority and explicit configured
+locations, registers its actual polling contact, takes sequential admitted samples,
+checks saved pool/resource views and waits for ordinary storage cleanup. It reports
+unknown cleanup/stop outcomes as failures while preserving the ledger. Real
+macOS two-filesystem throughput and Linux VM execution remain deferred for a
+coordinated measurement window. No throughput comparison, Linux native pass,
+physical I/O quota, cold host/guest cache guarantee or full browser acceptance is
+claimed by the current candidate checks.
+
+
+A subsequent source review found that internally known benchmark writes could
+be forgotten after the scratch file was removed and an empty directory was
+surveyed. The correction journals write intent before the worker begins and
+makes content knowledge monotonic through cleanup. A controlled no-I/O worker
+checks durable intent on entry and proves an empty later namespace retains the
+storage obligation until explicit handoff. Benchmark receipts now include the
+storage/execution lease IDs and cleanup state. The native harness waits for each
+original cleanup worker and offers a separate explicit owned-scratch handoff
+flag; it never infers exclusive physical credit from unlinking or apparent size.
+A native no-write negative replaces the selected root with a symlink and verifies
+that the opened identity check refuses before scratch creation, leaving the
+unrelated directory unchanged. Focused observe/manager/CLI/server race checks,
+affected vet and macOS/Linux ARM64 builds pass for this correction.
+
+
+Independent queue review reproduced two queued 600-byte grants consuming 1,200
+bytes against 1,000 bytes of named backing headroom. The lease snapshot used by
+disk admission still contained queued states after the first grant; the same
+problem affected default disk admission without named pools. The correction
+updates the original snapshot entry after each grant and removes the obsolete
+ports append. The reported reproduction and five added default-headroom,
+default-ceiling, named-ceiling, named-alias and default-alias cases fail before
+the fix and pass after it. Each added case also checks continued blocking on
+the next tick and successful admission after the first reservation is released.
+Scoped race checks cover these cases, live disk accounting, FIFO/deadline
+admission, ports, counted pools and owner budgets; manager vet passes. Exact
+changed-source hashes and selection scope are recorded in
+`docs/validation/storage-queue-admission-2026-10-28.json`. Earlier candidate
+inventory/build receipts retain their original source scope. Composed re-review
+and native macOS/Linux measurements remain pending; previously staged native
+binaries require rebuilding before those measurements.
+
+
+Independent profile review found that startup could expose replacement-location
+metadata beside an original-volume profile marked fresh, because freshness only
+compared the profile with the retained record. The correction also requires a
+nonempty matching current volume and no provider error. Pure view controls cover
+confirmed, replaced, unavailable, provider-root-error, unknown, aged and future
+cases. A restart regression persists a previous-volume identity/profile and lets
+normal native discovery report the current volume at the same configured path;
+two restarts verify both pool and resource projections retain original profile
+identity/time, mark it stale and keep admission unavailable. No actual mount is
+changed and no performance benchmark is run. The new cases fail before the
+correction and pass after it; scoped race checks include location/restart
+accounting and the earlier same-tick queue regressions, and manager vet passes.
+Exact changed-source hashes and evidence scope are recorded in
+`docs/validation/storage-profile-freshness-2026-10-28.json`. Central composed
+review and deferred native measurement/build gates remain pending.
+
 ### Run selector completion
 
 Independent source and actual-evidence review accepts `a6dd82e1`: eight CLI
@@ -6798,6 +6902,77 @@ Go source/module entries and four owned paths match the reviewed feature
 exactly; no new runtime run is claimed for this composition. Website validation
 and later native-foundation integration remain separate. Normalized evidence:
 [log-run-completion-2026-10-28.json](validation/log-run-completion-2026-10-28.json).
+
+
+## Bounded Btrfs association correction — candidate
+
+A read-only Linux preflight found a visible Btrfs block source and UUID membership
+that the original discovery code discarded because path stat device and covering
+mount device differed. The correction's production parser/association helpers
+execute on macOS and allow only the Btrfs/native-type exception, with exact block
+rdev, resolved sysfs object and one UUID membership required before shared backing
+is assigned. Two snapshots bracket the probe in opposite orders. Native path and
+statfs identity, complete bounded mount bytes, source link/object and membership
+changes refuse association. No CPU/memory, model, format or startup contract changes.
+
+The final normal and race rosters each pass 61 named nodes, zero failures/skips.
+They cover the observed synthetic IDs; nested/escaped canonical boundaries; strict
+non-Btrfs matching; malformed/ambiguous mounts; absent/nonblock/mismatched sources;
+changed independently valid proofs; missing/duplicate/multiple UUID membership;
+device-mapper refusal; and independently valid entry/byte-limit overflow controls.
+A compiler overlay restoring only the original strict device predicate reproduces
+the original observed-device failure; its exit-one receipt remains a failed causal
+control, separate from the passing candidate. Native/Linux observer vet and Linux
+ARM64 CLI/observer-test builds pass. Corrected Linux artifacts are compiled only.
+
+Exact source/protected-contract hashes, roster, limits and compiled artifact hashes
+are in `docs/validation/storage-association-candidate-2026-10-28.json`. Corrected
+Linux configured startup/pool/status/topology verification awaits independent
+review and a separately granted read-only window. The original Linux benchmark
+preflight and initial-cgroup workload admission refusals remain failed; no samples
+or native manager tests were accepted. Earlier macOS performance at `e6bd73a` and
+UI at `23116bf` retain their original source scopes. No later-source acceptance,
+physical host capacity/enforcement authority, privileged setup or workload retry
+is inferred from this source correction.
+
+
+## Named-provider first-creation custody — candidate
+
+A P1 review found that fresh location observation followed by path-based provider
+mkdir could create on a replaced parent or wrong filesystem. A manager fixture
+with a controlled stale native filesystem observation reproduces an active grant
+under the original call. The additive named opener now holds a bounded no-follow
+parent, checks its native FilesystemID before mkdirat, opens the root relative to
+that FD and verifies the root filesystem and exact native birth/type/mode/owner
+identity before publication. Existing `storage.Open` remains byte-identical.
+
+Production-helper controls cover mismatch before any root side effects, matching
+held-parent success and reopen, original Open identity compatibility, parent
+rename/replacement with the original FD held, non-adoption of existing roots,
+changed private mode and path bounds. Manager controls cover the observation-to-
+open replacement boundary, matching reopen, persisted-root mismatch, explicit
+cleanup retention and failed metadata publication. A failed-publication root
+remains untouched, its uncommitted identity is not published, and restart/retry
+cannot adopt it or erase the original promise. No mounts or privileges change.
+
+Final normal and race scopes each pass 26 named nodes with zero failures/skips,
+including affected provider/lifetime/queue controls. Native/Linux storage/manager
+vet and native CLI plus Linux ARM64 CLI/storage-test/manager-test builds pass.
+The Linux binaries are compile-only. A final-source compiler overlay restoring
+only the legacy first-provider call reproduces the old active grant; its failed
+receipt is retained as a causal control. Early post-change fixture attempts to
+ordinary-End a needs-attention lease correctly failed policy; tests now preserve
+that refusal and exercise explicit cleanup retry instead, without weakening code.
+
+`docs/validation/storage-provider-custody-candidate-2026-10-28.json` records exact
+source, unchanged interface/native/cgroup/model/format hashes, roster and compiled
+artifacts. This remains a source-check candidate pending central composed review
+and affected native-boundary validation. Earlier performance/UI scopes are not
+relabelled as this source; original Linux workload/performance refusals remain
+unverified. Bounded operation count is not a guarantee against blocking native
+I/O or namespace changes after the observation/publication boundary.
+
+
 ### Detachable run-log windows
 
 The focused continuation on `codex/run-log-windows` adds stock Semblance
@@ -6886,3 +7061,13 @@ Automatic [main build and Pages deployment](https://github.com/inferal-oss/arm/a
 both pass on `24182f5`. Its feature inputs remain identical to reviewed `2e3fa59`;
 the intervening acceptance commit changes documentation only. This publication
 receipt does not add live-origin, DNS/HTTPS or latency measurement acceptance.
+
+
+
+Btrfs association fixtures now derive malformed UUIDs and membership ranges only
+from a synthetic base UUID and use synthetic source/subvolume/sysfs labels. All
+61 existing pure association cases pass after this fixture-data normalization,
+with zero failures/skips. Production discovery/custody bytes are unchanged; prior
+race and compile runs retain their original hashes and scope. The fixture-only
+followup is recorded in
+`docs/validation/storage-association-fixture-normalization-2026-10-28.json`.

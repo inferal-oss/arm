@@ -106,7 +106,16 @@ func Serve(ctx context.Context, home, address string, capacity model.Resources) 
 }
 
 func serveNode(ctx context.Context, home, address string, capacity model.Resources, restart *nodestop.Restart) (resultErr error) {
-	settings := daemonconfig.Settings{Resources: capacity, Listen: address}
+	return serveConfiguredNode(ctx, home, daemonconfig.Settings{Resources: capacity, Listen: address}, restart)
+}
+
+// ServeConfigured preserves every validated desired startup setting through the
+// real backend boundary; capacity-only callers retain their existing wrapper.
+func ServeConfigured(ctx context.Context, home string, settings daemonconfig.Settings) error {
+	return serveConfiguredNode(ctx, home, settings, nil)
+}
+func serveConfiguredNode(ctx context.Context, home string, settings daemonconfig.Settings, restart *nodestop.Restart) (resultErr error) {
+	address := settings.Listen
 	if err := settings.Validate(); err != nil {
 		return model.Err("invalid_config", err.Error())
 	}
@@ -280,7 +289,7 @@ func serveNode(ctx context.Context, home, address string, capacity model.Resourc
 	if e = m.TrackInfrastructure(listener.Addr()); e != nil {
 		return e
 	}
-	if e = saveMeshStartupPolicy(home, address, capacity); e != nil {
+	if e = saveConfiguredMeshStartupPolicy(home, settings); e != nil {
 		return e
 	}
 	runtimeExecutable, _ = mesh.CaptureRuntimeExecutable()
@@ -1014,6 +1023,19 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 			return nil, model.Err("observation_busy", "socket discovery is already running")
 		}
 		return s.Manager.DiscoverPorts(ctx)
+	case "storage_pools":
+		return s.Manager.StoragePools()
+	case "storage_benchmark":
+		var q struct {
+			Name   string `json:"name"`
+			Bytes  int64  `json:"bytes"`
+			Reason string `json:"reason"`
+			Agent  string `json:"agent"`
+		}
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		return s.Manager.BenchmarkStoragePool(ctx, q.Name, q.Bytes, q.Reason, q.Agent)
 	case "storage_list":
 		return s.Manager.StorageList()
 	case "storage_export", "storage_export_preview":

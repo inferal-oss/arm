@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"getarm.org/internal/model"
@@ -15,13 +16,17 @@ import (
 // StartupPolicy records configured ceilings, never observed free memory. A
 // missing record is distinct from current defaults or historical settings.
 type StartupPolicy struct {
-	Schema     int             `json:"schema"`
-	Resources  model.Resources `json:"resources"`
-	Listen     string          `json:"listen"`
-	RecordedAt time.Time       `json:"recorded_at,omitempty"`
+	SettingsSHA256 string          `json:"settings_sha256,omitempty"`
+	Schema         int             `json:"schema"`
+	Resources      model.Resources `json:"resources"`
+	Listen         string          `json:"listen"`
+	RecordedAt     time.Time       `json:"recorded_at,omitempty"`
 }
 
 func (p StartupPolicy) Validate() error {
+	if p.SettingsSHA256 != "" && (len(p.SettingsSHA256) != 64 || strings.Trim(p.SettingsSHA256, "0123456789abcdef") != "") {
+		return fmt.Errorf("invalid complete startup settings hash")
+	}
 	host, port, err := net.SplitHostPort(p.Listen)
 	ip := net.ParseIP(host)
 	number, portErr := strconv.Atoi(port)

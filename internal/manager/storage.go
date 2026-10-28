@@ -57,10 +57,11 @@ func (m *Manager) provisionStorage(l model.Lease) (model.Lease, error) {
 	if reason := m.startDeadlineProblem(l); reason != nil {
 		return m.rejectUnstarted(l, reason)
 	}
-	if err := m.ensureStorage(); err != nil {
+	if err := m.ensurePoolStorage(l.Request.StoragePool); err != nil {
 		return m.storageFailed(l, err)
 	}
-	l.ManagedDir = m.storage.Path(l.ID)
+	provider := m.providerFor(l)
+	l.ManagedDir = provider.Path(l.ID)
 	l.Artifact = &model.Artifact{Name: l.ID, Path: l.ManagedDir, Phase: "creating", Policy: "exclusive-managed-directory; unknown reclamation remains charged", Updated: time.Now().UTC()}
 	l.Revision++
 	// The intention is durable before mkdir. A directory found after a crash
@@ -68,7 +69,7 @@ func (m *Manager) provisionStorage(l model.Lease) (model.Lease, error) {
 	if err := m.put(l, "storage.creating"); err != nil {
 		return l, err
 	}
-	id, err := m.storage.Create(l.ID)
+	id, err := provider.Create(l.ID)
 	if err != nil {
 		return m.storageFailed(l, err)
 	}
@@ -107,7 +108,7 @@ func (m *Manager) storageForRun(r model.Request) (model.Lease, error) {
 	if l.Request.Kind != "storage" || l.Owner != m.owner || l.Host != m.host || l.State != "active" || l.Expires == nil || !m.leaseCovers(l, r.TTL) || l.Artifact == nil || l.Artifact.Phase != "owned" {
 		return l, model.Err("storage_unavailable", "storage must be active, owned by this host/user, and outlast the command's TTL")
 	}
-	if m.storage == nil {
+	if m.providerFor(l) == nil {
 		return l, model.Err("storage_unavailable", "managed storage provider is unavailable")
 	}
 	if export, err := m.storageExportBusy(l.ID); err != nil {
@@ -115,7 +116,7 @@ func (m *Manager) storageForRun(r model.Request) (model.Lease, error) {
 	} else if export != "" {
 		return l, model.Err("operation_busy", "storage export "+export+" must settle, reconcile or be handed off before attaching new work")
 	}
-	if err := m.storage.Check(*l.Artifact); err != nil {
+	if err := m.providerFor(l).Check(*l.Artifact); err != nil {
 		return l, model.Err("storage_unavailable", err.Error())
 	}
 	return l, nil
@@ -210,7 +211,7 @@ func (m *Manager) cleanupStorage(id string) {
 		m.mu.Unlock()
 		return
 	}
-	p := m.storage
+	p := m.providerFor(l)
 	if p == nil || l.Artifact == nil || l.Artifact.Identity == nil {
 		_, _ = m.storageFailed(l, fmt.Errorf("storage ownership or provider is unavailable; no deletion attempted"))
 		m.mu.Unlock()
@@ -231,7 +232,7 @@ func (m *Manager) cleanupStorage(id string) {
 		}
 		if err == nil && a.AllocatedBefore == nil {
 			a.AllocatedBefore = &survey.Allocated
-			a.ContentObserved = survey.Entries > 0
+			a.ContentObserved = a.ContentObserved || survey.Entries > 0
 			m.mu.Lock()
 			l.Artifact = &a
 			l.Revision++
@@ -322,7 +323,7 @@ func (m *Manager) StoragePreview(ctx context.Context, id string) (model.StorageP
 		return model.StoragePreview{}, model.Err("invalid_request", "not a storage lease")
 	}
 	ls, err := m.list()
-	p := m.storage
+	p := m.providerFor(l)
 	preview := model.StoragePreview{Lease: l, Consumers: storageConsumers(ls, id), ActivePIDs: []int{}, Detail: "Read-only preview; allocated blocks do not establish exclusive or reclaimable bytes"}
 
 	if export, e := m.storageExportBusy(id); e != nil || export != "" {

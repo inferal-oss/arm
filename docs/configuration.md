@@ -65,7 +65,8 @@ quotas, configure a reserved human/OS allowance, or change enforcement policy.
 Owner/nested policy budgets remain administered by `arm budget` through their
 existing attributed transactional journal and revision/idempotency checks.
 Per-lease usage and review policies retain their existing explicit commands.
-This file does not support provider selection, managed roots, profile defaults,
+This file supports named managed storage locations as described below. It does
+not support other provider selection, profile defaults,
 warning/escalation defaults, service/watchdog setup, retention/redaction,
 backup/restore, contact/messaging defaults or client settings. Unknown fields
 for those categories refuse rather than advertise support.
@@ -121,3 +122,114 @@ unchanged and changed startup journals, retained existing leases and deficits,
 transaction failure, malformed last events and settled-proof compatibility.
 This stage installs no OS service and claims no full degraded-database recovery,
 retention/restore, provider or performance acceptance.
+
+## Configure storage locations and tiers
+
+`arm config show` and `check` print the absolute `config.toml` path even when the
+file does not exist. Human-readable zero memory/disk defaults are shown as
+`auto`; JSON retains exact numeric internal ceilings. Configuration is desired
+next-start policy and does not live-reload a running daemon.
+
+Use ARM commands to create or edit a private configuration without starting a
+backend:
+
+```sh
+arm config set daemon.cpu 4
+arm config set daemon.memory auto
+arm config pool set fast-scratch --path /absolute/fast/storage --tier build --ceiling 200GiB
+arm config pool set bulk --path /absolute/bulk/storage --tier archive
+arm config pool set fast-scratch --ceiling 150GiB --dry-run
+arm config pool remove bulk
+arm config check
+arm config show
+```
+
+The first edit creates a private ARM home and mode-0600 configuration if absent.
+Edits validate the complete existing and proposed file, preserve unrelated
+scalar values/comments, serialize ARM editors, compare the original file again,
+and publish through an exclusively created private temporary file, fsync and
+atomic rename. `--dry-run` previews validated TOML in an existing home;
+`--expect-file SHA256` optionally requires the `file_sha256` reported by
+`config show`. Inline table forms remain readable but commands refuse pool edits
+that cannot preserve their structure. Unsafe symlinks, hard links and public
+configuration permissions are refused. A failed directory sync reports that
+replacement occurred but durability was not confirmed; inspect before retrying.
+
+The equivalent TOML is:
+
+```toml
+schema = 1
+
+[[storage_pools]]
+name = "fast-scratch"
+path = "/absolute/fast/storage"
+tier = "build"
+ceiling = "200GiB"
+
+[[storage_pools]]
+name = "bulk"
+path = "/absolute/bulk/storage"
+tier = "archive"
+```
+
+Configure at most eight named locations, using existing absolute directories.
+ARM creates a new private host-specific managed root beneath the configured
+path on first allocation; it does not adopt or clean that directory's existing
+contents. Enabling named locations atomically opts that ledger into workspace format 3;
+format-1-only writers refuse it before recovery or admission. Ordinary ledgers
+keep format 1. Removing configuration never downgrades the ledger or drops its
+obligations. Unsupported partial markers refuse startup without repair.
+
+Pool names and paths are durable bindings: use a new name to select a
+different path. Removed pools remain visible and retain existing obligations,
+while next startup disables new allocations. Unavailable or replaced
+filesystems refuse allocation rather than falling back onto the parent disk.
+Retained pool records count toward the eight-location bound.
+
+`ceiling` is optional (`auto` removes it) and caps only that location's claims;
+it does not create free space. Locations sharing a filesystem/APFS container or
+Btrfs UUID share full outstanding promises. Their visible capacity overlaps and
+must not be summed. Native topology that cannot establish shared backing gives
+no new named-pool admission credit. Physical device sharing can also cause I/O
+contention between otherwise independent capacity pools.
+
+```sh
+arm storage pools --json
+arm storage benchmark fast-scratch --size 256MiB --reason "Compare build storage"
+arm storage create 20GiB --storage-pool fast-scratch --ttl 30m --reason "Write-heavy build outputs"
+arm run --storage STORAGE_LEASE_ID --profile rust-build --cpu 2 --ttl 20m --cwd /absolute/project --reason "Build into selected storage" -- cargo build --release
+```
+
+Benchmarking is explicit and uses ordinary admission: one CPU, 8MiB cooperative
+memory, and selected-location scratch bytes plus 1MiB metadata headroom. Only one
+benchmark runs per authority. It writes 8MiB–1GiB (whole MiB) of private random
+scratch, measures sequential 1MiB write including fsync/read and queue-depth-one
+4KiB random reads, and removes its exact scratch file. macOS uses `F_NOCACHE`;
+Linux uses advisory `POSIX_FADV_DONTNEED`, which does not guarantee a cold device
+or host/guest caches. It neither evicts global caches nor writes raw devices.
+Context checks bound work between native calls; blocked native I/O itself can
+outlast cancellation. Runtime holds retain obligations until the original
+worker joins. The response includes the storage/execution lease IDs and cleanup
+state. Write intent is durable before native writes and survives an empty later
+survey: removing scratch names does not prove exclusive block reclamation.
+Uncertain physical storage remains charged; inspect the returned storage lease
+and use an explicit `storage handoff` only when assuming residual responsibility.
+The opt-in validation harness has a separate `--handoff-owned-scratch` flag for
+that deliberate decision after confirmed removal of only its own scratch
+namespace; it grants no exclusive reclamation credit.
+
+Pool views in CLI, web and terminal show mount, filesystem, backing identity,
+reported device/model/transport/media facts, live promises and performance
+numbers with timestamp and cache method. Missing hardware facts remain unknown;
+VM device properties describe guest reports. Seven-day-old performance profiles
+are marked stale. Tier names are operator workload hints, not measured rankings.
+Prefer a faster measured suitable location with enough available capacity for
+write-heavy work. Named pool inventory and selectors are local-owner operations; initial peer
+claims and aggregate observe-host summaries do not expose them.
+There is no automatic placement, fallback, migration,
+throughput reservation or kernel disk quota.
+
+Strict reset currently refuses the named external-root metadata group because
+its independent native namespace proof has not been extended. Preserve that
+ledger, or explicitly review `--forget` as intentional ledger abandonment; it
+provides no external cleanup or physical reclamation credit.

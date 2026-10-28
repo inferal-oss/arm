@@ -165,7 +165,7 @@ func (m *Manager) reconcileQueued() error {
 			continue
 		}
 		reason := m.startDeadlineProblem(l)
-		if reason == nil && !m.requestFitsCeiling(l.Request.Resources) {
+		if reason == nil && !m.storageRequestFitsCeiling(l.Request) {
 			reason = &model.Error{Code: "capacity_exceeded", Message: "Known physical inventory or a configured host ceiling cannot satisfy this queued request. Submit a new request with feasible quantities."}
 		}
 		if reason != nil {
@@ -261,13 +261,22 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 		}
 	}
 	if l.Request.Resources.Disk > 0 {
+		resource := m.host + "/disk"
 		budget := m.diskBudget(s.used.Disk)
-		if !budget.Known {
-			add("observation_unavailable", m.host+"/disk", "bytes", "Fresh nonprivileged state-filesystem headroom is required before disk admission.", number(model.CountQuantity(l.Request.Resources.Disk)), nil)
-		} else if l.Request.Resources.Disk > budget.Available {
-			add("disk_headroom", m.host+"/disk", "bytes", "State-filesystem headroom is insufficient after full outstanding promises; free space and filesystem size can change.", number(model.CountQuantity(l.Request.Resources.Disk)), number(model.CountQuantity(budget.Available)))
+		if l.Request.StoragePool != "" {
+			resource = m.host + "/storage/" + l.Request.StoragePool
+			leases, err := m.list()
+			if err != nil {
+				return nil, err
+			}
+			budget = m.storageBudget(l.Request.StoragePool, leases)
 		}
-		if len(info.Blockers) > 0 && info.Blockers[len(info.Blockers)-1].Resource == m.host+"/disk" {
+		if !budget.Known {
+			add("observation_unavailable", resource, "bytes", "Fresh headroom for the selected storage backing is required before disk admission.", number(model.CountQuantity(l.Request.Resources.Disk)), nil)
+		} else if l.Request.Resources.Disk > budget.Available {
+			add("disk_headroom", resource, "bytes", "Selected storage backing headroom is insufficient after full outstanding promises; free space and filesystem size can change.", number(model.CountQuantity(l.Request.Resources.Disk)), number(model.CountQuantity(budget.Available)))
+		}
+		if len(info.Blockers) > 0 && info.Blockers[len(info.Blockers)-1].Resource == resource {
 			last := &info.Blockers[len(info.Blockers)-1]
 			last.Stale = budget.Stale
 			if !budget.Observation.At.IsZero() {

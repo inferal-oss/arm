@@ -51,7 +51,7 @@ func TestDaemonConfigurationJournalInitialLegacyAndUnchangedStartup(t *testing.T
 		t.Fatal(e)
 	}
 	c := daemonJournal(t, m)
-	if len(c) != 1 || c[0].Previous != nil || c[0].Operation != "initialize-observed-startup" || c[0].Settings != s {
+	if len(c) != 1 || c[0].Previous != nil || c[0].Operation != "initialize-observed-startup" || !reflect.DeepEqual(c[0].Settings, s) {
 		t.Fatal(c)
 	}
 	if e = m.Close(); e != nil {
@@ -106,7 +106,7 @@ func TestDaemonConfigurationLowerCeilingPreservesLeaseTermsAndDeficit(t *testing
 		t.Fatal("admitted into deficit")
 	}
 	c := daemonJournal(t, m)
-	if len(c) != 2 || c[1].Revision != 2 || c[1].Previous == nil || *c[1].Previous != old || c[1].Settings != next {
+	if len(c) != 2 || c[1].Revision != 2 || c[1].Previous == nil || !reflect.DeepEqual(*c[1].Previous, old) || !reflect.DeepEqual(c[1].Settings, next) {
 		t.Fatal(c)
 	}
 }

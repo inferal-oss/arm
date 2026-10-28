@@ -16,7 +16,7 @@ import (
 func (m *Manager) AcquirePeer(peer string, r model.Request, run *RunRequest, limit model.Resources, maxTTL time.Duration) (model.Lease, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if r.Budget != "" || r.ServiceLease != "" || isGradleProfile(r.Profile) || r.StartDeadline != nil || r.Queue || len(r.Pools) > 0 || r.Kind == "storage" || r.Kind == "ports" || len(r.Ports) > 0 || r.StorageLease != "" || r.PortLease != "" || r.Agent != "" || r.UsagePolicy != nil {
+	if r.StoragePool != "" || r.Budget != "" || r.ServiceLease != "" || isGradleProfile(r.Profile) || r.StartDeadline != nil || r.Queue || len(r.Pools) > 0 || r.Kind == "storage" || r.Kind == "ports" || len(r.Ports) > 0 || r.StorageLease != "" || r.PortLease != "" || r.Agent != "" || r.UsagePolicy != nil {
 		return model.Lease{}, model.Err("unsupported_remote_claim", "initial remote claims support immediate native budgets and supervised execution; policy selectors, services, queue, start deadline, pool, storage, port and agent attachments need separate authorization support")
 	}
 	if r.TTL <= 0 || r.TTL > maxTTL || !r.Resources.Fits(limit) {

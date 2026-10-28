@@ -188,6 +188,35 @@ Measurements include units, scope, method, timestamp, completeness, and quality:
 
 The default disk reservation pool follows current nonprivileged filesystem availability rather than assuming a fixed20GiB pool. Allow an explicit configured ceiling, but never treat that ceiling as observed free space. Initially identify the filesystem containing ARM's managed storage/state and state that scope clearly; arbitrary unlocated cooperative disk claims do not prove where writes occur. Use fresh native availability, preserve existing promises when capacity falls, expose shortfalls/unknown observations and apply the same policy to admission, queueing, renewal and web/TUI views. APFS shared-container capacity and equivalent shared filesystems must not be summed as independent volume space. Outstanding promises remain conservatively charged until supported settlement; observed file size or namespace removal alone cannot establish exclusive physical reclaim. Disk availability and configured ceiling are separate values. This default replaces the initial static development budget and requires native/Linux verification.
 
+### Configured storage locations and measured tiers
+
+Operators may configure existing directories on selected mounts as named host
+storage pools. Managed allocations must use the selected location and return
+that actual path; an unavailable/replaced mount cannot silently fall back to the
+parent filesystem. Persist stable filesystem/backing and owned-root identities,
+retain obligations through restart/configuration removal, and fence writers that
+cannot interpret the new placement/accounting semantics.
+
+Pool views must show filesystem/mount and reported backing-device facts, live
+available capacity and overlapping backing relationships. Locations sharing an
+APFS container, Btrfs filesystem or equivalent capacity consume one conservative
+ledger of outstanding promises. Operator ceilings do not manufacture space.
+Unknown topology cannot establish independence or exclusive capacity.
+
+Performance measurement is explicit, admitted and bounded in scratch space,
+CPU/memory and work duration. Use only private owned temporary files and retain
+charges through native I/O cancellation/join and uncertain cleanup. Report
+sequential write/read throughput, queue-depth-one random-read latency/IOPS,
+measurement timestamp, byte/block sizes and cache/durability conditions. Missing
+or stale samples remain visibly unknown/stale; measurements are advisory under
+current contention and do not reserve throughput. Operator tier labels describe
+intended workload classes separately from actual measured numbers.
+
+Agent guidance should recommend comparing ARM's measured write speed and live
+space before selecting a pool for write-heavy work, including large Rust build
+outputs under an attached managed storage lease. Automatic tier selection,
+fallback/migration and I/O enforcement require separate semantics.
+
 ### Filesystem knowledge
 
 APFS support must account for sparse files, clones, snapshots, and volumes sharing container capacity. A directory walk or logical-byte sum is insufficient. Provider discovery must identify the filesystem and relevant pool, prefer supported platform accounting APIs, and distinguish readily available capacity from conditional or purgeable capacity. Shared volume free space must not be summed into fictional additional capacity. These distinctions follow [Apple's APFS documentation](https://developer.apple.com/documentation/foundation/about-apple-file-system).

@@ -37,10 +37,10 @@ func (m *Manager) openGradleDirectory(storageID, name string, expected *gradleDi
 	if err != nil {
 		return nil, none, err
 	}
-	if m.storage == nil || store.Artifact == nil || store.Artifact.Identity == nil || store.Artifact.Phase != "owned" {
+	if m.providerFor(store) == nil || store.Artifact == nil || store.Artifact.Identity == nil || store.Artifact.Phase != "owned" {
 		return nil, none, model.Err("storage_unavailable", "Gradle workspace needs verified owned managed storage")
 	}
-	if err := m.storage.Check(*store.Artifact); err != nil {
+	if err := m.providerFor(store).Check(*store.Artifact); err != nil {
 		return nil, none, err
 	}
 	parent, err := unix.Open(store.ManagedDir, unix.O_RDONLY|unix.O_DIRECTORY|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
@@ -81,7 +81,7 @@ func (m *Manager) openGradleDirectory(storageID, name string, expected *gradleDi
 		err = model.Err("unsafe_path", "Gradle private directory identity changed")
 	}
 	if err == nil {
-		err = m.storage.Check(*store.Artifact)
+		err = m.providerFor(store).Check(*store.Artifact)
 	}
 	if err != nil {
 		directory.Close()

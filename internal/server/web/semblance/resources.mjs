@@ -1,20 +1,20 @@
 import {namedLabel} from '../resource-names.mjs';
 import {count,bytes,quantity,stringifyJSON} from '../core.mjs';
-import {cpuBudgetFields,memoryBudgetFields,diskBudgetFields,cpuBudgetKnown,memoryBudgetKnown,diskBudgetKnown,cpuCores} from '../metric-help.mjs';
+import {cpuBudgetFields,memoryBudgetFields,diskBudgetFields,cpuBudgetKnown,memoryBudgetKnown,diskBudgetKnown,cpuCores,budgetForView} from '../metric-help.mjs';
 import {poolBudgetFields} from '../pool-model.mjs';
 
 // Keep the authoritative quantities and freshness rules shared with Monitor.
 // Only the presentation is progressive; promises and material warnings stay out.
 export function resourcePresentation(r,budgets) {
-  const cpu=r.kind==='cpu'?budgets.cpu:null,memory=r.kind==='memory'?budgets.memory:null,disk=r.kind==='disk'?budgets.disk:null;
-  let fields=r.kind==='cpu'?cpuBudgetFields(r,cpu):r.kind==='memory'?memoryBudgetFields(r,memory):r.kind==='disk'?diskBudgetFields(r,disk):poolBudgetFields(r);
+  const cpu=r.kind==='cpu'?budgets.cpu:null,memory=r.kind==='memory'?budgets.memory:null,disk=(r.storage?budgetForView(r.storage.budget,budgets.viewOptions):null)??(r.kind==='disk'?budgets.disk:null);
+  let fields=r.kind==='cpu'?cpuBudgetFields(r,cpu):r.kind==='memory'?memoryBudgetFields(r,memory):(r.kind==='disk'||r.storage)?diskBudgetFields(r,disk):poolBudgetFields(r);
   const genericUnavailable=!['cpu','memory','disk'].includes(r.kind)&&(r.stale||r.availability_known===false);
   if(genericUnavailable)fields=fields.map(([label,value])=>[label,['AVAILABLE','POOL','TOTAL'].includes(label)?null:value]);
   const format=value=>r.kind==='cpu'?cpuCores(value):quantity(value,r.unit);
   const formatted=fields.map(([label,value])=>[label,format(value)]),warnings=[],notes=[];
   if(r.kind==='cpu'&&!cpuBudgetKnown(cpu))warnings.push('CPU headroom stale or unavailable. New CPU grants wait.');
   if(r.kind==='memory'&&!memoryBudgetKnown(memory))warnings.push('New memory grants paused: waiting for fresh availability.');
-  if(r.kind==='disk'&&!diskBudgetKnown(disk))warnings.push('New disk grants paused: waiting for fresh availability.');
+  if((r.kind==='disk'||r.storage)&&!diskBudgetKnown(disk))warnings.push('New disk grants paused: waiting for fresh availability.');
   const shortfall=fields.find(([label])=>label==='SHORTFALL');
   if(shortfall?.[1]>0)warnings.push('Shortfall: '+format(shortfall[1])+'. Existing promises remain charged.');
   // Disk and counted partitions expose deficits outside the common fields.
@@ -30,7 +30,21 @@ export function resourcePresentation(r,budgets) {
   if(cpu){notes.push('Other apps share this CPU · full promises remain charged','Managed use credited: '+cpuCores(cpuBudgetKnown(cpu)?cpu.managed_credit_cores??0:null));if(cpu.ceiling_cores!=null)notes.push('Operator ceiling: '+cpuCores(cpu.ceiling_cores));}
   if(memory){notes.push('Physical memory: '+bytes(memory.observation?.total_bytes));if(memory.ceiling_bytes!=null)notes.push('Operator ceiling: '+bytes(memory.ceiling_bytes));}
   if(disk?.ceiling_bytes!=null)notes.push('Operator ceiling: '+bytes(disk.ceiling_bytes));
-  return {label:namedLabel(r,r.custom?.pool?.name||({cpu:'CPU',memory:'Memory',disk:'Storage',port:'Ports'}[r.kind]||r.kind||r.id)),
+  let storageSummary='';
+  if(r.storage){const s=r.storage,l=s.location??{},p=s.performance;
+    notes.push('Path: '+l.path,'Mount: '+l.mount,'Filesystem: '+l.filesystem,'Source: '+l.source,'Backing pool: '+l.backing_pool);
+    if(s.tier)notes.push('Tier: '+s.tier+' (operator label)');
+    for(const d of l.devices??[])notes.push([d.device,d.model,d.transport,d.solid_state==null?'media unknown':d.solid_state?'non-rotational (reported)':'rotational (reported)',d.internal==null?'':d.internal?'internal':'external'].filter(Boolean).join(' · '));
+    const rate=v=>Number.isFinite(Number(v))&&Number(v)>0?bytes(Number(v))+'/s':'unknown';
+    if(p){storageSummary='Write '+rate(p.write_bytes_per_second)+' · Read '+rate(p.read_bytes_per_second);
+      notes.push('Measured '+new Date(p.at).toLocaleString()+' · '+p.method,'QD1 random reads: '+count(p.random_read_iops)+' IOPS · mean '+(Number(p.random_read_latency_ns)/1e6).toFixed(3)+' ms',p.detail);
+      if(s.performance_stale)warnings.push('Performance measurement is stale; remeasure before relying on its ranking.');
+    }else storageSummary='Performance unmeasured';
+    notes.push(s.detail,'Shared backing pool views overlap; do not sum available bytes.');
+    if(!s.enabled)warnings.push('Location removed from configuration; new storage grants disabled.');
+  }
+
+  return {storageSummary,label:r.storage?r.storage.name+' · Storage':namedLabel(r,r.custom?.pool?.name||({cpu:'CPU',memory:'Memory',disk:'Storage',port:'Ports'}[r.kind]||r.kind||r.id)),
     available:formatted[0],commitment:formatted.find(([label])=>['PROMISED','COMMITTED','RESERVED'].includes(label)),
     formatted,warnings,notes,context:{accounting:r.accounting,cpu,memory,disk,measurements:[['Physical reading',r.measurement?.used]]}};
 }
@@ -38,21 +52,21 @@ export function resourcePresentation(r,budgets) {
 export function createResourceOverview({ui,root,owner,onLease,help}) {
   const cards=new Map(),empty=ui.text('No matching resources').retain();
   function create(r,model){
-    const available=ui.stat(...model.available),commitment=ui.text(''),warnings=ui.stack(),facts=ui.descriptions([]),notes=ui.stack(),consumers=ui.stack();
+    const available=ui.stat(...model.available),summary=ui.text(''),commitment=ui.text(''),warnings=ui.stack(),facts=ui.descriptions([]),notes=ui.stack(),consumers=ui.stack();
     const details=ui.disclosure('Accounting & consumers',[facts,notes,consumers]);
     const context={current:model.context};
     const explanation=help(r.custom?.pool?'resource-custom':'resource-'+r.kind,()=>context.current);
     // Stock Stat has an 11rem flex basis for horizontal statistic rows. Keep
     // that basis on the inline axis rather than stretching a vertical card.
-    const card=ui.card(model.label,[ui.stack([available],{row:true}),commitment,warnings,details],{actions:[explanation]}).retain();
-    return {card,available,commitment,warnings,facts,notes,consumers,details,fingerprint:null,explanation,context,consumerRows:new Map()};
+    const card=ui.card(model.label,[ui.stack([available],{row:true}),summary,commitment,warnings,details],{actions:[explanation]}).retain();
+    return {card,available,summary,commitment,warnings,facts,notes,consumers,details,fingerprint:null,explanation,context,consumerRows:new Map()};
   }
   return {update(resources,budgets,filter='') {ui.batch(()=>{
     const wanted=new Set(),visible=[];
     for(const r of resources){
       const key=r.id;wanted.add(key);const model=resourcePresentation(r,budgets);let h=cards.get(key);
       if(!h){h=create(r,model);cards.set(key,h);}
-      h.context.current=model.context;h.card.set({label:model.label});h.available.set({label:model.available[0],value:model.available[1]});
+      h.summary.set({label:model.storageSummary,hidden:!model.storageSummary});h.context.current=model.context;h.card.set({label:model.label});h.available.set({label:model.available[0],value:model.available[1]});
       h.commitment.set({label:model.commitment?`${model.commitment[0]} · ${model.commitment[1]}`:''});
       const fingerprint=stringifyJSON({formatted:model.formatted,warnings:model.warnings,notes:model.notes});
       if(fingerprint!==h.fingerprint){

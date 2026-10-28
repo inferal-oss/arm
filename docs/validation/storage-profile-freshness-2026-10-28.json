@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "status": "focused P2 review correction; composed re-review and native measurement gates remain pending",
+  "parent_commit": "0ddc1e6caa01b0e83b49d047539d7ba111ea56c9",
+  "source_files_sha256": {
+    "internal/manager/storage_pools.go": "298bfaf6d2ae3e9ce27be8ad51674d7c20b1f509b83a4ec524abcced354dd4ee",
+    "internal/manager/storage_performance_view_test.go": "916d36e9eb4652221df38bffd0aef3cc03ec7dff31e68a4188ebe3bb9d07d8e5"
+  },
+  "finding": {
+    "priority": 2,
+    "problem": "After startup detects a replacement volume, pool views can pair current location metadata with an original-volume performance profile marked fresh.",
+    "correction": "Require profile volume to match the current nonempty location volume and persisted volume, and mark profiles stale on provider errors; preserve existing age/future checks and retained data."
+  },
+  "before_fix": "The replacement, location-unavailable, provider-root-error and unknown-volume view cases fail, as does the startup replacement-volume regression.",
+  "regressions": [
+    "Pure view controls: confirmed, replacement, unavailable, provider-root-error, unknown-volume, aged and future profile",
+    "Persist a previous-volume identity/profile, then reopen twice while native discovery reports the current volume at the same configured path",
+    "Pool and resource views retain original profile identity/time, report current location identity, mark profile stale and keep admission unavailable"
+  ],
+  "checks": {
+    "focused_normal": "passed: TestStoragePoolPerformanceViewRequiresCurrentVolumeConfirmation and TestStoragePoolReplacementVolumeProfileStaysStaleAcrossRestart",
+    "scoped_race": "passed: new profile tests; missing-location restart, disabled-obligation restart, placement/ceiling, shared-backing, unavailable-mount and prior same-tick queue regressions",
+    "manager_vet": "passed"
+  },
+  "scope": "Exact changed Go sources on the stated parent. Startup replacement is simulated through a persisted previous-volume identity; no mount is changed and no native performance benchmark is run. Earlier source/build evidence retains its original scope. Central format, startup, proof and composed acceptance gates remain pending."
+}

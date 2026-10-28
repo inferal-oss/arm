@@ -214,3 +214,30 @@ func TestDaemonMeshEnsureChangedConfigurationRefusesBeforeBackendOpen(t *testing
 		t.Fatal("missing actionable guard diagnosis", string(raw))
 	}
 }
+
+func TestDaemonMeshNamedPoolsBindFullConfiguration(t *testing.T) {
+	base, e := filepath.EvalSymlinks(t.TempDir())
+	if e != nil {
+		t.Fatal(e)
+	}
+	home := filepath.Join(base, "arm")
+	if e = os.Mkdir(home, 0700); e != nil {
+		t.Fatal(e)
+	}
+	raw := "schema=1\n[[storage_pools]]\nname='scratch'\npath='" + base + "'\n"
+	if e = os.WriteFile(filepath.Join(home, "config.toml"), []byte(raw), 0600); e != nil {
+		t.Fatal(e)
+	}
+	a := app{home: home, ctx: t.Context()}
+	before, e := a.inspectMeshLifecycle()
+	if e != nil || before.Startup.SettingsSHA256 == "" {
+		t.Fatal(before, e)
+	}
+	if e = os.WriteFile(filepath.Join(home, "config.toml"), []byte(raw+"tier='changed'\n"), 0600); e != nil {
+		t.Fatal(e)
+	}
+	launched := false
+	if _, e = a.ensureMeshBackendWithLauncher(before.Startup, func(*exec.Cmd) error { launched = true; return nil }); e == nil || launched {
+		t.Fatal("changed pool policy reached native launch", e)
+	}
+}

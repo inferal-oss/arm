@@ -93,3 +93,24 @@ func TestDaemonInvalidStartupRefusesBeforeCreatingState(t *testing.T) {
 		}
 	}
 }
+
+func TestConfigCLIPathAutoAndPoolEditCommands(t *testing.T) {
+	base, e := filepath.EvalSymlinks(t.TempDir())
+	if e != nil {
+		t.Fatal(e)
+	}
+	home := filepath.Join(base, "arm")
+	var out, stderr bytes.Buffer
+	a := app{home: home, out: &out, err: &stderr, outputTTY: true}
+	a.commandName = "config show"
+	if _, e = a.configCommand([]string{"show"}); e != nil || !strings.Contains(out.String(), filepath.Join(home, daemonconfig.Filename)) || !strings.Contains(out.String(), "auto") {
+		t.Fatal(out.String(), e)
+	}
+	for _, args := range [][]string{{"config", "set", "daemon.cpu", "2"}, {"config", "pool", "set", "scratch", "--path", base, "--tier", "build", "--ceiling", "20GiB"}, {"config", "pool", "remove", "scratch"}} {
+		out.Reset()
+		stderr.Reset()
+		if code := Main(append([]string{"--home", home}, args...), strings.NewReader(""), &out, &stderr); code != 0 {
+			t.Fatal(args, code, stderr.String())
+		}
+	}
+}

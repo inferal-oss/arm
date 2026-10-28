@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "status": "candidate: native measurement and independent integration gates pending",
+  "baseline": "02c7a1d85d8647ed366c43d746696b656a5f70d9",
+  "owner_branch": "codex/storage-performance-pools",
+  "repository_input_sha256": "c716ef88ad31e3d92bcda488ab0fb5fed6dc721261a22c9e62a7665fa6ec39c2",
+  "repository_input_count": 2519,
+  "inventory_scope": "Tracked and owned untracked repository files excluding SPEC.md and docs; includes knowledge cards and embedded assets. Does not attest external tool/module-cache contents.",
+  "checks": {
+    "selected_go_normal_and_race": "passed: daemonconfig, manager, CLI, database, TUI, server and mesh selections; latest overlap-binding manager/database regressions also pass",
+    "affected_go_vet": "passed",
+    "node_resource_and_metric_cases": 13,
+    "node_skipped": 0,
+    "embedded_frontend_build": "passed",
+    "macos_cli_build": "passed",
+    "linux_arm64_cli_and_manager_test_build": "passed",
+    "actual_cli_config_and_live_pool_views": "passed",
+    "older_writer_persisted_format_refusal": "passed after isolating the ledger from new config/launch hints",
+    "benchmark_opened_root_and_known_scratch_race": "passed: exact opened-directory replacement refusal before scratch creation, durable write intent before worker entry, monotonic content evidence and explicit handoff after retained uncertainty",
+    "storage_cleanup_export_proof_race": "passed: selected manager/database Storage, LiveDisk, SSHProof and WorkspaceFormat regressions after the correction"
+  },
+  "review_fixes": [
+    {
+      "priority": 1,
+      "finding": "Parsed named locations were dropped at the capacity-only server constructor",
+      "fix": "Full configured server boundary and native API/startup-hash regression"
+    },
+    {
+      "priority": 1,
+      "finding": "Older writers could lose named placement/accounting on recovery",
+      "fix": "Atomic opt-in format-3 fence with partial/downgraded-marker refusal"
+    },
+    {
+      "priority": 1,
+      "finding": "Benchmark cancellation/expiry could return capacity before native work joins",
+      "fix": "Exact runtime holds, original context cancellation and join-before-release regressions"
+    },
+    {
+      "priority": 1,
+      "finding": "Unknown default backing could be mistaken for independent capacity",
+      "fix": "Refuse named admission until default/backing identity is established"
+    },
+    {
+      "priority": 2,
+      "finding": "Cargo/Gradle still selected the default provider",
+      "fix": "Resolve exact parent provider across build, retention/export and cleanup paths"
+    },
+    {
+      "priority": 2,
+      "finding": "Shared reservations were incorrectly bounded by another location ceiling",
+      "fix": "Separate location claims from overlapping backing promises"
+    },
+    {
+      "priority": 2,
+      "finding": "Held pool budgets and persisted overlap bindings could misstate availability",
+      "fix": "Client aging and exact recorded backing/default-overlap validation"
+    },
+    {
+      "priority": 2,
+      "finding": "An unparsed CPU edit value could inject additional TOML fields",
+      "fix": "Parse one numeric scalar before source-preserving edit and reject injection without writing"
+    },
+    {
+      "priority": 1,
+      "finding": "Known benchmark writes could be forgotten after scratch removal and an empty survey",
+      "fix": "Durable pre-write intent, monotonic content evidence, returned owner lease IDs and explicit residual responsibility handoff"
+    },
+    {
+      "priority": 1,
+      "finding": "A replaced managed directory could redirect benchmark I/O and misbind its performance profile",
+      "fix": "Verify exact native creation-time identity/type/mode/owner on the opened root before scratch creation"
+    }
+  ],
+  "remaining_gates": [
+    "Final-source macOS two-filesystem performance comparison",
+    "Actual Linux VM execution and drive performance",
+    "Independent coordinator review and central format/startup-policy contract acceptance"
+  ],
+  "unsupported": [
+    "Automatic tier selection, fallback or migration",
+    "Guaranteed throughput or kernel disk quotas",
+    "Initial peer exposure/claims for named pools",
+    "Independent strict-reset proof of external named roots"
+  ],
+  "privacy": "Raw native receipts, contacts, machine paths, hostnames and coordination handles are retained outside version control."
+}

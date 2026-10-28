@@ -297,6 +297,8 @@ func (p *proofReader) metadata() error {
 				return fmt.Errorf("invalid host authority")
 			}
 			p.result.Host = raw
+		case "storage_pools":
+			return fmt.Errorf("strict reset does not cover external named storage roots; preserve their ledger or use explicit --forget without cleanup credit")
 		case "storage_root":
 			var id model.FileIdentity
 			if err = strictEvidence(raw, &id, "device", "inode", "owner", "birth_known"); err != nil {

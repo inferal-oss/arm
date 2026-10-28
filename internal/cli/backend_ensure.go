@@ -30,6 +30,9 @@ func (a *app) inspectMeshLifecycle() (mesh.LifecycleInspection, error) {
 			}
 			inspection.Startup.Resources = resolved.Settings.Resources
 			inspection.Startup.Listen = resolved.Settings.Listen
+			if len(resolved.Settings.StoragePools) > 0 {
+				inspection.Startup.SettingsSHA256 = resolved.SettingsSHA256
+			}
 			inspection.StartupSource = "validated desired configuration; no prior launch policy exists"
 		}
 		return inspection, nil
@@ -80,9 +83,13 @@ func (a *app) ensureMeshBackendWithLauncher(expected mesh.StartupPolicy, launch 
 	if err := expected.Validate(); err != nil {
 		return mesh.LifecycleInspection{}, err
 	}
-	snapshot, err := daemonconfig.SnapshotSHA256(daemonconfig.Settings{Resources: expected.Resources, Listen: expected.Listen})
-	if err != nil {
-		return mesh.LifecycleInspection{}, err
+	snapshot := expected.SettingsSHA256
+	if snapshot == "" {
+		var err error
+		snapshot, err = daemonconfig.SnapshotSHA256(daemonconfig.Settings{Resources: expected.Resources, Listen: expected.Listen})
+		if err != nil {
+			return mesh.LifecycleInspection{}, err
+		}
 	}
 	inspection, err := a.inspectMeshLifecycle()
 	if err != nil {
@@ -140,7 +147,7 @@ func (a *app) ensureMeshBackendWithLauncher(expected mesh.StartupPolicy, launch 
 			return current, err
 		}
 		if current.Running {
-			if current.Startup.Resources != expected.Resources || current.Startup.Listen != expected.Listen {
+			if current.Startup.Resources != expected.Resources || current.Startup.Listen != expected.Listen || expected.SettingsSHA256 != "" && current.Startup.SettingsSHA256 != expected.SettingsSHA256 {
 				return current, model.Err("setup_changed", "started backend does not match the inspected startup policy; inspect its retained startup decision before proceeding")
 			}
 			return current, nil

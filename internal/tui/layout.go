@@ -361,6 +361,9 @@ func (m *dashboardModel) resourcesText() string {
 		totalText, promisedText, availableText, deficitText := m.resourceCapacityTexts(&r)
 		lines := []string{align(muted.Render(availableLabel), strong.Foreground(colorAccent).Render(availableText), inner), align(muted.Render(totalLabel), strong.Render(totalText), inner), align(muted.Render("Promised"), promisedText, inner)}
 		lines = append(lines, muted.Render("ID: "+safe(r.ID)))
+		if r.Storage != nil {
+			lines = append(lines, storagePoolLines(r.Storage)...)
+		}
 		if r.Kind == "cpu" || r.Kind == "memory" || r.Kind == "disk" {
 			lines = append(lines, align(muted.Render("Shortfall"), deficitText, inner))
 		} else if r.Deficit != "" && r.Deficit != "0" {
@@ -715,6 +718,9 @@ func (m *dashboardModel) resourceDetailRender() textRows {
 		}
 		out += "\nCONSUMERS · Enter opens selected lease\n"
 		out += "\nFull outstanding promises stay charged. Shared files and snapshots do not prove exclusive reclamation. [?] help explains scope.\n"
+	}
+	if r.Storage != nil {
+		out += strings.Join(storagePoolLines(r.Storage), "\n") + "\n\n"
 	}
 	if len(r.Users) == 0 {
 		out += "No lease consumers.\n"

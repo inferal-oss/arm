@@ -92,6 +92,12 @@ func (a *app) scalar(key string, v any) string {
 		return a.paint("33", "unknown")
 	}
 	if n, ok := v.(json.Number); ok {
+		if strings.HasPrefix(a.commandName, "config ") && (key == "memory_bytes" || key == "disk_bytes") && n.String() == "0" {
+			return "auto"
+		}
+		if strings.HasSuffix(key, "_bytes_per_second") {
+			return humanBytes(n.String()) + "/s"
+		}
 		if strings.HasSuffix(key, "_bytes") {
 			return humanBytes(n.String())
 		}
@@ -227,6 +233,9 @@ func (a *app) resourceTable(w io.Writer, rows []any, cpu ...map[string]any) {
 			continue
 		}
 		name := fmt.Sprint(row["kind"])
+		if storage, ok := row["storage"].(map[string]any); ok {
+			name = renderString(storage, "name")
+		}
 		suppliedName := ""
 		domain := readablename.Resource
 		if port, ok := row["port"].(map[string]any); ok {
@@ -241,11 +250,16 @@ func (a *app) resourceTable(w io.Writer, rows []any, cpu ...map[string]any) {
 				suppliedName, domain = renderString(pool, "name"), readablename.Pool
 			}
 		}
-		if supplied, ok := row["display_name"].(string); ok && supplied != "" {
+		if supplied, ok := row["display_name"].(string); ok && supplied != "" && row["storage"] == nil {
 			name = a.humanName(domain, renderString(row, "host"), renderString(row, "id"), supplied, suppliedName)
 		}
 		unit := fmt.Sprint(row["unit"])
 		total, reserved, available := row["budget_total"], row["reserved"], row["available"]
+		if storage, ok := row["storage"].(map[string]any); ok {
+			if budget, ok := storage["budget"].(map[string]any); !ok || budget["known"] != true || budget["stale"] == true {
+				total, available = nil, nil
+			}
+		}
 		if row["kind"] == "cpu" {
 			name += " (live)"
 			unit = "cores"
@@ -275,6 +289,14 @@ func (a *app) resourceTable(w io.Writer, rows []any, cpu ...map[string]any) {
 		row, ok := raw.(map[string]any)
 		if !ok {
 			continue
+		}
+		if storage, ok := row["storage"].(map[string]any); ok {
+			raw, _ := json.Marshal(storage)
+			var pool model.StoragePoolView
+			if json.Unmarshal(raw, &pool) == nil {
+				fmt.Fprintln(w, "\nStorage: "+terminalSafe(pool.Name))
+				a.tree(w, storage, 1)
+			}
 		}
 		users, _ := row["users"].([]any)
 		if len(users) > 0 {

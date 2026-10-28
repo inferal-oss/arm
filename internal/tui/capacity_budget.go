@@ -45,6 +45,14 @@ func diskBudgetKnown(b *model.DiskBudget) bool { return b != nil && b.Known && !
 // host total minus usage. Promises remain visible when headroom is unknown.
 func (m *dashboardModel) resourceCapacityTexts(r *model.ResourceView) (total, promised, available, deficit string) {
 	total, promised, available, deficit = quantity(r.BudgetTotal, r.Unit), quantity(r.Reserved, r.Unit), quantity(r.Available, r.Unit), quantity(r.Deficit, r.Unit)
+	if r.Storage != nil {
+		b := r.Storage.Budget
+		b.Stale = m.heldBudgetStale(b.Stale, b.Age, b.StaleAfter)
+		if !diskBudgetKnown(&b) {
+			total, available, deficit = "unavailable", "unavailable", "unavailable"
+		}
+		return
+	}
 	switch r.Kind {
 	case "cpu":
 		return cpuBudgetValues(r, m.cpuBudgetForView())

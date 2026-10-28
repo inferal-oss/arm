@@ -127,6 +127,15 @@ type Manager struct {
 	diskScopeVolume    string
 	diskSampleSlots    chan struct{}
 	diskCollector      func(context.Context, string) model.DiskAvailability
+
+	storageBenchmarkRunner func(context.Context, string, string, int64) (model.StoragePerformance, error)
+	storageBenchmarkLeases map[string]context.CancelFunc
+	storageBenchmarkBusy   bool
+	storagePools           map[string]*storagePool
+	storagePoolObserve     func(context.Context, string) (model.StorageLocation, error)
+	defaultStorageLocation model.StorageLocation
+	storagePoolReadings    map[string]storagePoolReading
+
 	storage            *storage.Provider
 	storageErr         error
 	storageJobs        map[string]bool
@@ -292,8 +301,19 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 		return nil, e
 	}
 	m.loadStorage()
+	if e = m.initStoragePools(startup); e != nil {
+		m.closeStoragePools()
+		if m.storage != nil {
+			m.storage.Close()
+		}
+		db.Close()
+		return nil, e
+	}
 	opened := false
 	defer func() {
+		if !opened {
+			m.closeStoragePools()
+		}
 		if !opened && m.storage != nil {
 			m.storage.Close()
 		}
@@ -309,6 +329,10 @@ func openWithStartup(home string, capacity model.Resources, clockRead func() (le
 		return nil, e
 	}
 	for _, l := range leaves {
+		if e = m.validateStorageBinding(l); e != nil {
+			db.Close()
+			return nil, e
+		}
 		if l.Usage != nil {
 			l.Usage.Live = false
 			l.Usage.Stale = true
@@ -543,6 +567,9 @@ func (m *Manager) Close() error {
 	m.pressureLaunchMu.Lock()
 	m.mu.Lock()
 	m.closing = true
+	for _, cancel := range m.storageBenchmarkLeases {
+		cancel()
+	}
 	m.mu.Unlock()
 	m.pressureLaunchMu.Unlock()
 	// Workspace calls may hold the single database connection while awaiting
@@ -607,6 +634,7 @@ func (m *Manager) Close() error {
 	if m.storage != nil {
 		closeErr = errors.Join(closeErr, m.storage.Close())
 	}
+	closeErr = errors.Join(closeErr, m.closeStoragePools())
 	dbCloseErr := m.db.Close()
 	return errors.Join(closeErr, dbCloseErr)
 }
@@ -734,7 +762,7 @@ func (m *Manager) Status() (model.Status, error) {
 	disk := m.diskBudget(s.Reserved.Disk)
 	s.Disk = &disk
 	s.Capacity.Disk = disk.Capacity
-	s.Capabilities = append(s.Capabilities, "live-cpu-admission", "live-memory-admission", "live-disk-admission")
+	s.Capabilities = append(s.Capabilities, "live-cpu-admission", "live-memory-admission", "live-disk-admission", "named-storage-pools", "storage-performance-benchmarks")
 	for _, kind := range []string{"cpu", "memory", "disk"} {
 		total, reserved, unit := s.Capacity.CPU, s.Reserved.CPU, "logical-core-equivalents"
 		if kind == "memory" {
@@ -795,6 +823,7 @@ func (m *Manager) Status() (model.Status, error) {
 		}
 		s.Resources = append(s.Resources, v)
 	}
+	m.appendStorageResources(&s, ls)
 	m.portResources(&s, ls)
 	views, err := m.poolViews(ls, false)
 	if err != nil {
@@ -928,6 +957,9 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 	if r.ForwardSource != nil && (!relay || r.Kind != forwardListenerKind) {
 		return empty, model.Err("invalid_request", "forward source binding requires its in-process listener owner")
 	}
+	if err := m.validateStoragePool(&r); err != nil {
+		return empty, err
+	}
 	if r.Kind == "storage" && (len(r.Pools) > 0 || run != nil || r.Resources.CPU != 0 || r.Resources.Memory != 0 || r.Resources.Disk <= 0 || r.Profile != "" || r.StorageLease != "" || len(r.Ports) > 0 || r.PortLease != "") {
 		return empty, model.Err("invalid_request", "a storage lease requires only a disk claim and no command, profile or parent storage lease")
 	}
@@ -1019,7 +1051,7 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 	if err := m.validateGradleRequest(r, run); err != nil {
 		return empty, err
 	}
-	if !m.requestFitsCeiling(r.Resources) {
+	if !m.storageRequestFitsCeiling(r) {
 		return empty, model.Err("capacity_exceeded", "request exceeds a configured host ceiling or known physical memory capacity")
 	}
 	if err := m.poolAdmissionAncestry(r.Pools); err != nil {
@@ -1067,6 +1099,10 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 	}
 	used.Disk = diskReserved
 	l := model.Lease{ID: local.ID(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Request: r, Created: time.Now().UTC(), State: "queued", Revision: 1, Capabilities: capabilities}
+	if r.StoragePool != "" {
+		p := m.storagePools[r.StoragePool]
+		l.StorageBinding = &model.StoragePoolBinding{Name: r.StoragePool, Volume: p.record.Volume, Backing: p.record.Backing, SharesDefault: p.record.Backing != "" && p.record.Backing == m.defaultStorageLocation.Backing}
+	}
 	binding, e := m.resolveNewBudgetBinding(l, r.Budget)
 	if e != nil {
 		return empty, e
@@ -1101,7 +1137,7 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		l.Ended = &stamp
 		l.QueueInfo = rejectedQueueInfo(stamp, deadlineProblem)
 		l.Failure = deadlineProblem.Message
-	} else if !queued && m.fitsLiveResources(r.Resources, used) && poolFits && len(budgetBlockers) == 0 {
+	} else if !queued && m.fitsStorageRequest(r, used, ls) && poolFits && len(budgetBlockers) == 0 {
 		if e = m.activate(&l, run != nil); e != nil {
 			return empty, e
 		}
@@ -1303,6 +1339,16 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
+	}
+	if cancel, held := m.storageBenchmarkLeases[id]; held {
+		cancel()
+		if l.State == "active" || l.State == "provisioning" {
+			l.State = "ending"
+			l.Outcome = outcome
+			l.Revision++
+			return l, m.put(l, "storage.benchmark_ending")
+		}
+		return l, nil
 	}
 	if l.State == "terminal" || l.State == "ending" {
 		if l.State == "ending" {
@@ -1629,7 +1675,7 @@ func (m *Manager) tick() {
 	if e != nil {
 		return
 	}
-	for _, l := range ls {
+	for i, l := range ls {
 		if l.State != "queued" {
 			continue
 		}
@@ -1666,7 +1712,7 @@ func (m *Manager) tick() {
 		if err != nil {
 			return
 		}
-		if !budgetFits || !m.fitsLiveResources(l.Request.Resources, used) || !poolFits {
+		if !budgetFits || !m.fitsStorageRequest(l.Request, used, ls) || !poolFits {
 			break
 		}
 		if reason := m.startDeadlineProblem(l); reason != nil {
@@ -1713,6 +1759,9 @@ func (m *Manager) tick() {
 		if e != nil {
 			return
 		}
+		// Later disk/backing and port checks reread this snapshot. Publish the
+		// final grant state before admitting another queued bundle.
+		ls[i] = l
 		if l.State == "queued" {
 			break
 		}
@@ -1721,9 +1770,6 @@ func (m *Manager) tick() {
 			for _, c := range l.Request.Pools {
 				poolUsed[c.Pool] += c.Quantity
 			}
-		}
-		if len(l.Ports) > 0 {
-			ls = append(ls, l)
 		}
 	}
 }

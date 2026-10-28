@@ -2680,6 +2680,92 @@ improvement. The composed source is published through the existing Pages
 workflow; scoped build, capture and publication evidence is recorded in
 [VALIDATION.md](VALIDATION.md).
 
+## Named storage pools and performance profiles — candidate
+
+The local configuration/CLI/backend candidate supports up to eight durable named
+storage locations, optional workload tier labels and per-location byte ceilings.
+`config show/check` includes the absolute config file path; terminal auto
+memory/disk settings no longer appear as zero-byte limits. `config set` and
+`config pool set/remove` validate whole files, preserve unrelated scalar comments,
+serialize editors and publish private files atomically with content/identity
+rechecks and optional expected-file hashes. These commands change desired
+next-start configuration, not running authority settings.
+
+The CLI passes complete validated settings into the actual server constructor;
+new named-location launch records retain the full settings hash for fresh or
+frozen replay. Native server tests verify the configured pool actually appears
+through the live API, and changed desired pool policy refuses before child launch.
+Ordinary launch records retain their established encoding.
+
+Selected storage leases create owned private roots on the configured filesystem.
+Named creation/reopen uses an additive filesystem-bound opener while preserving
+`storage.Open` and existing callers. It walks a bounded canonical parent without
+following symlinks, holds the parent FD and checks the fresh native FilesystemID
+before any mkdir. Root creation/open is relative to that FD; exact native birth,
+type, private mode, owner and root filesystem are checked before identity
+publication. Current parent/name checks supplement the original descriptor
+custody. Refusal never deletes or adopts an uncertain namespace; original
+promises remain charged, and failed root-record publication rolls back the
+in-memory identity before closing the provider.
+Execution, Cargo, Gradle, export, retention and cleanup resolve the exact selected
+provider. APFS container/Btrfs UUID or other supported filesystem identities group
+full promises without summing overlapping views. Independent locations do not
+spend the state-filesystem budget. Unknown default/backing topology, stale native
+samples, missing/replaced mounts and missing/corrupt bindings refuse admission.
+Removal disables new grants while preserving provider identity and obligations.
+Named-pool persistence atomically activates workspace format 3; ordinary ledgers
+keep format 1 and old format-1 writers refuse the named-placement ledger.
+Unsupported mixed markers never authorize an automatic repair or downgrade.
+
+Queue admission updates each granted lease in its original in-memory snapshot
+before considering another bundle. Disk headroom, per-location ceilings, shared
+backing promises and port checks therefore see earlier grants from the same tick.
+The acquisition path no longer performs an ineffective snapshot reassignment,
+and port grants no longer append a duplicate snapshot entry.
+
+macOS discovery uses statfs and bounded diskutil property lists, following APFS
+physical stores to reported disk model/transport/media properties. Linux uses
+statfs, bounded kernel mountinfo and bounded sysfs block/Btrfs UUID membership.
+Btrfs synthetic path devices may differ from their covering mount's device only
+when native and mounted filesystem types both agree on Btrfs. The longest
+canonical boundary-covering mount must have an accessible block source whose
+rdev, resolved sysfs object and exactly one UUID membership agree. Native path,
+complete mount bytes, source and membership are recaptured in reverse order;
+changed or contradictory observations retain unknown backing. Non-Btrfs matching
+stays strict, and unresolved/device-mapper capacity sharing refuses named admission.
+The native FilesystemID remains separate from the observed guest UUID grouping. Guest properties describe guest reports. Unknown optional hardware
+facts remain unknown and provide no additional allocation authority.
+
+`storage benchmark` explicitly admits selected-location scratch plus one CPU and
+8MiB cooperative memory. It reports sequential write including fsync/read and
+QD1 4KiB random reads, cache method, sample time and size; scratch is exclusive
+and exactly removed. Runtime holds retain claims through cancellation/expiry and
+shutdown until the original worker joins. Write intent is persisted before possible native writes, and
+cleanup preserves that knowledge even when the later directory is empty.
+Benchmark responses identify both owner leases and cleanup state; namespace
+removal retains physical uncertainty until explicit operator handoff. The native
+worker verifies the exact recorded creation-time directory identity on the opened
+root before scratch creation; path replacement cannot retarget its rooted I/O. Native
+calls may block past their context; uncertain cleanup retains obligations. Performance profiles persist
+with the original volume identity and become visibly stale after seven days.
+Retained profiles also become stale immediately if the current location has no
+confirmed matching volume or the location/provider has an error. Replacement
+metadata may remain visible, while the original profile and ownership records
+are preserved and unavailable admission remains refused.
+CLI/web/terminal resource views show locations, topology, live promises and actual
+measurements; agent and Rust cards teach performance/space-based selection.
+Initial remote aggregate observation/claim scopes do not expose local named
+paths, names or selectors.
+
+Focused normal/race, format/refusal, configuration, lifetime and browser-model
+checks and native/Linux ARM64 builds have passed at the recorded candidate
+source. Native two-location macOS measurements, actual Linux VM execution and
+independent integration review remain pending coordinated resource windows.
+The independent strict-reset external-root namespace proof is not implemented:
+strict reset refuses this group; explicit reviewed forgetting remains ledger
+abandonment without cleanup credit. Automatic placement/migration, throughput
+reservation, physical quotas and broad native/browser acceptance are not claimed.
+
 ### Run selector completion
 
 `arm log RUN` completes IDs and readable names from one authenticated local run

@@ -21,6 +21,31 @@ then separately authorizes compilation after rechecking the lease, deadline and
 evidence. Inspect `lease.cargo` for preparation, authorization and command start.
 A lost acknowledgement is not permission to repeat the build with another key.
 
+## Choose storage for write-heavy projects
+
+For a large Rust project, inspect `arm storage pools --json` before creating
+intermediate storage. Compare ARM's measured sequential write throughput, random
+read latency/IOPS, benchmark timestamp/cache method, and live available space.
+When fast writes matter and there is enough space for the expected `target` and
+intermediate outputs, prefer the faster measured suitable pool. Operator tier
+labels describe intended use; check the actual performance numbers. Missing or
+stale measurements do not establish speed. Shared backing pool views overlap;
+never add their available bytes. Performance is advisory under current load,
+not guaranteed bandwidth. Request a benchmark only when authorized.
+
+```sh
+arm storage pools --json
+arm storage create 20GiB --storage-pool POOL_NAME --ttl 30m --reason "Large write-heavy Cargo build on a measured suitable pool"
+arm run --storage STORAGE_LEASE_ID --profile rust-build --cpu 2 --ttl 20m --cwd /absolute/project --reason "Build using selected fast intermediate storage" -- cargo build --release
+```
+
+Replace `POOL_NAME` with an actual configured pool that has enough available
+capacity. Attach the returned storage lease: the Rust profile places its private
+`CARGO_TARGET_DIR` and intermediate build directory beneath that allocation.
+Do not override `CARGO_TARGET_DIR` or point cleanup at a shared cache. Selection
+is explicit; ARM does not automatically migrate outputs or downgrade a request
+to another pool.
+
 ## Give build directories a short, explicit lifetime
 
 Often the requested result is an executable, not the complete `target` tree.

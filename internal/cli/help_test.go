@@ -41,7 +41,7 @@ func TestHelpOnlyListsOptionsThatApplyToTheCommand(t *testing.T) {
 		present, absent []string
 	}{
 		{"ports reserve", []string{"--port ", "--reason ", "OS-selected"}, []string{"--cpu", "--memory", "--disk", "--storage", "--port-lease", "--cwd", "--profile"}},
-		{"storage create", []string{"SIZE", "--disk", "--reason"}, []string{"--cpu", "--memory", "--port", "--cwd", "--profile", "--storage"}},
+		{"storage create", []string{"SIZE", "--disk", "--reason", "--storage-pool"}, []string{"--cpu", "--memory", "--port", "--cwd", "--profile", "--storage LEASE"}},
 		{"daemon stop", []string{"--json"}, []string{"--cpu", "--memory", "--disk", "--listen"}},
 		{"release", []string{"LEASE_ID"}, []string{"--ttl"}},
 		{"storage handoff", []string{"Preserves remaining data"}, []string{"--dry-run"}},

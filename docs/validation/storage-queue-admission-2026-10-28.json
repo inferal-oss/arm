@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "status": "focused review correction; independent composed review and native measurement gates remain pending",
+  "parent_commit": "ce55d7e3089be87720c63050840732359d64d675",
+  "source_files_sha256": {
+    "internal/manager/manager.go": "9b21fad8116debb0aa5a25f957760f554fa3c1ab3b9f72856d148c8d87155781",
+    "internal/manager/storage_queue_review_test.go": "4ed299110573f2fb9d7ca12c906184e59fb9de85f25a19d6da36493abb6ab332",
+    "internal/manager/storage_queue_test.go": "1118ec723e502da338396cf04176826218b022c03c556e8af0769845cf5b9771"
+  },
+  "finding": {
+    "priority": 1,
+    "problem": "Same-tick queued grants were absent from the lease snapshot used to recompute disk and shared-backing reservations.",
+    "correction": "Replace the granted lease at its original snapshot index before considering another request; remove the ineffective acquisition loop and obsolete ports append."
+  },
+  "before_fix": "Reported named-headroom reproduction and all five additional same-tick cases fail by admitting two 600-byte requests against a 1000-byte limit.",
+  "regressions": [
+    "Reported named-headroom held=1200 reproduction",
+    "Default disk headroom without configured named pools",
+    "Default disk ceiling without configured named pools",
+    "Named location ceiling with ample physical headroom",
+    "Two configured named aliases sharing backing capacity",
+    "Named and default locations sharing backing capacity",
+    "Each added case verifies one grant, persistence across the next tick, and admission of the remaining request after release"
+  ],
+  "checks": {
+    "focused_normal": {
+      "result": "passed",
+      "command": [
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./internal/manager",
+        "-run",
+        "^(TestStoragePoolReviewQueuedGrantsShareOneBackingSnapshot|TestStorageQueueSameTickDiskAccounting)$",
+        "-count=1"
+      ]
+    },
+    "scoped_race": {
+      "result": "passed",
+      "selection": "TestStoragePoolReviewQueuedGrantsShareOneBackingSnapshot, TestStorageQueueSameTickDiskAccounting, TestLiveDisk*, TestStoragePoolPlacementSharedAliasesAndCeiling, TestStoragePoolSharedBackingCannotDoubleSpend, TestPortAdmissionQueueAndAtomicBudgets, TestPoolsAtomicAdmissionQueueGrowthAndDeficit, TestBudgetRuntimeHierarchyQueueGrowthAndNoReservationReuse, TestBudgetRuntimeReductionRenewalDrainAndQueuedEntitlement, TestSchedulingQueueExplanationFIFOAndGrantTTL, TestSchedulingRawQueuedGrantRechecksAfterJournal, TestExpiryQueueAndRenewal, TestCancellationCannotRaceIntoLaterAdmission, TestConcurrentAdmissionAndAttribution"
+    },
+    "manager_vet": "passed"
+  },
+  "scope": "Validation applies to the listed changed sources on the exact parent commit. Earlier candidate inventory and native build receipts retain their original source scope. No new native benchmark, Linux execution, main integration or push is claimed."
+}
