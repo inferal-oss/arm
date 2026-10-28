@@ -1,0 +1,51 @@
+{
+  "schema": "arm.current-composition-failed-gate/v1",
+  "status": "INDEPENDENTLY_VERIFIED_FAILED_CURRENT_COMPOSITION",
+  "source_tree": "5f2952a5755eb87437d1898b144f268f3f53b7ec",
+  "source_count": 2750,
+  "selected_tool_count": 11,
+  "go_inventory_count": 1612,
+  "source_tools_index_go_membership_before_after_equal": true,
+  "selected_roots_run": 48,
+  "selected_roots_pass": 47,
+  "named_nodes_run": 84,
+  "named_nodes_pass": 81,
+  "skip_events": [],
+  "vet": "NOT_RUN_STOP_ON_RACE_FAILURE",
+  "raw_sha256": {
+    "race.stdout": "d1f095cd3d5588349c16146d2584625921dce782fc75580aa824b6328bda995f",
+    "race.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "events.json": "837502ce12d8358067ac7454f684579a2ac3786cadea0d6fbfb53c8ced5c623a",
+    "owners.json": "979f2417cec431627f6db8dd14deec535ac10006d5b669eadbd5bf62bdc29b3a",
+    "before.json": "2b2a911939b5d4dddc8d0058abb7239236177e0e41f4574eb45b2eadf970d82a",
+    "after.json": "2b2a911939b5d4dddc8d0058abb7239236177e0e41f4574eb45b2eadf970d82a",
+    "actual-roster.json": "4c57931ccba495335bddd87dcd0bf0ebbb5557cd1c6ae217f6159e5ef0fab1fa",
+    "receipt.json": "b9f0ce72e56497700b1df0bdf841ec4746758b6fca72e19f7d3e3c26ae816107"
+  },
+  "limits": [
+    "Whole combined gate remains FAILED; 47 completed root results remain scoped to exact tested tree, no later-source acceptance.",
+    "No vet/normal/Linux/browser/full-suite/S3/Java/runtime pressure activation acceptance.",
+    "Selected tool hashes are not full SDK/OS/modulecache hermeticity; cache deliberately reused/mutable, offline readonly Go command.",
+    "Source-reviewed native fixtures and GoJSON assertions are evidence, not a blanket unobserved descendant/process or hardware claim.",
+    "Installed arm proxy unavailable; canonical queue used with no user ARM state or invented agent contact."
+  ],
+  "failed_nodes": [
+    "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/reconcile/checkpoint-and-settlement",
+    "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs/tick/checkpoint-and-settlement",
+    "TestLeaseClockCheckpointFailureCancelsOriginalNativeJobs"
+  ],
+  "failure": "Two existing checkpoint-and-settlement subcases refuse ordinary post-refusal reconciliation after original native and transport joins; durable charges are retained.",
+  "original_go_exit": 1,
+  "closure": {
+    "original_go_returncode": 1,
+    "original_signal_authority_retired": true,
+    "original_pipes_closed": true,
+    "ownership_lost": false,
+    "group_signal_incomplete": false,
+    "interrupts": [],
+    "private_tmp_absent": true
+  },
+  "independent_actual_review_sha256": "8eb68e71aacb97cc01f75a8fb7b0298c75c1f6b7c46d348c6d190cd3eeb742ee",
+  "named_nodes_fail": 3,
+  "own_five_regression_roots_named_pass": 24
+}

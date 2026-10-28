@@ -7204,3 +7204,23 @@ Manager reservations and observer interleavings are staged or injected. This
 does not accept the complete pressure controller, OS stopped-state confirmation,
 physical headroom, host sleep, hard-crash recovery or model/trace correspondence.
 Earlier failed source runs remain failed. Production pausing remains disabled.
+
+
+### Failed current integration cohort
+
+[Independently checked failed evidence](validation/current-composition-48-failed-2026-10-28.json)
+records source tree `5f2952a5`: all 48 roots execute, 47 pass and one fails.
+There are 84 named RUN events, 81 PASS, three FAIL including the parent root,
+and no skips. The two failing checkpoint-and-settlement subcases reach
+ordinary post-refusal reconciliation after positive native and transport joins;
+the new expiry guard refuses because the original job entry was discarded
+before the failed settlement ACK. No later-source acceptance follows.
+
+The five new holder-regression roots pass their 24 named cases in this failed
+aggregate. Both other packages pass, but the Manager package and the whole
+command fail. Targeted vet remains unrun. All 2,750 source pins, eleven selected
+tool pins, the 1,612-file Go inventory and index agree before/after; raw logs
+and original returned-command closure are independently checked. This is no
+complete SDK/module-cache or arbitrary-descendant proof. Installed proxy support
+was unavailable; the existing bounded canonical queue protocol was retained.
+The original failure stays failed while a production correction is reviewed.
