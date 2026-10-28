@@ -47,11 +47,11 @@ func TestCompleteScopeRefusesCallerClaimsWithoutOriginalOwner(t *testing.T) {
 			t.Fatalf("caller claim or empty owner minted proof: %+v %v", proof, err)
 		}
 	}
-	if binding, err := (CompleteScopeProof{}).BindingFor(claim); !errors.Is(err, ErrQuotaUnknown) || binding != (ScopeBinding{}) {
+	if binding, err := (CompleteScopeProof{}).BindingFor(t.Context(), claim); !errors.Is(err, ErrQuotaUnknown) || binding != (ScopeBinding{}) {
 		t.Fatalf("zero proof yielded binding: %+v %v", binding, err)
 	}
 	withoutOwner := CompleteScopeProof{claim: claim, binding: ScopeBinding{provider: fields.Provider}}
-	if binding, err := withoutOwner.BindingFor(claim); !errors.Is(err, ErrQuotaUnknown) || binding != (ScopeBinding{}) {
+	if binding, err := withoutOwner.BindingFor(t.Context(), claim); !errors.Is(err, ErrQuotaUnknown) || binding != (ScopeBinding{}) {
 		t.Fatalf("native-looking tuple without owner yielded binding: %+v %v", binding, err)
 	}
 }

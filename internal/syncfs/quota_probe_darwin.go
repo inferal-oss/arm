@@ -255,7 +255,6 @@ func decodePlistValue(decoder *xml.Decoder, start xml.StartElement, depth int) (
 	default:
 		return nil, ErrQuotaUnknown
 	}
-	return nil, ErrQuotaUnknown
 }
 
 func apfsQuotaFromPlists(info, list map[string]any, mount string) (NativeQuotaEvidence, error) {
