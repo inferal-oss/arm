@@ -1,0 +1,147 @@
+{
+  "date": "2026-10-28",
+  "source": "19664fedaec00ae5539e696333a3f21664f88cc5",
+  "previous_capture_source": "31bf681f0246733032e5576ca76eea7ba3a041be",
+  "scope": "Supplemental retained-session contracts and desktop/narrow native window transition",
+  "feature_inputs": {
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/runs.mjs": "0e8de8950f94a4fb76f7f3ff2ef9b4a7a92b7196d93b02529aeb168501b3613c",
+    "internal/server/web/semblance/run-log.mjs": "d85b6ca2531a437e752bfe6253af3f559d2abf32c67721ef404f7af0a8e9a65f",
+    "internal/server/web/semblance/app.ttl": "0c573d4d17765aeff63737337920e23b0aa7e7d6f4ff3f6d04c33ffa48d48b4e",
+    "internal/server/web/assets/arm.mjs": "e2a369466c012abc1a4fd39382e2f92e92c84e22a412bfe7395fda00907a1499",
+    "internal/server/web/semblance/runs.test.mjs": "f7ed250843df18e0ecf418de62731f2d50b2adee1c262eb1a07e8060fb851612",
+    "internal/server/web/semblance/runs-ownership.test.mjs": "e0b952c92aea9b4809f75f3773cda45c7ad32005914c28437647ead1beabc8d2",
+    "web/test/run-log-windows.test.mjs": "253788ce5f666e5b8cc921683a2a3b56396ae8c6ef03c1d683c0723531ca143b",
+    "web/package-lock.json": "b48637aa9fdd1ffab0eb8cba19b5b01ceee3a8c6c894716f286416f4cfaeba8a",
+    "web/semblance-provenance.json": "62d2688b2c2c45603835666733d29aad23bdad67773fbed447191a8941a0dab9"
+  },
+  "binary_sha256": "07e58e2b8d307b5917f70020b51feedbf08517de96de26272d7001837dc200ca",
+  "limits": {
+    "open_logs": 8,
+    "transcript_utf16_code_units_each": 262144,
+    "aggregate_transcript_utf16_code_units": 2097152,
+    "aggregate_utf16_text_bytes_before_graph_dom_copies": 4194304,
+    "actual_in_flight_inventory_and_output_requests": 2
+  },
+  "validation": {
+    "javascript_passed": 428,
+    "javascript_failed": 0,
+    "javascript_skipped": 0,
+    "native_semblance_runtime_tests_passed": 2,
+    "web_asset_build": "passed",
+    "native_command_build": "passed",
+    "video_fully_decoded": true
+  },
+  "checks": [
+    "three native windows opened from one roster, including pointer, control and keyboard pop-out",
+    "native tiling shows three agents side by side with original unobscured visible-tail nodes",
+    "pausing one log preserves two peer streams and ongoing backend capture",
+    "closing one log preserves both remaining windows and readers",
+    "docked hidden log stops reading while detached peer follows across navigation",
+    "reopening a minimized watched run restores its existing window and cursor",
+    "two peers tile again after independent docking, closing and restore",
+    "closing views never stops any of the three executions",
+    "completed minimized log restores its tail without replay while a peer keeps following",
+    "390px simultaneous tiled and floating windows remain bounded through maximize, fullscreen, taskbar restore and viewport changes"
+  ],
+  "page_errors": [],
+  "viewports": [
+    1440,
+    390
+  ],
+  "artifacts": [
+    {
+      "file": "run-roster.png",
+      "bytes": 142942,
+      "sha256": "2525fdf516d87cf7542389dbbeca84f9e56fc90adb8ba12f9d0770d09a8c7553"
+    },
+    {
+      "file": "three-floating.png",
+      "bytes": 249990,
+      "sha256": "d1d86a69e1e2b82aa456ac8a72da19e1414ad0933422756a56a803d698419318"
+    },
+    {
+      "file": "three-side-by-side.png",
+      "bytes": 187153,
+      "sha256": "435ffd2612bbff584fbed0156fbf2eb6d08f7205bc6bcd5c2077922b7f996bb8"
+    },
+    {
+      "file": "one-paused-two-following.png",
+      "bytes": 225175,
+      "sha256": "85cf96a81cea755e5b95919f1bd0f24a1a0902ca07fe42092e8ec66a00015dec"
+    },
+    {
+      "file": "close-one-keep-two.png",
+      "bytes": 184918,
+      "sha256": "39f01dc1e180ca5cc6fcde01ba16efbfcc55524586f1cc671f56ce6009db56ab"
+    },
+    {
+      "file": "independent-navigation.png",
+      "bytes": 205086,
+      "sha256": "0395517b177878b5c8844bcb8a8340539d69b73b29145b66089ccd48649a460c"
+    },
+    {
+      "file": "two-agents-side-by-side.png",
+      "bytes": 188327,
+      "sha256": "54883ca9ed54850f4b625e831ae8231e714e4eaa02ad508620975014d988297b"
+    },
+    {
+      "file": "completed-and-running-side-by-side.png",
+      "bytes": 197708,
+      "sha256": "1e9d33893243af4a09d42bace0d169d0882ca8828c35f355806925b71ef1323c"
+    },
+    {
+      "file": "two-narrow-tiled.png",
+      "bytes": 80002,
+      "sha256": "8d7b97d0151ad37d935134ab7cbebf4f0490b7136da70a4ae769e3386e816482"
+    },
+    {
+      "file": "two-narrow-floating.png",
+      "bytes": 98234,
+      "sha256": "b06afd9dedf333d6f8473fbcafd4e78f405acdb568038592bdef9c113f448b88"
+    },
+    {
+      "file": "multiple-run-logs.webm",
+      "bytes": 4921114,
+      "sha256": "f27d358cf122a59c678a0b533f20aedb39c038f027b22824545378032d6069e2"
+    }
+  ],
+  "video": {
+    "file": "multiple-run-logs.webm",
+    "duration": "00:00:16.40",
+    "codec": "VP9",
+    "width": 1440,
+    "height": 1000,
+    "fps": 25
+  },
+  "cleanup": {
+    "producer_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "browser_and_context_closed": true
+  },
+  "leases": {
+    "validation": {
+      "cpu": 2,
+      "memory_bytes": 2147483648,
+      "ttl": "5m",
+      "outcome": "completed",
+      "exit_code": 0
+    },
+    "capture": {
+      "cpu": 1,
+      "memory_bytes": 2147483648,
+      "ttl": "110s",
+      "outcome": "completed",
+      "exit_code": 0
+    }
+  },
+  "limitations": [
+    "Display bound is logical text, not total browser heap",
+    "Narrow tiled windows retain little transcript space; floating/fullscreen provide more reading space",
+    "Earlier failed narrow floating capture is excluded from acceptance and retained privately",
+    "No OS/browser popup, full Go suite, Linux runtime, new TUI or composed-main acceptance claim"
+  ]
+}

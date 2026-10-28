@@ -270,7 +270,11 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
       put(ui.windowDesktop.iri,C.columns,3);put(ui.windowDesktop.iri,C.minWidth,'320px');
       const taskbar=ui.windowDesktop.children.find(child=>child.kind==='Taskbar');if(taskbar)put(taskbar.iri,C.attachedTo,enabled?C.BottomEdge:null,true);
       if(enabled)for(const frame of ui.windowFrames)if(frame.detached){put(frame.frameIRI,C.windowState,C.Normal,true);put(frame.frameIRI,C.attachedTo,null);}
-    });for(const frame of ui.windowFrames)frame.fit();},
+    });for(const frame of ui.windowFrames)frame.fit();
+      // Native grid-to-floating projection can settle after the current event.
+      // Refit restored geometry after that commit, especially after narrowing.
+      queueMicrotask(()=>{for(const frame of ui.windowFrames)frame.fit();});
+    },
     disclosure(label,children=[],props={}){return batch(()=>{const h=component('AccordionItem',{label,open:false,...props});h.body=ui.stack(children);put(h.iri,C.content,h.body.iri,true);h.children=h.body.children;replaceOwnership(h,[h.body]);return h;});},
     json(value,label='JSON'){const raw=stringifyJSON(value);return ui.disclosure(label,[ui.code(raw.length>256000?raw.slice(0,256000)+'\n[display truncated]':raw)]);},
     // Review cells are already formatted; stock code format preserves their
