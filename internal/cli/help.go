@@ -16,6 +16,18 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"rollout status":                    {summary: "Read local project adoption policies and expiring session observations. Default is fully disabled; no backend or discovery is started.", max: 0},
+	"rollout check":                     {summary: "Resolve the working directory and optional client project to cooperative adoption policy. Read-only; never registers or enrolls a session.", max: 0},
+	"rollout history":                   {summary: "Read retained rollout policy and enrollment audit history locally.", max: 0},
+	"rollout project":                   {summary: "Preview an explicit directory or Git checkout binding to an ARM project. New projects are disabled. Apply requires the exact --expect digest and --yes.", max: 0},
+	"rollout bind":                      {summary: "Explicitly map a Codex/Claude project identity to an existing ARM project boundary. Does not discover sessions or grant resources.", max: 0},
+	"rollout policy":                    {summary: "Review disabled, observe, new-sessions or all adoption within a selected project. Existing resource obligations remain unchanged.", max: 0},
+	"rollout pause":                     {summary: "Pause further enrollment without canceling jobs or removing existing obligations.", max: 0},
+	"rollout resume":                    {summary: "Review resuming enrollment under the saved project policy.", max: 0},
+	"rollout invite":                    {summary: "Invite an explicit cohort of live roster identities. Each session must separately acknowledge adoption.", max: 0},
+	"rollout revoke":                    {summary: "End adoption for selected identities without canceling resource leases, work or cleanup obligations.", max: 0},
+	"rollout identify":                  {summary: "Voluntarily report a stable session UUID and bounded resource needs in an enabled discovery scope. Does not create a messaging contact or enroll.", max: 0},
+	"rollout ack":                       {summary: "Acknowledge adoption using an exact live identity and current policy revision. Requires policy eligibility or an explicit invitation.", max: 0},
 	"config set":                        {usage: "KEY VALUE [--dry-run] [--expect-file SHA256]", summary: "Atomically edit daemon.cpu, daemon.memory, daemon.disk or daemon.listen in the selected config.toml. Validates the whole file and preserves unrelated fields/comments. Applies on next ordinary startup.", min: 2, max: 2},
 	"config pool set":                   {usage: "NAME [--path PATH] [--tier LABEL] [--ceiling SIZE] [--dry-run]", summary: "Add or update a named storage pool in config.toml. New pools require an absolute path. Writes validated private TOML atomically; no live reload or benchmark is performed.", min: 1, max: 1},
 	"config pool remove":                {usage: "NAME [--dry-run]", summary: "Remove a pool from desired startup configuration. Existing pool obligations remain recorded; next startup disables new allocations without deleting files.", min: 1, max: 1},
@@ -242,6 +254,7 @@ var commandHelps = map[string]commandHelp{
 	"version":                {summary: "Print ARM, Go and platform versions."},
 }
 var groupHelps = map[string]string{
+	"rollout":         "  status|check|history    Read project policy, roster and audit history offline\n  project|bind            Review directory, Git and client project boundaries\n  policy                  Choose disabled, observe, new-sessions or all\n  pause|resume            Stop/resume further enrollment; preserve work\n  invite|revoke           Review selected exact session identities\n  identify|ack            Voluntary observation, then eligible acknowledgment\n",
 	"config":          "  check              Validate config.toml without creating state\n  show               Show its full path, desired settings and provenance\n  set KEY VALUE      Atomically edit a supported daemon setting\n  pool set NAME      Add/update a named storage location\n  pool remove NAME   Remove it from desired startup configuration\n",
 	"config pool":     "  set NAME      Add or update a configured storage pool\n  remove NAME   Remove its desired configuration; existing obligations survive\n",
 	"name":            "  list                List local names (--all includes reservations)\n  set KIND TARGET NAME  Assign a visible target at --revision N\n  clear KIND ID NAME    Clear an exact binding at --host ID --revision N\n",

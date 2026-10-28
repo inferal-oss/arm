@@ -66,6 +66,9 @@ func (a *app) installationReport(report install.Report) error {
 	showDiff := a.showDiff && !a.diffShown
 	hasChanges := false
 	fmt.Fprintln(&b, a.paint("1;36", "ARM · "+verb))
+	if report.Adoption != "" {
+		fmt.Fprintln(&b, terminalSafe(report.Adoption))
+	}
 	if report.DryRun {
 		fmt.Fprintln(&b, "Review the instruction-file changes below. Nothing has been changed.")
 	}

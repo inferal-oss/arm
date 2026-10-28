@@ -6,6 +6,23 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Project-scoped gradual agent adoption
+
+Owner: `codex/gradual-agent-rollout`. Implementation adds a separate cooperative
+adoption ledger and CLI, disabled-by-default installed guidance, explicit
+directory/Git/client-project bindings, manual cohorts and session acknowledgment.
+Resource admission, existing obligations and messaging registration remain
+independent. [Design and acceptance boundaries](design/gradual-agent-rollout.md).
+
+Source self-review fixes disabled-write side effects, stale identity/invitation
+inheritance, Git repository replacement, audit-generation gaps and nonregular
+ledger reads. Complete rollout/installation race suites and scoped CLI
+rollout/guide/help/completion regressions, affected-package vet and native/Linux
+CLI compilation pass. The focused feature is ready for coordinator review and
+integration; full-suite and Linux runtime acceptance remain open. Native client discovery,
+graphical policy editing, binding removal and compaction are outside this
+milestone.
+
 ## Integration policy
 
 The coordinator owns shared module, schema, backend, CLI and documentation

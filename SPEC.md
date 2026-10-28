@@ -528,6 +528,30 @@ Before changing any instruction file or the installation manifest, save verified
 
 Use native service management where supported, with recovery after daemon failure and clear manual-operation fallback where unavailable. Installation must report exactly what is enabled, what capabilities are missing, and how to inspect or reverse changes. Partial failure must leave recoverable recorded state.
 
+### Gradual agent adoption
+
+Installing or upgrading agent instructions does not authorize protocol adoption.
+Unconfigured projects default to fully disabled. Setup should suggest gradual
+new-session enrollment while requiring an explicit user choice of disabled,
+observation/manual pilots, new sessions only, or all sessions within a reviewed
+project scope. A new task within an existing chat/session is not a new session.
+
+Scope includes explicit canonical directories, selected Git checkouts/worktrees
+and mapped client-project identifiers. Observation, invitation and acknowledgment
+are distinct. Self-identification does not authorize execution, reserve resources,
+create messaging authority or enroll another agent. Show eligibility, policy
+provenance, resource needs, bounded identity metadata and honest liveness/expiry.
+Stale identities must not silently inherit grants. Native UI or mesh registration
+must not broaden local adoption policy.
+
+Policy changes support exact previews and durable audit. Pause/rollback stops
+further rollout without canceling jobs, discarding ownership, reclaiming leases
+or erasing cleanup/accounting promises. Revoking adoption and resource admission
+are separate operations. Instruction distribution is distinct from authoritative
+versioned policy; cooperative adoption cannot retroactively control ongoing or
+nonparticipating sessions. See [the rollout design](docs/design/gradual-agent-rollout.md)
+for the CLI-first implementation boundary and remaining work.
+
 ### Uninstallation
 
 `arm uninstall` must use the installation manifest and resource records, not guesses about filenames. Validate the plan before mutation and support `--dry-run` with concrete effects.

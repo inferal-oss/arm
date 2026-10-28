@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"getarm.org/internal/rollout"
 )
 
 func TestCurrentInstructionsRoundTripBothAdaptersWithBoundState(t *testing.T) {
@@ -41,6 +43,9 @@ func TestCurrentInstructionsRoundTripBothAdaptersWithBoundState(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, fragment := range []string{
+			"arm rollout check", "arm rollout identify", "arm rollout ack", "fully disabled",
+			"--client-project CLIENT_PROJECT",
+			"Installation alone does not authorize adoption", "existing session's original start",
 			"arm agents --json", "arm agents card --list --json", "arm agents card rust-build --json",
 			"arm run --quiet", "arm proxy --quiet --agent CONTACT", "arm runs --json",
 			"arm log -f RUN_ID", "arm log RUN_ID --offset BYTE_OFFSET", "does not bypass",
@@ -84,5 +89,49 @@ func TestCurrentInstructionsRoundTripBothAdaptersWithBoundState(t *testing.T) {
 		if err != nil || info.Mode().Perm() != 0640 {
 			t.Fatal("instruction mode changed", target.Adapter, info, err)
 		}
+	}
+}
+
+func TestInstallAndUninstallPreserveExplicitRolloutPolicy(t *testing.T) {
+	base := t.TempDir()
+	home := filepath.Join(base, "state")
+	root := filepath.Join(base, "instructions")
+	if e := os.Mkdir(root, 0700); e != nil {
+		t.Fatal(e)
+	}
+	store := rollout.Store{Home: home}
+	for _, change := range []rollout.Change{
+		{Action: "project", Project: "demo", Binding: &rollout.Binding{Kind: "directory", Root: root}, Reason: "Select project"},
+		{Action: "policy", Project: "demo", Mode: "all", Reason: "Explicitly include this project"},
+	} {
+		plan, e := store.Preview(change)
+		if e != nil {
+			t.Fatal(e)
+		}
+		if _, e = store.Apply(change, plan.Review); e != nil {
+			t.Fatal(e)
+		}
+	}
+	before, e := os.ReadFile(filepath.Join(home, "rollout.json"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	targets := []Target{{Adapter: "codex", Root: root, Name: "AGENTS.md"}}
+	for _, dry := range []bool{true, false, false} {
+		report, e := Install(home, targets, dry)
+		if e != nil || !strings.Contains(report.Adoption, "disabled") || !strings.Contains(report.Adoption, "new-sessions") {
+			t.Fatal(report, e)
+		}
+		after, e := os.ReadFile(filepath.Join(home, "rollout.json"))
+		if e != nil || string(after) != string(before) {
+			t.Fatal("installation changed explicit rollout policy", e)
+		}
+	}
+	if _, e = Uninstall(home, false); e != nil {
+		t.Fatal(e)
+	}
+	after, e := os.ReadFile(filepath.Join(home, "rollout.json"))
+	if e != nil || string(after) != string(before) {
+		t.Fatal("uninstall discarded rollout policy", e)
 	}
 }

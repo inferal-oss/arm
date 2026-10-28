@@ -1,5 +1,22 @@
 # Backend and CLI implementation
 
+## Project-scoped gradual agent adoption — CLI milestone
+
+The CLI has a separate local rollout ledger, independent of the resource/backend
+schema. New projects are disabled. Explicit directory/Git bindings contain
+observation, new-session or all-session policy; optional client-project aliases
+also require filesystem containment. Installed instructions check policy before
+adopting ARM. Observation, invitation and session acknowledgment are distinct.
+Reviewed mutations, expiring identity generations, roster eligibility, pause,
+revoke and policy audit are implemented in source. Resource commands, existing
+leases, ownership and cleanup obligations are unchanged.
+
+Complete rollout/installation race suites and scoped CLI regressions pass after
+source self-review fixes. This does not establish full-suite, independent review
+or Linux runtime acceptance. Native client-project discovery, UI editing, binding
+removal and history compaction remain unsupported. See
+[the scoped design](design/gradual-agent-rollout.md) and the validation record.
+
 ## Execution runs and durable logs
 
 Ordinary recorded command leases project into runs using the lease ID and a

@@ -1,5 +1,40 @@
 # Validation record
 
+## Project-scoped gradual agent adoption — scoped owner validation
+
+The complete `internal/rollout` and `internal/install` suites pass with
+`GOMAXPROCS=1 go test -p 1 -race ./internal/rollout ./internal/install -count=1 -timeout=120s`.
+The rollout suite includes 13 focused cases for disabled reads without
+initialization, exact/concurrent preview/apply guards, directory/nested/Git/
+worktree/client containment, original session-start eligibility, manual cohorts
+and acknowledgment, stale identity generations, persistent revocation,
+pause/disable semantics, bounded metadata/audit, corrupt/nonregular ledgers and
+clock rollback. Installation tests include policy preservation through preview,
+installation, repeat installation and uninstall in synthetic fixtures.
+
+Scoped CLI tests pass with
+`GOMAXPROCS=1 go test -p 1 ./internal/cli -run 'Test(Rollout|.*Instruction|.*Guide|.*Help|.*Completion|.*Builtin)' -count=1 -timeout=120s`.
+These exercise all rollout command help offline, exact review/application,
+observation/invitation/acknowledgment, project-selector containment, guide ordering
+and shared help/completion/built-in command boundaries. Temporary fixtures use
+canonical directories. Two initial helper checks refused symlinked temporary
+paths; the final selected tests pass with canonical fixtures. The legacy
+instruction-upgrade diff expectation was updated to require the adoption gate.
+
+Affected-package `go vet -p 1 ./internal/rollout ./internal/install ./internal/cli`
+passes. Native CLI compilation and a CGo-free Linux amd64 cross-build of
+`./cmd/arm` pass with one Go worker. Cross-compilation does not establish Linux
+runtime behavior. No graphical or native client discovery behavior is claimed.
+
+Source review identified and fixed disabled acknowledgments initializing state,
+stale invitations inheriting identity generations, missing replacement-identity
+audit, and Git-directory replacement inheriting checkout adoption policy.
+Regression cases cover these fixes, concurrent application, explicit repository
+rebinding, unsupported versions/fields, symlinks and FIFOs. No real agent
+enrollment, installation, instruction broadcast or resource-lifecycle change is
+part of the feature validation. Independent review/integration, full Go suite,
+Linux runtime, native client-project discovery and UI acceptance remain open.
+
 ## Website SSR integration and hosted Pages acceptance — 2026-10-28
 
 Owner commits `768ecdb` and `622acb3` are independently reviewed and integrated

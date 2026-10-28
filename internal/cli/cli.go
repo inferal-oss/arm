@@ -215,6 +215,7 @@ Commands:
   events [--follow]          Read or stream durable events
   agents                    Read the offline guide and list knowledge cards
   agents card NAME          Read a workload knowledge card
+  rollout                   Review project adoption (disabled by default)
   agent probe|register|list  Discover CLIs and register exact sessions
   agent inbox|watch|receive|ack  Poll notifications and acknowledge explicitly
   message operator|send|broadcast  Send a durable message
@@ -303,6 +304,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.integration(cmd, args)
 	case "agents":
 		return 0, a.agentsGuide(args)
+	case "rollout":
+		return 0, a.rollout(args)
 	case "workspaces":
 		return a.workspacesCommand(args)
 	case "history":
