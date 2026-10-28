@@ -2969,17 +2969,20 @@ disabled paired factory remain in force alongside the unused C1/C2 readers.
 The reviewed recovery candidate retains the original completion owner across
 fallible terminal persistence, bounds exact physical lease and event reads,
 and continues independently expired original siblings. Its affected native
-Darwin gate passes; this candidate is not yet integrated into the current
-whole-source composition. SSH pre-effect binding is a separate correction:
-the first gate exposed a valid never-granted PID-zero settlement case, and
-review of its successor found an acknowledged End/Close predecessor ordering
-case. Both must be resolved without adopting arbitrary saved process identity
-or a changed row. Public activation and current composition remain open.
+Darwin gate passes. Source is integrated as `540a022`. The earlier SSH gate
+exposed a valid never-granted PID-zero settlement case; successor review also
+found acknowledged End/Close predecessor ordering. Both are corrected using
+only the exact privately known predecessor, advanced after the original ending
+CAS and positive Commit acknowledgment. Arbitrary saved process identities or
+changed rows remain refused. The accepted 16-root / 99-name race cohort and
+Manager vet cover End, CancelRequest and Close; charge remains until the
+original native Wait and actual SSH joins. Public activation remains separate.
+See [scoped evidence](validation/cancellation-safety-recovery-2026-10-28.json).
 
 ### Reviewed forwarding and onboarding branches awaiting composition
 
-Private Unix binder `48d21fc1` now has focused source and native lifecycle
-acceptance, documented in `ceea798b`; it exposes no public accept worker.
+Private Unix binder `48d21fc1` is integrated as `25d60cc` after focused and
+composed native acceptance; it exposes no public accept worker.
 Kubernetes correction `2da67aa6` keeps final journal writes within the strict
 reader envelope and excludes fork/exec inheritance during original and probe
 socket construction. Its seven source files are reviewed and validated on

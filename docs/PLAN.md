@@ -739,6 +739,11 @@ and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.js
 
 ### Survey update: reviewed source and publication boundaries
 
+### Earlier survey snapshot before current native integration
+
+The table below preserves the earlier review state. The later current native
+integration and remaining-ownership sections supersede its pending native gates.
+
 | Ownership branch | Reviewed or published state | Remaining acceptance |
 | --- | --- | --- |
 | `codex/log-run-completion` | Original `a6dd82e1` passes independent source and actual-evidence review: eight race roots / 33 named cases, no skips, CLI vet. Published as `dd47bb6e` with normalized record `34ea83a8`, preserving website SSR baseline `ef18a22a`. All 1,608 Go source/module entries and four owned paths match the tested feature exactly. | This primary checkout's native-foundation history still requires composed integration. No new full-suite, Linux runtime or carrier installation claim. |
@@ -780,20 +785,25 @@ and the separately reviewed second activation stage remain rollout gates.
 Recovery v3 passes its affected 11-root / 84-name race cohort and targeted vet.
 This closes the scoped recovery gate, including the two checkpoint/settlement
 subcases that failed in the earlier composition. The separate SSH pre-effect
-binding gate fails `TestSSHFailedNativeGateKeepsChargeUntilOriginalInputJoin`;
-its 93 passing names do not establish an aggregate pass. The source successor
-still needs to preserve a known positively acknowledged lifecycle predecessor
-when End or Close wins the finalizer lock. Reviewed correction, affected
-validation and the actual current-source union remain prerequisites to feature
-integration. See [normalized evidence](validation/retained-settlement-recovery-2026-10-28.json).
+binding v1 gate failed `TestSSHFailedNativeGateKeepsChargeUntilOriginalInputJoin`;
+its 93 passing names do not establish an aggregate pass. That failure remains
+preserved. The reviewed successor now preserves only its privately known,
+positively acknowledged lifecycle predecessor after the exact original ending
+CAS and Commit. Its 16-root / 99-name race cohort and Manager vet pass, including
+End, CancelRequest and Close ordering. Source is integrated as `540a022`; actual
+native reap and SSH transport joins remain required before releasing charge.
+See [earlier failed evidence](validation/retained-settlement-recovery-2026-10-28.json)
+and [accepted successor evidence](validation/cancellation-safety-recovery-2026-10-28.json).
 
 ### Current composition and private forwarding worker gates
 
 The composed native candidate passes all 193 roots / 764 named cases in the
 normal run. Its race run executes the same roster with 763 passes, one failure
 and no skips: `TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue`
-cannot reserve its expected pressure effect. Source diagnosis is in progress;
-vet and build were not run after the failure. Feature integration remains open.
+could not reserve its expected pressure effect. Vet and build were not run
+in that failed attempt. The later test-only successor and previously unrun
+vet/build pass as recorded below; focused native source is now integrated.
+The original aggregate remains failed.
 
 The separate private forwarding worker passes all 44 roots / 82 named cases
 normally. Its tagged race run has 81 passes, one failure and no skips:
@@ -802,3 +812,46 @@ before the Unix worker path. Independent diagnosis is pending; subsequent vet
 and Linux compile stages are unrun. The accepted binder remains a separate
 review boundary; these results do not enable the public forwarding factory.
 See [normalized evidence](validation/native-composition-failures-2026-10-28.json).
+
+### Reviewed current native integration
+
+The current native source is recorded in focused integration commits:
+`540a022` cancellation and original settlement, `2d9d5cf` holder regressions,
+`25d60cc` private Unix custody, `53938db` unused C3 primitives and `69c3a57`
+private charged sync. The reviewed shared Manager and proof-schema composition
+preserves original startup custody, cancellation ordering, bounded object
+censuses and ordinary sync schema 2. Published log-window assets are preserved
+byte-for-byte in `5e8caac`.
+
+The original 193-root race aggregate remains failed. Its unchanged 192 roots /
+763 sibling names retain their exact source-equivalent normal and race passes.
+A test-only correction (`f7e831c`) adds a deterministic busy-owner refusal
+control and retries only a bounded, typed pre-effect reservation refusal. The
+corrected one-root / two-name cohort passes normal and race; seven-package vet
+and the private CLI build pass. Production pressure guards and one-shot native
+effects are unchanged. No fresh 193-root aggregate is claimed.
+
+The C3 primitive leaf separately passes 39 roots / 333 names in normal and race
+with targeted vet. This does not implement full Manager lifecycle hooks, atomic
+reservation or native finalization. Public paired-provider, sync and forwarding
+activation remain gated. The full private forwarding worker still has its
+separate failed three-node relay-admission race case. Unified Kubernetes
+stage history, typed worker, dashboard wiring and real enrollment remain open.
+See [source binding](validation/native-integration-source-binding-2026-10-28.json),
+[corrected pressure evidence](validation/native-composition-successor-2026-10-28.json),
+[cancellation evidence](validation/cancellation-safety-recovery-2026-10-28.json)
+and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.json).
+
+### Remaining integration ownership after native source acceptance
+
+The local primary contains the reviewed native composition through `ae70c86`.
+Its exact source binding and qualified execution boundary are recorded above;
+publication awaits the separately advanced storage integration.
+
+| Ownership branch | Current reviewed boundary | Next gate |
+| --- | --- | --- |
+| `codex/storage-native-integration-review` | Published storage feature `3856f9c3` and records through `5f75cae6` are available for composition. | Review shared Manager/storage recovery and strict C1/C2 compatibility with new storage selectors, bindings and opt-in format 3. Reflected model additions must not silently widen inert readers or invent accounting credit. No composed acceptance yet. |
+| `codex/kubernetes-unified-continuation` | Managed source `85e47781` and scoped record `ca7af509` are accepted locally: normal/race each 16 roots / 37 names, vet zero. Original helper boundaries use a controlled expiry seam. | Primary composition, actual Manager-to-factory admission and the unified dashboard installer remain open. Closed stage history and typed worker continue separately on `codex/kubernetes-stage-history`; no live installation is accepted. |
+| `codex/forward-unix-adapter` | Private binder is integrated as `25d60cc`. The full worker's original race gate remains failed. A single diagnostic identifies relay admission refusing unknown CPU capacity while its context still has time. | Review native sampler and test readiness without relaxing capacity or authorization; then a reviewed affected successor, later vet and Linux compile gates. |
+| `codex/provider-pair-c3-hooks` | Unused primitives are integrated as `53938db`; full hooks remain isolated work in progress. | Review exact original cancellation before fallible reads, callbacks after unlock, retaining-marker knowledge, unknown ACK debt and compatibility with strict storage accounting. C4/C5 and public activation remain separate. |
+| `codex/numeric-182-d879` and `codex/sparkline-155-d879` | Focused local commits `22ba77db` / `8ced16a4` match the tested composed source. Normal production prebuild and two-worker SSR are independently accepted; generated assets are not browser-tested. | Two focused draft submissions, then separately reviewed ARM dependency promotion. No upstream merge or release is authorized by this record. |

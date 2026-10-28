@@ -7397,9 +7397,13 @@ The separate SSH v1 race attempt executes all 15 roots / 94 names: 93 pass,
 one fails, none skip. The failure is
 `TestSSHFailedNativeGateKeepsChargeUntilOriginalInputJoin`; subsequent vet is
 unrun. Raw run/status sets agree, captured before/after source records agree,
-and the failure remains failed. The next source-only correction retains a
-review finding for legitimate End/Close ACK ordering. No current composed
-acceptance follows. [Normalized evidence](validation/retained-settlement-recovery-2026-10-28.json).
+and the failure remains failed. The reviewed successor corrects legitimate
+End/Close ACK ordering without adopting an unknown predecessor. Its actual
+16-root / 99-name race cohort passes with no skips, and Manager vet passes;
+End, CancelRequest and Close orderings are included. Source is integrated as
+`540a022`, with original Wait and transport joins required before settlement.
+[Earlier failed evidence](validation/retained-settlement-recovery-2026-10-28.json);
+[accepted successor evidence](validation/cancellation-safety-recovery-2026-10-28.json).
 
 ### Kubernetes journal and socket correction
 
@@ -7417,7 +7421,8 @@ Independent audit accepts four actual layouts, 24 matched rendering states,
 16 live sample clicks, both example paths and three regional keyboard checks.
 The original external Arabic digit assertion remains failed: it expected
 localized digits while the documented component preserves stored lexical
-numeric text. Arabic keyboard and 512/513-sample witnesses remain unrun. Both
+numeric text. Arabic keyboard and 512/513-sample witnesses were unrun in that
+partial capture; later bounded residual checks accept them separately. Both
 active mount disposals returned and the owned server closed; server exit zero
 does not establish UI success. [Qualified partial evidence](validation/semblance-sparkline-ui-partial-2026-10-28.json).
 
@@ -7430,7 +7435,9 @@ tagged 44-root / 82-name roster: normal passes all cases; race passes 81 and
 fails the three-node HTTP case at SSH relay admission. Both original race
 children return exit 1, and both final input comparisons are unchanged.
 
-Both aggregates remain failed. Later vet/build or Linux compile stages are
-unrun. Neither earlier baseline symptoms nor passing sibling cases establish
-acceptance; source diagnosis and reviewed successor validation remain required.
+Both original aggregates remain failed. Their later vet/build or Linux compile
+stages were unrun. The composed native candidate subsequently has an accepted
+test-only pressure successor and seven-package vet/private build, recorded
+below. The separate full forwarding worker remains under diagnosis. Earlier
+baseline symptoms and passing sibling cases do not waive either failed attempt.
 [Normalized evidence](validation/native-composition-failures-2026-10-28.json).
