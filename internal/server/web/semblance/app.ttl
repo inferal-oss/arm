@@ -197,3 +197,26 @@ arm:RunTechnical a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-run-techni
               [ sty:property "letter-spacing" ; sty:raw "0.04em" ] ,
               [ sty:property "color" ; sty:token tok:muted ] ,
               [ sty:property "margin-block" ; sty:raw "0.6rem 0.2rem" ] .
+
+
+# A detached log keeps controls fixed and gives its saved-output disclosure the
+# remaining frame height. Only the transcript scrolls, so following shows its tail.
+arm:RunTranscriptWindow a owl:Class ; rdfs:subClassOf arm:RunTranscript .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ;
+ sty:declares [ sty:property "height" ; sty:raw "100%" ] , [ sty:property "min-height" ; sty:raw "0" ] , [ sty:property "overflow" ; sty:raw "hidden" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ; sty:part "> :not([data-sem-c=\"accordion-item\"])" ;
+ sty:declares [ sty:property "flex-shrink" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ; sty:part "> [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]" ;
+ sty:declares [ sty:property "display" ; sty:raw "flex" ] , [ sty:property "flex-direction" ; sty:raw "column" ] , [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] , [ sty:property "overflow" ; sty:raw "hidden" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ; sty:part "[data-expanded=\"true\"] > .sem-panel" ;
+ sty:declares [ sty:property "display" ; sty:raw "flex" ] , [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ; sty:part ".sem-panel-clip" ;
+ sty:declares [ sty:property "display" ; sty:raw "flex" ] , [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ; sty:part ".sem-panel-body" ;
+ sty:declares [ sty:property "display" ; sty:raw "flex" ] , [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ; sty:part ".sem-panel-body > [data-sem-c=\"stack\"]" ;
+ sty:declares [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] , [ sty:property "overflow" ; sty:raw "hidden" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ; sty:part ".sem-panel-body > [data-sem-c=\"stack\"] > :not(pre)" ;
+ sty:declares [ sty:property "flex-shrink" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscriptWindow ; sty:state ":not([data-sem-fullscreen])" ; sty:part "pre" ;
+ sty:declares [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] , [ sty:property "max-height" ; sty:raw "none" ] .

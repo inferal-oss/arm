@@ -54,13 +54,14 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
       display.expand=ui.button('Fullscreen log',()=>setFull(!full));
       display.exitHint=ui.text('Escape returns to the run details',{hidden:true});
       display.fold=ui.disclosure('Saved log output',[display.cursor,display.lost,display.output],{open:true});
-      display.transcript=ui.stack([ui.heading(runPurpose(run)+' · Log output',3),ui.toolbar('Run log controls',[display.follow,display.expand,ui.button('Read from start',readStart),display.next]),display.exitHint,display.error,ui.text('Folding hides the transcript; capture and following continue.'),display.fold]);
+      display.transcriptHeading=ui.heading(runPurpose(run)+' · Log output',3);display.foldHint=ui.text('Folding hides the transcript; capture and following continue.');
+      display.transcript=ui.stack([display.transcriptHeading,ui.toolbar('Run log controls',[display.follow,display.expand,ui.button('Read from start',readStart),display.next]),display.exitHint,display.error,display.foldHint,display.fold]);
       ui.put?.(display.transcript.iri,RDF_TYPE,ARM+'RunTranscript',true);
       ui.put?.(display.output.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type','https://arm.local/ui#RunOutput',true);
       ui.put?.(display.output.iri,'https://semblance.dev/ns/component#block',true);
       display.technical=ui.disclosure('Details',[ui.text('Run: '+label(run)+' · ID: '+run.id),display.fullCommand,display.metadata,display.times,...(run.lease_id?[ui.text('Lease ID: '+run.lease_id),ui.button('Inspect associated lease',()=>onLease(run.lease_id))]:[ui.text('Observation only · no resource lease')])],{open:false});
       display.window=ui.detachable(runPurpose(run)+' · Log output',display.transcript);
-      display.window.on('detach',()=>{setFull(false,false);updateActivity();});
+      display.window.on('detach',()=>{setFull(false,false);renderPresentation();updateActivity();if(following&&display.fold.open)display.output.scrollEnd?.();});
       replace(detail,[ui.button('Back to runs',close,{emphasis:'Quiet'}),display.heading,display.command,display.state,display.technical,ui.text('Drag the log tab out, use its pop-out control, or press Shift+Enter. Closing its window returns the log here.'),display.window]);
     }
     display.command.set({value:runCommand(run,150)});display.fullCommand.set({value:JSON.stringify(run.command??[])});
@@ -73,13 +74,17 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
     display.lost.set({hidden:run.outcome!=='reporter_lost'});
     display.output.set({value:text||'(No output yet)'});renderErrors();
   });}
+  function renderPresentation(){
+    if(!display)return;const detached=Boolean(display.window?.detached);
+    ui.batch(()=>{ui.put?.(display.transcript.iri,RDF_TYPE,ARM+(detached?'RunTranscriptWindow':'RunTranscript'),true);display.transcriptHeading.hidden=display.foldHint.hidden=detached&&!full;});
+  }
   function setFull(enabled,restoreFocus=true){
     if(!display||full===Boolean(enabled))return;
     if(enabled){foldBeforeFull=display.fold.open;display.fold.open=true;}
     full=Boolean(enabled);
     display.transcript.set({fullViewport:full});
     ui.put?.(display.output.iri,RDF_TYPE,ARM+(full?'RunOutputFull':'RunOutput'),true);
-    display.expand.set({label:full?'Exit fullscreen':'Fullscreen log'});display.exitHint.hidden=!full;
+    display.expand.set({label:full?'Exit fullscreen':'Fullscreen log'});display.exitHint.hidden=!full;renderPresentation();
     if(!full)display.fold.open=foldBeforeFull;
     if(restoreFocus)display.expand.focus();
     if(full&&following)display.output.scrollEnd?.();
