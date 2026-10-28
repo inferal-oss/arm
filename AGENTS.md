@@ -38,6 +38,8 @@ Keep the returned run ID; for leased runs it is also the lease ID. Find active
 and past executions with `arm runs --json`. Inspect quiet failures with
 `arm log RUN_ID`, follow with `arm log -f RUN_ID`, and read only later bytes with
 `arm log RUN_ID --offset BYTE_OFFSET`. Both dashboards also follow selected runs.
+In terminal run logs, `o` folds/unfolds output, `z` opens fullscreen and `Esc`
+returns. Web logs have a disclosure and fullscreen/exit controls.
 Commands, working directories and logs are visible to authorized local readers;
 avoid secrets in arguments/output. Retention truncation is explicit, and lost
 reporting does not prove process exit.

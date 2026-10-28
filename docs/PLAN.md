@@ -493,9 +493,30 @@ composed focused macOS race tests, vet, native build, 393 JavaScript tests and
 Linux amd64 cross-compilation pass. Native proxy cancellation separately verifies
 the original child join and retained log. Go 1.27.3 is installed and verified.
 
-Remaining gates/limits: live browser rendering is unverified because the browser
-executor rejects the configured symlinked writable roots. Full-suite and Linux
-runtime acceptance are unestablished. Remote runs, SSH capture, history
+At that source cut, interactive browser rendering was unverified because its
+executor rejected configured symlinked writable roots. The later headless browser
+and live-PTY acceptance below supersedes that local presentation gap. Full-suite
+and Linux runtime acceptance remain unestablished. Remote runs, SSH capture, history
 pagination/archival and retention deletion remain unsupported. Inventory and
 proxy storage bounds, reporter uncertainty and reset-proof evidence limits are
 recorded in IMPLEMENTATION and VALIDATION; none broadens resource authority.
+
+### Run log presentation and native capture follow-up
+
+Owner: `codex/run-dashboards`, integrated review baseline `4b30070`. Independent
+review identified below-fold run details that did not receive focus. The focused
+fix is integrated as `3de2e70`; requested foldable and full-screen log views in
+both dashboards are integrated as `47f9031`. Final independent source review has
+no blocking findings. All 400 JavaScript tests, focused TUI race checks, affected
+vet, native build and Linux amd64 compilation pass.
+
+Actual headless Chromium and live-PTY recordings pass on `47f9031`: live output,
+fold/unfold, fullscreen/Escape, independent pause/resume, final saved-log drain,
+web opener focus restoration and PTY mode restoration. Final video streams are
+14.84 seconds (web) and 14.36 seconds (terminal), 1440×1000 at 25 fps. The TUI is
+actual 140×48 PTY bytes rendered in xterm, not synthetic Go previews. Recording
+work itself runs under an ARM lease; the foreground fixture disables peer
+publication and uses new private state. Normalized evidence is in
+[run-transparency-headless-2026-10-28.json](validation/run-transparency-headless-2026-10-28.json).
+Videos, frames, credentials and raw execution receipts remain outside version
+control. No remote, alternate browser/platform or full-suite claim is added.

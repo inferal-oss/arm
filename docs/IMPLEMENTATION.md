@@ -42,7 +42,18 @@ transcript window; the CLI can read the full retained log. UTF-8 boundaries and
 terminal/HTML escaping preserve safe presentation. Backlog reads yield bounded
 pages, suppress stale session/selection responses, and avoid fetching the full
 inventory per page. Paused output still refreshes metadata. Web command-palette
-navigation includes Runs. Browser visual rendering remains unverified.
+navigation includes Runs. Local headless Chromium and live-PTY captures establish
+the presentation scope recorded in VALIDATION.
+
+Run logs are foldable and full-screenable in both dashboards. Web disclosure
+starts expanded; fullscreen forces expansion, preserves the same buffer/cursor/
+poller and restores the previous fold state on exit. Stock native Escape updates
+the graph and returns focus to the fullscreen control. Opening a run reveals its
+details below the history list; closing restores its surviving opener or filter.
+TUI `o` folds/unfolds; `z` uses the whole terminal for output and `z`/`Esc` restores
+the prior fold/scroll state and normal dashboard chrome. Capture/following continue
+while folded, and explicit pause remains independent. Numeric navigation,
+quit/cancellation and bounded safe output retain their previous behavior.
 
 The inventory and name resolution explicitly refuse more than 4,096 combined
 runs or 2MiB of response metadata. Exact canonical IDs remain inspectable/readable

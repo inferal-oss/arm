@@ -1,5 +1,51 @@
 # Validation record
 
+## Fold/fullscreen log views and native recordings — 2026-10-28
+
+Focus fix `3de2e70` and presentation `47f9031` are independently reviewed and
+integrated. A renewed actual-source review found one P2 issue: opening a log
+could leave details below the history list without focus. Explicit open now
+reveals/focuses details; close restores the surviving opener or filter. Polling
+does not steal focus. The final disclosure/fullscreen review has no unresolved
+blocking finding.
+
+All 400 JavaScript tests pass with zero failures or skips. Final integrated
+`go test -race -p 2 ./internal/tui -run TestRuns -count=1 -timeout=90s` passes,
+as do affected TUI/server vet and the native CLI build. CGo-free Linux amd64
+TUI/server compilation through `-exec /usr/bin/true` is compilation only.
+The embedded bundle is rebuilt; its existing large-chunk warning remains.
+
+[Normalized headless evidence](validation/run-transparency-headless-2026-10-28.json)
+records actual local Chromium and real PTY acceptance on `47f9031`. The capture
+uses disposable backend state with peer publication disabled and a generic
+poll-only fixture contact. The recorder itself executes under a one-core ARM
+lease; real proxy producers and a separate leased example provide active,
+completed and failed history. No live installed state or personal agent session
+is reused. Web interactions use accessible controls against the embedded app;
+terminal input/output uses a native 140×48 PTY and pinned xterm rendering.
+
+Checks observe live output before completion, fold/unfold, stock browser
+fullscreen entry/native Escape, full-terminal `z`/`Esc`, and unchanged paused
+output while backend log bytes grow. Both surfaces display their final marker
+and end-of-saved-log state. Web open reveals below-fold details and close
+restores opener focus; saved leased output exposes its association. No browser
+page error occurs. TUI quits successfully and restores the original terminal
+mode; the original fixture backend is joined. The accepted videos are 14.84s
+(web) and 14.36s (TUI), VP9/WebM at 1440×1000/25fps. Both streams decode, and
+representative frames plus completed screenshots were visually inspected.
+
+An initial harness argument-parser error fails before recording. A first
+successful capture is retained privately; the final reshoot additionally keeps
+completion output in frame and requires the TUI terminal drain state. Video,
+frame, raw PTY and private debug receipts remain outside version control. The
+committed record contains only normalized results, source/binary and artifact
+hashes, dependency pins and scoped limitations.
+
+This establishes local headless presentation beyond the earlier interactive
+browser-executor blockage. It does not establish remote runs, other browser/
+platform combinations, interactive desktop control, full-suite acceptance or
+universal descendant cleanup. Existing retention and authority limits remain.
+
 ## Execution transparency — 2026-10-28
 
 The final composed feature source is `7310f3a`, following shared/backend
@@ -49,9 +95,10 @@ attempts remain failed: a symlinked temporary-home refusal before daemon startup
 and a mistaken expected daemon signal-exit status. The corrected run passes; no
 arbitrary descendant-tree or interactive-terminal coverage is claimed.
 
-Live browser visual verification remains blocked: its executor rejects symlinked
-writable roots despite the existing opt-in, and cannot use the shell's approval
-path. There is no successful browser rendering claim. Full Go suite, Linux
+At this earlier source cut, interactive browser visual verification was blocked:
+its executor rejected symlinked writable roots despite the existing opt-in and
+could not use the shell approval path. That earlier record contains no browser
+rendering claim; the later local headless acceptance above is separate. Full Go suite, Linux
 runtime, remote Runs and SSH capture remain unestablished. Proxy storage bounds
 are decoded bytes/chunk counts, not physical quotas. The ordinary reset proof's
 existing 64MiB evidence budget counts base64 chunks and other records, so it may

@@ -534,6 +534,8 @@ arm log -f RUN_ID_OR_READABLE_NAME
 
 The web and terminal dashboards list active and past runs with their command,
 agent, reason and optional lease, and follow selected output by default.
+Web logs fold and fill the browser window; terminal logs use `o` to fold,
+`z` for fullscreen and `Esc` to return.
 `arm log RUN` reads a snapshot; `arm log -f RUN` follows. Proxy captures stdout
 and stderr together, reserves no resources, and does not replace required
 admission. Logs, arguments and working directory are visible to authorized local
