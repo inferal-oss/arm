@@ -13,6 +13,8 @@ import (
 
 var errPressureControlRefused = errors.New("native pressure control authority is unavailable")
 
+const maxDurablePressureStateBytes = 8 << 20
+
 // pressureNativeControlInput keeps the ordinary host samples and all warning
 // recipients, replacing only the exact original native candidate's governor
 // identity. It never assigns a process identity or capability to a recovered
@@ -88,14 +90,20 @@ func (m *Manager) reservePressureNativeControl(a pressure.Action, policy pressur
 		return pressureNativeCandidate{}, errPressureControlRefused
 	}
 	var durable []byte
-	if err := m.db.QueryRow(`SELECT data FROM host_pressure_state WHERE id='current'`).Scan(&durable); err != nil {
+	var durableType string
+	var durableBytes int64
+	if err := m.db.QueryRow(`SELECT typeof(data),length(CAST(data AS BLOB)),
+		CASE WHEN typeof(data)='text' AND length(CAST(data AS BLOB))<=? THEN substr(CAST(data AS BLOB),1,?) END
+		FROM host_pressure_state WHERE id='current'`, maxDurablePressureStateBytes, maxDurablePressureStateBytes+1).
+		Scan(&durableType, &durableBytes, &durable); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return pressureNativeCandidate{}, errPressureControlRefused
 		}
 		return pressureNativeCandidate{}, err
 	}
 	current, err := json.Marshal(m.pressureState)
-	if err != nil || !bytes.Equal(durable, current) {
+	if err != nil || durableType != "text" || durableBytes < 0 || durableBytes > maxDurablePressureStateBytes ||
+		len(current) > maxDurablePressureStateBytes || !bytes.Equal(durable, current) {
 		return pressureNativeCandidate{}, errPressureControlRefused
 	}
 	now := time.Now().UTC()
@@ -109,6 +117,7 @@ func (m *Manager) reservePressureNativeControl(a pressure.Action, policy pressur
 		return pressureNativeCandidate{}, errPressureControlRefused
 	}
 	candidate.job.pressureEffectActive = true
+	candidate.job.pressureEffectCandidate = candidate
 	m.wg.Add(1) // Keep Close's Wait alive until the effect and deferred cleanup are registered.
 	return candidate, nil
 }
@@ -127,6 +136,7 @@ func (m *Manager) applyPressureNativeControl(a pressure.Action, policy pressure.
 	defer func() {
 		m.mu.Lock()
 		candidate.job.pressureEffectActive = false
+		candidate.job.pressureEffectCandidate = pressureNativeCandidate{}
 		deferred := candidate.job.pressureCancelDeferred
 		candidate.job.pressureCancelDeferred = false
 		m.mu.Unlock()

@@ -137,6 +137,19 @@ func TestPressureRetirementCutsOffDelayedOriginalEffect(t *testing.T) {
 	done := make(chan error, 1)
 	go func() { done <- o.Pause() }()
 	<-entered
+	busy := make(chan bool, 1)
+	go func() {
+		_, available := o.TryPaused()
+		busy <- available
+	}()
+	select {
+	case available := <-busy:
+		if available {
+			t.Fatal("busy original observer produced a pressure snapshot")
+		}
+	case <-time.After(time.Second):
+		t.Fatal("pressure snapshot waited on held original observer")
+	}
 	o.RetirePressureControls() // End does not wait for the held native observer.
 	close(release)
 	if err := <-done; !errors.Is(err, ErrRetired) || signals != 0 {

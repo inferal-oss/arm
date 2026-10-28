@@ -4,9 +4,11 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"os/exec"
 	"reflect"
 	"time"
 
+	"getarm.org/internal/childowner"
 	"getarm.org/internal/model"
 	"getarm.org/internal/pressure"
 )
@@ -19,6 +21,8 @@ import (
 type pressureNativeCandidate struct {
 	id            pressure.JobID
 	job           *job
+	owner         *childowner.Owner
+	cmd           *exec.Cmd
 	leaseRevision int
 	remaining     time.Duration
 	policyDigest  [32]byte
@@ -77,14 +81,18 @@ func (m *Manager) bindPressureNativeGrant(id string, policy pressure.Policy) boo
 // owner fence with a nonblocking child-owner check. A busy native observer
 // withdraws this pressure action instead of holding Manager.mu behind it.
 // SSH/profile-specific jobs are excluded by pressureGenericExecution.
-func (m *Manager) pressureOriginalBinding(id string, l model.Lease, j *job) bool {
+func (m *Manager) pressureOriginalBindingFields(id string, l model.Lease, j *job) bool {
 	return j != nil && m.jobs[id] == j && j.sshRuntime == nil && m.sshTransports[id] == nil &&
 		j.cmd != nil && j.cmd.Process != nil && j.childOwner != nil && j.done != nil &&
 		l.ID == id && l.Host == j.leaseHost && l.Owner == j.leaseOwner &&
 		reflect.DeepEqual(l.Request, j.leaseRequest) && j.identity != nil && l.Process != nil &&
 		l.PID > 0 && l.PID == j.cmd.Process.Pid && j.identity.PID == l.PID && j.identity.PGID == l.PID &&
 		j.identity.UID == l.Owner && j.identity.Start != "" && j.identity.Namespace != "" &&
-		reflect.DeepEqual(l.Process, j.identity) && j.childOwner.TryOwnsUnreaped(j.cmd)
+		reflect.DeepEqual(l.Process, j.identity)
+}
+
+func (m *Manager) pressureOriginalBinding(id string, l model.Lease, j *job) bool {
+	return m.pressureOriginalBindingFields(id, l, j) && j.childOwner.TryOwnsUnreaped(j.cmd)
 }
 
 func (m *Manager) pressureGenericExecution(l model.Lease) bool {
@@ -137,7 +145,7 @@ func (m *Manager) pressureOriginalNativeCandidate(id string, policy pressure.Pol
 	sum := sha256.Sum256(identity)
 	return pressureNativeCandidate{
 		id:  pressure.JobID{LeaseID: id, ExecutionID: id, Generation: hex.EncodeToString(sum[:]), OwnershipID: m.pressureEpoch},
-		job: j, leaseRevision: l.Revision, remaining: remaining, policyDigest: digest,
+		job: j, owner: j.childOwner, cmd: j.cmd, leaseRevision: l.Revision, remaining: remaining, policyDigest: digest,
 	}, true
 }
 
