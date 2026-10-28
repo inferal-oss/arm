@@ -24,8 +24,10 @@ import (
 
 type CargoHelperSource func() (string, cargoprofile.HelperRuntime, error)
 type cargoWorker struct {
+	leaseID               string
 	leaseHost, leaseOwner string
 	leaseRequest          model.Request
+	lease, storageParent  model.Lease // Manager.mu; deadlines change only after successful Renew
 	cancel                context.CancelFunc
 	done                  chan struct{}
 	id                    string
@@ -81,7 +83,12 @@ func (m *Manager) launchCargo(l model.Lease, run RunRequest) (model.Lease, error
 	}
 	source := m.cargoHelper
 	ctx, cancel := context.WithCancel(context.Background())
-	worker := &cargoWorker{cancel: cancel, done: make(chan struct{}), id: local.ID(), leaseHost: l.Host, leaseOwner: l.Owner, leaseRequest: l.Request}
+	parent, err := m.get(l.Request.StorageLease)
+	if err != nil {
+		cancel()
+		return l, err
+	}
+	worker := &cargoWorker{leaseID: l.ID, lease: l, storageParent: parent, cancel: cancel, done: make(chan struct{}), id: local.ID(), leaseHost: l.Host, leaseOwner: l.Owner, leaseRequest: l.Request}
 	rec.Phase, rec.Worker = "spawn_intent", worker.id
 	rec.Revision++
 	l.Revision++
@@ -123,6 +130,13 @@ func (m *Manager) cargoGate(l model.Lease, rec cargoRecord, worker *cargoWorker)
 func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id string, run RunRequest, source CargoHelperSource) {
 	defer close(worker.done)
 	defer worker.cancel()
+	// Native elapsed expiry remains observable while the helper is compiling
+	// and no protocol packet or successful checkpoint write is forthcoming.
+	watchStop, watchDone := make(chan struct{}), make(chan struct{})
+	go m.watchCargoEntitlement(ctx, worker, watchStop, watchDone)
+	var elapsedStopOnce sync.Once
+	stopElapsedWatch := func() { elapsedStopOnce.Do(func() { close(watchStop) }); <-watchDone }
+	defer stopElapsedWatch() // Fallback before the full cleanup defer is installed.
 	// A separate watcher is joined BEFORE Wait reaps the current child; no
 	// signalling can subsequently race PID reuse. Pipes unblock on cancellation.
 	var cmd *exec.Cmd
@@ -156,6 +170,9 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		}
 	}
 	defer func() {
+		// Join before any native settlement, Manager lock, map deletion or
+		// done witness. LIFO defers must not leave the elapsed watcher alive.
+		stopElapsedWatch()
 		stopWatch()
 		if cmd != nil && childStarted && !childWaited {
 			// Both IPC handles were created before this original child started.
@@ -390,7 +407,7 @@ func (m *Manager) runCargoWorker(ctx context.Context, worker *cargoWorker, id st
 		l.PID = identity.PID
 		l.Process = native
 		l.Revision++
-		j = &job{cmd: cmd, done: make(chan struct{}), identity: native, cpuAnchor: cpuAnchor, childOwner: originalOwner, leaseHost: l.Host, leaseOwner: l.Owner, leaseRequest: l.Request}
+		j = &job{cmd: cmd, done: make(chan struct{}), identity: native, cpuAnchor: cpuAnchor, childOwner: originalOwner, leaseHost: l.Host, leaseOwner: l.Owner, leaseRequest: l.Request, leaseDeadline: l.Clock, leaseExpires: l.Expires}
 		m.jobs[id] = j
 		e = m.putCargo(l, rec, "cargo.helper_bound")
 	}

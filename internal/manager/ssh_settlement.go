@@ -99,6 +99,97 @@ func (m *Manager) bindSSHTransport(l model.Lease, r *sshRuntime) error {
 	return nil
 }
 
+// putOriginalSSHNoNativeEnding advances only the privately known predecessor of
+// the original gated child whose start ACK failed. Manager.mu is held. The exact
+// writer bytes become authority only after a successful comparison and Commit;
+// an arbitrary PID-zero row or an unknown ACK can never create that authority.
+func (m *Manager) putOriginalSSHNoNativeEnding(l model.Lease, data string, j *job) error {
+	refuse := func() error {
+		return model.Err("ssh_owner_changed", "original no-native SSH ending predecessor differs")
+	}
+	if j == nil || j.sshNoNative == nil || j.sshRuntime == nil || j.cmd == nil || j.cmd.Process == nil || j.cmd.Process.Pid <= 0 || j.childOwner == nil || m.jobs[l.ID] != j {
+		return refuse()
+	}
+	h := j.sshRuntime.leaseHold
+	prior := *j.sshNoNative
+	if h == nil || h.manager != m || h.job != j || h.runtime != j.sshRuntime || m.sshTransports[l.ID] != h || !h.nativeStarted || h.nativeReaped || h.staged || h.err != nil || h.expectedPID != 0 || h.expectedProcess != nil || prior.id != l.ID || !originalSettlementLaunchMatches(prior, j.settlementLaunch) {
+		return refuse()
+	}
+	var expected model.Lease
+	if json.Unmarshal([]byte(prior.data), &expected) != nil || expected.State != "provisioning" || expected.PID != 0 || expected.Process != nil || expected.ID != h.original.ID || expected.Host != j.leaseHost || expected.Owner != j.leaseOwner || !reflect.DeepEqual(expected.Request, j.leaseRequest) || !reflect.DeepEqual(expected.Clock, j.leaseDeadline) || !reflect.DeepEqual(expected.Expires, j.leaseExpires) || l.State != "ending" || l.Revision != expected.Revision+1 {
+		return refuse()
+	}
+	// get may attach an observation; only lifecycle fields and that observation
+	// may differ. In particular ports, request, native identity and deadline stay.
+	expected.State, expected.Outcome, expected.Revision, expected.Usage = l.State, l.Outcome, l.Revision, l.Usage
+	if !reflect.DeepEqual(expected, l) || len(data) < 1 || len(data) > originalSettlementRecordBytes || len(prior.id)+len(data)+len(prior.key.String)+len(prior.run.String) > originalSettlementTupleBytes {
+		return refuse()
+	}
+	tx, err := m.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	current, err := readOriginalSettlementTuple(tx, l.ID)
+	if err != nil {
+		return err
+	}
+	if current != prior {
+		return refuse()
+	}
+	result, err := tx.Exec(`UPDATE leases SET data=? WHERE id=? AND typeof(id)='text' AND data=? AND typeof(data)='text' AND request_key IS ? AND typeof(request_key)=? AND run IS ? AND typeof(run)=?`, data, l.ID, prior.data, settlementSQLText(prior.key), settlementSQLType(prior.key), settlementSQLText(prior.run), settlementSQLType(prior.run))
+	if err != nil {
+		return err
+	}
+	n, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n != 1 {
+		return refuse()
+	}
+	if _, err = tx.Exec(`INSERT INTO events(type,entity,at,data) VALUES(?,?,?,?)`, "lease.ending", l.ID, time.Now().UTC().Format(time.RFC3339Nano), data); err != nil {
+		return err
+	}
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+	prior.data = data
+	j.sshNoNative = &prior
+	return nil
+}
+
+// originalSSHCompletionBinding is a pre-effect check, before classification or
+// port/profile cleanup. It neither consumes ready/staged nor invokes native
+// controls. The original sole waiter has returned; optional identity observation
+// may be unavailable, but the captured command and process-local owner remain.
+// Manager.mu is held. Renew changes only the job's acknowledged deadline.
+func (m *Manager) originalSSHCompletionBinding(id string, row originalSettlementTuple, l model.Lease, j *job, r *sshRuntime, originalPorts []model.PortBinding, nativeIdentityAcknowledged bool, preNative *originalSettlementTuple) bool {
+	if id == "" || j == nil || r == nil || m.jobs[id] != j || j.sshRuntime != r || j.childOwner == nil || j.cmd == nil || j.cmd.Process == nil || j.cmd.Process.Pid <= 0 ||
+		j.done == nil || j.nativeDone == nil || row.id != id || !originalSettlementLaunchMatches(row, j.settlementLaunch) {
+		return false
+	}
+	h := r.leaseHold
+	if h == nil {
+		return false
+	}
+	nativeMatches := nativeIdentityAcknowledged && l.PID > 0 && l.PID == j.cmd.Process.Pid && h.expectedPID == l.PID &&
+		reflect.DeepEqual(l.Process, j.identity) && reflect.DeepEqual(l.Process, h.expectedProcess)
+	if !nativeIdentityAcknowledged && preNative != nil {
+		// The original gated shell was really owned and waited, but the failed
+		// lease.started ACK prevented the requested workload gate from opening.
+		// Only its privately known, ACKed no-native predecessor is eligible here.
+		nativeMatches = preNative.id == id && preNative.data == row.data && preNative.key == row.key && preNative.run == row.run &&
+			l.PID == 0 && l.Process == nil && h.expectedPID == 0 && h.expectedProcess == nil && j.cpuExited.Load() && j.cmd.ProcessState != nil
+	}
+	return h != nil && h.manager == m && h.runtime == r && h.job == j && m.sshTransports[id] == h &&
+		h.nativeStarted && !h.nativeReaped && !h.staged && h.err == nil && h.original.ID == id &&
+		l.ID == id && l.Host == m.host && l.Owner == m.owner && l.Host == j.leaseHost && l.Owner == j.leaseOwner &&
+		h.original.Host == l.Host && h.original.Owner == l.Owner && reflect.DeepEqual(l.Request, j.leaseRequest) && reflect.DeepEqual(l.Request, h.original.Request) &&
+		nativeMatches &&
+		reflect.DeepEqual(l.Clock, j.leaseDeadline) && reflect.DeepEqual(l.Expires, j.leaseExpires) && reflect.DeepEqual(l.Ports, originalPorts)
+}
+
 // stageSSHResult never stores terminal while the original transport is live.
 // The exact charged intermediate row fences later join settlement.
 func (m *Manager) stageSSHResult(l model.Lease) (model.Lease, error) {

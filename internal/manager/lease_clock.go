@@ -111,8 +111,8 @@ func (m *Manager) retainLeaseClock(l model.Lease) error {
 	if h := m.syncSourceWorkers[l.ID]; h != nil {
 		h.cancel()
 	}
-	if cancel := m.storageExportCancels[l.ID]; cancel != nil {
-		cancel()
+	if owner := m.storageExportCancels[l.ID]; owner != nil {
+		owner.cancel()
 	}
 
 	l.State = "needs_attention"
@@ -126,43 +126,78 @@ func (m *Manager) reconcileLeaseExpiries() error {
 	if err != nil {
 		return err
 	}
-	ls, err := m.list()
-	if err != nil {
-		return err
+	checkpointErr := m.checkpointLeaseClock(s)
+	// Successful and refused checkpoints share the same post-write complete
+	// physical-keyed roster and fresh native sample. Neither a reason string
+	// nor the earlier decoded body can authorize automatic withdrawal.
+	current, readErr := m.checkpointExpiryLeases()
+	if readErr != nil {
+		return errors.Join(checkpointErr, readErr)
 	}
-	if err = m.checkpointLeaseClock(s); err != nil {
-		// Re-read the complete roster after the refused write. Changed row
-		// bindings or newly unavailable reads cannot inherit the earlier list's
-		// authority. Cancellation alone cannot settle a row on this path.
-		current, readErr := m.checkpointExpiryLeases()
+	fresh, clockErr := m.readLeaseClock()
+	if clockErr != nil {
+		return errors.Join(checkpointErr, clockErr)
+	}
+	if checkpointErr != nil {
+		return errors.Join(checkpointErr, m.cancelCheckpointExpiredJobs(fresh, current), m.cancelCheckpointExpiredHolders(fresh, current))
+	}
+	var failures error
+	sawDebt := false
+	for _, row := range current {
+		if row.id == "" || row.id != row.lease.ID {
+			failures = errors.Join(failures, model.Err("needs_attention", "physical expiry key differs from body; obligations remain charged"))
+			continue
+		}
+		if j := m.jobs[row.id]; j != nil && j.failedSettlement != nil {
+			sawDebt = true
+			if err := m.retryOriginalJobSettlement(row, j); err != nil {
+				failures = errors.Join(failures, err)
+			}
+		}
+	}
+	if sawDebt {
+		// A settlement write can change the durable roster. Re-establish the
+		// complete physical snapshot and native sample before unrelated expiry;
+		// one refused debt must not starve an eligible original sibling.
+		current, readErr = m.checkpointExpiryLeases()
 		if readErr != nil {
-			return errors.Join(err, readErr)
+			return errors.Join(failures, readErr)
 		}
-		// Refused persistence and the full read may have blocked. Require a
-		// fresh same-boot, nonregressed sample before any native cancellation;
-		// a later sample never retries the checkpoint or restores admission.
-		fresh, clockErr := m.readLeaseClock()
+		fresh, clockErr = m.readLeaseClock()
 		if clockErr != nil {
-			return errors.Join(err, clockErr)
+			return errors.Join(failures, clockErr)
 		}
-		return errors.Join(err, m.cancelCheckpointExpiredJobs(fresh, current))
 	}
-	for _, l := range ls {
+	authority := &automaticExpiryEnding{roster: &automaticExpiryRoster{rows: keyedRetainedRows(current), sample: fresh, validated: map[string]bool{}}}
+	for _, row := range current {
+		l := row.lease
+		if row.id == "" || row.id != l.ID {
+			failures = errors.Join(failures, model.Err("needs_attention", "physical expiry key differs from body; obligations remain charged"))
+			continue
+		}
+		if j := m.jobs[row.id]; j != nil && j.failedSettlement != nil {
+			continue // Already reported; no ordinary expiry may adopt this debt.
+		}
 		if l.State != "active" && l.State != "provisioning" {
 			continue
 		}
-		remaining, e := l.Clock.Remaining(s, l.Expires)
+		remaining, e := l.Clock.Remaining(fresh, l.Expires)
 		if e != nil {
+			// Unknown provenance retains charge. Do not route a changed current row
+			// through explicit cancellation either.
+			if m.checkRetainedCancellation(row, retainedValidateOnly) != nil {
+				continue
+			}
 			if e = m.retainLeaseClock(l); e != nil {
-				return e
+				failures = errors.Join(failures, e)
 			}
 		} else if remaining == 0 {
-			if _, e = m.end(l.ID, "expired"); e != nil {
-				return e
+			if _, e = m.endAutomaticExpiry(row.id, "expired", authority); e != nil {
+				failures = errors.Join(failures, e)
 			}
 		}
 	}
-	return nil
+	return failures
 }
 
 type checkpointExpiryLease struct {
@@ -175,7 +210,19 @@ type checkpointExpiryLease struct {
 // This reader is used only after a refused clock checkpoint; normal list
 // behavior and the persistent schema remain unchanged.
 func (m *Manager) checkpointExpiryLeases() ([]checkpointExpiryLease, error) {
-	rows, err := m.db.Query(`SELECT id,data FROM leases ORDER BY rowid`)
+	return m.checkpointExpiryLeaseRows("")
+}
+
+// The full roster establishes automatic authority. A later keyed reread uses
+// the same undecorated physical-row decoder without rebuilding a status view.
+func (m *Manager) checkpointExpiryLeaseRows(id string) ([]checkpointExpiryLease, error) {
+	query := `SELECT id,data FROM leases ORDER BY rowid`
+	var args []any
+	if id != "" {
+		query = `SELECT id,data FROM leases WHERE id=?`
+		args = []any{id}
+	}
+	rows, err := m.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}

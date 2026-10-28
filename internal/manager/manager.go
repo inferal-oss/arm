@@ -38,24 +38,31 @@ import (
 
 type RunRequest struct {
 	model.Request
-	Command    []string                `json:"command"`
-	CWD        string                  `json:"cwd"`
-	SSH        *model.SSHRunDescriptor `json:"ssh,omitempty"`
-	sshRuntime *sshRuntime
+	Command     []string                `json:"command"`
+	CWD         string                  `json:"cwd"`
+	SSH         *model.SSHRunDescriptor `json:"ssh,omitempty"`
+	sshRuntime  *sshRuntime
+	originalRun string // bounded exact bytes of the admitted/selected saved run, never wire input
 }
 type job struct {
 	leaseHost, leaseOwner   string
 	leaseRequest            model.Request
+	leaseDeadline           *leaseclock.Deadline // original mutable deadline, updated only after acknowledged Renew
+	leaseExpires            *time.Time
+	storageParent           model.Lease // original admitted parent; only acknowledged renewal changes its deadline
 	nativeDone              chan struct{}
 	sshRuntime              *sshRuntime
 	controlMu               sync.Mutex
 	controlRetired          bool
 	controlError            error
 	childOwner              *childowner.Owner
-	pressureGrant           *pressureNativeGrant    // process-local only; never restored from a lease row
-	pressureEffectActive    bool                    // Manager.mu protects the one native pressure effect reservation
-	pressureEffectCandidate pressureNativeCandidate // exact original captured by that reservation
-	pressureCancelDeferred  bool                    // original cancellation waits for that reserved effect, never under Manager.mu
+	settlementLaunch        *originalSettlementLaunch // bounded physical tuple bound before native Start
+	sshNoNative             *originalSettlementTuple  // known no-native predecessor, advanced only by acknowledged ending CAS
+	failedSettlement        *originalJobSettlement    // original completion retained across a refused final ACK
+	pressureGrant           *pressureNativeGrant      // process-local only; never restored from a lease row
+	pressureEffectActive    bool                      // Manager.mu protects the one native pressure effect reservation
+	pressureEffectCandidate pressureNativeCandidate   // exact original captured by that reservation
+	pressureCancelDeferred  bool                      // original cancellation waits for that reserved effect, never under Manager.mu
 	cmd                     *exec.Cmd
 	done                    chan struct{}
 	identity                *model.ProcessIdentity
@@ -68,15 +75,29 @@ type job struct {
 	originalCancellationError     error
 }
 
+// A completion candidate is process-local evidence from this original waiter,
+// never reconstructed from a row or PID. Retrying it performs no native work.
+type originalJobSettlement struct {
+	job                       *job
+	owner                     *childowner.Owner
+	cmd                       *exec.Cmd
+	expected, candidate, kind string
+	eventAt                   string
+	eventSequence             int64
+	reaped, nativeSafe        bool
+	failure                   error
+}
+
 type Manager struct {
 	proxyReported map[string]time.Time
 
 	kubernetesSourceAdmissions map[string]bool
+	sshBeforeFinalizer         func()                                  // private real-Wait ordering fixture; snapshotted under mu, called outside locks
 	sourceBeforeAdmission      func()                                  // private disposable causal fixture; runs outside locks
 	kubernetesSources          map[string]*KubernetesSourcePreparation // original native source/parent cancellation only
 
 	leaseClockCheckpoint    leaseclock.Sample
-	storageExportCancels    map[string]context.CancelFunc
+	storageExportCancels    map[string]*storageExportCancellation
 	leaseClockRead          func() (leaseclock.Sample, error)
 	leaseClockLast          leaseclock.Sample
 	leaseClockError         *model.Error
@@ -589,6 +610,17 @@ func (m *Manager) Close() error {
 	m.pressureLaunchMu.Lock()
 	m.mu.Lock()
 	m.closing = true
+	for id := range m.cargoWorkers {
+		m.cancelRegisteredProfileOwners(id)
+	}
+	for id, j := range m.jobs {
+		if j != nil && isGradleProfile(j.leaseRequest.Profile) {
+			m.cancelRegisteredGradleJob(id, j)
+		}
+	}
+	for id := range m.storageExportCancels {
+		m.cancelRegisteredExport(id)
+	}
 	for _, cancel := range m.storageBenchmarkLeases {
 		cancel()
 	}
@@ -640,6 +672,16 @@ func (m *Manager) Close() error {
 	m.mu.Unlock()
 	close(m.stop)
 	m.wg.Wait()
+	// A generic waiter can first retain a refused terminal ACK during this
+	// join, after the earlier ending write succeeded. Report that debt before
+	// closing the database; joining the native child is not a durable ACK.
+	m.mu.Lock()
+	for _, j := range m.jobs {
+		if j != nil && j.failedSettlement != nil {
+			closeErr = errors.Join(closeErr, j.failedSettlement.failure)
+		}
+	}
+	m.mu.Unlock()
 	closeErr = errors.Join(closeErr, m.sshSettlementErrors())
 	for _, hold := range syncOwners {
 		// This callback belongs to the original admitted runtime even when
@@ -712,6 +754,11 @@ func (m *Manager) put(l model.Lease, kind string) error {
 	b, e := json.Marshal(l)
 	if e != nil {
 		return e
+	}
+	if kind == "lease.ending" {
+		if j := m.jobs[l.ID]; j != nil && j.sshNoNative != nil {
+			return m.putOriginalSSHNoNativeEnding(l, string(b), j)
+		}
 	}
 	tx, e := m.db.Begin()
 	if e != nil {
@@ -1188,6 +1235,10 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		}
 		b, _ := json.Marshal(run)
 		rb = string(b)
+		run.originalRun = ""
+		if len(b) <= originalSettlementRecordBytes {
+			run.originalRun = string(b)
+		}
 	}
 	poolTree, bindErr := m.checkedPoolTree()
 	if bindErr != nil {
@@ -1358,10 +1409,47 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 	if hold := m.syncSourceWorkers[id]; hold != nil {
 		hold.cancel()
 	}
+	// Explicit ending withdraws only capabilities already registered in this
+	// process. A failed read/write still cannot keep those originals running.
+	// Durable mutation below retains its own independent binding/refusal gates.
+	m.cancelRegisteredProfileOwners(id)
+	if m.closing {
+		m.cancelRegisteredExport(id)
+	}
+	if h := m.relayTransits[id]; h != nil && h.manager == m && h.id == id {
+		h.cancel()
+	}
+	if h := m.forwardListeners[id]; h != nil && h.manager == m && h.id == id {
+		h.CloseOriginal()
+	}
+	if j := m.jobs[id]; j != nil && j.failedSettlement != nil {
+		row, err := readOriginalSettlementTuple(m.db, id)
+		var l model.Lease
+		if err == nil {
+			err = json.Unmarshal([]byte(row.data), &l)
+		}
+		if err != nil {
+			return l, errors.Join(j.failedSettlement.failure, err)
+		}
+		if err = m.retryOriginalJobSettlement(checkpointExpiryLease{id: row.id, lease: l}, j); err != nil {
+			return l, err
+		}
+		return m.get(id)
+	}
 	l, e := m.get(id)
 	if e != nil {
 		return l, e
 	}
+	if l.ID != id {
+		return l, model.Err("needs_attention", "physical ending key differs from body; obligations remain charged")
+	}
+	return m.endLease(id, l, outcome, nil)
+}
+
+// expiry is nil only for explicit/operator ending. Automatic expiry never
+// enters end's unconditional withdrawal of registered original capabilities.
+func (m *Manager) endLease(id string, l model.Lease, outcome string, expiry *automaticExpiryEnding) (model.Lease, error) {
+	var e error
 	if cancel, held := m.storageBenchmarkLeases[id]; held {
 		cancel()
 		if l.State == "active" || l.State == "provisioning" {
@@ -1430,7 +1518,7 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 		return l, err
 	}
 	if l.Request.Kind == "storage" {
-		return m.endStorage(l, outcome)
+		return m.endStorageForCause(l, outcome, expiry)
 	}
 	if l.Request.Kind == "ports" && l.State != "queued" {
 		return m.endPortParent(l, outcome)
@@ -1442,7 +1530,7 @@ func (m *Manager) end(id, outcome string) (model.Lease, error) {
 		if m.jobs[id] == nil {
 			return m.reconcileGradle(l, outcome)
 		}
-		if err := m.endGradleConsumers(l, outcome); err != nil {
+		if err := m.endGradleConsumersForCause(l, outcome, expiry); err != nil {
 			return l, err
 		}
 	}
@@ -1600,7 +1688,11 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 		l.Artifact.Retention = nil
 	}
 	l.Revision++
-	return l, m.put(l, "lease.renewed")
+	if err := m.put(l, "lease.renewed"); err != nil {
+		return l, err
+	}
+	m.refreshRetainedDeadline(l)
+	return l, nil
 }
 
 func (m *Manager) Events(after int64) ([]model.Event, error) {
@@ -1770,6 +1862,9 @@ func (m *Manager) tick() {
 		if rb.Valid {
 			var r RunRequest
 			if e = json.Unmarshal([]byte(rb.String), &r); e == nil {
+				if len(rb.String) <= originalSettlementRecordBytes {
+					r.originalRun = rb.String
+				}
 				if len(l.Request.Ports) > 0 {
 					l, e = m.provisionPorts(l, &r, ls)
 				} else {
@@ -1826,6 +1921,18 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	if err := m.prepareGradleLaunch(&l, &r); err != nil {
 		return m.launchFailed(l, err)
 	}
+	var settlementLaunch *originalSettlementLaunch
+	var preNativeSSH *originalSettlementTuple
+	preNativePorts := append([]model.PortBinding(nil), l.Ports...)
+	// Both finalizers bind their physical key and saved run before native
+	// Start. SSH keeps its own settlement writer and transport join protocol.
+	// A failed/oversized capture cannot authorize later completion effects.
+	settlementLaunch, _ = m.captureOriginalSettlementLaunch(l, r)
+	if r.sshRuntime != nil && l.PID == 0 && l.Process == nil {
+		if row, err := readOriginalSettlementTuple(m.db, l.ID); err == nil && originalSettlementLaunchMatches(row, settlementLaunch) {
+			preNativeSSH = &row
+		}
+	}
 	var f io.Closer = sshNoopCloser{}
 	var e error
 	if r.sshRuntime == nil {
@@ -1880,12 +1987,14 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			return m.launchFailed(l, e)
 		}
 	}
+	var originalStorage model.Lease
 	if l.Request.StorageLease != "" {
 		store, e := m.storageForRun(l.Request)
 		if e != nil {
 			f.Close()
 			return m.launchFailed(l, e)
 		}
+		originalStorage = store
 		cmd.Env = append(cmd.Env, "ARM_STORAGE_DIR="+store.ManagedDir, "ARM_STORAGE_LEASE="+store.ID)
 		if l.Request.Profile == "rust-build" {
 			target := filepath.Join(store.ManagedDir, "target")
@@ -1921,7 +2030,7 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	if r.sshRuntime != nil {
 		r.sshRuntime.startCopies()
 	}
-	j := &job{cmd: cmd, done: make(chan struct{}), nativeDone: make(chan struct{}), sshRuntime: r.sshRuntime, leaseHost: l.Host, leaseOwner: l.Owner, leaseRequest: l.Request}
+	j := &job{settlementLaunch: settlementLaunch, cmd: cmd, done: make(chan struct{}), nativeDone: make(chan struct{}), sshRuntime: r.sshRuntime, leaseHost: l.Host, leaseOwner: l.Owner, leaseRequest: l.Request, leaseDeadline: l.Clock, leaseExpires: l.Expires, storageParent: originalStorage}
 	if r.sshRuntime != nil {
 		h := r.sshRuntime.leaseHold
 		h.job = j
@@ -1987,6 +2096,12 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 	l.State = "active"
 	l.Revision++
 	e = m.put(l, "lease.started")
+	// A refused start ACK never reaches the workload gate below. Preserve this
+	// local fact before e can be reused by a later lifecycle operation.
+	nativeIdentityAcknowledged := e == nil
+	if !nativeIdentityAcknowledged {
+		j.sshNoNative = preNativeSSH
+	}
 	if e == nil && r.sshRuntime != nil {
 		h := r.sshRuntime.leaseHold
 		h.expectedPID = l.PID
@@ -2034,6 +2149,10 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			_ = j.signalGroup(syscall.SIGKILL)
 		}
 	}
+	// Gradle has its own multi-record settlement writer; SSH additionally joins
+	// original IO through its existing result hold. Preserve those paths.
+	retainCompletion := r.sshRuntime == nil && !m.gradleObligation(l)
+	beforeSSHFinalizer := m.sshBeforeFinalizer
 	m.wg.Go(func() {
 		waited := j.childOwner.Wait(context.Background())
 		err := waited.WaitError
@@ -2052,15 +2171,45 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			time.Sleep(10 * time.Millisecond)
 		}
 		groupGone := waited.Reaped && waited.CleanupError == nil && errors.Is(syscall.Kill(-cmd.Process.Pid, 0), syscall.ESRCH)
+		if r.sshRuntime != nil && beforeSSHFinalizer != nil {
+			beforeSSHFinalizer()
+		}
 		m.mu.Lock()
 		defer m.mu.Unlock()
 		if r.sshRuntime == nil {
 			defer close(j.done)
 		}
-		if waited.Reaped && r.sshRuntime == nil {
-			delete(m.jobs, l.ID)
+		// Keep the original registered until its final durable ACK. Otherwise
+		// a refused settlement would erase the only native completion evidence.
+		var expectedSettlement string
+		var current model.Lease
+		var ge error
+		if r.sshRuntime == nil {
+			row, readErr := readOriginalSettlementTuple(m.db, l.ID)
+			if readErr == nil {
+				readErr = json.Unmarshal([]byte(row.data), &current)
+			}
+			if readErr == nil && originalSettlementLaunchMatches(row, j.settlementLaunch) && m.originalCompletionBinding(l.ID, current, j) && reflect.DeepEqual(current.Ports, l.Ports) {
+				expectedSettlement = row.data
+				m.attachUsage(&current)
+			} else {
+				ge = errors.Join(readErr, model.Err("needs_attention", "original native completion row differs; obligations remain charged"))
+			}
+		} else {
+			row, readErr := readOriginalSettlementTuple(m.db, l.ID)
+			if readErr == nil {
+				readErr = json.Unmarshal([]byte(row.data), &current)
+			}
+			originalPorts := l.Ports
+			if !nativeIdentityAcknowledged {
+				originalPorts = preNativePorts
+			}
+			if readErr == nil && m.originalSSHCompletionBinding(l.ID, row, current, j, r.sshRuntime, originalPorts, nativeIdentityAcknowledged, j.sshNoNative) {
+				m.attachUsage(&current)
+			} else {
+				ge = errors.Join(model.Err("ssh_owner_changed", "original SSH completion tuple differs; obligations remain charged"), readErr)
+			}
 		}
-		current, ge := m.get(l.ID)
 		delete(m.usages, l.ID)
 		if (current.Usage == nil || !current.Usage.IdentityVerified || current.Usage.MemberCount == 0) && j.lastUsage != nil {
 			summary := *j.lastUsage
@@ -2075,6 +2224,12 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 		if ge != nil {
 			m.failSSHSettlement(l.ID, ge)
 			return
+		}
+		// Validate the original physical/native tuple before profile or port
+		// finalization. Keep Gradle's existing writer/deletion semantics only
+		// after that check; no changed body can redirect its cleanup effects.
+		if waited.Reaped && r.sshRuntime == nil && !retainCompletion {
+			delete(m.jobs, l.ID)
 		}
 		code := 0
 		if err != nil {
@@ -2129,8 +2284,21 @@ func (m *Manager) launch(l model.Lease, r RunRequest) (model.Lease, error) {
 			h.nativeReaped = waited.Reaped
 			h.nativeSafe = groupGone
 			_, _ = m.stageSSHResultFor(l.ID, current)
-		} else {
+		} else if !retainCompletion {
 			_ = m.put(current, "lease."+current.Outcome)
+		} else {
+			kind := "lease." + current.Outcome
+			candidate, encodeErr := json.Marshal(current)
+			if encodeErr != nil || expectedSettlement == "" || len(candidate) > originalSettlementRecordBytes {
+				return
+			}
+			settlement := &originalJobSettlement{job: j, owner: j.childOwner, cmd: j.cmd, expected: expectedSettlement, candidate: string(candidate), kind: kind, eventAt: time.Now().UTC().Format(time.RFC3339Nano), reaped: waited.Reaped, nativeSafe: groupGone}
+			if putErr := m.commitOriginalJobSettlement(l.ID, settlement); putErr != nil {
+				settlement.failure = putErr
+				j.failedSettlement = settlement
+			} else if waited.Reaped {
+				delete(m.jobs, l.ID)
+			}
 		}
 	})
 	return l, e

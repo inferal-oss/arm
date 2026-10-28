@@ -131,6 +131,9 @@ func storageConsumers(ls []model.Lease, id string) []string {
 	return consumers
 }
 func (m *Manager) endStorage(l model.Lease, outcome string) (model.Lease, error) {
+	return m.endStorageForCause(l, outcome, nil)
+}
+func (m *Manager) endStorageForCause(l model.Lease, outcome string, expiry *automaticExpiryEnding) (model.Lease, error) {
 
 	if l.State == "queued" {
 		now := time.Now().UTC()
@@ -148,11 +151,12 @@ func (m *Manager) endStorage(l model.Lease, outcome string) (model.Lease, error)
 	l.State = "ending"
 	l.Outcome = outcome
 	l.Revision++
+	m.cancelRegisteredExport(l.ID)
+	if expiry == nil {
+		m.cancelRegisteredStorageConsumers(l.ID)
+	}
 	if err := m.put(l, "storage.ending"); err != nil {
 		return l, err
-	}
-	if cancel := m.storageExportCancels[l.ID]; cancel != nil {
-		cancel()
 	}
 	ls, err := m.list()
 	if err != nil {
@@ -162,7 +166,11 @@ func (m *Manager) endStorage(l model.Lease, outcome string) (model.Lease, error)
 		// Only attached ARM-supervised executions can be terminated here.
 		// A recovered or otherwise uncertain consumer stays charged and blocks
 		// the storage cleanup; no persisted PID authorizes a signal.
-		_, _ = m.end(id, "revoked")
+		if expiry == nil {
+			_, _ = m.end(id, "revoked")
+		} else {
+			_, _ = m.endAutomaticExpiry(id, "revoked", expiry.dependent(l.ID))
+		}
 	}
 	m.scheduleStorage(l.ID)
 	return l, nil

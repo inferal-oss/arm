@@ -308,11 +308,17 @@ func (m *Manager) StorageExportCreate(ctx context.Context, request model.Storage
 	worker.Plan.Files = append([]model.ExportFile(nil), operation.Plan.Files...)
 	workerCtx, workerCancel := context.WithTimeout(context.Background(), min(2*time.Minute, remaining))
 	if m.storageExportCancels == nil {
-		m.storageExportCancels = map[string]context.CancelFunc{}
+		m.storageExportCancels = map[string]*storageExportCancellation{}
 	}
-	m.storageExportCancels[l.ID] = workerCancel
+	m.storageExportCancels[l.ID] = &storageExportCancellation{lease: current, operation: operation.ID, cancel: workerCancel}
 	m.wg.Go(func() { m.runStorageExport(workerCtx, workerCancel, worker, p) })
 	return operation, nil
+}
+
+type storageExportCancellation struct {
+	lease     model.Lease
+	operation string
+	cancel    context.CancelFunc
 }
 
 func (m *Manager) runStorageExport(ctx context.Context, cancel context.CancelFunc, operation model.StorageExport, provider *storage.Provider) {
@@ -546,5 +552,9 @@ func (m *Manager) StorageRetain(id string, revision int, ttl time.Duration, reas
 	l.Clock = deadline
 	l.Artifact.Retention = &model.StorageRetention{At: time.Now().UTC(), Expires: expires, Reason: reason}
 	l.Revision++
-	return l, m.put(l, "storage.retained")
+	if err := m.put(l, "storage.retained"); err != nil {
+		return l, err
+	}
+	m.refreshRetainedDeadline(l)
+	return l, nil
 }

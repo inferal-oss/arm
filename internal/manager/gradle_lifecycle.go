@@ -23,6 +23,9 @@ func leaseDependencyRank(l model.Lease) int {
 }
 
 func (m *Manager) endGradleConsumers(parent model.Lease, outcome string) error {
+	return m.endGradleConsumersForCause(parent, outcome, nil)
+}
+func (m *Manager) endGradleConsumersForCause(parent model.Lease, outcome string, expiry *automaticExpiryEnding) error {
 	if parent.Request.Profile != "gradle-service" {
 		return nil
 	}
@@ -34,7 +37,13 @@ func (m *Manager) endGradleConsumers(parent model.Lease, outcome string) error {
 		if child.Request.ServiceLease != parent.ID || (!consuming(child.State) && child.State != "queued") {
 			continue
 		}
-		if _, err := m.end(child.ID, outcome); err != nil {
+		var err error
+		if expiry == nil {
+			_, err = m.end(child.ID, outcome)
+		} else {
+			_, err = m.endAutomaticExpiry(child.ID, outcome, expiry.dependent(parent.ID))
+		}
+		if err != nil {
 			var api *model.Error
 			if !errors.As(err, &api) || api.Code != "needs_attention" {
 				return err
