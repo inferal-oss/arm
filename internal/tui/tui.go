@@ -20,9 +20,10 @@ import (
 	"github.com/charmbracelet/colorprofile"
 )
 
-var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host", "Mesh"}
+var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host", "Mesh", "Runs"}
 
 type dashboardModel struct {
+	runsUI                            *runsDashboard
 	nameUI                            *nameEditor
 	nameDiagnostic                    *model.Error
 	namingObserved                    uint64
@@ -217,6 +218,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.timeNow = time.Now()
 	defer m.syncViewport()
 	defer m.retirePeerIfHidden()
+	defer m.retireRunsIfHidden()
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -224,6 +226,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.height = max(1, min(200, msg.Height))
 		m.resize()
 	case connectedMsg:
+		m.retireRuns()
 		m.connecting = false
 		if msg.err != nil {
 			m.notice = msg.err.Error()
@@ -324,6 +327,15 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, waitStream(m.ctx, m.session)
 	case tickMsg:
+		if m.runsVisible() {
+			var snapshotRead tea.Cmd
+			if m.connected && m.dirty && !m.refreshing {
+				m.refreshing = true
+				m.dirty = false
+				snapshotRead = refresh(m.ctx, m.session)
+			}
+			return m, tea.Batch(clockTick(), m.readRuns(false), snapshotRead)
+		}
 		peerRead := m.readPeers(false)
 		if ui := m.meshUI; m.nodeUI == nil && m.view == 6 && m.connected && ui != nil && ui.dirty && !ui.loading && !ui.busy && !m.meshModal() {
 			mode, id := "list", ""
@@ -343,6 +355,8 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(clockTick(), refresh(m.ctx, m.session), peerRead)
 		}
 		return m, tea.Batch(clockTick(), peerRead)
+	case runsReadMsg:
+		return m, m.acceptRunsRead(msg)
 	case nameReadMsg:
 		return m, m.acceptNameRead(msg)
 	case nameResultMsg:
@@ -403,6 +417,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	k := key.String()
 	if k == "ctrl+c" {
 		m.stopPeerReads()
+		m.retireRuns()
 		return tea.Quit
 	}
 	if m.nameUI != nil {
@@ -416,6 +431,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	}
 	if k == "q" && m.inputMode == "" {
 		m.stopPeerReads()
+		m.retireRuns()
 		return tea.Quit
 	}
 	if m.nodeUI != nil && m.record == nil {
@@ -455,11 +471,11 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	if m.composer != nil {
 		return m.composeKey(k)
 	}
-	if m.view == 6 && m.record == nil && (m.meshModal() || k < "1" || k > "7") {
+	if m.view == 6 && m.record == nil && (m.meshModal() || k < "1" || k > "8") {
 		return m.meshKey(k)
 	}
 	if m.poolUI != nil && m.record == nil && m.detail == nil {
-		if !m.poolModal() && k >= "1" && k <= "7" {
+		if !m.poolModal() && k >= "1" && k <= "8" {
 			m.poolUI.generation++
 			m.poolUI = nil
 			m.resourceID = ""
@@ -489,6 +505,14 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			return cmd
 		}
 		return nil
+	}
+	if m.view == 7 && m.runsUI != nil && m.runsUI.selected != nil {
+		if k >= "1" && k <= "8" {
+			m.retireRuns()
+			m.runsUI.selected = nil
+		} else {
+			return m.runKey(k)
+		}
 	}
 	if m.detail != nil {
 		switch k {
@@ -566,7 +590,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		}
 		return nil
 	}
-	if k >= "1" && k <= "7" {
+	if k >= "1" && k <= "8" {
 		m.detailGeneration++
 		m.view = int(k[0] - '1')
 		m.selected = 0
@@ -574,6 +598,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		m.feedFocus = false
 		m.feedOpen = false
 		m.viewport.GotoTop()
+		if m.view == 7 {
+			return m.readRuns(false)
+		}
 		if m.view == 6 {
 			return m.openMesh()
 		}
@@ -604,6 +631,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		}
 	case "q":
 		m.stopPeerReads()
+		m.retireRuns()
 		return tea.Quit
 	case "tab":
 		m.feedFocus = !m.feedFocus
@@ -617,13 +645,16 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			m.viewport.GotoTop()
 		}
 	case "?":
-		m.record, _ = newRecord(map[string]any{"Keys": "1–7 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "CPU": "New CPU claims follow recently idle processor time, up to an optional operator ceiling. Other work can shrink headroom. Full CPU promises remain charged: running ARM jobs reduce the idle reading and are subtracted again for now, so new work may wait. Missing/stale readings pause new grants. Reservations are cooperative, not OS limits; logical cores do not compare speed across architectures.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": map[string]string{"Live pool": "Reported space available to your user on ARM’s state filesystem.", "Promises": "Full outstanding promises stay charged, even after actual writes.", "Ceiling": "An optional operator ceiling bounds the live pool.", "Unknown": "New disk grants wait for fresh availability.", "Shared space": "APFS volumes can share one container; do not add their totals.", "Cleanup": "Snapshots and clones do not prove exclusive reclamation.", "Other mounts": "Other mounted filesystems may have separate limits."}, "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. Mesh [7] selects exact read-only peer contexts; remote monitor/messages/actions remain unavailable."}, "Dashboard help")
+		m.record, _ = newRecord(map[string]any{"Keys": "1–8 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "CPU": "New CPU claims follow recently idle processor time, up to an optional operator ceiling. Other work can shrink headroom. Full CPU promises remain charged: running ARM jobs reduce the idle reading and are subtracted again for now, so new work may wait. Missing/stale readings pause new grants. Reservations are cooperative, not OS limits; logical cores do not compare speed across architectures.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": map[string]string{"Live pool": "Reported space available to your user on ARM’s state filesystem.", "Promises": "Full outstanding promises stay charged, even after actual writes.", "Ceiling": "An optional operator ceiling bounds the live pool.", "Unknown": "New disk grants wait for fresh availability.", "Shared space": "APFS volumes can share one container; do not add their totals.", "Cleanup": "Snapshots and clones do not prove exclusive reclamation.", "Other mounts": "Other mounted filesystems may have separate limits."}, "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. Mesh [7] selects exact read-only peer contexts; remote monitor/messages/actions remain unavailable."}, "Dashboard help")
 		m.viewport.GotoTop()
 	case "/":
 		m.inputMode = "filter"
 		m.input.SetValue(m.filter)
 		return m.input.Focus()
 	case "r":
+		if m.view == 7 {
+			return m.readRuns(false)
+		}
 		if m.connected && !m.refreshing {
 			m.refreshing = true
 			return tea.Batch(refresh(m.ctx, m.session), m.readPeers(true))

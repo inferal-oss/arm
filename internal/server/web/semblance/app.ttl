@@ -39,11 +39,11 @@ arm:host a c:Text ; c:label "Local operator session" .
 arm:theme a c:Choice ; c:label "Theme" ; c:controls arm:shell ; c:property sty:theme .
 arm:shell arm:view arm:monitor .
 arm:navigation a c:Segmented ; c:label "Views" ; c:controls arm:shell ; c:property arm:view ; c:compactAs c:Picker ;
- c:options ( arm:monitor arm:resources arm:leases arm:messages arm:activityView arm:hostView arm:mesh arm:screen ) .
+ c:options ( arm:monitor arm:resources arm:leases arm:messages arm:activityView arm:hostView arm:mesh arm:screen arm:runs ) .
 arm:heading a c:Heading ; c:level 2 ; c:label "Host monitor" .
 arm:notice a c:Alert ; c:label "Waiting for backend" ; c:hidden true .
 arm:content a c:Switch ; c:controls arm:shell ; c:property arm:view ;
- c:cases ( arm:monitorCase arm:resourcesCase arm:leasesCase arm:messagesCase arm:activityCase arm:hostCase arm:meshCase arm:screenCase ) .
+ c:cases ( arm:monitorCase arm:resourcesCase arm:leasesCase arm:messagesCase arm:activityCase arm:hostCase arm:meshCase arm:screenCase arm:runsCase ) .
 arm:activity a c:AccordionItem ; c:label "Live activity" ; c:expanded false ; c:content arm:liveActivityContent .
 arm:liveActivityContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-2 .
 arm:desktop a c:Stack ; pos:direction pos:Column .
@@ -101,3 +101,13 @@ arm:footer a c:StatusBar ; c:label "ARM" ; c:children ( arm:sessionScope ) .
 arm:sessionScope a c:Text ; c:label "Local operator session" .
 # Host-page reset only; components and theme styling are entirely stock.
 [] a sty:StyleRule ; sty:part "body" ; sty:declares [ sty:property "margin" ; sty:raw "0" ] .
+
+arm:runs rdfs:label "Runs" .
+arm:runsCase c:when arm:runs ; c:content arm:runsContent .
+arm:runsContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
+
+# The run transcript uses stock Code rendering in a bounded scrolling surface.
+arm:RunOutput a owl:Class ; rdfs:subClassOf c:Code .
+[] a sty:StyleRule ; sty:appliesTo arm:RunOutput ;
+ sty:declares [ sty:property "max-height" ; sty:raw "55vh" ] ,
+              [ sty:property "overflow-y" ; sty:raw "auto" ] .

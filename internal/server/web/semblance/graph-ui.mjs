@@ -103,6 +103,7 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
       // Native buttons and fields retain their stock place in the Tab order.
       const reading=!target||(target===n&&object(this.iri,ARM+'focusable')?.value==='true');
       if(!target){put(this.iri,ARM+'focusable',true);app.flush();n=nodeOf(this.iri);}n?.scrollIntoView?.({block:reading?'center':'nearest'});(target??n)?.focus?.({preventScroll:true});}
+    scrollEnd(){if(this.disposed)return;app.flush();const n=nodeOf(this.iri);if(n)n.scrollTop=n.scrollHeight;}
     showModal(opener){this.returnTo=ui.activeComponent;this.opener=opener??activating??this.returnTo;
       // Stock overlays share a stacking level, and keyboard focus follows the
       // last visible modal. Raise the existing graph handle when it opens;

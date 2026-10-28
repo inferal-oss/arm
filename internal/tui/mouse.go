@@ -79,6 +79,8 @@ func (m *dashboardModel) baseControls() []mouseControl {
 		return []mouseControl{{"y", "Send reviewed"}, {"n", "Keep unsent"}, {"pgup", "↑"}, {"pgdown", "↓"}}
 	case m.record != nil:
 		return []mouseControl{{"enter", "Expand"}, {"esc", "Back"}, {"pgup", "↑"}, {"pgdown", "↓"}}
+	case m.view == 7 && m.runsUI != nil && m.runsUI.selected != nil:
+		return []mouseControl{{"f", "Follow/pause"}, {"home", "Start"}, {"n", "Next page"}, {"esc", "Runs"}}
 	case m.detail != nil:
 		return []mouseControl{{"e", "Extend"}, {"x", "Release"}, {"c", "Cancel"}, {"h", "Check-ins"}, {"r", "Refresh"}, {"i", "Record"}, {"esc", "Back"}}
 	case m.poolUI != nil:
@@ -156,6 +158,10 @@ func mouseKey(key string) tea.KeyPressMsg {
 		code = tea.KeyEnter
 	case "esc":
 		code = tea.KeyEscape
+	case "home":
+		code = tea.KeyHome
+	case "end":
+		code = tea.KeyEnd
 	case "pgup":
 		code = tea.KeyPgUp
 	case "pgdown":
@@ -256,6 +262,17 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 			starts[row] = i
 			row += 4 + len(item.Deliveries)
 		}
+	case m.view == 7 && m.runsUI != nil && m.runsUI.selected == nil:
+		base := 2
+		if !m.connected {
+			base += 2
+		}
+		if m.runsUI.err != "" {
+			base += 2
+		}
+		for i := range m.filteredRuns() {
+			starts[base+4*i] = i
+		}
 	case m.view == 4:
 		for i := range m.events {
 			starts[3*i] = i
@@ -330,6 +347,9 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg, frame string) tea.Cm
 			m.feedOffset = max(0, min(max(0, len(m.feedItems())-1), m.feedOffset+msg.wheel))
 		} else {
 			m.viewport.SetYOffset(m.viewport.YOffset() + msg.wheel)
+			if m.view == 7 && m.runsUI != nil && m.runsUI.selected != nil {
+				m.runsUI.following = false
+			}
 		}
 		return nil
 	}
@@ -339,6 +359,10 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg, frame string) tea.Cm
 	r := msg.region
 	if strings.HasPrefix(r.key, "nav") {
 		m.recovery = nil
+		if m.runsUI != nil {
+			m.retireRuns()
+			m.runsUI.selected = nil
+		}
 		m.detail = nil
 		m.record = nil
 		m.resourceID = ""
