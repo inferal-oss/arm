@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"getarm.org/internal/kubesource"
@@ -36,6 +37,41 @@ func (s *kubernetesForwardSocket) closeOriginal() error {
 }
 func (s *kubernetesForwardSocket) available() bool {
 	return s != nil && s.file != nil && !s.closing.Load()
+}
+
+type kubernetesForwardSocketOps struct {
+	open        func() (int, error)
+	closeOnExec func(int) error
+	close       func(*os.File) error
+}
+
+func openKubernetesForwardSocket(name string) (*kubernetesForwardSocket, error) {
+	return openKubernetesForwardSocketWith(name, kubernetesForwardSocketOps{
+		open: func() (int, error) { return unix.Socket(unix.AF_INET, unix.SOCK_STREAM, 0) },
+		closeOnExec: func(fd int) error {
+			_, err := unix.FcntlInt(uintptr(fd), unix.F_SETFD, unix.FD_CLOEXEC)
+			return err
+		},
+		close: func(f *os.File) error { return f.Close() },
+	})
+}
+
+// Fork exclusion covers creation through checked CLOEXEC, including retirement
+// of an unmarked original on failure. No Manager lock or worker join belongs
+// inside this section. Return that retired owner too, so its first close error
+// remains part of subsequent resource-settlement evidence.
+func openKubernetesForwardSocketWith(name string, ops kubernetesForwardSocketOps) (*kubernetesForwardSocket, error) {
+	syscall.ForkLock.RLock()
+	defer syscall.ForkLock.RUnlock()
+	fd, err := ops.open()
+	if err != nil {
+		return nil, err
+	}
+	socket := &kubernetesForwardSocket{file: os.NewFile(uintptr(fd), name), closeNative: ops.close}
+	if err = ops.closeOnExec(fd); err != nil {
+		return socket, errors.Join(err, socket.closeOriginal())
+	}
+	return socket, nil
 }
 
 func (k *KubernetesSourcePreparation) prepareForwardPort(budget string) error {
@@ -69,17 +105,14 @@ func (k *KubernetesSourcePreparation) prepareForwardPort(budget string) error {
 		return err
 	}
 	// Own the original immediately after socket(), before every fallible step.
-	fd, err := unix.Socket(unix.AF_INET, unix.SOCK_STREAM, 0)
-	if err != nil {
-		return err
-	}
-	socket := &kubernetesForwardSocket{file: os.NewFile(uintptr(fd), "kubernetes-forward-original"), closeNative: func(f *os.File) error { return f.Close() }}
+	socket, err := openKubernetesForwardSocket("kubernetes-forward-original")
 	m.mu.Lock()
 	k.socket = socket
 	m.mu.Unlock()
-	if _, err = unix.FcntlInt(uintptr(fd), unix.F_SETFD, unix.FD_CLOEXEC); err != nil {
+	if err != nil {
 		return err
 	}
+	fd := int(socket.file.Fd())
 	if err = unix.SetsockoptInt(fd, unix.SOL_SOCKET, unix.SO_REUSEADDR, 0); err != nil {
 		return err
 	}
@@ -288,11 +321,11 @@ func probeOriginalForwardPort(binding model.PortBinding) (available, closed bool
 	if binding.Network != "tcp4" || binding.Address != "127.0.0.1" || binding.Port < 1 || binding.Port > 65535 {
 		return false, true, fmt.Errorf("invalid original forward probe binding")
 	}
-	fd, err := unix.Socket(unix.AF_INET, unix.SOCK_STREAM, 0)
+	socket, err := openKubernetesForwardSocket("kubernetes-forward-cleanup-probe")
 	if err != nil {
-		return false, true, err
+		return false, socket.closeOriginal() == nil, err
 	}
-	socket := &kubernetesForwardSocket{file: os.NewFile(uintptr(fd), "kubernetes-forward-cleanup-probe"), closeNative: func(f *os.File) error { return f.Close() }}
+	fd := int(socket.file.Fd())
 	defer func() {
 		err := socket.closeOriginal()
 		closed = err == nil
@@ -301,9 +334,6 @@ func probeOriginalForwardPort(binding model.PortBinding) (available, closed bool
 		}
 		resultErr = errors.Join(resultErr, err)
 	}()
-	if _, err = unix.FcntlInt(uintptr(fd), unix.F_SETFD, unix.FD_CLOEXEC); err != nil {
-		return false, false, err
-	}
 	if err = unix.SetsockoptInt(fd, unix.SOL_SOCKET, unix.SO_REUSEADDR, 0); err != nil {
 		return false, false, err
 	}

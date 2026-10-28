@@ -308,3 +308,37 @@ func TestStageCancellationAfterBindingRefusesAttemptButRecordsCleanup(t *testing
 		t.Fatal("cleanup erased stop/approval or invented an effect")
 	}
 }
+
+func TestStageFinalObservationBoundsPreserveOriginal(t *testing.T) {
+	for _, mode := range []string{"string", "aggregate"} {
+		t.Run(mode, func(t *testing.T) {
+			r, now := fixture(t)
+			approved(t, &r, "create", now)
+			_, _ = bound(t, &r, "create", now)
+			if err := r.Attempt(r.Revision, "create", "", now); err != nil {
+				t.Fatal(err)
+			}
+			before, _ := json.Marshal(r)
+			pod := &kubeprovision.Pod{UID: strings.Repeat("x", 65537)}
+			if mode == "aggregate" {
+				// Every individual field fits the closed string bound, but their
+				// complete final observation does not fit the record byte bound.
+				part := strings.Repeat("x", 65536)
+				pod = &kubeprovision.Pod{Name: part, UID: part, Namespace: part, OwnerLabel: part, KeyLabel: part, KeyAnnotation: part, PlanAnnotation: part, NodeName: part}
+			}
+			if err := r.Observe(r.Revision, "create", StageKey(r.Key, "create"), EffectResult{Unknown: true, Pod: pod}, now); err == nil {
+				t.Fatal("oversized final observation accepted", mode)
+			}
+			after, _ := json.Marshal(r)
+			if !bytes.Equal(before, after) {
+				t.Fatal("rejected observation replaced original bytes or revision")
+			}
+			if err := r.Observe(r.Revision, "create", StageKey(r.Key, "create"), EffectResult{Unknown: true}, now); err != nil {
+				t.Fatal("bounded ordinary observation failed", err)
+			}
+			if _, err := r.Snapshot(); err != nil {
+				t.Fatal("successful observation is not strictly readable", err)
+			}
+		})
+	}
+}

@@ -1,6 +1,7 @@
 package mesh
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -159,6 +160,26 @@ func targetOverlap(a, b []string) bool {
 func saveCoordination(home string, op Coordination) error {
 	if err := validateKubernetesCoordination(op); err != nil {
 		return err
+	}
+	if op.KubernetesWorkflow != nil {
+		// Check the complete encoded envelope that save writes, rather than
+		// only its nested record. The legacy writer's 1 MiB bound is wider than
+		// the closed Kubernetes reader and would otherwise ACK unreadable data.
+		if op.Schema != 1 || !ValidKey(op.Key) || op.Revision < 1 || len(op.Targets) > 4 {
+			return fmt.Errorf("invalid Kubernetes coordination envelope")
+		}
+		raw, err := json.MarshalIndent(op, "", "  ")
+		if err != nil {
+			return err
+		}
+		var decoded Coordination
+		if err = kubejournal.Decode(append(raw, '\n'), &decoded); err != nil {
+			return err
+		}
+		canonical, err := json.MarshalIndent(decoded, "", "  ")
+		if err != nil || !bytes.Equal(raw, canonical) {
+			return fmt.Errorf("Kubernetes coordination canonical round trip differs")
+		}
 	}
 	// Lifecycle writer creates/verifies this same private directory and bounds it.
 	p, e := coordinationPath(home, op.Key)

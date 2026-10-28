@@ -7,10 +7,12 @@ import (
 	"path/filepath"
 	"strconv"
 	"sync"
+	"syscall"
 	"testing"
 
 	"getarm.org/internal/kubesource"
 	"getarm.org/internal/model"
+	"golang.org/x/sys/unix"
 )
 
 func forwardCoreOwner(t *testing.T) (*Manager, *KubernetesSourcePreparation, func()) {
@@ -32,6 +34,10 @@ func TestKubernetesForwardOriginalTripleCloseAndCachedBinding(t *testing.T) {
 	binding, err := owner.Binding()
 	if err != nil || binding.PortLeaseID == "" {
 		t.Fatal(binding, err)
+	}
+	flags, err := unix.FcntlInt(owner.socket.file.Fd(), unix.F_GETFD, 0)
+	if err != nil || flags&unix.FD_CLOEXEC == 0 {
+		t.Fatal("original socket can cross exec", flags, err)
 	}
 	m.mu.Lock()
 	source, _ := m.get(binding.SourceLeaseID)
@@ -309,5 +315,74 @@ func TestKubernetesForwardRequestDebtSurvivesPositivePortAndCPUClosure(t *testin
 	m.mu.Unlock()
 	if readErr != nil || !consuming(parent.State) || parent.Request.Resources.Disk != 131072 || parent.Artifact == nil || !parent.Artifact.ContentObserved || parent.Artifact.AllocatedBefore == nil {
 		t.Fatal("original paired storage promise/history missing", parent, readErr)
+	}
+}
+
+func TestKubernetesForwardSocketForkExclusionAndFirstClose(t *testing.T) {
+	for _, mode := range []string{"normal", "cloexec-refused", "close-uncertain"} {
+		t.Run(mode, func(t *testing.T) {
+			flagErr := errors.New("fixture CLOEXEC refusal")
+			closeErr := errors.New("fixture original close uncertainty")
+			fd, closes := -1, 0
+			excluded := true
+			checkExclusion := func() {
+				// Go's fork/exec writer must not acquire the lock while the
+				// descriptor exists without verified CLOEXEC, including failure
+				// retirement. An omitted critical section makes this observable.
+				if syscall.ForkLock.TryLock() {
+					excluded = false
+					syscall.ForkLock.Unlock()
+				}
+			}
+			socket, err := openKubernetesForwardSocketWith("forward-exec-fixture", kubernetesForwardSocketOps{
+				open: func() (int, error) {
+					checkExclusion()
+					var err error
+					fd, err = unix.Socket(unix.AF_INET, unix.SOCK_STREAM, 0)
+					return fd, err
+				},
+				closeOnExec: func(fd int) error {
+					checkExclusion()
+					if mode != "normal" {
+						return flagErr
+					}
+					_, err := unix.FcntlInt(uintptr(fd), unix.F_SETFD, unix.FD_CLOEXEC)
+					return err
+				},
+				close: func(f *os.File) error {
+					if mode != "normal" {
+						checkExclusion()
+					}
+					closes++
+					actual := f.Close()
+					if mode == "close-uncertain" {
+						return errors.Join(actual, closeErr)
+					}
+					return actual
+				},
+			})
+			if socket != nil {
+				t.Cleanup(func() { _ = socket.closeOriginal() })
+			}
+			if socket == nil || !excluded {
+				t.Fatal("creation or unmarked retirement escaped fork exclusion", socket, err)
+			}
+			if mode == "normal" {
+				flags, flagReadErr := unix.FcntlInt(uintptr(fd), unix.F_GETFD, 0)
+				if err != nil || flagReadErr != nil || flags&unix.FD_CLOEXEC == 0 || closes != 0 || !socket.available() {
+					t.Fatal("normal original CLOEXEC/lifecycle differs", flags, closes, err, flagReadErr)
+				}
+			} else if !errors.Is(err, flagErr) || closes != 1 || socket.available() {
+				t.Fatal("unmarked original not retired before return", closes, err)
+			}
+			first := socket.closeOriginal()
+			second := socket.closeOriginal()
+			if closes != 1 || first != second || (mode == "close-uncertain") != errors.Is(first, closeErr) {
+				t.Fatal("first close was retried or its error lost", closes, first, second)
+			}
+			if mode == "close-uncertain" && !errors.Is(err, closeErr) {
+				t.Fatal("constructor lost original close uncertainty", err)
+			}
+		})
 	}
 }

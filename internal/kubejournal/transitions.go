@@ -48,6 +48,12 @@ func (r *Record) change(revision int64, now time.Time, fn func(*Record) error) e
 	if err = r.ValidateSuccessor(next); err != nil {
 		return err
 	}
+	// Validate the mutated value through the same closed codec as a reader,
+	// before replacing even the in-memory original. Semantic validation alone
+	// does not enforce final string, collection or aggregate byte bounds.
+	if next, err = next.Snapshot(); err != nil {
+		return err
+	}
 	*r = next
 	return nil
 }

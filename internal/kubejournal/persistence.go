@@ -1,6 +1,7 @@
 package kubejournal
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -69,6 +70,12 @@ func (r Record) Snapshot() (Record, error) {
 	var out Record
 	if err == nil {
 		err = Decode(raw, &out)
+	}
+	if err == nil {
+		canonical, encodeErr := json.Marshal(out)
+		if encodeErr != nil || !bytes.Equal(canonical, raw) {
+			err = fmt.Errorf("Kubernetes journal canonical round trip differs")
+		}
 	}
 	return out, err
 }

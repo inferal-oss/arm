@@ -10,6 +10,7 @@ import (
 	"getarm.org/internal/kubejournal"
 	"getarm.org/internal/kubeprovision"
 	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 )
 
 func kubeWorkflowFixture(t *testing.T) kubejournal.Record {
@@ -116,6 +117,60 @@ func TestKubernetesWorkflowProtectedReaderRejectsOuterAliasesAndDuplicates(t *te
 			}
 			if _, err = ListCoordinations(home); err == nil {
 				t.Fatal("history reader ignored malformed workflow", mode)
+			}
+		})
+	}
+}
+
+func TestKubernetesWorkflowFinalEnvelopeRefusalPreservesProtectedBytes(t *testing.T) {
+	for _, mode := range []string{"string", "aggregate", "target-count"} {
+		t.Run(mode, func(t *testing.T) {
+			home := coordinationHome(t)
+			r := kubeWorkflowFixture(t)
+			g, err := ClaimKubernetesWorkflow(home, r)
+			if err != nil {
+				t.Fatal(err)
+			}
+			path, err := coordinationPath(home, r.Key)
+			if err != nil {
+				t.Fatal(err)
+			}
+			before, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			revision := g.revision
+			err = g.Change(func(next *Coordination) error {
+				switch mode {
+				case "string":
+					next.Worker = strings.Repeat("w", 65537)
+				case "aggregate":
+					// Each string fits, and the nested record stays unchanged.
+					// Only the complete outer envelope exceeds 512 KiB.
+					part := strings.Repeat("x", 65536)
+					next.Targets = []string{part, part, part, part}
+					next.Worker = part
+					next.Actor.Username = part
+					next.Error = &model.Error{Code: part, Message: part}
+				case "target-count":
+					next.Targets = []string{"a", "b", "c", "d", "e"}
+				}
+				return nil
+			})
+			if err == nil || g.revision != revision {
+				t.Fatal("unreadable outer envelope advanced original worker", mode, err)
+			}
+			after, readErr := os.ReadFile(path)
+			if readErr != nil || !bytes.Equal(before, after) {
+				t.Fatal("failed write replaced protected original", readErr)
+			}
+			if err = g.ChangeKubernetesWorkflow(r.Revision, func(next *kubejournal.Record) error {
+				return next.ReviewStage(next.Revision, "create", "", time.Now().UTC())
+			}); err != nil {
+				t.Fatal("ordinary transition lost original worker", err)
+			}
+			if op, ok, err := ReadCoordination(home, r.Key); err != nil || !ok || op.Revision != revision+1 || op.KubernetesWorkflow == nil || op.KubernetesWorkflow.Revision != r.Revision+1 {
+				t.Fatal("successful protected write is not strictly readable", op, ok, err)
 			}
 		})
 	}
