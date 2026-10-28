@@ -3085,3 +3085,23 @@ it is not a browser-heap limit. A deferred native layout refit keeps restored
 floating frames in bounds after switching from a narrow tiled layout. The pinned
 engine remains unchanged. Reviewed composed source `a7fb230` includes only these
 focused supplemental source/test/documentation changes.
+
+
+### Kubernetes default-root component integration
+
+Feature `95532d95` composes closed source/storage/port profiles, exact current
+source-parent checks, independent original port lifetime, managed provider
+preparation and an unused historical workflow codec. The private API helper
+uses fixed create-original and fresh lookup-original actions, checks the node
+again after listing, and does not widen public commands. Every nonnil storage
+binding is refused by these default-root profiles, including empty bindings and
+bindings marked as sharing the default pool. A changed durable parent cannot
+silently redirect the original source factory.
+
+The historical codec preserves prior decisions and observations while current
+prefixes fence stale approvals. A fresh explicit review may follow an identical
+runtime refresh; unknown or changed identity cannot revive old authority.
+Protected V2 writing, native workflow dispatch and public onboarding are not
+activated. Durable pre-Pod ownership, truthful constructor outcomes, typed
+workers and the unified dashboard flow remain separate work.
+[Scoped validation](validation/kubernetes-components-integration-2026-10-28.json).

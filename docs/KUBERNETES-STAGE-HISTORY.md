@@ -26,9 +26,10 @@ and canonical roundtrip before replacing the previous in-memory snapshot.
 Create discloses one e request with the closed `create_original_pod` action.
 A lost create ACK requires a separate fresh read-only e review for exactly
 `lookup_original_pod`, never another create. Both use the existing single
-`mesh_bootstrap` request-file lane and 131072-byte scratch promise. Native
-helper action support is still absent; the general e purpose allowlist is
-unchanged, and no caller-supplied command/action is accepted by this model.
+`mesh_bootstrap` request-file lane and 131072-byte scratch promise. Private fixed helper actions are now implemented and component-tested; they
+remain unexposed pending durable pre-Pod ownership and competing-source fencing.
+The general e purpose allowlist is unchanged, and no caller-supplied command/action
+is accepted by this model.
 
 Start discloses t then i as distinct serial sources. The original t must close
 and settle before i admission; a start marker cannot stand in for fresh
@@ -92,8 +93,8 @@ a later original-invocation outcome/census contract is required for useful
 known-refusal continuation. It must neither fabricate an empty binding nor
 turn a saved row into a native owner.
 
-Fixed e/f action helpers, retained listener loans/stream slots, pinned mesh
-TLS/SSH dial references, real Manager-to-provider integration, typed dashboard
+Retained listener loans/stream slots, pinned mesh TLS/SSH dial references,
+production Manager-to-provider wiring, typed dashboard
 prepare/review/status/lookup, and a concrete reviewed live cluster plan remain
 separate implementation and validation steps. Legacy copied all-stage browser
 review shapes must not be enabled as a shortcut.

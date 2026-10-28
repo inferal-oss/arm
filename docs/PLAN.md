@@ -34,7 +34,7 @@ retain their assignments and the source-specific gates recorded below.
 | Detachable run logs — `codex/run-log-windows` | Reviewed focused continuation `1fea100` through `18b0926` composed on accepted main `34ea83a` as `c44e6f0` through `2e3fa59`. | All nine feature inputs and ten media artifacts match; independent 418 JavaScript tests, real Semblance lifecycle regression, deterministic web rebuild and native command build pass. Source-bound drag/pop-out/dock/mobile/follow video is verified. Nondeploy Pages CI passes on the exact composition; all 611 UI inputs, runtime assets, four pages and eight decoded PNGs match. Automatic main build and Pages deployment pass on `24182f5`. Full Go suite and Linux runtime remain outside scope. Owner branch and uncommitted plan are preserved. |
 | Storage performance pools — `codex/storage-performance-pools` | Reviewed focused owner commits `e015b5b`, `ce55d7e`, `0ddc1e6`, `cc24b70`, `2b16fd8`, `8c7d839` plus fixture cleanup `6aa5f80`; focused feature `3856f9c` lands on `dacba08`, with production source identical to reviewed `ce92760`. | All four source findings are closed. Fully synthetic final observer fixtures pass 61 normal/61 race nodes. Reviewed native boundary 87, affected race 453, complete storage race 41, JS 420, native Semblance lifecycle, native/Linux vet/builds and nondeploy Pages CI pass. Source-bound macOS samples and web/PTY evidence are verified; corrected Linux read-only discovery/config/views pass on the original target. Positive Linux allocation/workload/performance and full-suite acceptance remain open; strict external-root reset remains unsupported. Automatic main build and Pages deployment pass on `2d83ba4`. Branch/worktree preserved. |
 | Multiple simultaneous run logs — `codex/multiple-run-logs` | Initial six focused commits landed as `827e09f`; supplemental `4199207`, `19664fe`, `fcaacc6` reviewed on that milestone as `a7fb230`. | Eight independent views and two actual in-flight calls. Supplemental 430 JS tests, two native lifecycle cases, web/native builds and video decoding pass. Both source-bound desktop/narrow capture sets are verified; nondeploy capture/SSR/browser gates match 612 inputs/assets, four pages/CSS and eight PNGs. Narrow floating refit, retained identity/reconnect and aggregate display bounds are accepted within the recorded source. Automatic main build and Pages deployment pass on `2d74eab`. Owner branches and plan preserved; full Go/Linux/throughput/OS popup scope remains outside acceptance. |
-| Kubernetes onboarding — `codex/kubernetes-current-source-extraction` | Current-base extraction contains reviewed core, managed bridge, historical journal and private original API helper components. Review found and corrected non-default storage bindings in closed default-root roles. | Composed 85-root normal/race, targeted vet and Linux compile gates remain pending final acceptance. Durable pre-Pod ownership, constructor outcomes, protected workflow activation and unified dashboard onboarding remain separate unfinished work; no live-cluster acceptance. |
+| Kubernetes onboarding — `codex/kubernetes-current-source-extraction` | Reviewed component milestone `95532d95` integrates core, managed bridge, historical journal and private original API helper components. Closed default-root roles reject non-default storage bindings. | Composed normal/race each pass 85 roots / 195 named cases, seven-package vet passes, and three Linux ARM64 compile-only outputs are verified. Durable pre-Pod ownership, constructor outcomes, protected workflow activation and unified dashboard onboarding remain unfinished; no live-cluster acceptance. |
 | Pressure control journal — `codex/pressure-control-journal-review-fixes-current` | Four source corrections are prepared for schema/proof compatibility, exact permit revision, original acknowledged deadline and bounded header reads. | Independent correction review and current composed validation remain required. Ordinary behavior stays warning-only; native pausing remains disabled. |
 | Forwarding worker — `codex/forward-unix-adapter` | Original cleanup gate failed. A retained-cleanup liveness correction and bounded diagnostic controls are prepared. | Review and validate the corrected original route and causal controls; preserve earlier failures. Production TCP access, recovery and broader runtime acceptance remain open. |
 | Provider lifecycle — `codex/provider-pair-c3-hooks` | Focused C3 hook source and a proposed 121-root roster are available for independent review. | Current storage/native/sync composition, causal runtime and original finalizer checks remain required. C4/C5 and rollout remain open; paired factory stays disabled. |
@@ -923,3 +923,21 @@ assets match the validated candidate, with only the later privacy policy and
 delivery documentation differing. Broader native, quota, performance, UI and
 activation work remains separate; no paired/public sync/forward enablement is
 introduced. See [scoped evidence](validation/storage-native-compatibility-2026-10-28.json).
+
+
+### Kubernetes source and workflow components
+
+Reviewed feature `95532d95` preserves current storage/native/sync boundaries while
+integrating the default-root source core, managed provider bridge, unused
+historical journal and private fixed create/lookup helper. Same-revision storage
+binding changes now refuse current-pair and file-factory authority before an
+open, retaining original obligations until their actual joins and cleanup.
+The composed normal/race, vet and compile-only evidence is
+[scoped component acceptance](validation/kubernetes-components-integration-2026-10-28.json).
+
+The requested unified connect/install dashboard remains unfinished. Remaining
+gates include an original constructor-outcome contract, durable pre-Pod intent
+and competing-source fencing, protected V2 compatibility activation, typed
+workers, live review deadlines and actual cluster/node/runtime acceptance.
+Fixed helpers are private and unexposed; historical data cannot recreate native
+owners. These component checks do not enable production installation.

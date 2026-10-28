@@ -7645,3 +7645,23 @@ The supplemental automatic main build and Pages deployment both pass on
 `2d74eab` in [the publication run](https://github.com/inferal-oss/arm/actions/runs/40732147166).
 Production inputs and assets are identical to the validated `a7fb230` composition;
 subsequent acceptance-record changes are documentation only.
+
+
+### Composed Kubernetes component acceptance
+
+The corrected component composition integrates as `95532d95`; all seven affected
+Go package trees and module inputs equal the tested candidate `32a4657a`.
+Normal and native race runs each pass the exact same 85 roots / 195 named cases
+with seven package passes and no failures or skips. All eight required
+default-binding controls pass, including same-revision source/storage/port
+mutation refusal, no file exposure, retained charges and original cleanup.
+Seven-package vet passes. Three test binaries for Manager, journal and mesh are
+verified ELF64 little-endian Linux ARM64 outputs; they were not executed.
+
+Independent review verified every original phase return, actual named roster,
+selected input, source byte/mode/membership and protected boundary. Controlled
+API and self-helper cases retain their fixture scope. The optional tagged
+historical-reader binary cohort was not selected. This does not establish a
+full Go suite, Linux runtime, real cluster installation, public enrollment,
+protected V2 activation, typed workflow worker or dashboard acceptance.
+[Normalized component record](validation/kubernetes-components-integration-2026-10-28.json).
