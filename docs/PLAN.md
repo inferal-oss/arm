@@ -181,6 +181,12 @@ requires a native-user causal reproduction; prefer existing CSS scroll behavior
 and do not add lifecycle/focus code without another concrete reviewed finding.
 No global engine/theme/shell, backend/protocol/pin, live transport or installation
 changes are allocated. Independent final composition remains a gate.
+The doubled-token follow-up reproduces a native Stat box extending to 786px in a
+768px viewport. One additional MonitorSurface-only Stat rule is allocated:
+border-box sizing, zero minimum inline size and a 100% maximum. Preserve the
+original failing width control, native Stat values and all other surface styles.
+Any remaining zero-width detail values require a separate concrete finding;
+document containment alone does not establish readability.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
