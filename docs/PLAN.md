@@ -6,7 +6,7 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
-## Resident supervision and replaceable workers — private proof
+## Resident supervision and replaceable workers — private proof accepted
 
 Owner: `codex/resident-api-workers`, based on reviewed `80ca1ed`. Original design
 `23e211f` and selected contract `ff034de` remain preserved separately. The selected
@@ -24,19 +24,26 @@ Focused correction source: `3992f88`.
 The [correction evidence](validation/resident-worker-alias-refusal-2026-10-29.json)
 separates the causal original-decoder failure from the corrected 14-root
 normal/race roster and canonical opaque/map preservation controls. Original
-source/evidence remain preserved; independent correction acceptance is pending.
+source/evidence remain preserved. Independent correction review accepts the
+exact canonical-field refusal while preserving opaque and case-sensitive map
+data. The original independent ambiguity control fails before and passes after.
 Focused normal/race native proof covers generic jobs through healthy retirement,
 IPC loss, abrupt owned-worker exit and replacement, plus no-worker expiry.
 The [scoped evidence](validation/resident-worker-prototype-2026-10-29.json)
 distinguishes same-binary generations from version compatibility and native
-execution from Linux compilation. Independent source/proof review remains open.
+execution from Linux compilation. Independent composed normal/race cohorts each
+pass fourteen selected unit/native roots, with seven original worker/channel
+joins and four job settlements. Focused vet and Linux amd64 compilation pass;
+Linux is not executed. See the
+[composed record](validation/resident-worker-composed-2026-10-29.json).
 
 Next gates: reviewed production dispatcher/principal extraction, stable legacy
 proxy reporting, durable native worker-controller keys/cleanup, immutable staging,
 version pairs, production routing/browser reconnection and provider/transport
 coverage. Initial monolithic bootstrap, resident-core/schema upgrades and
-uninterrupted connections remain separate. No main integration, installed/live
-backend change or production activation is included in this milestone.
+uninterrupted connections remain separate. This milestone integrates only the
+private package and scoped design/evidence. No installed/live backend change or
+production activation is included.
 
 ## Dashboard visibility and detail presentation — reviewed and integrated
 

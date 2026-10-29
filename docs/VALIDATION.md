@@ -1,5 +1,24 @@
 # Validation record
 
+## Resident prototype — independent composed acceptance
+
+Focused source `1a9b7ba` and correction `3992f88` pass final isolated review and
+the unchanged normal FIFO. Fourteen selected unit/native roots pass in both
+normal and race cohorts, zero failures/skips. Each retains seven complete
+original worker/channel joins and four positive original job settlements.
+Healthy retirement, committed reply loss, abrupt original-worker SIGKILL and
+no-worker expiry remain distinct; exact keys, renewal replay, original native
+identity, log cursors, lock exclusion and terminal charges are checked. Focused
+vet and Linux amd64 fixture compilation pass; no Linux execution is claimed.
+The original independent typed-alias refusal control fails on the first cut and
+passes on corrected source. Canonical embedded fields and opaque/map keys remain
+valid. All six corrected Go hashes match; protected product code is unchanged.
+Added-scope privacy and 74 local-link checks pass. Same-binary fixture evidence
+does not establish version compatibility, production startup/auth/routing,
+legacy proxy/provider continuity or resident-core replacement. Raw native
+receipts stay private; no installed/default runtime is changed.
+[Normalized record](validation/resident-worker-composed-2026-10-29.json).
+
 ## Resident typed JSON aliases — correction proof
 
 The [correction record](validation/resident-worker-alias-refusal-2026-10-29.json) for `3992f88`

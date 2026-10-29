@@ -1,5 +1,14 @@
 # Backend and CLI implementation
 
+## Resident prototype composition
+
+The unconnected private boundary and typed-alias correction are independently
+reviewed and tested. Fourteen selected tests pass in normal/race runs, retaining
+the original resident Manager, worker and job owners through the tested cuts.
+The [composed acceptance](validation/resident-worker-composed-2026-10-29.json)
+separates this proof from the production dispatcher/controller, proxy/provider
+coverage and actual installed upgrades. Ordinary startup remains unchanged.
+
 ## Resident worker boundary — private prototype
 
 The selected [resident design](design/resident-supervision.md) now has an
