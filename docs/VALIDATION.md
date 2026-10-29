@@ -8242,3 +8242,43 @@ not acceptance evidence. Resource JavaScript, preexisting ontology prefix,
 shared main/graph/accounting sources and dependency pins are verified unchanged
 from `37fa208`. Independent current composition/rebuild and broader UX gates
 remain open.
+
+## Resources route/help/nearby inventory — no product remediation
+
+The [source-bound inventory](validation/ux-resources-route-inventory-2026-10-29.json)
+uses accepted `03f8a4` product source unchanged, replacing only Backend at import
+resolution. The bounded native run passes its scenario/lifecycle assertions at
+1440×900, 390×900, 768×600 with actual doubled tokens, and 390×320. It inventories
+twenty help dialogs, four stale CPU help states and a separate initial status
+error. Body/technical font assertions are 15px/13px and 30px/26px. No page errors,
+unexpected operations, live network requests or WebSockets occur. Original
+context/browser close and Vite server join are positively awaited. No broad
+regression suites, bundle rebuild or activation is included.
+
+Reproduced P2: opening CPU Technical details leaves value columns 24.36px wide
+at 390px and effectively zero at doubled text in 768px; the technical body
+content reaches 28911px. Storage technical values get 63.11px at 390px. This is
+a useful-reading-width defect, not evidence that the actual modal escapes its
+viewport: final actual dialog panels are bounded, and Close/Escape remain
+reachable. Proposed product allocation is Resource-only body/facts markers in
+`main.mjs` help() and scoped `app.ttl` styles; no implementation is included.
+Desktop prose, narrow technical values, doubled-text values and short stale
+help captures are visually inspected.
+
+Discovery/refresh errors and stale connection warnings remain readable. Refresh
+errors preserve filter focus, reconnect retains the original filter node, and
+stale CPU help states unknown capacity truthfully and restores its opener on
+Escape. Contract-shaped 32-character peer IDs, summaries, advisory notes, active
+expiry and queue text fit in the final native cases. An earlier clipping
+candidate used overlong synthetic host IDs and is withdrawn. Likewise, earlier
+help measurements selected a nested disclosure panel; only the final actual
+role=dialog bounds establish panel geometry. Raw earlier evidence is preserved.
+
+Before help, the narrow nearby report has document width390. After help disposal,
+scrollWidth becomes416–427 despite no visible element bounding box exceeding
+the viewport. This observation is retained without attributing a product cause;
+it requires focused reproduction before allocating any shared graph/shell edit.
+Initial loading shows the existing Authenticating badge and waiting-sample text;
+there is no resource-specific loading label. This inventory does not classify
+that alone as a defect. Real transport/authentication, timing/cancellation,
+independent review and broader route/terminal acceptance remain open.

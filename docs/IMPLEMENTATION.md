@@ -3420,3 +3420,20 @@ The correction adds only Resource-scoped ontology styles and native evidence
 checks. Existing resource nodes, ordering, filters, callbacks, budget arithmetic
 and warnings are unchanged. Historical clipping evidence alone did not establish
 useful expanded reading width; independent composition remains required.
+
+## Synthetic Resources route inventory
+
+The task-owned native runner imports the unchanged actual main route. A Vite
+resolver substitutes only Backend with synthetic read-only status/peer responses
+and deferred/error states. Existing static Screen Sharing dependencies resolve
+without starting that view. A refusing WebSocket class and network interception
+block live transports; no product authentication exchange or mutation is used.
+
+The fixture inspects initial loading/status errors, discovery failure, disconnect
+retention, reconnect, nearby summary/claim disclosures and five actual Resource
+help dialogs. Pixel text tokens are doubled explicitly. Complete box/text bounds
+use actual clipping ancestors, and modal geometry selects the role=dialog panel
+rather than its nested technical disclosure. Native Enter/Escape, close disposal
+and original filter node/focus checks remain real renderer behavior. This is
+inventory evidence with a reproduced technical-field width defect; no product
+remediation has been implemented in this continuation.

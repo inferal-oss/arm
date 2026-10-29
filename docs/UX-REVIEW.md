@@ -31,7 +31,7 @@ feature tests and earlier screenshots do not close those gates.
    validation above the scrolled form; background refresh preserves draft focus.
    Mesh, forwarding and naming modal width remain source candidates: the stock
    480px cap alone is not a defect and their dialogs have not been changed.
-3. **Resources: reproduced and corrected; composition pending.** A 568px
+3. **Resources: layout accepted; help reading-width finding open.** A 568px
    consumer action clipped inside 338/356px cards at desktop/mobile widths.
    Accounting values, full lease IDs and multiline reasons also clipped or
    collapsed. Resource-specific containment, wrapping, paragraph styling and
@@ -62,7 +62,7 @@ states; no principal view is declared complete from source inspection.
 | --- | --- | --- | --- |
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
 | Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Source inventory only | Dense cores/devices, stale/unknown/reset/disconnected, pause and help dialogs |
-| Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Independent current composition/rebuild accepted; full route loading/transport and nearby-instance/help-dialog visuals remain pending |
+| Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Layout composition accepted in 03f8a4; synthetic route/help inventory reproduced technical reading-width defect awaiting allocation; real transport and full route acceptance remain open |
 | Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, actual doubled text-token coverage (15px/30px), short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild accepted; native subpool/drain/resume/delete and broader pagination/hierarchy density remain pending |
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |
 | Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Accepted focused default/detail/lifecycle cut in c830982 | Remaining route/geometry coverage; preserve reader and cleanup invariants |
@@ -118,7 +118,8 @@ owner evidence does not replace independent composition or a full UX pass.
 Accepted runtime `6035548` includes Messages, targeted defaults/run/lease/private-
 input presentation changes, and the independently reviewed Pools short-window
 correction. The Resources initial slice `37fa208` was not accepted for useful
-expanded width; its focused width correction awaits independent composition.
+expanded width; its focused width correction and composition are accepted in
+`03f8a4`. The new Resource-help reading-width finding awaits allocation.
 Broader route/state/terminal acceptance remains open.
 
 The original Messages and Pools scaled cases varied root rem sizing only,
@@ -147,5 +148,19 @@ The initial Resource record remains historical containment evidence. The
 actual expanded card, consumer, primary-control and value width checks at
 desktop/tablet sizes, plus outer collapse/reopen with retained nested state,
 nonfirst-resource expansion, unchanged order and original-node identity. The
-final correction passes the same ten-case matrix and 23/28 focused regressions;
-independent composition/rebuild remains open.
+final correction passes the same ten-case matrix and 23/28 focused regressions.
+Independent layout composition/rebuild is accepted in `03f8a4`; broader route
+acceptance remains open.
+
+## Resources route-state/help continuation
+
+Accepted layout composition `03f8a4` remains unchanged. The separate
+[inventory record](validation/ux-resources-route-inventory-2026-10-29.json)
+covers actual route rendering with synthetic read-only responses, deferred/error
+status, disconnected stale help, reconnect, nearby reports and five Resource
+help kinds at desktop/narrow/short/doubled text sizes. The technical description
+columns reproduce a P2 reading-width defect. Remediation is proposed only for
+the Resource branch of main help() and additive Resource help styles; product
+edits await allocation. Valid peer identities/claims fit. A post-help document
+width observation remains unattributed. This is not real transport or full
+Resources-page acceptance.

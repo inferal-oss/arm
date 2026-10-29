@@ -1255,3 +1255,22 @@ filter, original node identity, refresh and doubled-text checks pass. Resource
 JavaScript, shared sources, pins and generated assets remain unchanged from the
 initial slice. Independent composition/rebuild remain required; full UX remains
 open.
+
+## Resources route/help inventory — findings awaiting allocation
+
+Owner: `codex/ux-resource-route-state`, from accepted Resources composition
+`03f8a4`. The prior layout branch/evidence is preserved. This continuation adds
+only a synthetic route Backend fixture, native inventory runner and evidence/docs;
+all product source remains byte-identical to the accepted base.
+
+The [inventory record](validation/ux-resources-route-inventory-2026-10-29.json)
+covers four viewport/text cases, twenty Resource help dialogs, four disconnected
+CPU help states and initial status failure. A P2 technical-help reading-width
+defect is reproduced. Proposed next allocation is only the Resource branch of
+`main.mjs` help() and additive marker-scoped `app.ttl` styles plus focused
+regressions. Product edits await explicit allocation and independent review.
+Valid nearby-instance IDs/claim lines fit; an invalid-fixture clipping candidate
+is withdrawn. Post-help narrow document-width drift remains unattributed and
+requires its own reproduction before any shared-file allocation. Full UX remains
+open; no live backend, transport, resource mutation, broad suite or bundle work
+is included.
