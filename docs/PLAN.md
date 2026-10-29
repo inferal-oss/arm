@@ -6,6 +6,24 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Uninterrupted upgrade design — in progress
+
+Owner: `codex/zero-downtime-upgrade-design`, based on accepted main `dfd916c`.
+Investigate how a running backend can adopt new code while preserving active
+jobs, leases, admission/accounting and cleanup ownership. Distinguish replacing
+the installed executable from runtime code uptake, uninterrupted workloads,
+brief admission/control-plane pauses and persistent client connections.
+
+Trace existing lifecycle/recovery and compare re-exec, fenced backend handoff
+and a stable supervisor against actual durable state, process/descriptor custody,
+endpoint generations, idempotent in-flight outcomes and version/rollback fences.
+Return source-backed options, a recommended bounded milestone and concrete
+failure/recovery acceptance scenarios. This assignment is design-only: no live
+restart, installed-state or resource mutation, backend takeover, schema change or
+product implementation before the user chooses an approach. Any design files
+belong in the task's isolated worktree and focused commits; primary integration
+and publication remain central.
+
 ## Dashboard visibility and detail presentation — reviewed and integrated
 
 Focused cuts `8caf3df`, `f176aa1`, `344402a` and `dbba2c4` are reviewed and
@@ -80,9 +98,10 @@ accepted base, owned by `codex/ux-resource-layout`. Candidate `37fa208` fixes
 reproduced consumer/accounting clipping and passes preliminary source/component
 checks, but is not accepted: desktop expanded details still use roughly 338px
 inside a 1440px view, producing an excessively long narrow column. A focused
-expanded-reading-width correction is pending. Main contains no Resources
+expanded-reading-width correction `a70561e` is returned and awaits independent
+source/composition review. Main contains no Resources
 candidate runtime or bundle; original captures remain source-qualified.
- Shell/Mesh/global helpers and backend/pins remain
+Shell/Mesh/global helpers and backend/pins remain
 coordinated separately. Full route/state/terminal acceptance remains open.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
