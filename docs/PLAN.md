@@ -103,8 +103,16 @@ carrier and four payload streams verify; installed binary and protected runtime
 state remain unchanged. Historical clipping-only evidence remains qualified. See the
 [composed record](validation/ux-resources-composed-2026-10-29.json).
 
-The Resources route loading/transport/disconnect, help and nearby-instance visual
-gates remain open; source/runtime installation is separate. Keep the validated
+Resources route inventory `1233ba1` uses unchanged actual main with a read-only
+synthetic backend: route error/reconnect/filter and contract-shaped nearby data
+have scoped evidence. Independent review confirms a P2 resource-help technical
+grid with 24px or effectively zero value columns. Remediation is allocated only
+to the resource-kind path of `main.mjs` help() plus additive Resource-help styles
+and focused fixtures; Monitor helpers, copy/accounting, native controls/disposal,
+transport and shared graph/shell remain protected. A separate narrow post-disposal
+width observation has no assigned cause; read-only reproduction is allocated,
+with product edits requiring a concrete reviewed cause. Full transport/auth/timing,
+route and broader UX acceptance remain open; installation is separate. Keep the validated
 build staged while the reviewed upgrade design addresses immutable runtime
 paths. Broader shell/Mesh/global helper and backend/pin changes remain centrally
 coordinated. No full route/state/terminal UX acceptance is claimed.
