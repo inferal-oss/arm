@@ -1053,3 +1053,10 @@ lease summaries/check-ins: verified host display names and exact local identity,
 readable timing, grouped metadata and accessible raw records. Preserve exact
 revision action review, off-by-default check-ins and unchanged backend/protocol.
 Owner branches and pre-existing uncommitted plan content remain preserved.
+
+
+The separate run-details cut now groups metadata, preserves full purpose/raw
+record, resolves loaded host names by exact ID, labels only verified local ARM
+identity and excludes year-one times. It passes 67 focused JS, full terminal
+package, native three-case lifecycle and web/native builds. Associated lease
+polish and final synthetic desktop/narrow visual checks remain in progress.

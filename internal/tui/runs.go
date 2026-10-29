@@ -231,6 +231,31 @@ func safeRunOutput(data []byte, done bool) string {
 	}
 	return strings.Join(lines, "\n")
 }
+
+// A cosmetic host name never establishes local identity. Only the exact known
+// local ARM host ID can carry the Local marker; unknown IDs remain inspectable.
+func (m *dashboardModel) runHostLabel(host string) string {
+	if host == "" {
+		return "Unknown host"
+	}
+	name := m.hostDisplayName(host)
+	if len(host) == 32 && strings.Trim(host, "0123456789abcdef") == "" && host == m.data.status.Host {
+		name += " · Local"
+	}
+	return name
+}
+func runDetailTime(value time.Time) string {
+	if value.IsZero() {
+		return "Not reported"
+	}
+	return value.Local().Format("Jan 02, 2006 15:04:05 MST")
+}
+func runDetailDate(value *time.Time) string {
+	if value == nil {
+		return "Not recorded"
+	}
+	return runDetailTime(*value)
+}
 func (m *dashboardModel) runsText() string {
 	ui := m.runsUI
 	if ui == nil {
@@ -244,7 +269,10 @@ func (m *dashboardModel) runsText() string {
 		fmt.Fprintf(&out, "Runs unavailable: %s\n\n", safe(ui.err))
 	}
 	if r := ui.selected; r != nil {
-		fmt.Fprintf(&out, "%s\nRun ID: %s\nCommand: %s\nAgent: %s\nReason: %s\nHost: %s\nDirectory: %s\nState: %s · %s\nCreated: %s\nStarted: %s · Ended: %s\n", safe(r.Name), safe(r.ID), safe(strings.Join(r.Command, " ")), safe(r.Agent), safe(r.Reason), safe(r.Host), safe(r.CWD), safe(r.State), safe(r.Outcome), r.Created.Local().Format(time.RFC3339), date(r.Started), date(r.Ended))
+		fmt.Fprintf(&out, "%s · %s\n%s\n\nCommand: %s\nAgent: %s\nHost: %s\nDirectory: %s\n\nStarted: %s\nEnded: %s\nCreated: %s\nLast report: %s\n\nRun: %s\nRun ID: %s\nHost ID: %s\n", safe(runListPurpose(*r)), safe(runStatusLabel(*r)), safe(r.Reason), safe(strings.Join(r.Command, " ")), safe(r.Agent), m.runHostLabel(r.Host), safe(r.CWD), runDetailDate(r.Started), runDetailDate(r.Ended), runDetailTime(r.Created), runDetailTime(r.LastReported), safe(r.Name), safe(r.ID), safe(r.Host))
+		if r.Outcome != "" {
+			fmt.Fprintf(&out, "Outcome: %s\n", safe(r.Outcome))
+		}
 		if r.LeaseID != "" {
 			fmt.Fprintf(&out, "Lease: %s\n", safe(r.LeaseID))
 		} else {
@@ -267,7 +295,7 @@ func (m *dashboardModel) runsText() string {
 		if ui.done {
 			out.WriteString(" · end of saved log")
 		}
-		out.WriteString("\n[f] Follow/pause · [o] Fold/unfold · [z] Fullscreen\n[Home] Read from start · [n] Next page · [l] Lease · [Esc] Runs\n")
+		out.WriteString("\n[f] Follow/pause · [o] Fold/unfold · [z] Fullscreen\n[Home] Read from start · [n] Next page · [l] Lease · [i] Exact record · [Esc] Runs\n")
 		if ui.displayCut {
 			out.WriteString("Display holds latest 256 KiB; Home reads earlier output.\n")
 		}

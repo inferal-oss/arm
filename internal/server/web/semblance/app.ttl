@@ -220,3 +220,20 @@ arm:RunTranscriptWindow a owl:Class ; rdfs:subClassOf arm:RunTranscript ; sem:sl
  sty:declares [ sty:property "flex-shrink" ; sty:raw "0" ] .
 [] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "pre" ;
  sty:declares [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] , [ sty:property "max-height" ; sty:raw "none" ] .
+
+
+arm:RunContext a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-context" .
+[] a sty:StyleRule ; sty:appliesTo arm:RunContext ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "font-size" ; sty:raw "0.875rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunContext ; sty:part "dd,pre" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "white-space" ; sty:raw "pre-wrap" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunContext ; sty:part "h3,h4" ;
+ sty:declares [ sty:property "font-size" ; sty:raw "0.875rem" ] ,
+              [ sty:property "margin-block" ; sty:raw "0.25rem" ] .
+
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "[data-sem-c=\"arm-run-context\"]" ;
+ sty:declares [ sty:property "max-height" ; sty:raw "min(28vh, 12rem)" ] ,
+              [ sty:property "overflow" ; sty:raw "auto" ] .

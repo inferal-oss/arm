@@ -25,3 +25,7 @@ test('capture failure is not success and uncertain reporters remain ahead of his
 });
 
 test('terminal start deadline rejection remains explicitly Rejected',()=>{assert.equal(runStatus({...run,state:'terminal',outcome:'rejected',exit_code:null}).label,'Rejected');});
+
+test('unfamiliar and prototype-named lifecycle states remain truthfully Unknown',()=>{
+ for(const state of ['future_state','constructor','__proto__','toString','',undefined])assert.deepEqual(runStatus({...run,state}),{label:'Unknown',tone:'warning'});
+});

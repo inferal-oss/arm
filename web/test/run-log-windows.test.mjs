@@ -58,7 +58,7 @@ it('multiple native windows retain independent nodes, tile, reveal existing logs
  try{
   const click=node=>{expect(node).toBeTruthy();node.dispatchEvent(new x.window.Event('click',{bubbles:true}));},nodeOf=h=>x.renderer.nodeOf(x.projection.index.rootOf(h.iri));
   panel.setActive(true);await tick();const outputs=[];
-  for(const record of records){await panel.open(record);const output=[...x.ui.handles.values()].find(h=>h.kind==='Code'&&h.value.includes(record.agent));outputs.push({handle:output,node:nodeOf(output)});click(x.document.querySelector('.sem-detach'));await tick();}
+  for(const record of records){await panel.open(record);const output=[...x.ui.handles.values()].find(h=>h.kind==='Code'&&h.value.startsWith(record.agent+'\n'));outputs.push({handle:output,node:nodeOf(output)});click(x.document.querySelector('.sem-detach'));await tick();}
   expect(x.document.querySelectorAll('[data-sem-c="window"]:not([hidden])')).toHaveLength(2);expect(x.ui.windowFrames.size).toBe(2);const f=x.store.factory;expect(x.store.match(f.namedNode(x.ui.windowDesktop.iri),f.namedNode(C+'topmost'),null,f.defaultGraph())[0].object.value).toBe([...x.ui.windowFrames][1].frameIRI);
   const windows=()=>outputs.map(o=>o.node.closest('[data-sem-c="window"]'));
   const control=(frame,label)=>[...frame.querySelectorAll('button')].find(n=>n.getAttribute('aria-label')===label||n.textContent.trim()===label);

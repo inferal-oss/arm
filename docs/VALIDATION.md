@@ -7938,3 +7938,17 @@ checkbox routes through the real renderer/event bus and retains original output
 nodes without replaying completed logs. No backend/protocol/adoption changes,
 real leases, installs, full Go suite or Linux validation are claimed. Presentation
 polish and coordinator source/composition review remain separate gates.
+
+
+### Run metadata grouping checks
+
+The separate run-details source cut passes 67 focused JavaScript cases, complete
+`internal/tui` package, three native Semblance window/checkbox lifecycle cases,
+web asset rebuild and native CLI build through the normal shared FIFO. Tests
+cover exact-ID locality versus remote/hostname/unknown contexts, year-one/absent
+times, full untruncated purpose, exact numeric/timestamp record preservation and
+name refresh retaining the same paused transcript and expanded disclosure.
+Prototype-named lifecycle states explicitly assert Unknown/warning. Existing
+reader/window/cursor and action/reconnect tests remain passing. Combined
+synthetic desktop/narrow screenshots and associated-lease polish are pending;
+these checks alone are not a visual/composed-main acceptance claim.

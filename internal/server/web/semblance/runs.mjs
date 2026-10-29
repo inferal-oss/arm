@@ -3,7 +3,7 @@ import {currentRun,runStatus,compactRunText,runCommand,runPurpose,orderRuns,runW
 import {createRunLogView} from './run-log.mjs';
 export {cleanRunText} from './run-log.mjs';
 const RDF_TYPE='http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM='https://arm.local/ui#',MAX_OPEN_LOGS=8;
-export function createRunsConsole({ui,root,call,connected,context=()=>null,onLease=()=>{},preferences}){
+export function createRunsConsole({ui,root,call,connected,context=()=>null,onLease=()=>{},preferences,hostContext=()=>({})}){
   let visible=false,disposed=false,epoch=0,timer=null,inventoryBusy=false,selected=null,runs=[],listError='',openError='',tiled=false,inFlight=0,hideInactive=readHideInactiveRuns(preferences);
   const views=new Map(),waiting=[],listRows=new Map();
   const filter=ui.field('Search runs',{type:'search',placeholder:'Purpose, command or agent…'},renderList),status=ui.text(''),historyError=ui.text('',{role:'status',tone:'warning',hidden:true}),list=ui.stack(),detail=ui.stack();
@@ -71,7 +71,7 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
     if(view){if(view.detached)view.focus();else{selected=view;workspace();view.focusDetails();}return Promise.resolve();}
     if(selected)remove(selected);
     if(views.size>=MAX_OPEN_LOGS){openError='Eight logs are open. Close a log before opening another.';renderList();historyError.focus();return Promise.resolve();}
-    view=createRunLogView({ui,record:run,request,connected,context,onRead:read,onDetach:detached,onClose:v=>remove(v,true),onFullscreen:v=>{for(const other of views.values())if(other!==v)other.exitFullscreen();},onLayout:toggleLayout,onLease});
+    view=createRunLogView({ui,record:run,request,connected,context,hostContext,onRead:read,onDetach:detached,onClose:v=>remove(v,true),onFullscreen:v=>{for(const other of views.values())if(other!==v)other.exitFullscreen();},onLayout:toggleLayout,onLease});
     views.set(run.id,view);selected=view;openError='';workspace();view.focusDetails();return refresh();
   }
   function schedule(){if(active()&&!disposed&&timer===null)timer=setTimeout(()=>{timer=null;refresh();},1000);}

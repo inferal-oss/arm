@@ -3233,3 +3233,23 @@ uncertainty. In the terminal lists `h` and the visible mouse action toggle the
 filter. Filter changes target roster rows only: selected historical transcripts,
 detached windows, independent cursors/pause/fullscreen and cleanup remain owned by
 their run IDs. No backend, protocol or execution/adoption state changes are made.
+
+
+### Run details presentation
+
+Run details group full purpose, agent/host/directory, state/outcome/exit and human
+created/started/ended/report times. Compact headers remain bounded; the full
+purpose wraps in Details. Readable command text and a separate exact record keep
+raw arguments, IDs and original timestamp precision inspectable. Absent/invalid
+and year-one times render as not recorded/reported. The metadata disclosure
+belongs to the transcript, so it follows native floating/fullscreen transitions;
+constrained windows bound its independent scrolling to preserve output space.
+
+Host display names come only from already loaded records with the same exact
+host ID. Only an exact valid local ARM ID from the verified local operator
+status produces the Local marker. A hostname, remote selection or node-local flag
+does not establish locality. Unresolved names remain Unknown/Unnamed host with
+exact IDs available. Terminal run details use existing name metadata and the same
+exact local-ID rule, meaningful times and the existing complete-record key.
+Metadata refresh updates the existing components without restarting a transcript,
+byte cursor or paused/following state.
