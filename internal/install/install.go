@@ -47,6 +47,8 @@ type Action struct {
 	Change *FileChange `json:"change,omitempty"`
 }
 type Report struct {
+	Adoption        string        `json:"adoption,omitempty"`
+	NextCommand     string        `json:"next_command,omitempty"`
 	DryRun          bool          `json:"dry_run"`
 	Complete        bool          `json:"complete"`
 	Actions         []Action      `json:"actions"`
@@ -149,7 +151,7 @@ func Install(home string, targets []Target, dry bool) (Report, error) {
 	return install(home, targets, dry, nil)
 }
 func install(home string, targets []Target, dry bool, expected *snapshot) (Report, error) {
-	report := Report{DryRun: dry, Complete: true, Actions: []Action{}}
+	report := Report{DryRun: dry, Complete: true, Actions: []Action{}, Adoption: "Installation does not change adoption policy. Unconfigured projects are disabled. Use `arm rollout` to select a project boundary, then explicitly choose new-sessions (suggested), all, or observe for a manual pilot."}
 	if expected != nil {
 		if e := expected.check(home, false); e != nil {
 			return report, e

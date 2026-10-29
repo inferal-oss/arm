@@ -6,6 +6,55 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Project-scoped gradual agent adoption
+
+Installation/status UX continuation `379e41d` implements interactive diff review, a
+formatted post-install next command, omission of default-home overrides and a
+human terminal roster with independent managed-instruction readiness. Owner
+self-review, complete installation race tests, scoped CLI race regressions,
+affected-package vet and native compilation pass. Synthetic real-terminal
+install/diff/accept/status/uninstall/status behavior is verified. Integration
+review remains separate.
+
+Guided onboarding `74ab24d` adds generic bounded Codex/Claude directory adapters and a
+Charm terminal selection/review flow. Binding plus policy apply atomically;
+unchanged existing choices preserve invitations and revision. Read-only discovery,
+manual fallback, instruction readiness, stale reviews, cancellation, directory
+identity and small-screen gates have focused regression coverage. Metadata
+hints remain unverified activity. Owner self-review, complete discovery/rollout/
+installation race suites, scoped CLI race regressions, affected-package vet and
+native/Linux CLI compilation pass. Disposable real-terminal cancellation and
+confirmed onboarding pass without enrolling sessions. Coordinator review and
+integration remain separate gates.
+
+Onboarding review corrections keep pending policy writes authoritative across
+terminal resize and cancellation keys, and preserve the selected ARM home in
+readiness recovery commands. Focused CLI race regressions pass, including write
+success/failure after a resize. Coordinator integration remains separate.
+
+An additional source-review correction preserves typed `rollout_outcome_unknown`
+through shared CLI interruption reporting, with selected-home status/history
+recovery commands. It is separate from `b213640` and the earlier terminal evidence;
+shared-handler tests distinguish pre-confirmation interruption from pending or
+committed-but-unconfirmed application. Composed-source acceptance remains a
+coordinator gate.
+
+Owner: `codex/gradual-agent-rollout`. Focused source commit: `0916d4a`.
+Implementation adds a separate cooperative
+adoption ledger and CLI, disabled-by-default installed guidance, explicit
+directory/Git/client-project bindings, manual cohorts and session acknowledgment.
+Resource admission, existing obligations and messaging registration remain
+independent. [Design and acceptance boundaries](design/gradual-agent-rollout.md).
+
+Source self-review fixes disabled-write side effects, stale identity/invitation
+inheritance, Git repository replacement, audit-generation gaps and nonregular
+ledger reads. Complete rollout/installation race suites and scoped CLI
+rollout/guide/help/completion regressions, affected-package vet and native/Linux
+CLI compilation pass. The focused feature is ready for coordinator review and
+integration; full-suite and Linux runtime acceptance remain open. Native project
+identity attestation, web/dashboard policy editors, binding removal and compaction are outside this
+milestone.
+
 ## Integration policy
 
 The coordinator owns shared module, schema, backend, CLI and documentation
@@ -28,7 +77,7 @@ retain their assignments and the source-specific gates recorded below.
 
 | Owner / branch | Source state | Dependencies and remaining gates |
 | --- | --- | --- |
-| Gradual agent protocol adoption — `codex/gradual-agent-rollout` | Discussion/design only, starting from `842f016`. | Discuss new-task/session eligibility, self-identification versus explicit opt-in, a CLI-first candidate roster, pilot cohorts and observe-only/pause controls while retaining existing leases and cleanup obligations. No default policy is approved; implementation, adoption/instruction changes and activation await user direction. |
+| Gradual agent protocol adoption — `codex/gradual-agent-rollout` | Six focused owner commits `0916d4a` through `b213640`, review correction `d5bfe53` and fixture correction `15bf6e2` composed as `5b625b1` on `40631eb`. | Default-disabled local adoption; explicit directory/Git/client-project scope, exact policy review, separate observation/invitation/acknowledgment and CLI onboarding. Independent complete core normal/race suites each pass 46 roots/75 names; scoped CLI race passes 83 roots/278 names. Vet, native/Linux compile and 28 checks across eight real-terminal sessions pass. Nondeploy hosted captures/SSR/browser gate passes with all 612 UI inputs/assets, four pages/CSS and eight decoded PNGs verified. No real enrollment, web editor, full-suite or Linux rollout-runtime acceptance. |
 | Run-list presentation — `codex/run-list-polish` | Reviewed source `02300f2` and evidence `f131f76` integrated as `744a2f9`, `2f44cb2`, `f54676d`, `e91ec95`. | No blocking source findings. All 413 JavaScript tests, complete TUI race tests, TUI vet and native build pass on the identical composed tree. Source-bound responsive web/PTY evidence is verified; the capture window is released. Full Go suite and Linux runtime remain outside this acceptance. The owner's uncommitted plan is preserved. |
 | Website prerendering — `codex/website-prerender` | Reviewed owner cut `768ecdb` / `622acb3` integrated as `adb8bd6` / `76a9ed2` on `c13e199`. | Independent review has no blocking findings; composed Linux Pages CI, eight fresh dashboard PNGs, SSR/provenance and Chromium checks pass. Main build and Pages deployment succeed. Owner branch/worktree remain clean and preserved. Public latency measurement and broader origin/browser acceptance remain outside scope. |
 | Detachable run logs — `codex/run-log-windows` | Reviewed focused continuation `1fea100` through `18b0926` composed on accepted main `34ea83a` as `c44e6f0` through `2e3fa59`. | All nine feature inputs and ten media artifacts match; independent 418 JavaScript tests, real Semblance lifecycle regression, deterministic web rebuild and native command build pass. Source-bound drag/pop-out/dock/mobile/follow video is verified. Nondeploy Pages CI passes on the exact composition; all 611 UI inputs, runtime assets, four pages and eight decoded PNGs match. Automatic main build and Pages deployment pass on `24182f5`. Full Go suite and Linux runtime remain outside scope. Owner branch and uncommitted plan are preserved. |

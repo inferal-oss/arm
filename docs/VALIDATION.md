@@ -1,5 +1,124 @@
 # Validation record
 
+## Guided project onboarding — scoped owner validation
+
+An additional shared-interruption correction follows `b213640`; its evidence
+does not replace the earlier source scopes. The focused onboarding race suite
+passes with one Go worker. The shared command-completion handler used by Main
+is exercised in both terminal and JSON reporting: pre-confirmation cancellation
+reports ordinary interruption, while pending and committed-but-unconfirmed writes
+retain typed `rollout_outcome_unknown`, selected-home status/history recovery and
+exit 130. Synthetic policy snapshots verify reporting neither retries the change
+nor enrolls sessions. These are deterministic canceled-context/model tests, not
+a new external-signal terminal capture or current-main composition acceptance.
+The broader selected CLI race run also passes rollout, existing budget/message
+interruption and installation next-command cases; CLI vet and native compilation
+pass. Existing subprocess interruption cases retain their original scopes.
+
+Review-correction regressions pass under the race detector: after confirmation,
+shrinking the terminal and pressing Escape, q or Ctrl+C retains the pending
+write and reports its actual success or failure. Unready custom-home review and
+refusal commands retain the selected state directory. Scoped rollout/onboarding
+and installation next-command CLI tests, CLI vet and native compilation pass
+with one Go worker. These model checks do not claim a new real-terminal capture.
+
+Validated feature source: `74ab24d`. This source-bound evidence does not establish
+coordinator review or integration acceptance.
+
+Owner self-review and fixes cover metadata bounds/privacy, canonical suggestions,
+name collisions, asynchronous cancellation, immutable apply snapshots, preserved
+pause/cutoff, unchanged-policy invitations, stale reviews and replaced roots.
+Complete discovery, rollout and installation race suites pass with one worker:
+
+```sh
+GOMAXPROCS=1 go test -p 1 -race ./internal/agentprojects ./internal/rollout ./internal/install -count=1 -timeout=120s
+```
+
+Scoped CLI race tests pass for rollout/onboarding, install confirmation,
+post-install/default-home suggestions, readiness, guide/help/completion and
+terminal/machine rendering. Model cases exercise default-no cancellation,
+atomic confirmed policy, readiness refusal, disabled saves, back navigation,
+small-terminal approval refusal and late discovery after cancellation.
+Affected-package vet, native compilation and a CGo-free Linux amd64 cross-build
+pass. The only new module is the fuzzy-search dependency already pinned by the
+existing Charm list component.
+
+A real terminal with disposable synthetic Codex/Claude metadata verifies the
+searchable directory roster, evidence labels, Git scope, project name, policy
+choices and default-no review. Cancelling creates no rollout ledger. A fresh
+confirmed flow records one project/binding/policy and one audit event, with zero
+session records. No backend starts and no native user integrations, agents,
+contacts or resources are changed.
+
+Native metadata compatibility is fixture-tested, not validated by launching
+clients. Desktop cache/session-marker formats are version-dependent, activity
+hints are unverified, and metadata timestamps do not establish session starts.
+Full Go suite, independent coordinator review/integration and Linux runtime
+acceptance remain open. No web/dashboard editor or native identity attestation
+is claimed.
+
+## Installation review and rollout status — scoped owner validation
+
+Complete installation/readiness race tests pass. Scoped CLI race tests cover
+diff/accept/refuse/EOF/oversized-input cycles, cancellation after diff, changed
+targets after review, uninstall preservation, post-install next commands,
+default/custom/symlinked home selection, readiness lifecycle, preserved rollout
+policy, terminal control escaping, machine output and shared help/completion.
+Affected installation/CLI vet, a native CLI build and a CGo-free Linux amd64
+cross-build pass.
+
+A real terminal with disposable state and explicit synthetic client roots
+verifies: absent instructions report not ready; install offers `[y/N/diff]`;
+`d` prints the patch and re-prompts; `y` installs; completion prints a rollout
+command; status reports ready; uninstall removes only those owned instructions;
+status returns to not ready. Effective-default suggestions omit `--home`.
+No native user integration, agent registration or enrollment is exercised.
+
+Readiness bounds are 128 recorded targets, 8 MiB aggregate reads including the
+manifest, 1 MiB per instruction file, regular no-follow/nonblocking file opens,
+and held/named path identity checks. Unknown formats, unfinished updates and
+changed roots remain unverified. Readiness observes files, not session loading.
+Full Go suite, independent integration review and Linux runtime remain open.
+
+## Project-scoped gradual agent adoption — scoped owner validation
+
+Validated source: focused feature commit `0916d4a`. Owner self-review is complete;
+coordinator review and integration remain separate gates. Subsequent
+documentation-only bookkeeping does not broaden the evidence below.
+
+The complete `internal/rollout` and `internal/install` suites pass with
+`GOMAXPROCS=1 go test -p 1 -race ./internal/rollout ./internal/install -count=1 -timeout=120s`.
+The rollout suite includes 13 focused cases for disabled reads without
+initialization, exact/concurrent preview/apply guards, directory/nested/Git/
+worktree/client containment, original session-start eligibility, manual cohorts
+and acknowledgment, stale identity generations, persistent revocation,
+pause/disable semantics, bounded metadata/audit, corrupt/nonregular ledgers and
+clock rollback. Installation tests include policy preservation through preview,
+installation, repeat installation and uninstall in synthetic fixtures.
+
+Scoped CLI tests pass with
+`GOMAXPROCS=1 go test -p 1 ./internal/cli -run 'Test(Rollout|.*Instruction|.*Guide|.*Help|.*Completion|.*Builtin)' -count=1 -timeout=120s`.
+These exercise all rollout command help offline, exact review/application,
+observation/invitation/acknowledgment, project-selector containment, guide ordering
+and shared help/completion/built-in command boundaries. Temporary fixtures use
+canonical directories. Two initial helper checks refused symlinked temporary
+paths; the final selected tests pass with canonical fixtures. The legacy
+instruction-upgrade diff expectation was updated to require the adoption gate.
+
+Affected-package `go vet -p 1 ./internal/rollout ./internal/install ./internal/cli`
+passes. Native CLI compilation and a CGo-free Linux amd64 cross-build of
+`./cmd/arm` pass with one Go worker. Cross-compilation does not establish Linux
+runtime behavior. No graphical or native client discovery behavior is claimed.
+
+Source review identified and fixed disabled acknowledgments initializing state,
+stale invitations inheriting identity generations, missing replacement-identity
+audit, and Git-directory replacement inheriting checkout adoption policy.
+Regression cases cover these fixes, concurrent application, explicit repository
+rebinding, unsupported versions/fields, symlinks and FIFOs. No real agent
+enrollment, installation, instruction broadcast or resource-lifecycle change is
+part of the feature validation. Independent review/integration, full Go suite,
+Linux runtime, native client-project discovery and UI acceptance remain open.
+
 ## Website SSR integration and hosted Pages acceptance — 2026-10-28
 
 Owner commits `768ecdb` and `622acb3` are independently reviewed and integrated
@@ -7665,3 +7784,34 @@ historical-reader binary cohort was not selected. This does not establish a
 full Go suite, Linux runtime, real cluster installation, public enrollment,
 protected V2 activation, typed workflow worker or dashboard acceptance.
 [Normalized component record](validation/kubernetes-components-integration-2026-10-28.json).
+
+## Reviewed gradual-rollout current composition
+
+Source `5b625b1` passes scoped acceptance on current main `40631eb`. The complete
+discovery, rollout and installation packages pass normal and race: 46 roots /
+75 named nodes per cohort, without failures/skips. Their tested package trees
+and module inputs are byte-identical to the final composition; later Go changes
+are CLI only. Scoped CLI race passes 83 roots / 278 named nodes, including
+shared interruption recovery for pre-confirmation, pending and committed-but-
+unacknowledged outcomes. Affected vet, native build and Linux amd64 compile pass.
+The compiled native binary reports exact VCS source with no modified inputs.
+Linux compilation does not establish rollout runtime acceptance.
+
+A separate final-source real-terminal replay passes 28 checks across eight
+original joined, exit-zero processes. It covers install diff/re-prompt/accept,
+instruction readiness, default-no and confirmed Git-scoped onboarding, selected-
+home recovery/default-home suggestions, uninstall and exact policy preservation.
+Operational terminal modes, speeds and controls are restored; transient native
+pending-input state is excluded from that oracle. Synthetic roots only are used;
+no sessions enroll and no rollout-fixture backend starts. Independent supervisory
+authorities are all joined with terminal leases.
+
+Original path-oracle, temporary-root setup and pending-input-oracle failures
+remain failed and are recorded separately; no production guard was relaxed.
+[Hosted validation](https://github.com/inferal-oss/arm/actions/runs/40801822546)
+passes current-source captures and SSR/browser checks. Its artifact matches all
+612 UI inputs/assets, four pages/CSS and eight fully decoded PNGs. Earlier owner
+terminal claims retain their original sources. Full Go-suite, native client
+identity attestation, web policy editing and Linux rollout-runtime acceptance
+remain outside this milestone.
+[Normalized integration evidence](validation/gradual-agent-rollout-integration-2026-10-28.json).

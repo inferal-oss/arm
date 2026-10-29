@@ -522,11 +522,49 @@ Instructions explain which operations need leases, how to register contact infor
 
 Installation is scoped, idempotent, and available in dry-run form. Record a manifest of files, managed blocks, registrations, service identities, versions, and relevant pre-change state. Preserve unrelated instructions. Existing conflicting or edited content must be explained rather than overwritten. Do not recursively modify arbitrary projects merely because the installer can discover them.
 
-Install and uninstall previews must describe exact instruction-file effects: creation, modification or deletion, byte/line changes and before/after content hashes. Offer `--diff` for a unified patch with additions, deletions and context, colorized only in a suitable terminal. Structured output includes the same diff without ANSI. Preserve missing-final-newline distinctions; explicitly identify non-UTF-8 content when textual hunks cannot represent it faithfully. Bind confirmed content to the actual applied transformation.
+Install and uninstall previews must describe exact instruction-file effects: creation, modification or deletion, byte/line changes and before/after content hashes. Offer `--diff` for a unified patch with additions, deletions and context, colorized only in a suitable terminal. Interactive approval also offers `d`/`diff`, which shows the bound patch and returns to the default-no question without applying or creating backups. Structured output includes the same diff without ANSI. Preserve missing-final-newline distinctions; explicitly identify non-UTF-8 content when textual hunks cannot represent it faithfully. Bind confirmed content to the actual applied transformation.
 
 Before changing any instruction file or the installation manifest, save verified originals and metadata in a private per-operation backup directory under ARM state. Record absent files rather than inventing empty originals. Include original path, mode, size, identity, timestamps, ownership and content digest; retain byte-exact originals with private permissions. Sync and validate the backups before edits, stop if they cannot be saved, and report their concrete locations and completion state. Dry runs and declined prompts must create no backups. Uninstall preserves earlier backups; retention/purge is separate explicit scope. A backup does not authorize silently restoring over later user edits.
 
 Use native service management where supported, with recovery after daemon failure and clear manual-operation fallback where unavailable. Installation must report exactly what is enabled, what capabilities are missing, and how to inspect or reverse changes. Partial failure must leave recoverable recorded state.
+
+### Gradual agent adoption
+
+Installing or upgrading agent instructions does not authorize protocol adoption.
+Successful installation prints a concrete rollout next command. Status displays
+instruction readiness separately from policy, using human-oriented terminal
+output and JSON for pipes/explicit machine requests. Missing or changed managed
+instructions remain visible without resetting policy or claiming sessions loaded
+them. Suggested commands omit default state directories and quote custom ones.
+Unconfigured projects default to fully disabled. Setup should suggest gradual
+new-session enrollment while requiring an explicit user choice of disabled,
+observation/manual pilots, new sessions only, or all sessions within a reviewed
+project scope. A new task within an existing chat/session is not a new session.
+
+Scope includes explicit canonical directories, selected Git checkouts/worktrees
+and mapped client-project identifiers. Observation, invitation and acknowledgment
+are distinct. Self-identification does not authorize execution, reserve resources,
+create messaging authority or enroll another agent. Show eligibility, policy
+provenance, resource needs, bounded identity metadata and honest liveness/expiry.
+Stale identities must not silently inherit grants. Native UI or mesh registration
+must not broaden local adoption policy.
+
+Offer a guided terminal `arm rollout project onboard` flow using supported-client
+directory discovery behind a generic adapter interface. Suggest known/selected
+project directories and report the evidence and limitations of activity hints.
+Discovery must exclude transcripts, prompt-history/credential files, process
+scans and native delivery. Let the operator choose directory/Git scope, project
+identity and policy, then review a default-no atomic change. Read-only machine
+discovery, manual directory entry and preservation of an unchanged policy are
+required. Discovering a directory never enrolls a session or grants resources.
+
+Policy changes support exact previews and durable audit. Pause/rollback stops
+further rollout without canceling jobs, discarding ownership, reclaiming leases
+or erasing cleanup/accounting promises. Revoking adoption and resource admission
+are separate operations. Instruction distribution is distinct from authoritative
+versioned policy; cooperative adoption cannot retroactively control ongoing or
+nonparticipating sessions. See [the rollout design](docs/design/gradual-agent-rollout.md)
+for the CLI-first implementation boundary and remaining work.
 
 ### Uninstallation
 

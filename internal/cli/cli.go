@@ -109,9 +109,14 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 		a.ctx, a.stopSignals = ctx, stop
 	}
 	code, e := a.publicCommand(args)
+	return a.finishCommand(code, e)
+}
+
+// finishCommand preserves operation-specific recovery guidance on interruption.
+func (a *app) finishCommand(code int, e error) int {
 	if !a.externalDispatch && a.ctx.Err() != nil {
 		var detail *model.Error
-		if errors.As(e, &detail) && (detail.Code == "workspace_outcome_unknown" || detail.Code == "routing_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "history_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
+		if errors.As(e, &detail) && (detail.Code == "rollout_outcome_unknown" || detail.Code == "workspace_outcome_unknown" || detail.Code == "routing_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "history_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
 			a.reportError(detail)
 		} else {
 			a.reportError(model.Err("interrupted", "operation interrupted"))
@@ -215,6 +220,7 @@ Commands:
   events [--follow]          Read or stream durable events
   agents                    Read the offline guide and list knowledge cards
   agents card NAME          Read a workload knowledge card
+  rollout                   Review project adoption (disabled by default)
   agent probe|register|list  Discover CLIs and register exact sessions
   agent inbox|watch|receive|ack  Poll notifications and acknowledge explicitly
   message operator|send|broadcast  Send a durable message
@@ -303,6 +309,8 @@ func (a *app) command(args []string) (int, error) {
 		return 0, a.integration(cmd, args)
 	case "agents":
 		return 0, a.agentsGuide(args)
+	case "rollout":
+		return 0, a.rollout(args)
 	case "workspaces":
 		return a.workspacesCommand(args)
 	case "history":
@@ -1245,6 +1253,9 @@ func (a *app) integration(action string, args []string) error {
 				}
 			}
 			return e
+		}
+		if report.Complete {
+			report.NextCommand = installNextCommand(a.home, "rollout project onboard")
 		}
 		return a.print(report)
 	}

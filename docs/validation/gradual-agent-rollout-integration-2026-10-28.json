@@ -1,0 +1,252 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "source_commit": "5b625b1709e3dc43a9eb144b4e0e17c2ee389dbe",
+  "accepted_main_base": "40631eb2943bb19c73c2020a158f33891f6a1e1e",
+  "owner_commits": [
+    "0916d4a",
+    "a38d7e6",
+    "379e41d",
+    "74ab24d",
+    "f475f07",
+    "b213640"
+  ],
+  "owner_review_correction": "d5bfe539af9440220de57a74f80d1285f06066cd",
+  "coordinator_fixture_correction": "15bf6e2",
+  "result": "PASS_WITH_LIMITED_SCOPE",
+  "review": {
+    "scope": "Independent project-scoped cooperative adoption, managed instructions, bounded client-directory suggestions and offline guided CLI onboarding.",
+    "default_disabled": true,
+    "resource_admission_contacts_mesh_and_existing_obligations_unchanged": true,
+    "exact_preview_apply_and_atomic_onboarding_reviewed": true,
+    "findings_closed": [
+      "Pending-write uncertainty now survives shared CLI interruption reporting with selected-home status/history recovery.",
+      "Discovery fixture expected paths now use the same canonical form as production."
+    ],
+    "remaining_source_findings": []
+  },
+  "source_inputs_sha256": {
+    "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+    "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+    "internal/agentprojects/discovery.go": "92d9b42c847f1178cf3f7b99a9c85f21e6e61f91d9bd36510626a2fdb1bd280c",
+    "internal/agentprojects/discovery_test.go": "4fd745141fb31b5932670f36fa297a414724e2ffd077031d63617233ba879641",
+    "internal/cli/agents_guide.go": "e7e53428d7f4b1e75190b4ddd64024a550df6a4678e1be13c68aedfc32752b72",
+    "internal/cli/cli.go": "70e3c2b728ba171844409412d910d802c08e702116ae2f6b3f15f5075d00080b",
+    "internal/cli/confirmation.go": "5284c55cc5527651655ca023fd88580410f6737d61329deff828dd388f6d4b6c",
+    "internal/cli/confirmation_test.go": "98db1b42e8e72fd570f223c61c95c990914490b20948a642b6f0a00717a6a471",
+    "internal/cli/help.go": "f9f82ca79142bf4ce1f2c6f846ae222e832a70f8caa243d8f75b47072a12edbd",
+    "internal/cli/rollout.go": "8bd7571933c7ec4a0bf9500298e61b445cbaae875f11a3a06f99e4f86e11f205",
+    "internal/cli/rollout_onboard.go": "44faf7bc255ffdbe44f984490c91d894c267f0dd6c57c2367c240b46023d99e4",
+    "internal/cli/rollout_onboard_test.go": "c536aeac90e26cab963b3bff33a1677ba6e405056ab88e1d86972c4584318cf5",
+    "internal/cli/rollout_test.go": "3d1b16017caa77ee7209e524cb8db2a85bbf45aa5eb7b9692c77c9f8f7207ce2",
+    "internal/install/install.go": "fa11f762fcfdfe900d0401e828945b524b3b17a3b31a0b6e652bec22fa9ddca7",
+    "internal/install/instructions.md": "9c1d8ef427112ac2c3982acfa934e70fb6116af1b7373153ac63fad1c6607c26",
+    "internal/install/instructions_contract_test.go": "3767dd0577075bd6190ea3cc124e5618268fbbb89e2de6ea440569d14badfb62",
+    "internal/install/instructions_markdown_test.go": "97cc66099878f4d87210c0f749ee1dd0e3a72cbdcd4a9d6422d0c6d3018d1d67",
+    "internal/install/readiness.go": "9aa8ae6054b98efcaf3c15eaa9d42a4b164b7b4a30b343c95b3c6db965018082",
+    "internal/install/readiness_test.go": "f297e194460790bc6fae8705d56d1d52bfe2e3179d7d82156d30da25390c4b18",
+    "internal/rollout/onboard_test.go": "99b51d621f96ba3c70c1d1f1a07b5658a4429a395e42fe27089077f8b9abee33",
+    "internal/rollout/rollout.go": "cb12ade19c0d78b2ed96a3dbdfdccf760aa1acec2ed8933b587b0732b8e93e49",
+    "internal/rollout/rollout_test.go": "4c3049557c72fdd9f1ec8138badab056330b0fb50f438fb9e965d8b8219c9a80"
+  },
+  "validation": {
+    "core_normal": {
+      "name": "normal",
+      "exit_code": 0,
+      "seconds": 2.494,
+      "log_sha256": "a4e1932e95b09468de2aebf92de781950c15225672de6e369afe6e6e2d83b909",
+      "passed_nodes": 75,
+      "roots": 46,
+      "skipped": [],
+      "failed": []
+    },
+    "core_race": {
+      "name": "race",
+      "exit_code": 0,
+      "seconds": 5.203,
+      "log_sha256": "9c7ffcc33d1b9cf12f3d3745310fbe99b13fedbe02eb13fd58012db4bb1d976a",
+      "passed_nodes": 75,
+      "roots": 46,
+      "skipped": [],
+      "failed": []
+    },
+    "core_tested_source": "15bf6e2625c401ed3317b85de39851ce7c8e6e7b",
+    "core_source_equivalence": "Three complete package trees and both module inputs are identical between the core test source and final composition; later Go edits are CLI only.",
+    "final_components": [
+      {
+        "name": "cli-race",
+        "exit_code": 0,
+        "seconds": 16.045,
+        "log_sha256": "ead6156249ea5c6400dfb14e0b46747d3a5a88eff84a9ce115d6877434e45922",
+        "passed_nodes": 278,
+        "roots": 83,
+        "skipped": [],
+        "failed": []
+      },
+      {
+        "name": "vet",
+        "exit_code": 0,
+        "seconds": 5.938,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "native-build",
+        "exit_code": 0,
+        "seconds": 2.016,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "linux-amd64-build",
+        "exit_code": 0,
+        "seconds": 6.219,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "normal_shared_fifo_queue": true,
+    "native_binary": {
+      "sha256": "62d047f647ecfab7677e7b30e380356ac3ee2e6f19bc9b0eec380f5c72454709",
+      "vcs_revision": "5b625b1709e3dc43a9eb144b4e0e17c2ee389dbe",
+      "vcs_modified": false
+    },
+    "linux_amd64": {
+      "sha256": "776818cde415d4398a781dc4aa60d3b51b4838f4abfbf54d21ac260a8eb431c4",
+      "ELF_class": 64,
+      "machine": 62,
+      "compiled_only": true,
+      "executed": false
+    }
+  },
+  "terminal": {
+    "source": "5b625b1709e3dc43a9eb144b4e0e17c2ee389dbe",
+    "passed": true,
+    "checks": [
+      "before-install exit zero",
+      "before-install terminal restored",
+      "fresh status not ready",
+      "offline status creates no state",
+      "diff does not install",
+      "install exit zero",
+      "install terminal restored",
+      "installation next command preserves custom home",
+      "ready-status exit zero",
+      "ready-status terminal restored",
+      "installed instructions ready",
+      "onboard-decline exit zero",
+      "onboard-decline terminal restored",
+      "default no creates no rollout ledger",
+      "onboard-apply exit zero",
+      "onboard-apply terminal restored",
+      "confirmed atomic Git project policy",
+      "onboarding does not enroll sessions",
+      "default-home-status exit zero",
+      "default-home-status terminal restored",
+      "effective default next command omits home",
+      "uninstall exit zero",
+      "uninstall terminal restored",
+      "uninstall preserves rollout policy bytes",
+      "after-uninstall exit zero",
+      "after-uninstall terminal restored",
+      "uninstalled readiness and custom-home recovery",
+      "rollout fixture never starts backend"
+    ],
+    "original_sessions": 8,
+    "all_original_children_joined_exit_zero": true,
+    "operational_terminal_modes_restored": true,
+    "mode_oracle": "All operational flags, speeds and control characters match; transient native pending-input state is excluded.",
+    "rollout_fixture_backend_started": false,
+    "rollout_fixture_sessions": 0,
+    "synthetic_install_roots_only": true,
+    "uninstall_preserves_rollout_bytes": true
+  },
+  "preserved_failed_controls": [
+    "Original discovery expected-path failures precede canonical fixture correction.",
+    "A broad help/startup CLI selection used an uncanonical temporary root; production refusal was correct. Corrected canonical test-root run passes.",
+    "Initial terminal oracle included transient pending-input state and failed despite restored operational modes; corrected terminal-only replay passes.",
+    "Failed wrappers remain failed; successful component phases and final terminal-only run are reported separately."
+  ],
+  "cleanup": {
+    "private_validation_authorities": 5,
+    "all_original_backends_joined": true,
+    "all_recorded_leases_terminal": true,
+    "default_user_installation_or_agents_changed": false
+  },
+  "hosted_validation": {
+    "source": "5b625b1709e3dc43a9eb144b4e0e17c2ee389dbe",
+    "run_url": "https://github.com/inferal-oss/arm/actions/runs/40801822546",
+    "status": "passed",
+    "deploy": "skipped; review-branch dispatch",
+    "artifact_id": 12866652019,
+    "artifact_reported_zip_sha256": "b4115709887a2e3567e9652b85749e8f9900ab66698cc2196392f3052f9706c6",
+    "artifact_audit": {
+      "source": "5b625b1709e3dc43a9eb144b4e0e17c2ee389dbe",
+      "input_count": 612,
+      "source_and_assets_match": true,
+      "images_verified": 8,
+      "png_verification": "SHA256, chunk CRCs, complete zlib streams, dimensions and scanline filters",
+      "metadata_sha256": "3c980bcaed0df5f4f43c736472cea0fdbfdced75dfc95bf90940dfc750322abf",
+      "prerender": {
+        "pages": [
+          {
+            "file": "index.html",
+            "sha256": "80be43c5498f8ff22ed746b5431f688409ded4b123bd412211ef9d1650760dd9"
+          },
+          {
+            "file": "start/index.html",
+            "sha256": "091268f3c1d016cab27c6eeb164c45bbd0a39432522b9f7bcf39e13aadfd9205"
+          },
+          {
+            "file": "capabilities/index.html",
+            "sha256": "8252e7978d8f07028ab357ee653d66fc6c2948c6ea2fa62604cea722ec5c24c4"
+          },
+          {
+            "file": "docs/index.html",
+            "sha256": "66e44e1e4208d4ac7d6b376ced284ec20c4751eea20a2282a1de0752347bd14d"
+          }
+        ],
+        "stylesheet": {
+          "file": "semblance.css",
+          "sha256": "bbdd10390954c6e88b07e7881b05e87f9c6764765c9f761f530decec8248ba60"
+        }
+      },
+      "embedded_ui": {
+        "inputs_sha256": "117929b457b24b4953e88c15ec389be683b14f6bb6db70ed25190ed8135c47a4",
+        "input_count": 612,
+        "engine_sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea",
+        "assets": [
+          {
+            "file": "LICENSES.txt",
+            "bytes": 140022,
+            "sha256": "dce1163b4dacb25a7f3f78915a9902c1d64578841f9316579ce75f0e54a70a9f"
+          },
+          {
+            "file": "arm-wat-only-store-DpLv8E9I.mjs",
+            "bytes": 154,
+            "sha256": "8e674b8f439dcc808a42a77cc623c9ee8894003b480f37cba13458f58c8467de"
+          },
+          {
+            "file": "arm.mjs",
+            "bytes": 4312617,
+            "sha256": "f5172d1eed77bbf511fba9c5294ac1b277ba5222a947e2692f4a01a11387e62a"
+          },
+          {
+            "file": "assets/wat-C2A9nalw.wasm",
+            "bytes": 102443,
+            "sha256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea"
+          },
+          {
+            "file": "wat-2wrDwrzy.mjs",
+            "bytes": 62,
+            "sha256": "ab9b18aea2a5de4fcabc177994081d9c798224d27f63502c79951c13aab28884"
+          }
+        ]
+      }
+    }
+  },
+  "limits": [
+    "Cooperative policy is not an API firewall, native identity attestation or retroactive control of sessions with cached instructions.",
+    "Native metadata formats are fixture-tested and version-dependent; no real client process scan or agent enrollment was used.",
+    "No web policy editor, full Go suite or Linux rollout runtime acceptance.",
+    "Earlier owner terminal evidence remains bound to its earlier source; final composition terminal evidence is separate.",
+    "Raw receipts, actual environment paths, identities and terminal transcripts remain private."
+  ]
+}

@@ -1,5 +1,55 @@
 # Backend and CLI implementation
 
+## Project-scoped gradual agent adoption — CLI milestone
+
+Interactive install/uninstall confirmation offers `[y/N/diff]`. `d`/`diff`
+displays the bound patch and returns to the same default-no question; checking
+the diff never applies changes or creates backups. Acceptance rechecks the
+reviewed files. Successful CLI installation prints a guided project-onboarding
+command. Suggestions omit `--home` when it resolves to the effective CLI default
+and quote explicit custom homes.
+
+`rollout status` renders instruction readiness, project policies, scope and
+session participation as human-readable terminal text. Pipes and `--json` keep
+structured output. Readiness inspects only bounded, recorded installation
+targets: missing, modified, outdated, unfinished and unverified instructions
+remain visible. Missing/uninstalled instructions report not ready and suggest
+installation. Existing rollout policy and obligations remain intact. Matching
+files do not prove that an ongoing session loaded them.
+
+`arm rollout project onboard` uses Charm Bubble Tea/Bubbles/Lip Gloss for
+directory discovery/filtering, manual entry, scope, project naming, policy and
+default-no review. Generic Codex/Claude adapters suggest canonical existing
+directories from bounded project metadata. Saved selection/session-marker hints
+are labeled with unverified activity, never treated as live execution or session
+eligibility. Noninteractive output and `--json`/`--dry-run` are discovery-only.
+The confirmed binding and policy are one durable operation; keeping the current
+binding/mode preserves the ledger and invitations. Readiness is rechecked before
+enabling, stale reviews refuse, and uncertain writes require inspection.
+Pending writes continue awaiting their result across terminal resizing and
+cancellation keys. Readiness recovery commands retain an explicit custom ARM
+home and omit an effective default.
+Terminal-loop errors after apply starts return typed `rollout_outcome_unknown`;
+shared CLI interruption reporting preserves this outcome and selected-home
+status/history recovery commands with exit 130. Pre-confirmation interruption
+retains ordinary cancellation reporting. Interrupted reporting does not prove
+that a confirmed write did not commit.
+
+The CLI has a separate local rollout ledger, independent of the resource/backend
+schema. New projects are disabled. Explicit directory/Git bindings contain
+observation, new-session or all-session policy; optional client-project aliases
+also require filesystem containment. Installed instructions check policy before
+adopting ARM. Observation, invitation and session acknowledgment are distinct.
+Reviewed mutations, expiring identity generations, roster eligibility, pause,
+revoke and policy audit are implemented in source. Resource commands, existing
+leases, ownership and cleanup obligations are unchanged.
+
+Complete rollout/installation race suites and scoped CLI regressions pass after
+source self-review fixes. This does not establish full-suite, independent review
+or Linux runtime acceptance. Native project identity attestation, web/dashboard
+policy editors, binding removal and history compaction remain unsupported. See
+[the scoped design](design/gradual-agent-rollout.md) and the validation record.
+
 ## Execution runs and durable logs
 
 Ordinary recorded command leases project into runs using the lease ID and a
@@ -3105,3 +3155,19 @@ Protected V2 writing, native workflow dispatch and public onboarding are not
 activated. Durable pre-Pod ownership, truthful constructor outcomes, typed
 workers and the unified dashboard flow remain separate work.
 [Scoped validation](validation/kubernetes-components-integration-2026-10-28.json).
+
+### Reviewed gradual-rollout integration
+
+Focused owner rollout/install/onboarding commits and the shared interruption
+correction are composed on `40631eb` as reviewed source `5b625b1`. Projects are
+disabled until the operator reviews scope and policy; self-identification, exact
+invitation and session acknowledgment remain separate from resource admission
+and messaging. Existing leases, work and cleanup obligations are unchanged.
+The CLI uses bounded offline metadata suggestions and explicit default-no review.
+
+Independent review closes pending-write outcome loss in the shared CLI handler
+and corrects canonical expected paths in discovery fixtures. The new indirect
+fuzzy-search module supports the existing pinned Charm list component; no other
+module/dependency promotion, backend protocol or web editor is introduced.
+The accepted boundary remains cooperative, local and CLI-first. Native metadata
+compatibility is fixture-tested and version-dependent rather than attested.

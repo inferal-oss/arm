@@ -104,7 +104,7 @@ func TestMarkdownUpgradePreviewBackupAndUninstallBothAdapters(t *testing.T) {
 				t.Fatal(plan, err)
 			}
 			action := plan.Report.Actions[0]
-			if action.Action != "upgrade-managed-instructions" || action.Change == nil || !strings.Contains(action.Change.Diff, "-Use arm for") || !strings.Contains(action.Change.Diff, "+Use `arm` for") {
+			if action.Action != "upgrade-managed-instructions" || action.Change == nil || !strings.Contains(action.Change.Diff, "-Use arm for") || !strings.Contains(action.Change.Diff, "+Installation alone does not authorize adoption.") || !strings.Contains(action.Change.Diff, "+Once enrolled, use `arm` for") {
 				t.Fatal("preview omitted exact Markdown upgrade diff", action)
 			}
 			got, err := os.ReadFile(path)

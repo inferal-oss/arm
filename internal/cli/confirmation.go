@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"path/filepath"
 	"strings"
 
 	"getarm.org/internal/install"
+	"getarm.org/internal/local"
 	"getarm.org/internal/model"
 )
 
@@ -23,33 +25,111 @@ func (a *app) approve(plan *install.Plan, yes bool) error {
 	if err := a.print(plan.Report); err != nil {
 		return err
 	}
-	if _, err := fmt.Fprint(a.out, "\n"+a.paint("1;33", "Apply these changes? [y/N] ")); err != nil {
-		return err
-	}
 	type reply struct {
 		text string
 		err  error
 	}
+	// Retain buffered replies across diff/re-prompt cycles, with a bounded line.
+	reader := bufio.NewReaderSize(a.in, 257)
 	input := make(chan reply, 1)
-	go func() {
-		text, err := bufio.NewReader(io.LimitReader(a.in, 257)).ReadString('\n')
-		input <- reply{text, err}
-	}()
-	select {
-	case <-a.ctx.Done():
-		fmt.Fprintln(a.out)
-		return a.ctx.Err()
-	case r := <-input:
-		fmt.Fprintln(a.out)
-		if r.err != nil || len(r.text) > 256 {
-			return model.Err("confirmation_declined", "Cancelled; no integration changes were made")
+	for {
+		if err := a.ctx.Err(); err != nil {
+			return err
 		}
-		answer := strings.ToLower(strings.TrimSpace(r.text))
-		if answer != "y" && answer != "yes" {
-			return model.Err("confirmation_declined", "Cancelled; no integration changes were made")
+		if _, err := fmt.Fprint(a.out, "\n"+a.paint("1;33", "Apply these changes? [y/N/diff] ")); err != nil {
+			return err
+		}
+		go func() {
+			line, err := reader.ReadSlice('\n')
+			input <- reply{string(line), err}
+		}()
+		select {
+		case <-a.ctx.Done():
+			fmt.Fprintln(a.out)
+			return a.ctx.Err()
+		case r := <-input:
+			if _, err := fmt.Fprintln(a.out); err != nil {
+				return err
+			}
+			if r.err != nil || len(r.text) > 256 {
+				return model.Err("confirmation_declined", "Cancelled; no integration changes were made")
+			}
+			switch strings.ToLower(strings.TrimSpace(r.text)) {
+			case "d", "diff":
+				if err := plan.Check(); err != nil {
+					return err
+				}
+				if err := a.confirmationDiff(plan.Report); err != nil {
+					return err
+				}
+			case "y", "yes":
+				if err := a.ctx.Err(); err != nil {
+					return err
+				}
+				return plan.Check()
+			default:
+				return model.Err("confirmation_declined", "Cancelled; no integration changes were made")
+			}
 		}
 	}
-	return plan.Check()
+}
+
+func (a *app) writeInstructionDiff(b *strings.Builder, change *install.FileChange) {
+	for _, line := range strings.Split(strings.TrimSuffix(change.Diff, "\n"), "\n") {
+		color := "2"
+		if strings.HasPrefix(line, "+") {
+			color = "32"
+		}
+		if strings.HasPrefix(line, "-") {
+			color = "31"
+		}
+		if strings.HasPrefix(line, "@@") {
+			color = "36"
+		}
+		fmt.Fprintln(b, "    "+a.paint(color, terminalSafe(line)))
+	}
+}
+
+func (a *app) confirmationDiff(report install.Report) error {
+	var b strings.Builder
+	fmt.Fprintln(&b, a.paint("1;36", "Instruction-file diff"))
+	found := false
+	for _, action := range report.Actions {
+		if change := action.Change; change != nil {
+			found = true
+			if change.Binary {
+				fmt.Fprintln(&b, "  "+terminalSafe(action.Path)+": non-UTF-8 content; textual hunks unavailable.")
+				fmt.Fprintln(&b, "    Before: "+change.BeforeHash+"\n    After:  "+change.AfterHash)
+			} else {
+				a.writeInstructionDiff(&b, change)
+			}
+		}
+	}
+	if !found {
+		fmt.Fprintln(&b, "No instruction-file changes to display.")
+	}
+	if _, err := io.WriteString(a.out, b.String()); err != nil {
+		return err
+	}
+	a.diffShown = true
+	return nil
+}
+
+// Quote one shell argument; state paths can contain spaces and apostrophes.
+func installNextCommand(home, command string) string {
+	normalize := func(path string) string {
+		if abs, err := filepath.Abs(path); err == nil {
+			path = abs
+		}
+		if resolved, err := filepath.EvalSymlinks(path); err == nil {
+			path = resolved
+		}
+		return filepath.Clean(path)
+	}
+	if normalize(home) == normalize(local.Home()) {
+		return "arm " + command
+	}
+	return "arm --home '" + strings.ReplaceAll(home, "'", "'\\''") + "' " + command
 }
 
 func (a *app) installationReport(report install.Report) error {
@@ -66,6 +146,9 @@ func (a *app) installationReport(report install.Report) error {
 	showDiff := a.showDiff && !a.diffShown
 	hasChanges := false
 	fmt.Fprintln(&b, a.paint("1;36", "ARM · "+verb))
+	if report.Adoption != "" {
+		fmt.Fprintln(&b, terminalSafe(report.Adoption))
+	}
 	if report.DryRun {
 		fmt.Fprintln(&b, "Review the instruction-file changes below. Nothing has been changed.")
 	}
@@ -117,19 +200,7 @@ func (a *app) installationReport(report install.Report) error {
 			}
 			if showDiff {
 				fmt.Fprintln(&b)
-				for _, line := range strings.Split(strings.TrimSuffix(change.Diff, "\n"), "\n") {
-					color := "2"
-					if strings.HasPrefix(line, "+") {
-						color = "32"
-					}
-					if strings.HasPrefix(line, "-") {
-						color = "31"
-					}
-					if strings.HasPrefix(line, "@@") {
-						color = "36"
-					}
-					fmt.Fprintln(&b, "    "+a.paint(color, terminalSafe(line)))
-				}
+				a.writeInstructionDiff(&b, change)
 			}
 		}
 	}
@@ -172,6 +243,10 @@ func (a *app) installationReport(report install.Report) error {
 	}
 	if !report.Complete {
 		fmt.Fprintln(&b, "\n"+a.paint("33", "Some changes are incomplete. Review preservation decisions and any reported error."))
+	}
+	if report.Complete && !report.DryRun && report.NextCommand != "" {
+		fmt.Fprintln(&b, "\nNext: review project enrollment with:")
+		fmt.Fprintln(&b, "  `"+terminalSafe(report.NextCommand)+"`")
 	}
 	_, err := io.WriteString(a.out, b.String())
 	return err

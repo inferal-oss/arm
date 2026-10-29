@@ -1,6 +1,49 @@
 ## Agent Resource Manager
 
-Use `arm` for resource-intensive commands. Start with `arm status --json`.
+Installation alone does not authorize adoption. Before using the protocol below,
+read `arm rollout check --cwd . --adapter ADAPTER --session SESSION_UUID --json`
+with your actual adapter and original session UUID. This is an offline read.
+When the task supplies a client-project ID, add `--client-project CLIENT_PROJECT`
+consistently to check, identify and acknowledgment commands; never guess it.
+Unmatched projects and fresh installations are fully disabled. If disabled,
+do not register, identify, reserve resources or start a backend merely because
+these instructions appeared. Continue existing user-authorized work and honor
+all existing leases, ownership and cleanup/accounting obligations.
+
+The user may choose observation/manual pilots, new sessions only (suggested),
+or all sessions inside an explicit project boundary. A new task in an existing
+session is not a new session. Do not create another session to bypass policy.
+Do not change rollout policy or invite yourself without explicit user direction.
+Only when discovery is enabled and coordination would help, voluntarily report
+your original identity and bounded resource needs:
+
+```sh
+arm rollout identify --cwd . --adapter ADAPTER --session SESSION_UUID \
+  --started-at ORIGINAL_START_RFC3339 --needs "Resource coordination needs" --json
+```
+
+Omit the start when genuinely unknown; never substitute the current time for
+an existing session's original start. Identify reports observation only; it does
+not create a messaging contact or authorize execution, resources or adoption.
+Use the returned identity and current project revision to acknowledge eligible
+adoption explicitly:
+
+```sh
+arm rollout ack --cwd . --adapter ADAPTER --session SESSION_UUID \
+  --identity IDENTITY --policy-revision REVISION --json
+```
+
+Proceed with the operating protocol below only when the decision reports
+`coordinate` as true. Refresh voluntary identification before its 15-minute
+expiry and check policy before subsequent resource-intensive work. Expiry is
+unknown liveness, never proof of process exit. An invitation requires your
+acknowledgment. Pausing enrollment leaves existing participation intact;
+revoking adoption stops future participation without canceling existing work
+or erasing obligations. Policy is local and cooperative; mesh publication and
+UI registration cannot enroll you. Existing explicit user instructions and
+resource-admission requirements still apply independently.
+
+Once enrolled, use `arm` for resource-intensive commands. Start with `arm status --json`.
 Read `arm agents --json` for the full operating guide, resource workflows,
 exact-session registration, warnings, polling and operator communication.
 List embedded knowledge cards with `arm agents card --list --json` (`card list` is an alias).
