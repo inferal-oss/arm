@@ -132,7 +132,8 @@
   },
   "public_website_ci": {
     "run": 40896915169,
-    "status": "in_progress",
-    "url": "https://github.com/inferal-oss/arm/actions/runs/40896915169"
+    "status": "completed",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40896915169",
+    "conclusion": "success"
   }
 }

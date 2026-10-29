@@ -73,7 +73,7 @@ failed/rem-only artifacts remain qualified. See the
 
 Published runtime `6035548` is installed; carrier/four payload streams verify,
 protected policy/instruction/endpoint hashes remain unchanged and adoption stays
-disabled. Public website CI `40896915169` is still in progress.
+disabled. Public website CI `40896915169` completes successfully.
 
 Resources consumer/accounting presentation is the next bounded slice on the
 accepted base, owned by `codex/ux-resource-layout`. Shell/Mesh/global helpers and backend/pins remain
