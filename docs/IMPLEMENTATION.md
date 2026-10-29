@@ -1,5 +1,38 @@
 # Backend and CLI implementation
 
+## Resident prototype composition
+
+The unconnected private boundary and typed-alias correction are independently
+reviewed and tested. Fourteen selected tests pass in normal/race runs, retaining
+the original resident Manager, worker and job owners through the tested cuts.
+The [composed acceptance](validation/resident-worker-composed-2026-10-29.json)
+separates this proof from the production dispatcher/controller, proxy/provider
+coverage and actual installed upgrades. Ordinary startup remains unchanged.
+
+## Resident worker boundary — private prototype
+
+The selected [resident design](design/resident-supervision.md) now has an
+unconnected [private implementation](../internal/resident/README.md) in `1a9b7ba`. A resident
+callback retains all actual Manager/native ownership; exec'd fixture workers
+forward bounded requests under exact resident/worker/principal binding. Sealed
+epochs cannot dispatch new effects. The private journal persists exact mutation
+keys/hashes before dispatch and preserves complete/pending/unknown outcomes.
+Worker loss never calls Manager.Close or cancels resident job context.
+
+This is a generic-job boundary/proof milestone. It has no public Serve/CLI/model/
+database-schema/module/default changes, production worker launcher, browser/native
+principal translation, legacy proxy continuity or provider/transport acceptance.
+Only two same-binary fixture generations are supported per authority lifetime;
+journal continuation after registered workers is conservatively refused.
+
+The typed JSON alias follow-up `3992f88` requires canonical struct wire names before Go's
+case-insensitive field matching. Nested typed fields, map/slice values and saved
+receipts receive the same check. Opaque data and map keys are not case-folded;
+embedded/tagged field selection and valid canonical requests are preserved. The
+original duplicate check alone did not provide this guarantee. This correction
+changes only the private prototype decoder and tests, with no public API change.
+
+
 ## Resource help and tooltip composition
 
 Resource help uses full-width stacked technical fields and a bounded reading

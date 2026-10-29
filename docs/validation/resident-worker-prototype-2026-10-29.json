@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "kind": "private resident/worker prototype; no production activation",
+  "base_commit": "80ca1ed9b5fce0a2cabf8f89e3cc0506156d1347",
+  "preserved_design_commits": [
+    "23e211fc6df597a26ee49dac609f69738c9ec1e3",
+    "ff034de561811f9c21915ccb76d0f89563188cd5"
+  ],
+  "source_sha256": {
+    "internal/resident/authority.go": "b8def86a31d355f52e8e63c6a9cd1e5f9cc84062a4ff5012c8f29a31a09f4681",
+    "internal/resident/authority_test.go": "54d1d0b7db7d31f12b57b43ef11c9950f7b61b71f87fe8ea83effccd32081678",
+    "internal/resident/journal.go": "50b0d787bd1fa045ce09cedd7df40a61c658b7b77ed297f923ade79c7f273d13",
+    "internal/resident/native_test.go": "9179c00c52c52203fe7c9d23cbad9d43521ebcc8a80a59785ab05682753b3dc6",
+    "internal/resident/protocol.go": "6b4b7e2bad7390d424de73fe88136e0480bd05daa14874443cb524e290ee730d",
+    "internal/resident/worker.go": "c4e4c34f42e064b992f3ec53057811816c82c9b971040145b8d49275cd7b2b2f"
+  },
+  "execution": {
+    "runner": "unchanged approved normal FIFO; sequential cohorts",
+    "gomaxprocs": 1,
+    "go_package_parallelism": 1,
+    "test_timeout_seconds": 90,
+    "native_platform": "darwin/arm64",
+    "scope": "synthetic owned private fixture Manager, original generic jobs and exec worker processes only"
+  },
+  "cohorts": {
+    "normal": {
+      "status": "pass",
+      "selected_roots": [
+        "TestResidentEpochScopeAndReplay",
+        "TestResidentPendingAndJournalFaultNeverReplay",
+        "TestResidentCloseAndSealDoNotCancelAdmittedEffect",
+        "TestResidentJournalExclusiveIdentityAndConservativeRecovery",
+        "TestResidentFrameAndHTTPClaimBounds",
+        "TestResidentDispatchPanicRetainsUnknownOutcome",
+        "TestResidentJournalRejectsMalformedTerminalReceipt",
+        "TestResidentOutcomeOwnsDispatchBuffer",
+        "TestResidentNativeHealthyReplacement",
+        "TestResidentNativeLostResponseReplacement",
+        "TestResidentNativeAbruptCrashReplacement",
+        "TestResidentNativeExpiryWhileWorkersUnavailable"
+      ],
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "test_elapsed_seconds": 5.329,
+      "worker_fixture_version": "resident-test-v1",
+      "worker_fixture_sha256": "6a57f4cd15b75746efeb0d54d1072bdf4ffd48ddb7cea2331ef03ae3761ca760",
+      "two_generation_modes": [
+        "abrupt_crash",
+        "healthy",
+        "lost_response"
+      ],
+      "original_workers_positively_joined": 7,
+      "original_jobs_settled": 4,
+      "private_transport_joins": 7
+    },
+    "race": {
+      "status": "pass",
+      "selected_roots": [
+        "TestResidentEpochScopeAndReplay",
+        "TestResidentPendingAndJournalFaultNeverReplay",
+        "TestResidentCloseAndSealDoNotCancelAdmittedEffect",
+        "TestResidentJournalExclusiveIdentityAndConservativeRecovery",
+        "TestResidentFrameAndHTTPClaimBounds",
+        "TestResidentDispatchPanicRetainsUnknownOutcome",
+        "TestResidentJournalRejectsMalformedTerminalReceipt",
+        "TestResidentOutcomeOwnsDispatchBuffer",
+        "TestResidentNativeHealthyReplacement",
+        "TestResidentNativeLostResponseReplacement",
+        "TestResidentNativeAbruptCrashReplacement",
+        "TestResidentNativeExpiryWhileWorkersUnavailable"
+      ],
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "test_elapsed_seconds": 7.26,
+      "worker_fixture_version": "resident-test-v1",
+      "worker_fixture_sha256": "4630fd284e099093e55c9ce224f6a4e97604f442a9ca4cd18e52e687a552708d",
+      "two_generation_modes": [
+        "abrupt_crash",
+        "healthy",
+        "lost_response"
+      ],
+      "original_workers_positively_joined": 7,
+      "original_jobs_settled": 4,
+      "private_transport_joins": 7
+    }
+  },
+  "vet": {
+    "status": "pass",
+    "package": "./internal/resident"
+  },
+  "linux_compile": {
+    "status": "pass",
+    "platform": "linux/amd64",
+    "runtime_executed": false,
+    "artifact_sha256": "c34dab3eb6bd8c08b286784cde4506d220c9175c17a0873937e74458a51eaa00",
+    "format": "ELF"
+  },
+  "protected_sources_unchanged": [
+    "internal/cli",
+    "internal/server",
+    "internal/manager",
+    "internal/model",
+    "internal/database",
+    "internal/mesh",
+    "go.mod",
+    "go.sum"
+  ],
+  "same_binary_fixture_only": true,
+  "distinct_code_version_pair_accepted": false,
+  "negative_controls": [
+    "stale/wrong resident epoch refuses before effect",
+    "retired epoch and changed request/key refuse",
+    "pending and panic/unknown effect never re-execute",
+    "journal refusal after effect retains pending/unknown and faults boundary",
+    "second journal writer refuses",
+    "registered worker continuation and changed resident identity refuse",
+    "malformed saved terminal result refuses without repair",
+    "oversized, duplicate-field, deep and caller-scope input refuse",
+    "committed native launch response dropped before delivery; same-key result recovers without duplicate",
+    "exact original worker SIGKILL and native Wait join; resident job continues",
+    "saved acknowledged outcome owns its bytes despite later dispatch-buffer reuse"
+  ],
+  "review_corrections": [
+    "separate abrupt native crash from normal shutdown after IPC loss",
+    "assert retained daemon lock and acknowledged renewal replay",
+    "bound JSON depth, worker connections and admitted handlers; positively join worker I/O",
+    "reject malformed saved terminal receipts and unexpected original worker Wait/I/O errors",
+    "clone dispatch result bytes before saving/replaying acknowledged outcomes"
+  ],
+  "earlier_cohorts": "Passing earlier-source runs are retained privately; they are not final-source acceptance.",
+  "private_receipts": "Raw original stdout/stderr/JSON and native worker/job identifiers are retained privately, outside version control. Only normalized technical results appear here.",
+  "remaining_gates": [
+    "independent final source/proof review",
+    "production dispatcher and browser/native principal preservation",
+    "durable native launch/replacement controller and exact unknown-outcome recovery",
+    "authenticated immutable candidate staging and distinct-version compatibility",
+    "stable legacy proxy reporter route and real proxy continuity",
+    "production endpoint/origin/browser reconnection",
+    "other provider/profile/SSH/sync/forwarding/mesh custody",
+    "native signal/Wait denial and PID-reuse controls",
+    "native Linux execution and physical suspend",
+    "resident-core/schema replacement; monolithic bootstrap",
+    "uninterrupted connections"
+  ],
+  "not_performed": [
+    "ordinary startup/CLI activation",
+    "installed/default/shared backend changes",
+    "enrollment, contacts or policy changes",
+    "main merge/push/install/deployment",
+    "broad suite or benchmark",
+    "Linux runtime/environment setup"
+  ],
+  "source_commit": "1a9b7ba419bf17125e171320225ff484d105993a"
+}

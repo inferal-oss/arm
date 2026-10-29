@@ -1,0 +1,161 @@
+{
+  "scope": "Independently reviewed unconnected resident/worker prototype; no production activation",
+  "review_source": "89f72b5496e4c9ef08b76f81a6778114a6a147e6",
+  "owner_commits": [
+    "1a9b7ba419bf17125e171320225ff484d105993a",
+    "aea83273e116cf09b24f04ca5439ff6eb10225f0",
+    "3992f8804b3d8ffc8a1b0daff3486d02f511829a",
+    "90ee0be61cc2b6e1c0c2caa0f91d49dbf8b88b37"
+  ],
+  "source_sha256": {
+    "internal/resident/authority.go": "b8def86a31d355f52e8e63c6a9cd1e5f9cc84062a4ff5012c8f29a31a09f4681",
+    "internal/resident/authority_test.go": "8500866c6fcd7dfcd67803c5c85f605a5f00caf51e9adca955859b6c930b57d0",
+    "internal/resident/journal.go": "50b0d787bd1fa045ce09cedd7df40a61c658b7b77ed297f923ade79c7f273d13",
+    "internal/resident/native_test.go": "9179c00c52c52203fe7c9d23cbad9d43521ebcc8a80a59785ab05682753b3dc6",
+    "internal/resident/protocol.go": "efe3c8b918c732b498ff84204a2d3a2df81ee56be3f76c96642464119c5c4b79",
+    "internal/resident/worker.go": "c4e4c34f42e064b992f3ec53057811816c82c9b971040145b8d49275cd7b2b2f"
+  },
+  "independent": {
+    "normal_fifo": true,
+    "gomaxprocs": 1,
+    "go_package_parallelism": 1,
+    "phases": [
+      {
+        "name": "normal",
+        "exit": 0,
+        "seconds": 9.21
+      },
+      {
+        "name": "race",
+        "exit": 0,
+        "seconds": 10.186
+      },
+      {
+        "name": "vet",
+        "exit": 0,
+        "seconds": 0.999
+      }
+    ],
+    "total_active_seconds": 20.417,
+    "cohorts": {
+      "normal": {
+        "passed": 14,
+        "selected_roots": [
+          "TestResidentEpochScopeAndReplay",
+          "TestResidentPendingAndJournalFaultNeverReplay",
+          "TestResidentCloseAndSealDoNotCancelAdmittedEffect",
+          "TestResidentJournalExclusiveIdentityAndConservativeRecovery",
+          "TestResidentFrameAndHTTPClaimBounds",
+          "TestResidentDispatchPanicRetainsUnknownOutcome",
+          "TestResidentJournalRejectsMalformedTerminalReceipt",
+          "TestResidentOutcomeOwnsDispatchBuffer",
+          "TestResidentTypedFieldAliasesRejected",
+          "TestResidentCanonicalTypedAndOpaqueKeys",
+          "TestResidentNativeHealthyReplacement",
+          "TestResidentNativeLostResponseReplacement",
+          "TestResidentNativeAbruptCrashReplacement",
+          "TestResidentNativeExpiryWhileWorkersUnavailable"
+        ],
+        "failed": 0,
+        "skipped": 0,
+        "worker_fixture_version": "resident-test-v1",
+        "worker_fixture_sha256": "f7cbd2e0c06b2306de52f96e31bfc861593f5a8e5e311cb23be9fbfeb736772c",
+        "receipt_audit": [
+          {
+            "kind": "private_worker_receipt",
+            "count": 7,
+            "expected": 7,
+            "all_complete": true
+          },
+          {
+            "kind": "private_job_receipt",
+            "count": 4,
+            "expected": 4,
+            "all_complete": true
+          }
+        ]
+      },
+      "race": {
+        "passed": 14,
+        "selected_roots": [
+          "TestResidentEpochScopeAndReplay",
+          "TestResidentPendingAndJournalFaultNeverReplay",
+          "TestResidentCloseAndSealDoNotCancelAdmittedEffect",
+          "TestResidentJournalExclusiveIdentityAndConservativeRecovery",
+          "TestResidentFrameAndHTTPClaimBounds",
+          "TestResidentDispatchPanicRetainsUnknownOutcome",
+          "TestResidentJournalRejectsMalformedTerminalReceipt",
+          "TestResidentOutcomeOwnsDispatchBuffer",
+          "TestResidentTypedFieldAliasesRejected",
+          "TestResidentCanonicalTypedAndOpaqueKeys",
+          "TestResidentNativeHealthyReplacement",
+          "TestResidentNativeLostResponseReplacement",
+          "TestResidentNativeAbruptCrashReplacement",
+          "TestResidentNativeExpiryWhileWorkersUnavailable"
+        ],
+        "failed": 0,
+        "skipped": 0,
+        "worker_fixture_version": "resident-test-v1",
+        "worker_fixture_sha256": "0755593ad884633b4501a91a918a5188ddfb5453db319c88679f43203e083698",
+        "receipt_audit": [
+          {
+            "kind": "private_worker_receipt",
+            "count": 7,
+            "expected": 7,
+            "all_complete": true
+          },
+          {
+            "kind": "private_job_receipt",
+            "count": 4,
+            "expected": 4,
+            "all_complete": true
+          }
+        ]
+      }
+    },
+    "post_phases": [
+      {
+        "name": "original-alias-control",
+        "exit": 0,
+        "seconds": 2.037
+      },
+      {
+        "name": "linux-compile",
+        "exit": 0,
+        "seconds": 11.445
+      }
+    ],
+    "original_case_alias_overlay_passes": true,
+    "linux_compile": {
+      "platform": "linux/amd64",
+      "executed": false,
+      "sha256": "c7b50af11b7a6290319ae4299e6aff37b6527d2ce9a10a22f3bfc2f0ac5334b3"
+    }
+  },
+  "causal_review": {
+    "original_typed_alias_control_exit": 1,
+    "original_source": "1a9b7ba419bf17125e171320225ff484d105993a",
+    "corrected_typed_alias_control_exit": 0,
+    "typed_canonical_names_required": true,
+    "opaque_raw_custom_and_case_sensitive_map_keys_preserved": true
+  },
+  "protected": {
+    "source_changes_only_new_private_package_and_docs": true,
+    "no_public_startup_cli_manager_database_model_mesh_module_frontend_asset_changes": true,
+    "no_installed_live_default_backend_policy_enrollment_mutation": true
+  },
+  "privacy_and_links": {
+    "added_local_links_verified": 77,
+    "private_operational_literals_absent_from_added_scope": true
+  },
+  "limits": [
+    "Same-binary worker generations; no distinct-code or version-pair acceptance.",
+    "A fixed local-fixture principal and separate bounded receipt journal; no production browser/native principal translation or dispatcher extraction.",
+    "Two retained registrations maximum; worker-marker continuation after resident restart refuses.",
+    "No production worker launcher/controller, replacement-key reconciliation, authenticated immutable staging or public origin/endpoint routing.",
+    "No real legacy proxy continuity or other provider/profile/mesh/SSH/sync/forwarding continuity acceptance.",
+    "Original signal/Wait denial, PID reuse and physical suspend remain outside the tested native controls.",
+    "Linux compile-only; no Linux execution, full Go suite or new browser evidence.",
+    "No resident-core/schema replacement or retroactive adoption of legacy process ownership."
+  ]
+}

@@ -1,5 +1,61 @@
 # Validation record
 
+## Resident prototype — independent composed acceptance
+
+Focused source `1a9b7ba` and correction `3992f88` pass final isolated review and
+the unchanged normal FIFO. Fourteen selected unit/native roots pass in both
+normal and race cohorts, zero failures/skips. Each retains seven complete
+original worker/channel joins and four positive original job settlements.
+Healthy retirement, committed reply loss, abrupt original-worker SIGKILL and
+no-worker expiry remain distinct; exact keys, renewal replay, original native
+identity, log cursors, lock exclusion and terminal charges are checked. Focused
+vet and Linux amd64 fixture compilation pass; no Linux execution is claimed.
+The original independent typed-alias refusal control fails on the first cut and
+passes on corrected source. Canonical embedded fields and opaque/map keys remain
+valid. All six corrected Go hashes match; protected product code is unchanged.
+Added-scope privacy and 77 local-link checks pass. Same-binary fixture evidence
+does not establish version compatibility, production startup/auth/routing,
+legacy proxy/provider continuity or resident-core replacement. Raw native
+receipts stay private; no installed/default runtime is changed.
+[Normalized record](validation/resident-worker-composed-2026-10-29.json).
+
+## Resident typed JSON aliases — correction proof
+
+The [correction record](validation/resident-worker-alias-refusal-2026-10-29.json) for `3992f88`
+preserves the original prototype receipts as earlier-source evidence. Permanent
+regressions fail against the original decoder: differently cased typed operation,
+key, nested identity and receipt fields overwrite their canonical counterparts.
+The corrected decoder refuses typed aliases, including Unicode folding, while
+preserving canonical requests, opaque bytes, distinct map keys and embedded/tag
+dominance. Ten unit and four real native roots pass in final normal (5.603s) and
+race (7.044s) cohorts with zero selected failures/skips;
+original worker/job cleanup is positively joined. Focused vet and Linux compile
+evidence remain separately scoped in the record. Independent correction review
+is required; no production activation or broader continuity is accepted.
+
+## Resident worker boundary — scoped native prototype
+
+The [evidence record](validation/resident-worker-prototype-2026-10-29.json) binds
+source/proof `1a9b7ba` to reviewed base `80ca1ed`. Eight unit and four real native
+roots pass in focused normal and race cohorts; selected failures
+and skips are zero. Focused vet and Linux amd64 compilation pass. Healthy retirement/replacement,
+committed-response loss/replay, original-worker SIGKILL/replacement and no-worker
+expiry are separate controls. The real existing Manager retains original native
+identity, daemon lock, output/deadline/renewal and original Wait/charge settlement;
+fixture worker groups and private transport owners are positively joined.
+
+All exec'd generations within a cohort use the same fixture binary/version;
+hashes provide integrity evidence only. Earlier passing cohorts cover their own
+source states. No production startup, distinct-code version-pair, proxy/provider/
+browser/mesh continuity, resident-core upgrade, physical suspend or uninterrupted
+connection acceptance is inferred. Raw process/session/state receipts remain
+private; only normalized source/test results are published.
+
+These original 12-root passes did not cover Go's case-insensitive typed-field
+matching. The alias finding and correction above supersede that refusal claim;
+the earlier tests and receipts remain evidence for their original source only.
+
+
 ## Resource help and tooltips — independent composed acceptance
 
 Focused source `1233ba1`, `a75c1fe` and `2a1d728` passes independent review and
