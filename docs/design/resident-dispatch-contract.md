@@ -2,8 +2,8 @@
 
 Status: reviewed interface contract from `e30b145`, following accepted private
 prototype composition `f150f6bfc8693cdfb8a91d2cd9ab98558357a93f`. The first
-in-process caller/dispatch stage now has an owner implementation awaiting
-independent review; see [implementation scope](../IMPLEMENTATION.md#resident-caller-and-dispatch-extraction--owner-cut-awaiting-review).
+in-process caller/dispatch stage is independently reviewed and validated; see
+[implementation scope](../IMPLEMENTATION.md#resident-caller-and-dispatch-extraction--reviewed-composition).
 Worker IPC, grants, activation, controller and asset routing below remain
 proposals. The [accepted private proof](../validation/resident-worker-composed-2026-10-29.json)
 does not establish production authentication, proxy or provider continuity.
@@ -546,7 +546,9 @@ or production-controller acceptance follows from the same-binary fixture.
 | Candidate ready while old dispatch is admitted; dispatch joined while original worker/I/O remains unjoined | Candidate stays inactive through both barriers; no effect authority or public serving overlap and no cleanup credit from timeout. |
 | Lost launch/activation acknowledgment; rollback after sealing | Same-key lookup without duplicate spawn; a sealed capability never returns, including rollback to the same artifact. |
 
-These are future test gates, not executed evidence. This proposal used read-only
-source inspection plus document/link/diff checks only. It requires central
-interface review before any shared source edit and no new runtime validation
-window for the documentation itself.
+The original proposal used read-only source inspection and document/link/diff
+checks. Stage-one caller/dispatch evidence is now recorded separately in the
+[composed validation](../validation/resident-dispatch-composed-2026-10-29.json).
+The remaining bridge/controller/replacement entries above are future gates;
+stage-one evidence does not accept them. Later shared source edits require their
+own reviewed allocation.

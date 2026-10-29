@@ -1,6 +1,6 @@
 # Backend and CLI implementation
 
-## Resident caller and dispatch extraction — owner cut awaiting review
+## Resident caller and dispatch extraction — reviewed composition
 
 The first [contract stage](design/resident-dispatch-contract.md) is implemented
 in process. Credential recognition alone creates no registry entry. After actual
@@ -30,6 +30,8 @@ All existing operations still dispatch directly resident. There is no worker
 eligibility activation, IPC/grant registry/controller/role, frontend/asset route,
 Manager/provider/mesh/schema/CLI/startup or installed-runtime change. Future
 worker byte limits and versioned controller/bootstrap remain separate gates.
+Independent [current-main review and validation](validation/resident-dispatch-composed-2026-10-29.json)
+accept this extraction only; the installed backend is unchanged.
 
 ## Monitor readability composition
 

@@ -6,7 +6,7 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
-## Resident caller extraction — owner validation, independent review pending
+## Resident caller extraction — independently reviewed composition
 
 Owner: `codex/resident-dispatch-extraction`, from reviewed contract `e30b145`.
 Focused implementation: `01c43ba253ceca7846de4216a86fe48dff797e65`;
@@ -23,8 +23,12 @@ Focused source review adds restoration before native first-frame binding as well
 as before ordinary dispatch; a targeted pre-fix failure is retained. An owned
 fixture privacy failure is corrected without weakening directory validation.
 Source-bound normal/race, direct native CLI reporting, vet/build and compile-only
-Linux evidence are recorded separately in VALIDATION.md. Central current-main
-review remains required. Stage two, real worker replacement/controller recovery,
+Linux evidence are recorded separately in VALIDATION.md. Independent current-main
+composition passes the same 38 Server roots / 60 nodes normally and under race,
+and the direct CLI reporting root in both modes, plus affected vet, native build
+and Linux compilation. Source/scope/privacy and production-caller review finds
+no blocking issue. See the [composed record](validation/resident-dispatch-composed-2026-10-29.json).
+Stage two, real worker replacement/controller recovery,
 version pairs, immutable bootstrap and broader workload continuity remain open.
 
 ## Resident dispatcher contract — reviewed; in-process extraction allocated

@@ -1,5 +1,36 @@
 # Validation record
 
+## Resident caller extraction — independent composition
+
+Focused source `01c43ba` and documentation `4a5790f` compose on current main
+`1ae13b6` in an isolated checkout. All ten Go hashes and eight protected-input
+hashes match the owner record. Actual source review confirms the sole local
+production dispatch caller is the proof-checked adapter; mesh dispatch is
+separate, and the trusted domain body and following file content are unchanged.
+Caller/context, accepted-ingress/node, subscription, stop, projection,
+cancellation/retirement and direct-reporter boundaries have no blocking finding.
+
+Independent normal/race Server cohorts each pass 38 roots / 60 nodes, without
+failures or skips, in 43.645s and 51.227s including compilation. The native CLI
+reporting root passes both modes in 10.514s and 13.162s, including its owned
+private backend, proxy/output/log and small leased child. Affected vet, native
+CLI build and Linux amd64 Server test compilation pass in separate bounded
+normal-FIFO cohorts. The native artifact is not installed or executed; Linux
+remains compilation only. Original ingress/fixture teardown and job settlement
+assertions pass. Fifty-nine links in the final contract validate; the owner's
+61-link contract-and-tracking roster retains its different stated scope.
+
+An initial successful vet receipt has unconfirmed sequential launch ordering
+relative to the CLI race command and is excluded from the final sequencing
+evidence. A separate sequential vet rerun passes. Both receipts remain private.
+All final phases retain identical source hashes; added-scope privacy, exact
+ten-Go/five-owner-document scope and whitespace checks pass. The
+[normalized composed record](validation/resident-dispatch-composed-2026-10-29.json)
+binds source, rosters, artifacts and limits without private runtime receipts.
+No worker replacement, activation, version-pair, outage heartbeat, browser,
+full-Go, provider/transport or resident-core acceptance is inferred. The installed
+runtime, default/shared state and rollout policy remain unchanged.
+
 ## Resident caller extraction — scoped owner evidence
 
 Source `01c43ba253ceca7846de4216a86fe48dff797e65`, from reviewed contract
