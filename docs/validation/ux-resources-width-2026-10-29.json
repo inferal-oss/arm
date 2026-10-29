@@ -1,0 +1,199 @@
+{
+  "scope": "Resources expanded reading-width correction; independent current composition pending",
+  "base": "37fa208c33ab606a47eae910470d522cefc24c63",
+  "sources": {
+    "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+    "internal/server/web/semblance/app.ttl": "01cf45bf593a5ec8b7b37c29e69e4bf9fb8b4267c33dda4050146f18a02b1d88",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/pool-model.mjs": "90998db3f04ddb0dd5a743bfcbfc0a3f4621fe924bb48d91478ce8e6000b8e19",
+    "scripts/dashboard-screenshots/ux-resources.mjs": "69e93ab99619d74a74f5d7903471f141c66133fd47b1bf9510575842776a1bd6"
+  },
+  "test_sources": {
+    "internal/server/web/semblance/resources.test.mjs": "e30fbaac525dac9e3bf354a259aad5b2f4d4d5fde8256622275214e0c2079566",
+    "internal/server/web/metric-help.test.mjs": "606ed9144f1e949979f440f345a9c540717100af726d4337107d75a5e308b47d",
+    "internal/server/web/pool-model.test.mjs": "451158d4ec7f231ba84cc0157b28d5e169d08ea4fe2c5ae08b795b6c57446946",
+    "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+    "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+    "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+  },
+  "prior_evidence": {
+    "record": "ux-resources-2026-10-29.json",
+    "qualification": "Historical containment and clipping evidence; initial expanded reading width was not accepted",
+    "desktop_dense_card_height": 3412.5,
+    "doubled_tablet_dense_card_height": 6920.5
+  },
+  "protected_behavior": {
+    "resource_component_byte_identical_to_base": true,
+    "preexisting_app_ontology_prefix_unchanged": true,
+    "shared_graph_main_accounting_pins_unchanged": true,
+    "no_backend_or_resource_mutation": true
+  },
+  "regressions": {
+    "resource_budget_and_accounting": 23,
+    "rdf_resource_ownership_focus": 28
+  },
+  "native": {
+    "cases": [
+      {
+        "width": 320,
+        "height": 640,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "collapsed_card_width": 288,
+        "expanded_card_width": 288,
+        "consumer_reading_width": 206,
+        "primary_control_width": 206,
+        "quantity_value_width": 198,
+        "dense_consumer_card_height": 3795.25,
+        "compact_summary_card_height": 342.25,
+        "outer_collapse_restores_compact_width_with_nested_detail_retained": true,
+        "keyboard_reopen_restores_width_focus_and_original_nodes": true,
+        "nonfirst_resource_expansion_preserves_dom_order": true,
+        "refresh_membership_filter_and_exact_callback_checks": true,
+        "complete_text_and_control_fit_clipping_ancestors": true
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "collapsed_card_width": 358,
+        "expanded_card_width": 358,
+        "consumer_reading_width": 276,
+        "primary_control_width": 276,
+        "quantity_value_width": 268,
+        "dense_consumer_card_height": 3366,
+        "compact_summary_card_height": 326.25,
+        "outer_collapse_restores_compact_width_with_nested_detail_retained": true,
+        "keyboard_reopen_restores_width_focus_and_original_nodes": true,
+        "nonfirst_resource_expansion_preserves_dom_order": true,
+        "refresh_membership_filter_and_exact_callback_checks": true,
+        "complete_text_and_control_fit_clipping_ancestors": true
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "collapsed_card_width": 360,
+        "expanded_card_width": 736,
+        "consumer_reading_width": 654,
+        "primary_control_width": 654,
+        "quantity_value_width": 526,
+        "dense_consumer_card_height": 2641.5,
+        "compact_summary_card_height": 326.25,
+        "outer_collapse_restores_compact_width_with_nested_detail_retained": true,
+        "keyboard_reopen_restores_width_focus_and_original_nodes": true,
+        "nonfirst_resource_expansion_preserves_dom_order": true,
+        "refresh_membership_filter_and_exact_callback_checks": true,
+        "complete_text_and_control_fit_clipping_ancestors": true
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "collapsed_card_width": 340,
+        "expanded_card_width": 1408,
+        "consumer_reading_width": 992,
+        "primary_control_width": 484,
+        "quantity_value_width": 356,
+        "dense_consumer_card_height": 1937.25,
+        "compact_summary_card_height": 326.25,
+        "outer_collapse_restores_compact_width_with_nested_detail_retained": true,
+        "keyboard_reopen_restores_width_focus_and_original_nodes": true,
+        "nonfirst_resource_expansion_preserves_dom_order": true,
+        "refresh_membership_filter_and_exact_callback_checks": true,
+        "complete_text_and_control_fit_clipping_ancestors": true
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "collapsed_card_width": 460,
+        "expanded_card_width": 1888,
+        "consumer_reading_width": 992,
+        "primary_control_width": 484,
+        "quantity_value_width": 356,
+        "dense_consumer_card_height": 1937.25,
+        "compact_summary_card_height": 303,
+        "outer_collapse_restores_compact_width_with_nested_detail_retained": true,
+        "keyboard_reopen_restores_width_focus_and_original_nodes": true,
+        "nonfirst_resource_expansion_preserves_dom_order": true,
+        "refresh_membership_filter_and_exact_callback_checks": true,
+        "complete_text_and_control_fit_clipping_ancestors": true
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "text_token_scale": 2,
+        "body_font_px": 30,
+        "metadata_font_px": 26,
+        "collapsed_card_width": 360,
+        "expanded_card_width": 736,
+        "consumer_reading_width": 654,
+        "primary_control_width": 654,
+        "quantity_value_width": 414,
+        "dense_consumer_card_height": 4325.5,
+        "compact_summary_card_height": 613,
+        "outer_collapse_restores_compact_width_with_nested_detail_retained": true,
+        "keyboard_reopen_restores_width_focus_and_original_nodes": true,
+        "nonfirst_resource_expansion_preserves_dom_order": true,
+        "refresh_membership_filter_and_exact_callback_checks": true,
+        "complete_text_and_control_fit_clipping_ancestors": true
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "collapsed_card_width": 358,
+        "expanded_card_width": 358,
+        "consumer_reading_width": 276,
+        "primary_control_width": 276,
+        "quantity_value_width": 268,
+        "dense_consumer_card_height": 3366,
+        "compact_summary_card_height": 326.25,
+        "outer_collapse_restores_compact_width_with_nested_detail_retained": true,
+        "keyboard_reopen_restores_width_focus_and_original_nodes": true,
+        "nonfirst_resource_expansion_preserves_dom_order": true,
+        "refresh_membership_filter_and_exact_callback_checks": true,
+        "complete_text_and_control_fit_clipping_ancestors": true
+      }
+    ],
+    "state_cases": [
+      {
+        "state": "stale-unavailable-unknown-consumer",
+        "promisesRetained": true,
+        "noInventedLeaseAction": true
+      },
+      {
+        "state": "no-consumers"
+      },
+      {
+        "state": "empty-resources"
+      }
+    ],
+    "elapsed_ms": 22759,
+    "backend_calls": 0,
+    "cleanup": {
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    }
+  },
+  "remaining": [
+    "Independent current-composition review and central asset rebuild",
+    "Full Resources route loading/transport/disconnect lifecycle and help-dialog visual coverage",
+    "Broader route/state/terminal UX coverage in UX-REVIEW.md"
+  ]
+}

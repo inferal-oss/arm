@@ -1200,3 +1200,20 @@ agent/project/expiry inspectable. Focus, expanded state, callback IDs and filter
 behavior have source-bound native/regression evidence. Resource presentation
 math/warnings and protected shared sources are unchanged. Independent composed
 review/rebuild and broader UX coverage remain; no bundle replacement is included.
+
+## Resources expanded reading width — correction ready for review
+
+The initial Resource slice `37fa208` remains historical clipping evidence;
+independent review found its expanded consumer card still occupied one narrow
+grid column. This focused correction expands only an open outer Accounting &
+consumers card, caps its reading area at 64rem and pairs primary consumer text
+with accounting fields above 1100px. Tablet content uses the full reading width;
+collapsed summaries retain compact geometry even with nested details open.
+
+The [correction record](validation/ux-resources-width-2026-10-29.json) binds
+23 accounting tests, 28 RDF/ownership/focus tests and ten native cases to the
+corrected source. Width, value readability, collapse/reopen, nonfirst-card order,
+filter, original node identity, refresh and doubled-text checks pass. Resource
+JavaScript, shared sources, pins and generated assets remain unchanged from the
+initial slice. Independent composition/rebuild remain required; full UX remains
+open.

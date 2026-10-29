@@ -40,6 +40,10 @@ feature tests and earlier screenshots do not close those gates.
    Doubled-text testing also reproduced a stock statistic reaching 777px in a
    768px viewport; resource-only box constraints fix it. Neighboring compact
    summaries keep natural height beside an expanded dense consumer list.
+   Independent review then found expanded details still occupied a narrow grid
+   column. The correction spans only the open outer accounting card, bounds its
+   reading width and pairs desktop consumer text/accounting. Tablet details use
+   the full width; nested open details do not prevent compact outer collapse.
    Budget arithmetic, freshness and warning construction are byte-identical.
 4. **Host metadata: source candidate, reproduction pending.** Capability labels
    still require dense/long/empty native fixtures before any presentation change.
@@ -111,11 +115,11 @@ owner evidence does not replace independent composition or a full UX pass.
 
 ## Acceptance and scaling qualification
 
-Accepted runtime `c830982` includes Messages and targeted defaults/run/lease/
-private-input presentation changes. The Pools feature and this short-window
-correction remain subject to independent current-composition review. Resources
-implementation is held pending that correction review. Broader route/state/
-terminal acceptance remains open.
+Accepted runtime `6035548` includes Messages, targeted defaults/run/lease/private-
+input presentation changes, and the independently reviewed Pools short-window
+correction. The Resources initial slice `37fa208` was not accepted for useful
+expanded width; its focused width correction awaits independent composition.
+Broader route/state/terminal acceptance remains open.
 
 The original Messages and Pools scaled cases varied root rem sizing only,
 because the pinned text tokens use pixel values. Their original source hashes,
@@ -137,3 +141,11 @@ acceptance. The fixture uses the main view's four-column/280px grid and a native
 help icon. It waits for disclosure expansion before measuring actual clipping
 ancestors and fixed shell bounds. Native callback checks record only an exact
 lease ID in a stub; no backend or live resource action occurs.
+
+The initial Resource record remains historical containment evidence. The
+[width correction record](validation/ux-resources-width-2026-10-29.json) adds
+actual expanded card, consumer, primary-control and value width checks at
+desktop/tablet sizes, plus outer collapse/reopen with retained nested state,
+nonfirst-resource expansion, unchanged order and original-node identity. The
+final correction passes the same ten-case matrix and 23/28 focused regressions;
+independent composition/rebuild remains open.

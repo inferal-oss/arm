@@ -426,3 +426,28 @@ arm:ResourceReason a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-resource
  sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
               [ sty:property "min-width" ; sty:raw "0" ] ,
               [ sty:property "max-width" ; sty:raw "100%" ] .
+
+arm:ResourceDesktopReading a sty:WidthClass ; sty:media "(min-width: 1100px)" .
+# Only the direct accounting disclosure expands a resource card. Retained open
+# consumer subdisclosures must not keep a collapsed summary spanning the grid.
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:part "> [data-sem-c=\"card\"]:has(> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"accordion-item\"][data-expanded=\"true\"])" ;
+ sty:declares [ sty:property "grid-column" ; sty:raw "1 / -1" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:part "> [data-sem-c=\"card\"]:has(> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]) > .sem-card-body > [data-sem-c=\"stack\"]" ;
+ sty:declares [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "max-width" ; sty:raw "64rem" ],
+              [ sty:property "margin-inline" ; sty:raw "auto" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:atWidth sty:RegularWidth ; sty:part "> [data-sem-c=\"card\"]:has(> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]) [data-sem-c=\"arm-resource-facts\"]" ;
+ sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(7rem, max-content) minmax(0, 1fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:atWidth arm:ResourceDesktopReading ; sty:part "> [data-sem-c=\"card\"]:has(> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]) [data-sem-c=\"arm-resource-consumer\"]" ;
+ sty:declares [ sty:property "display" ; sty:raw "grid" ],
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr) minmax(0, 1fr)" ],
+              [ sty:property "column-gap" ; sty:raw "1.5rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:atWidth arm:ResourceDesktopReading ; sty:part "> [data-sem-c=\"card\"]:has(> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]) [data-sem-c=\"arm-resource-consumer\"] > :is(:first-child,[data-sem-c=\"arm-resource-identity\"],[data-sem-c=\"arm-resource-reason\"])" ;
+ sty:declares [ sty:property "grid-column" ; sty:raw "1" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:atWidth arm:ResourceDesktopReading ; sty:part "> [data-sem-c=\"card\"]:has(> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]) [data-sem-c=\"arm-resource-consumer\"] > [data-sem-c=\"arm-resource-facts\"]" ;
+ sty:declares [ sty:property "grid-column" ; sty:raw "2" ],
+              [ sty:property "grid-row" ; sty:raw "1 / span 3" ],
+              [ sty:property "align-self" ; sty:raw "start" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:atWidth arm:ResourceDesktopReading ; sty:part "> [data-sem-c=\"card\"]:has(> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]) [data-sem-c=\"arm-resource-consumer\"] > [data-sem-c=\"accordion-item\"]" ;
+ sty:declares [ sty:property "grid-column" ; sty:raw "1 / -1" ] .

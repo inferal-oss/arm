@@ -8190,3 +8190,36 @@ before geometry checks. Resource presentation math/warning construction and the
 preexisting ontology prefix are verified unchanged. Full Resources transport/
 loading/disconnect and help-dialog visuals, independent composition/rebuild,
 other routes and terminal UX remain outside this slice.
+
+## Resources expanded-width review correction
+
+Independent review rejected `37fa208` as complete Resources presentation evidence:
+containment passed while the desktop expanded card remained a narrow column,
+with a 3412.5px dense card. The initial normalized record and private captures
+are preserved. The [width correction record](validation/ux-resources-width-2026-10-29.json)
+binds the focused additive styles and final native fixture to new evidence.
+
+At 1440px, the expanded card is 1408px wide with a bounded 992px consumer area,
+484px primary control and 356px quantity value; dense height is 1937.25px. At
+768px, the consumer/control width is 654px and quantity width is 526px, or
+414px with actual doubled text. The doubled-text dense height falls from
+6920.5px to 4325.5px. Width assertions inspect both the outer card and inner
+control/value areas, preventing containment from masking cramped text.
+
+All ten native cases pass, including narrow/short windows, stale/unknown/empty
+states and asserted body 15px/30px and metadata 13px/26px text. Outer collapse
+restores the original compact width while nested details retain their state.
+Keyboard reopening, nonfirst-resource expansion, resource DOM order, original
+action/detail nodes, filter/unfilter and membership refresh are checked. Complete
+text/control clipping checks remain. Final desktop, doubled-tablet and short
+warning captures are visually inspected. Twenty-three accounting and 28 real
+RDF/ownership/focus tests pass through the normal shared queue. Native backend
+calls remain zero; context/browser close and server join are positively awaited.
+
+An intermediate development breakpoint used a nonexistent width class and
+therefore applied unconditionally; visual review caught it. The final source uses
+an explicitly defined 1100px media class. Intermediate captures are historical,
+not acceptance evidence. Resource JavaScript, preexisting ontology prefix,
+shared main/graph/accounting sources and dependency pins are verified unchanged
+from `37fa208`. Independent current composition/rebuild and broader UX gates
+remain open.

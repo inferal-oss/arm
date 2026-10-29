@@ -3397,3 +3397,18 @@ accounting/freshness/deficit warning construction is byte-identical and remains
 outside disclosures. No resource admission, arithmetic, backend, shared graph/
 main shell/theme/pin or generated bundle is changed. Broader route/terminal
 coverage and independent composition remain separate gates.
+
+## Expanded resource reading width
+
+An open outer Accounting & consumers disclosure makes its resource card span
+the existing grid. The card body has a centered 64rem maximum reading width.
+At desktop widths of at least 1100px, consumer identity/reason/action and labeled
+accounting occupy adjacent columns, with secondary details across the full row.
+Tablet fields use aligned labels and full available value width; narrow fields
+continue to stack. Closing the outer disclosure restores the compact summary
+even when its nested consumer disclosure retains expanded state.
+
+The correction adds only Resource-scoped ontology styles and native evidence
+checks. Existing resource nodes, ordering, filters, callbacks, budget arithmetic
+and warnings are unchanged. Historical clipping evidence alone did not establish
+useful expanded reading width; independent composition remains required.
