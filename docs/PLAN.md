@@ -8,7 +8,7 @@ A completed milestone does not establish full specification coverage.
 
 ## Uninterrupted upgrade design — in progress
 
-Owner: `codex/zero-downtime-upgrade-design`, based on accepted main `dfd916c`.
+Owner: `codex/live-upgrade-design`, based on accepted main `dfd916c`.
 Investigate how a running backend can adopt new code while preserving active
 jobs, leases, admission/accounting and cleanup ownership. Distinguish replacing
 the installed executable from runtime code uptake, uninterrupted workloads,
