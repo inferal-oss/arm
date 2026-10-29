@@ -36,6 +36,7 @@ func TestBrowserTicketConcurrentExchangeHasOneWinner(t *testing.T) {
 
 func TestBrowserSessionExpiryClosesExistingWebSocket(t *testing.T) {
 	s := &Server{}
+	residentFixtureIdentity(t, s)
 	token := local.ID() + local.ID()
 	s.browser.sessions = map[[32]byte]time.Time{sha256.Sum256([]byte(token)): time.Now().Add(250 * time.Millisecond)}
 	mux := http.NewServeMux()

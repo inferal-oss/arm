@@ -20,6 +20,7 @@ import (
 
 func loginLinkServer(t *testing.T, s *Server) (*httptest.Server, context.Context) {
 	t.Helper()
+	residentFixtureIdentity(t, s)
 	mux := http.NewServeMux()
 	s.registerBrowser(mux)
 	mux.HandleFunc("/v1/ws", s.ws)

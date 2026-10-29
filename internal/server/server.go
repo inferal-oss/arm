@@ -35,6 +35,7 @@ import (
 )
 
 type Server struct {
+	callers               residentCallers
 	peerCacheMu           sync.RWMutex
 	peerCache             model.PeerSnapshot
 	peerCacheErr          error
@@ -380,21 +381,16 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer leave()
-	if !s.validHost(r.Host) {
-		http.Error(w, "invalid host", http.StatusForbidden)
+	caller, authErr := s.authenticateLocalIngress(r, time.Now())
+	if authErr != nil {
+		failure := authErr.(*ingressFailure)
+		http.Error(w, failure.message, failure.status)
 		return
 	}
-	admission, ok := s.authenticateAdmission(r, time.Now())
+	defer s.retireCallerIngress(caller)
+	admission := caller.proof.admission
 	browser, expires := admission.Browser, admission.Expires
-	if !ok {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
 	nativeNode := r.Header.Values("Arm-Node-Context")
-	if len(nativeNode) > 0 && (browser || len(nativeNode) != 1 || nativeNode[0] != "v1") {
-		http.Error(w, "invalid native node negotiation", http.StatusForbidden)
-		return
-	}
 	options := &websocket.AcceptOptions{}
 	if browser {
 		options.Subprotocols = []string{"arm.v1"}
@@ -406,10 +402,14 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 	defer c.CloseNow()
 	c.SetReadLimit(65536)
 	ctx, cancel := context.WithCancel(r.Context())
+	ctx = caller.proof.context(ctx, admission.Node)
 	var wsWG sync.WaitGroup
 	defer func() { cancel(); wsWG.Wait() }()
+	if err := s.registerCallerIngress(caller, c, ctx); err != nil {
+		return
+	}
 	if len(nativeNode) == 1 {
-		bound, err := s.negotiateNativeNode(ctx, c)
+		bound, err := s.negotiateCallerNode(ctx, caller, c)
 		if err != nil {
 			return
 		}
@@ -438,6 +438,13 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 		}
 		timer := time.AfterFunc(time.Until(expires), cancel)
 		defer timer.Stop()
+	}
+	if err := s.activateCallerIngress(caller); err != nil {
+		return
+	}
+	ctx, err = s.callerContext(caller)
+	if err != nil {
+		return
 	}
 	out := make(chan model.WireResponse, 64)
 	writerDone := make(chan struct{})
@@ -506,14 +513,10 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			}
 			continue
 		}
-		// Validate immutable local contexts too, before special subscription
-		// handlers can bypass ordinary dispatch. Remote handlers remain closed
-		// below and are independently destination-authorized by the gateway.
-		if bound, ok := ctx.Value(nodeSessionKey{}).(nodeSession); ok {
-			if _, err := s.validateNodeSession(bound); err != nil {
-				send(model.WireResponse{Version: 1, ID: req.ID, Error: &model.Error{Code: "node_context_changed", Message: "selected node authority changed; reopen from Mesh"}})
-				return
-			}
+		// The same original caller guard covers subscriptions and ordinary calls.
+		if _, err := s.callerContext(caller); err != nil {
+			send(dispatchError(req.ID, err))
+			return
 		}
 
 		if req.Operation == "mesh_operator_watch" && !remoteNodeContext(ctx) {
@@ -719,38 +722,12 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 			go func(req model.WireRequest) {
 				defer wsWG.Done()
 				defer func() { <-requests }()
-				resp := model.WireResponse{Version: 1, ID: req.ID}
-				result, err := s.dispatch(ctx, req)
+				call, err := s.prepareCall(caller, req)
 				if err != nil {
-					var re *model.Error
-					if errors.As(err, &re) {
-						resp.Error = re
-					} else {
-						resp.Error = &model.Error{Code: "internal_error", Message: "backend operation failed"}
-					}
-				} else {
-					resp.Result = s.namedView(req.Operation, result)
-					if source, ok := result.(sourceNamedRead); ok {
-						resp.Result, resp.NamingDiagnostic = source.raw, source.diagnostic
-					} else if !remoteNodeContext(ctx) {
-						resp.Result, resp.NamingDiagnostic = s.customNamedView(ctx, req.Operation, resp.Result)
-						if poolProjectedRead(req.Operation) {
-							bounded, boundErr := boundedPoolRead(resp.Result, nil)
-							if boundErr != nil {
-								var api *model.Error
-								if errors.As(boundErr, &api) {
-									resp.Error = api
-								} else {
-									resp.Error = &model.Error{Code: "internal_error", Message: "pool view could not be encoded"}
-								}
-								resp.Result = nil
-							} else {
-								resp.Result = bounded
-							}
-						}
-					}
+					send(dispatchError(req.ID, err))
+					return
 				}
-				send(resp)
+				send(s.dispatchPrepared(call).response)
 			}(req)
 		default:
 			resp.Error = &model.Error{Code: "too_many_requests", Message: "at most eight requests may be in flight on one connection"}
@@ -767,6 +744,14 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		return nil, e
 	}
 	defer leave()
+	// The sole production local entry supplies its original caller marker.
+	// Legacy domain-only unit tests remain below this authentication boundary.
+	if caller, ok := ctx.Value(residentCallerContextKey{}).(*authenticatedCaller); ok {
+		ctx, e = s.callerContext(caller)
+		if e != nil {
+			return nil, e
+		}
+	}
 	if bound, ok := ctx.Value(nodeSessionKey{}).(nodeSession); ok {
 		if r.Operation == "dashboard_login_link" {
 			return nil, model.Err("forbidden", "scoped node sessions cannot issue local dashboard login links")

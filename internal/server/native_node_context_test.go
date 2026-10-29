@@ -17,6 +17,7 @@ import (
 
 func nativeNodeSocket(t *testing.T, s *Server) (*websocket.Conn, context.Context) {
 	t.Helper()
+	residentFixtureIdentity(t, s)
 	s.token = local.ID() + local.ID()
 	h := httptest.NewServer(http.HandlerFunc(s.ws))
 	t.Cleanup(h.Close)

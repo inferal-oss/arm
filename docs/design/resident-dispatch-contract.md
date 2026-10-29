@@ -1,9 +1,11 @@
 # Resident authentication and dispatcher contract
 
-Status: source-backed interface proposal only. Baseline:
-`f150f6bfc8693cdfb8a91d2cd9ab98558357a93f`, which accepts the private prototype
-and its alias correction. This document changes no product/private code, wire
-schema, defaults or running state. The [accepted proof](../validation/resident-worker-composed-2026-10-29.json)
+Status: reviewed interface contract from `e30b145`, following accepted private
+prototype composition `f150f6bfc8693cdfb8a91d2cd9ab98558357a93f`. The first
+in-process caller/dispatch stage is independently reviewed and validated; see
+[implementation scope](../IMPLEMENTATION.md#resident-caller-and-dispatch-extraction--reviewed-composition).
+Worker IPC, grants, activation, controller and asset routing below remain
+proposals. The [accepted private proof](../validation/resident-worker-composed-2026-10-29.json)
 does not establish production authentication, proxy or provider continuity.
 
 ## Proposed boundary
@@ -45,7 +47,7 @@ flowchart LR
 | Direct mesh | Separate TLS listener and closed RPC surface. `/v1/mesh` requires a peer certificate and absent Origin; `PeerByCert` and `WithPeer`/`WithPeerSnapshot` establish current grants. Destination and expected enrollment are checked separately. | Do not mint a mesh principal from local JSON or reuse the local dispatcher for peer RPC. |
 
 Source anchors: [native client](../../internal/client/client.go#L16),
-[local WS admission](../../internal/server/server.go#L376),
+[local WS admission](../../internal/server/server.go#L377),
 [Host/authentication](../../internal/server/browser.go#L78),
 [ticket exchange](../../internal/server/browser.go#L293),
 [node ticket/credential state](../../internal/server/node_sessions.go#L43),
@@ -63,8 +65,16 @@ are trusted same-account code, not an OS sandbox against the state owner.
 
 ## Proposed interfaces and modules
 
-The following names/signatures are proposals, not existing APIs. All constructors
-and fields below remain private to `internal/server`. They are not JSON DTOs.
+The following full shapes/signatures describe the proposed boundary. All
+constructors and fields below remain private to `internal/server`; they are not
+JSON DTOs.
+Stage one implements the smaller original-ingress form:
+`dispatchPrepared(call)` takes no caller-supplied context, and `dispatchResult`
+retains a typed v1 response for the original WS encoder. The later serialized
+result/policy/grant forms are not activated by that extraction. Actual helpers:
+[caller ownership](../../internal/server/resident_auth.go),
+[prepared dispatch](../../internal/server/resident_dispatch.go), and
+[response projection](../../internal/server/resident_outcomes.go).
 
 ```go
 // internal/server/resident_auth.go
@@ -287,10 +297,10 @@ Only copied authoritative bytes may cross a worker boundary. View code must not
 forge successful effects, normalize identifiers, lose number precision or share
 cached snapshots across distinct principals/selected destinations.
 
-Source anchors: [dispatch guards](../../internal/server/server.go#L764),
-[special subscriptions](../../internal/server/server.go#L519),
-[response projection](../../internal/server/server.go#L732),
-[browser lease action](../../internal/server/server.go#L880),
+Source anchors: [dispatch guards](../../internal/server/server.go#L741),
+[special subscriptions](../../internal/server/server.go#L522),
+[response projection](../../internal/server/resident_outcomes.go#L40),
+[browser lease action](../../internal/server/server.go#L865),
 [revision/consumer validation](../../internal/manager/operator.go#L5),
 [mesh destination grants](../../internal/server/mesh.go#L370),
 [SSH scope and original transport](../../internal/server/mesh_ssh.go#L101),
@@ -343,7 +353,7 @@ named `run_append` into native access: original authentication still decides.
 Current `stopInspection` permits append/finish during ordinary drain; a worker
 seal must not set `stopping`, invoke shutdown drain or refuse ordinary renewals.
 
-Source anchors: [endpoint publication](../../internal/server/server.go#L336),
+Source anchors: [endpoint publication](../../internal/server/server.go#L337),
 [CLI native call](../../internal/cli/cli.go#L173),
 [reporting/error cancellation](../../internal/cli/runs.go#L104),
 [proxy child owner](../../internal/cli/runs.go#L274),
@@ -484,7 +494,7 @@ explicit verified role/protocol before any ordinary CLI/default-home handling.
 It must never fall back to `serve`, `daemon start` or plugin execution on mismatch.
 Proposed installer/controller edits are not part of dispatcher extraction.
 See [runtime proof](../../internal/mesh/runtime_identity.go#L32),
-[helper binding](../../internal/server/server.go#L295),
+[helper binding](../../internal/server/server.go#L296),
 [native-only runtime proof](../../internal/server/provision_runtime.go#L8),
 [startup executable](../../internal/cli/cli.go#L964),
 [existing early helper roles](../../internal/cli/cli.go#L56), and
@@ -536,7 +546,9 @@ or production-controller acceptance follows from the same-binary fixture.
 | Candidate ready while old dispatch is admitted; dispatch joined while original worker/I/O remains unjoined | Candidate stays inactive through both barriers; no effect authority or public serving overlap and no cleanup credit from timeout. |
 | Lost launch/activation acknowledgment; rollback after sealing | Same-key lookup without duplicate spawn; a sealed capability never returns, including rollback to the same artifact. |
 
-These are future test gates, not executed evidence. This proposal used read-only
-source inspection plus document/link/diff checks only. It requires central
-interface review before any shared source edit and no new runtime validation
-window for the documentation itself.
+The original proposal used read-only source inspection and document/link/diff
+checks. Stage-one caller/dispatch evidence is now recorded separately in the
+[composed validation](../validation/resident-dispatch-composed-2026-10-29.json).
+The remaining bridge/controller/replacement entries above are future gates;
+stage-one evidence does not accept them. Later shared source edits require their
+own reviewed allocation.
