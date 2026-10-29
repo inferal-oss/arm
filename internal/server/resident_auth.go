@@ -30,6 +30,7 @@ type ingressProof struct {
 }
 
 type residentIngress struct {
+	sink        *residentResponseSink
 	proof       *ingressProof
 	connection  *websocket.Conn
 	ctx         context.Context

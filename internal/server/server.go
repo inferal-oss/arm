@@ -35,6 +35,7 @@ import (
 )
 
 type Server struct {
+	responses             responseTracking
 	callers               residentCallers
 	peerCacheMu           sync.RWMutex
 	peerCache             model.PeerSnapshot
@@ -446,39 +447,14 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	out := make(chan model.WireResponse, 64)
-	writerDone := make(chan struct{})
-	defer func() { cancel(); <-writerDone }()
-	wsWG.Add(1)
-	go func() {
-		defer wsWG.Done()
-		defer close(writerDone)
-		defer cancel()
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case msg := <-out:
-				writeCtx, stop := context.WithTimeout(ctx, 5*time.Second)
-				e := wsjson.Write(writeCtx, c, msg)
-				stop()
-				if e != nil {
-					return
-				}
-			}
-		}
-	}()
-	send := func(msg model.WireResponse) bool {
-		select {
-		case out <- msg:
-			return true
-		case <-ctx.Done():
-			return false
-		default:
-			cancel()
-			return false
-		}
+	sink, err := s.openResponseSink(caller, c, &wsWG, cancel)
+	if err != nil {
+		return
 	}
+	defer sink.closeAndJoin()
+	wsWG.Add(1)
+	go func() { defer wsWG.Done(); sink.runWriter() }()
+	send := func(msg model.WireResponse) bool { return sink.enqueue(msg, nil) }
 	var workflowSendMu sync.Mutex
 	var workflowIdentity string
 	var workflowSubscription context.CancelFunc
