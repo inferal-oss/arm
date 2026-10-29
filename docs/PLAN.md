@@ -164,6 +164,21 @@ bounded FIFO; product main/styles, metric arithmetic and Resource controls stay
 protected until a concrete scoped correction is reviewed. No real transport,
 backend, OS/device discovery or environment setup is allocated.
 
+Monitor inventory `2b21806` is reviewed read-only: fifteen current/protected
+hashes match and product files are unchanged. Native images reproduce overlapping
+device labels, technical help columns as narrow as 8px under selected doubled
+tokens, and tooltips crossing narrow/right-column viewport edges. Remediation is
+allocated only to the existing noninteractive Monitor surface and selector-grid
+hooks, the six explicit Monitor help kinds, and additive Monitor-specific styles.
+Native control types, exact IDs/selection/focus, current-context help, disposal,
+all metric/I/O calculations and accepted Resource behavior remain protected.
+Return complete label/value/tooltip clipping and native keyboard evidence plus
+state/selection regressions through the same bounded FIFO. Vertical compensation
+requires a native-user causal reproduction; prefer existing CSS scroll behavior
+and do not add lifecycle/focus code without another concrete reviewed finding.
+No global engine/theme/shell, backend/protocol/pin, live transport or installation
+changes are allocated. Independent final composition remains a gate.
+
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
 readable sizing, responsive containment, navigation/focus and action clarity.
