@@ -7815,3 +7815,9 @@ terminal claims retain their original sources. Full Go-suite, native client
 identity attestation, web policy editing and Linux rollout-runtime acceptance
 remain outside this milestone.
 [Normalized integration evidence](validation/gradual-agent-rollout-integration-2026-10-28.json).
+
+Automatic main build and Pages deployment both pass on `dd365d8` in
+[the publication run](https://github.com/inferal-oss/arm/actions/runs/40803008221).
+The subsequent review-queue/publication updates are documentation only; runtime
+inputs remain identical to reviewed/tested `5b625b1`. This accepts the scoped
+rollout feature without broadening the platform or full-suite limits above.

@@ -248,5 +248,12 @@
     "No web policy editor, full Go suite or Linux rollout runtime acceptance.",
     "Earlier owner terminal evidence remains bound to its earlier source; final composition terminal evidence is separate.",
     "Raw receipts, actual environment paths, identities and terminal transcripts remain private."
-  ]
+  ],
+  "main_publication": {
+    "source": "dd365d85195e60441c18bd72710edfc396227c8f",
+    "run_url": "https://github.com/inferal-oss/arm/actions/runs/40803008221",
+    "build": "passed",
+    "deploy": "passed",
+    "runtime_source_equivalence": "All non-documentation inputs equal reviewed/tested 5b625b1; subsequent changes are documentation only."
+  }
 }
