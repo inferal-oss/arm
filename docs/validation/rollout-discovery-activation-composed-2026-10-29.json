@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-29",
+  "scope": "Independent composed review of project-scoped native metadata discovery and explicitly reviewed activation delivery",
+  "source": "d6da6cb95a3d9e8bdc00a8eea8315fd4175b2d0c",
+  "feature_inputs": {
+    "internal/activation/activation.go": "85bc1e990ee3d91b8aa8745838e3a3f7cc9e9b8010cb3112c90f61054a6dd258",
+    "internal/activation/activation_test.go": "ed8c63920dc8942a94e1b90778dda8f3658ba4562deb13c6b0bd253a3ed74ac4",
+    "internal/agentsessions/codex.go": "073987f25b185f8c4c93d34fa7e16e27bc5755fd932dfcf6ee44c09e97b69e6a",
+    "internal/agentsessions/sessions.go": "9419b623cdae60418ac370d465f7dc259f18e794ea373c582c92f06a141bcfd0",
+    "internal/agentsessions/sessions_test.go": "7cce0273bca15332f48adb67166e87075b1958a4926647b0663e0ca246a9985f",
+    "internal/cli/cli.go": "885a1a8b15a13844ef065eca214e98553250c8352ab27f6e43cb1447622c5be0",
+    "internal/cli/help.go": "2cdb5d468aee6c57447ec56b7c86bb059d2621f87ac814b063db9322c15ff441",
+    "internal/cli/rollout.go": "d085dfcff3e3518846c52d3ff1710dbee11000780aab23d9726d0049305739ff",
+    "internal/cli/rollout_activation.go": "576a5aa0fbdb5a2a2a94b09aef8a0dad96a632d9689e79baaaca6e2825f572a2",
+    "internal/cli/rollout_activation_test.go": "dad33d6eed7b9fe11fada60538824f88206c96f7b83074139f9c46b55aa7bfe4",
+    "internal/cli/rollout_discover_tui.go": "68725f8c9bc399a6618272a2612ddffbe6ac04bd74985512360539472d3c1426",
+    "internal/cli/rollout_onboard.go": "8279be324fa3ae8835389380610bbea3e5a9a7d1f993d95b82509d3ec0551727",
+    "internal/rollout/rollout.go": "8e7d4e078426d28fc0b7c82eac7fb1f25bbd743c97b94be8c3e33777850c7dac"
+  },
+  "phases": [
+    {
+      "name": "core-race",
+      "exit": 0,
+      "seconds": 12.617,
+      "roots": 62,
+      "names": 93,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "cli-race",
+      "exit": 0,
+      "seconds": 52.082,
+      "roots": 69,
+      "names": 205,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "vet",
+      "exit": 0,
+      "seconds": 16.832
+    },
+    {
+      "name": "native-build",
+      "exit": 0,
+      "seconds": 3.155
+    },
+    {
+      "name": "linux-compile",
+      "exit": 0,
+      "seconds": 14.241
+    }
+  ],
+  "native_cli_sha256": "a6a01e2bf9d056b44f42dda0710a8adf48f08d51aac92e6387585ee84edd69cb",
+  "linux_amd64_cli_sha256": "6851846b9e9095a9ee0322fc319263220ae95c490fe03c0f9b7d53d90a6e6b73",
+  "source_unchanged_during_validation": true,
+  "owner_terminal_scope": {
+    "source": "8c6f304",
+    "checks": 18,
+    "original_ptys_joined_exit_zero": 4,
+    "source_equivalence": "All 1738 Go/module inputs match except gofmt-only rollout status formatting."
+  },
+  "limitations": [
+    "Synthetic native metadata and queue helpers only; no actual agent delivery, clipboard, adoption, policy or backend startup",
+    "No full Go suite, live native identity attestation or Linux runtime acceptance",
+    "Executable installation remains a separate post-publication step"
+  ]
+}

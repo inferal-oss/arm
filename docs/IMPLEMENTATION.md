@@ -9,6 +9,10 @@ Pages publication; this does not move ARM hosting or change application behavior
 
 ## Native rollout discovery and explicit activation
 
+Independent composed-source review and scoped race/build checks pass.
+The [acceptance record](validation/rollout-discovery-activation-composed-2026-10-29.json)
+distinguishes synthetic terminal evidence, compile-only Linux and pending installation.
+
 `rollout discover --project ID` reads native session metadata without ARM
 self-identification. JSON/pipes remain discovery-only; the Charm terminal flow
 selects an exact session and displays its activation message. Terminal clipboard

@@ -1,5 +1,19 @@
 # Validation record
 
+## Native discovery and activation — independent composed review
+
+Reviewed owner source `e045e4b`/`8c6f304`/`550cf16` is composed on current main;
+`d6da6cb` changes formatting only. The unchanged normal FIFO, one Go worker and
+bounded tests pass 93 core race nodes (62 roots), 205 selected CLI race nodes
+(69 roots), affected vet, native CLI build and Linux amd64 cross-build. Zero
+failures/skips. All 1,738 Go/module hashes remain unchanged through validation.
+Owner 18-check/four-PTY terminal evidence matches these inputs except the exact
+formatting change; all original PTYs exited zero. No independent terminal replay
+or real native delivery is claimed. Source review checks project boundaries,
+policy/executable/message revalidation, default-no confirmation, durable pending
+keys, no uncertain resend and cancellation/worker joins. Publication/installation
+remain separate steps. [Normalized record](validation/rollout-discovery-activation-composed-2026-10-29.json).
+
 ## Organization directory listing — published
 
 Reviewed directory commit `42f445c` passes the existing six-project/local-asset

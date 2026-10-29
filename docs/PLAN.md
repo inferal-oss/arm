@@ -23,17 +23,23 @@ No backend/protocol, resource accounting or pinned-engine change is assigned.
 Focused tests, rebuilt assets, source review and current-main composition precede
 integration. Private reference images and operational identities stay outside Git.
 
-## Native session discovery and activation — in progress
+## Native session discovery and activation — reviewed; publication/install pending
 
-Owner: `codex/rollout-activation`, continuing the accepted rollout task from
-`8780b34`. Implement project-scoped metadata discovery, exact-session activation
-text and a post-onboarding handoff with generic adapter boundaries. Supported
-delivery requires an explicit review of the exact recipient and message; other
-adapters remain copy-only. Discovery and message delivery do not enroll agents,
-grant resources or prove activity. Preserve audit, original identity/start and
-uncertain-delivery recovery without automatic retry. Disposable validation,
-independent review and integration precede the requested push and executable
-installation; actual agent activation and policy changes are not validation scope.
+Owner: `codex/rollout-activation`, focused source `e045e4b`, `8c6f304` and
+validation `550cf16` from runtime `8780b34`. Independent review composes these
+onto current main and applies only a status-guidance formatting correction.
+Project-scoped native metadata discovery, exact activation message view/copy,
+separate default-no Codex send review and original-key recovery are supported.
+Claude remains copy-only. Discovery/delivery do not enroll agents or grant work.
+
+Independent current-source checks pass 93 core and 205 selected CLI race nodes,
+affected vet, native build and Linux amd64 compilation. All Go/module hashes
+remain stable through checks. Eighteen owner terminal checks and four joined PTYs
+are source-equivalent except the reviewed formatting. No real agent metadata,
+delivery, policy, enrollment or backend was touched. Main publication and the
+explicitly requested executable install follow; live native attestation, Linux
+runtime and full Go-suite acceptance remain outside this scope. See the
+[composed record](validation/rollout-discovery-activation-composed-2026-10-29.json).
 
 ## OSS project directory entry — accepted and published
 
@@ -60,21 +66,6 @@ coordinated centrally. A partial capture roster does not establish a complete
 UX pass. No new product capabilities, pinned-engine promotion or production
 mutations are assigned.
 
-## Native rollout discovery and explicit activation continuation
-
-Owner: `codex/rollout-activation`, based on accepted runtime main `8780b34`.
-Scope: generic bounded native session metadata adapters, project-scoped discovery,
-exact-session activation message view/copy, separately reviewed Codex queue
-delivery, durable original-key outcomes and a default-no post-onboarding
-discovery offer. Claude remains copy-only. No actual user-agent delivery,
-identification, adoption, policy change or ARM backend is part of validation.
-Owner feature source `e045e4b` and onboarding-choice correction `8c6f304` pass
-93 core normal/race nodes and 278 selected CLI race nodes, affected vet, clean
-native build and Linux compilation. The corrected source passes 18 checks across
-four joined controlled terminal sessions. Coordinator review/composition still
-precedes the requested main push and executable install. Unknown native state is
-not liveness, and live native delivery/identity attestation remain outside the
-controlled adapter-fixture evidence.
 
 ## Rollout removal and stale-boundary continuation
 
