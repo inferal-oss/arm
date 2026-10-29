@@ -6,6 +6,24 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Uninterrupted upgrade design — reviewed; approach selection open
+
+Owner: `codex/live-upgrade-design`, based on `dfd916c`; focused design commit
+`23e211f` remains preserved on the owner branch. Independent read-only review
+confirms current install/runtime identity, supervision, drain/recovery, proxy
+reporting and generation/authority boundaries. Fifty-eight added local source/document
+links and scoped privacy/diff checks pass; no runtime experiment was needed.
+
+The proposal separates a work-preserving verified-idle activation with a possible
+indefinite admission pause/API gap from resident custody with replaceable API/UI
+workers while jobs stay active. Neither establishes arbitrary whole-backend or
+connection continuity today. Current binaries need a preparatory compatible
+release; proposals must preserve original owners, single-writer fencing, exact
+operation outcomes and conservative accounting/cleanup. User approach selection,
+product implementation and all future native/failure-injection gates remain open.
+No live backend/installed-state mutation or product work is authorized by this
+design discussion, and the focused design is not integrated pending that choice.
+
 ## Dashboard visibility and detail presentation — reviewed and integrated
 
 Focused cuts `8caf3df`, `f176aa1`, `344402a` and `dbba2c4` are reviewed and
@@ -76,7 +94,14 @@ protected policy/instruction/endpoint hashes remain unchanged and adoption stays
 disabled. Public website CI `40896915169` completes successfully.
 
 Resources consumer/accounting presentation is the next bounded slice on the
-accepted base, owned by `codex/ux-resource-layout`. Shell/Mesh/global helpers and backend/pins remain
+accepted base, owned by `codex/ux-resource-layout`. Candidate `37fa208` fixes
+reproduced consumer/accounting clipping and passes preliminary source/component
+checks, but is not accepted: desktop expanded details still use roughly 338px
+inside a 1440px view, producing an excessively long narrow column. A focused
+expanded-reading-width correction `a70561e` is returned and awaits independent
+source/composition review. Main contains no Resources
+candidate runtime or bundle; original captures remain source-qualified.
+Shell/Mesh/global helpers and backend/pins remain
 coordinated separately. Full route/state/terminal acceptance remains open.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
