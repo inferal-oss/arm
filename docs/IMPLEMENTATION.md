@@ -3155,3 +3155,19 @@ Protected V2 writing, native workflow dispatch and public onboarding are not
 activated. Durable pre-Pod ownership, truthful constructor outcomes, typed
 workers and the unified dashboard flow remain separate work.
 [Scoped validation](validation/kubernetes-components-integration-2026-10-28.json).
+
+### Reviewed gradual-rollout integration
+
+Focused owner rollout/install/onboarding commits and the shared interruption
+correction are composed on `40631eb` as reviewed source `5b625b1`. Projects are
+disabled until the operator reviews scope and policy; self-identification, exact
+invitation and session acknowledgment remain separate from resource admission
+and messaging. Existing leases, work and cleanup obligations are unchanged.
+The CLI uses bounded offline metadata suggestions and explicit default-no review.
+
+Independent review closes pending-write outcome loss in the shared CLI handler
+and corrects canonical expected paths in discovery fixtures. The new indirect
+fuzzy-search module supports the existing pinned Charm list component; no other
+module/dependency promotion, backend protocol or web editor is introduced.
+The accepted boundary remains cooperative, local and CLI-first. Native metadata
+compatibility is fixture-tested and version-dependent rather than attested.

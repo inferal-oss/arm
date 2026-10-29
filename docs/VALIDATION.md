@@ -7784,3 +7784,34 @@ historical-reader binary cohort was not selected. This does not establish a
 full Go suite, Linux runtime, real cluster installation, public enrollment,
 protected V2 activation, typed workflow worker or dashboard acceptance.
 [Normalized component record](validation/kubernetes-components-integration-2026-10-28.json).
+
+## Reviewed gradual-rollout current composition
+
+Source `5b625b1` passes scoped acceptance on current main `40631eb`. The complete
+discovery, rollout and installation packages pass normal and race: 46 roots /
+75 named nodes per cohort, without failures/skips. Their tested package trees
+and module inputs are byte-identical to the final composition; later Go changes
+are CLI only. Scoped CLI race passes 83 roots / 278 named nodes, including
+shared interruption recovery for pre-confirmation, pending and committed-but-
+unacknowledged outcomes. Affected vet, native build and Linux amd64 compile pass.
+The compiled native binary reports exact VCS source with no modified inputs.
+Linux compilation does not establish rollout runtime acceptance.
+
+A separate final-source real-terminal replay passes 28 checks across eight
+original joined, exit-zero processes. It covers install diff/re-prompt/accept,
+instruction readiness, default-no and confirmed Git-scoped onboarding, selected-
+home recovery/default-home suggestions, uninstall and exact policy preservation.
+Operational terminal modes, speeds and controls are restored; transient native
+pending-input state is excluded from that oracle. Synthetic roots only are used;
+no sessions enroll and no rollout-fixture backend starts. Independent supervisory
+authorities are all joined with terminal leases.
+
+Original path-oracle, temporary-root setup and pending-input-oracle failures
+remain failed and are recorded separately; no production guard was relaxed.
+[Hosted validation](https://github.com/inferal-oss/arm/actions/runs/40801822546)
+passes current-source captures and SSR/browser checks. Its artifact matches all
+612 UI inputs/assets, four pages/CSS and eight fully decoded PNGs. Earlier owner
+terminal claims retain their original sources. Full Go-suite, native client
+identity attestation, web policy editing and Linux rollout-runtime acceptance
+remain outside this milestone.
+[Normalized integration evidence](validation/gradual-agent-rollout-integration-2026-10-28.json).
