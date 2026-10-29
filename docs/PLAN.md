@@ -239,6 +239,20 @@ until concrete findings and scoped corrections return for review. Use sequential
 unchanged-FIFO cohorts within the existing 120s/2CPU/2GiB bounds and positive
 original cleanup; no broad suites/build/install or new chats/subagents.
 
+Activity/Host inventory `3705be6` is reviewed read-only: 28 current/protected
+hashes match. Source confirms Host's two Code updates target the wrong property;
+Activity recreates its selected exact reader on identical/new-event refresh;
+and a contract-valid long name overflows the shared header.
+Allocate only the two Host setter changes to native `value`, and Activity-only
+selected-detail retention tied to exact sequence/current authority/content with
+correct invalidation, original callbacks, int64/format/caps and disposal. Keep
+global Code mapping, graph/engine, styles and all other route behavior protected.
+After populating Host Code, return its actual geometry before any layout change.
+The shared header remains a separate read-only cause/proposal boundary; do not
+hide or weaken the overflow control. Final same-source browser/ownership checks
+and independent composition remain gates; successful inventory collection is
+not visual acceptance.
+
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
 readable sizing, responsive containment, navigation/focus and action clarity.
