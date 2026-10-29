@@ -35,15 +35,17 @@ uncertain-delivery recovery without automatic retry. Disposable validation,
 independent review and integration precede the requested push and executable
 installation; actual agent activation and policy changes are not validation scope.
 
-## OSS project directory entry — in progress
+## OSS project directory entry — accepted and published
 
 Owner: `codex/add-arm-oss-listing` in
 [`inferal-oss/inferal-oss.github.io`](https://github.com/inferal-oss/inferal-oss.github.io).
-Add ARM to the existing project directory and assistant index, linking to
-`https://getarm.org/` and the public source. Match the existing card/mark design,
-preserve attribution and validate the static site. Coordinator review and
-publication follow the focused handoff; no hosting/domain/settings migration is
-assigned.
+Focused commit `42f445c` adds ARM to the existing project directory and assistant
+index, linking to `https://getarm.org/` and public source. Independent static and
+diff checks pass, the public symbol/complete MIT attribution match, and desktop
+and narrow card images are visually reviewed. Pages run `40888004289` builds and
+deploys successfully; four live HTTPS bodies match reviewed source exactly. No
+hosting/domain/settings migration occurred. See the
+[scoped publication record](validation/oss-directory-listing-2026-10-29.json).
 
 ## Full dashboard layout and UX remediation — in progress
 

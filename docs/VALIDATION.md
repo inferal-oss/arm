@@ -1,5 +1,16 @@
 # Validation record
 
+## Organization directory listing — published
+
+Reviewed directory commit `42f445c` passes the existing six-project/local-asset
+checker and diff checks. The copied ARM mark is byte-identical to public source
+and retains its complete MIT license. Desktop and 320px card captures are visually
+reviewed. Existing CSS/display scripts and hosting settings are unchanged.
+Pages run `40888004289` builds and deploys successfully. Independent normal HTTPS
+reads of the homepage, assistant index, mark and notice all return 200 and match
+the reviewed bytes. The browser suite was not independently repeated; source and
+publication hashes are in the [scoped record](validation/oss-directory-listing-2026-10-29.json).
+
 ## Rollout removal — independent composed acceptance
 
 Focused owner commits `928fd3b`, `cdbc082` and review correction `95f16ed`

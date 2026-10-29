@@ -1,5 +1,12 @@
 # Backend and CLI implementation
 
+## Organization project directory
+
+ARM is listed on the existing [Inferal OSS directory](https://oss.inferal.org/),
+with its canonical website/source links, assistant index entry and public mark
+with retained license attribution. Directory commit `42f445c` passes review and
+Pages publication; this does not move ARM hosting or change application behavior.
+
 ## Project-scoped gradual agent adoption — CLI milestone
 
 Interactive install/uninstall confirmation offers `[y/N/diff]`. `d`/`diff`

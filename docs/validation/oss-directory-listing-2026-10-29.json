@@ -1,0 +1,72 @@
+{
+  "status": "reviewed and published",
+  "repository": "https://github.com/inferal-oss/inferal-oss.github.io",
+  "source": "42f445cca88a3143c2c0a585725ef1f87500870f",
+  "base": "66c56fcd862dc1796d9a1ff749e8a6e212150c6b",
+  "source_sha256": {
+    "README.md": "dcade9c70e3dc963439eca62fb2c14620d1ff3a40823f55f0a46d0c67dbb4f69",
+    "assets/arm-NOTICE.txt": "bb873aa7906e6bfc65078ee72b39cfd6961ae06f8ea94466442af7be3c300342",
+    "assets/arm.svg": "39541aa0e8608b55d1997e91826c314aa64d71ca70fd8c21f7b9d1a1514d10b8",
+    "index.html": "9fd983e1df9ba86245c6e46d4a153716a024ddc88c1ab29a5cdc03955d711bb1",
+    "llms.txt": "9e070e0396d09b33a5bfeb76050e8eadf54e5c403a9c1b6c83427961d9e81a76",
+    "scripts/check.mjs": "b6fd26b1b9ac99c15b5565ec4758fe89a93ccd8ac7bc651130b213f094784baa"
+  },
+  "scope": [
+    "Add ARM card to the existing organization project directory.",
+    "Link canonical getarm.org and public source; update assistant index and featured-project count.",
+    "Copy existing public ARM symbol with complete required MIT attribution.",
+    "Existing display/style integrations and hosting/domain settings unchanged."
+  ],
+  "validation": {
+    "static_checker_exit": 0,
+    "project_count": 6,
+    "diff_check_exit": 0,
+    "logo_exact_source_bytes": true,
+    "required_license_retained": true,
+    "independent_visual_review": [
+      "desktop ARM card at 1440px page width",
+      "narrow ARM card at 320px page width"
+    ],
+    "browser_replay": "Owner fixture evidence reviewed; browser suite not independently repeated."
+  },
+  "publication": {
+    "workflow_run": 40888004289,
+    "url": "https://github.com/inferal-oss/inferal-oss.github.io/actions/runs/40888004289",
+    "build": "success",
+    "deploy": "success",
+    "live_https": [
+      {
+        "path": "index.html",
+        "url": "https://oss.inferal.org/",
+        "status": 200,
+        "sha256": "9fd983e1df9ba86245c6e46d4a153716a024ddc88c1ab29a5cdc03955d711bb1",
+        "source_matches": true
+      },
+      {
+        "path": "llms.txt",
+        "url": "https://oss.inferal.org/llms.txt",
+        "status": 200,
+        "sha256": "9e070e0396d09b33a5bfeb76050e8eadf54e5c403a9c1b6c83427961d9e81a76",
+        "source_matches": true
+      },
+      {
+        "path": "assets/arm.svg",
+        "url": "https://oss.inferal.org/assets/arm.svg",
+        "status": 200,
+        "sha256": "39541aa0e8608b55d1997e91826c314aa64d71ca70fd8c21f7b9d1a1514d10b8",
+        "source_matches": true
+      },
+      {
+        "path": "assets/arm-NOTICE.txt",
+        "url": "https://oss.inferal.org/assets/arm-NOTICE.txt",
+        "status": 200,
+        "sha256": "bb873aa7906e6bfc65078ee72b39cfd6961ae06f8ea94466442af7be3c300342",
+        "source_matches": true
+      }
+    ]
+  },
+  "limits": [
+    "Static directory listing, not an ARM hosting migration or new release.",
+    "No domain/DNS/Pages settings changes or new application behavior."
+  ]
+}
