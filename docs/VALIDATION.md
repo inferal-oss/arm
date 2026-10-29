@@ -10,8 +10,11 @@ protected graph/protocol/pin/module bytes are verified. Source-qualified owner
 captures show the stale short review with 197px visible body, actual panel-bound
 control/text reachability, complete exact values and computed 15px/30px text.
 Desktop/narrow/doubled-text images are independently visually reviewed and hashed.
-No real pool/backend/policy/credential mutation or Linux/full-Go/new-terminal
-acceptance is inferred. [Normalized record](validation/ux-pools-composed-2026-10-29.json).
+Published runtime `6035548` is installed in 25.442s; its four carrier payload
+streams verify and protected policy/instruction/endpoint hashes remain unchanged.
+The offline gate stays disabled. Public website workflow `40896915169` is still
+in progress. No real pool/backend/policy/credential mutation or Linux/full-Go/
+new-terminal acceptance is inferred. [Normalized record](validation/ux-pools-composed-2026-10-29.json).
 
 ## Dashboard presentation — independent composed acceptance
 

@@ -71,8 +71,12 @@ source-qualified fixtures prove 15px/30px text in Pools and Messages. Historical
 failed/rem-only artifacts remain qualified. See the
 [composed record](validation/ux-pools-composed-2026-10-29.json).
 
-Resources consumer/accounting presentation is the next bounded slice after this
-accepted base is supplied. Shell/Mesh/global helpers and backend/pins remain
+Published runtime `6035548` is installed; carrier/four payload streams verify,
+protected policy/instruction/endpoint hashes remain unchanged and adoption stays
+disabled. Public website CI `40896915169` is still in progress.
+
+Resources consumer/accounting presentation is the next bounded slice on the
+accepted base, owned by `codex/ux-resource-layout`. Shell/Mesh/global helpers and backend/pins remain
 coordinated separately. Full route/state/terminal acceptance remains open.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal

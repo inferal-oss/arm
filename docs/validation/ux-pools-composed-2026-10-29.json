@@ -113,5 +113,26 @@
     "No full Go suite or Linux runtime claim; no new terminal visual acceptance",
     "Native subpool, pause/resume/delete visuals and broader route/state coverage remain open",
     "Historical root-rem-only and clipped results remain excluded from successor acceptance"
-  ]
+  ],
+  "published_runtime": "60355480d46ae5a2c8e55fc4e83ab35d645d8fd7",
+  "installation": {
+    "source": "60355480d46ae5a2c8e55fc4e83ab35d645d8fd7",
+    "exit": 0,
+    "seconds": 25.442,
+    "binary_sha256": "2ac9f4cbed27f582cba6e692458813a9c7ebad75bbf99d2fccbc344a8a95a067",
+    "source_inputs_match_reviewed": true,
+    "catalog_digest": "5255b2c119ca138a596bb0d10b83429b8111dbfbdf68eb77f1bf4cb70ce9851b",
+    "coordinate": false,
+    "eligible": false,
+    "postflight_exit": 0,
+    "carrier_payload_streams_verified": 4,
+    "rollout_policy_unchanged": true,
+    "managed_instruction_manifest_unchanged": true,
+    "backend_endpoint_unchanged": true
+  },
+  "public_website_ci": {
+    "run": 40896915169,
+    "status": "in_progress",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40896915169"
+  }
 }
