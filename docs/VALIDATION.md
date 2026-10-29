@@ -1,5 +1,24 @@
 # Validation record
 
+## Resource help and tooltips — independent composed acceptance
+
+Focused source `1233ba1`, `a75c1fe` and `2a1d728` passes independent review and
+the unchanged shared FIFO: 445 JS tests, 29 native component/lifecycle cases,
+native CLI build and byte-identical asset rebuilds. The guarded actual-route
+development fixture passes twenty Resource dialogs across four viewport/text
+scenarios, 56 rendered native focus/hover tooltip samples, eight visible-edge
+checks, retained/disconnected contexts and two unchanged Monitor controls.
+Complete tooltip border and painted text fit; document width stays bounded.
+No real transport or mutation is attempted. Original browser/context/probe/server
+owners close/join. Narrow, short and doubled-token images are visually reviewed.
+The native PageDown/End/Home causal failure remains preserved; the CSS-only
+correction uses existing opener restoration. The final asserting causal mode
+has separate source-qualified owner evidence. Backend/module/pin/shared-engine
+bytes remain unchanged. No installed activation, compiled-bundle browser run,
+universal zoom, Linux/full-Go or complete UX acceptance is inferred. Monitor's
+existing narrow tooltip overflow remains open.
+[Normalized record](validation/ux-resource-help-composed-2026-10-29.json).
+
 ## Resources — independent composed acceptance
 
 Reviewed source `37fa208`/`a70561e` passes a normal-FIFO combined gate: 445 JS and
@@ -8242,3 +8261,156 @@ not acceptance evidence. Resource JavaScript, preexisting ontology prefix,
 shared main/graph/accounting sources and dependency pins are verified unchanged
 from `37fa208`. Independent current composition/rebuild and broader UX gates
 remain open.
+
+## Resources route/help/nearby inventory — no product remediation
+
+The [source-bound inventory](validation/ux-resources-route-inventory-2026-10-29.json)
+uses accepted `03f8a4` product source unchanged, replacing only Backend at import
+resolution. The bounded native run passes its scenario/lifecycle assertions at
+1440×900, 390×900, 768×600 with actual doubled tokens, and 390×320. It inventories
+twenty help dialogs, four stale CPU help states and a separate initial status
+error. Body/technical font assertions are 15px/13px and 30px/26px. No page errors,
+unexpected operations, live network requests or WebSockets occur. Original
+context/browser close and Vite server join are positively awaited. No broad
+regression suites, bundle rebuild or activation is included.
+
+Reproduced P2: opening CPU Technical details leaves value columns 24.36px wide
+at 390px and effectively zero at doubled text in 768px; the technical body
+content reaches 28911px. Storage technical values get 63.11px at 390px. This is
+a useful-reading-width defect, not evidence that the actual modal escapes its
+viewport: final actual dialog panels are bounded, and Close/Escape remain
+reachable. Proposed product allocation is Resource-only body/facts markers in
+`main.mjs` help() and scoped `app.ttl` styles; no implementation is included.
+Desktop prose, narrow technical values, doubled-text values and short stale
+help captures are visually inspected.
+
+Discovery/refresh errors and stale connection warnings remain readable. Refresh
+errors preserve filter focus, reconnect retains the original filter node, and
+stale CPU help states unknown capacity truthfully and restores its opener on
+Escape. Contract-shaped 32-character peer IDs, summaries, advisory notes, active
+expiry and queue text fit in the final native cases. An earlier clipping
+candidate used overlong synthetic host IDs and is withdrawn. Likewise, earlier
+help measurements selected a nested disclosure panel; only the final actual
+role=dialog bounds establish panel geometry. Raw earlier evidence is preserved.
+
+Before help, the narrow nearby report has document width390. After help disposal,
+scrollWidth becomes416–427 despite no visible element bounding box exceeding
+the viewport. This observation is retained without attributing a product cause;
+it requires focused reproduction before allocating any shared graph/shell edit.
+Initial loading shows the existing Authenticating badge and waiting-sample text;
+there is no resource-specific loading label. This inventory does not classify
+that alone as a defect. Real transport/authentication, timing/cancellation,
+independent review and broader route/terminal acceptance remain open.
+
+## Resource help technical-width remediation — owner evidence
+
+The [source-bound correction](validation/ux-resource-help-2026-10-29.json)
+retains accepted `03f8a4` outside help() and additive Resource-help styles.
+All twenty Resource help cases pass complete paragraph/label/value/control
+clipping and long-value-end checks across desktop, 390px narrow, 390×320 short,
+and 768px actual doubled-text cases. Body/technical fonts remain 15px/13px and
+30px/26px. CPU values now have 742px at 1440px, 252px at 390px and 630px at doubled
+768px, compared with the inventory's 162.36px, 24.36px and effectively zero.
+The doubled CPU technical body falls from 28911px to 2143px.
+
+Actual native panels remain within the viewport. The short case has 222px of
+reading space; doubled 768px has 502px. Oracles require at least 120px/four computed
+text lines. Native PageDown scrolls, End reaches the final exact value and Home
+returns to the beginning. Labels, original collector notes/accounting and
+paragraphs remain complete; exact CPU fields are compared with the synthetic
+source values. Disconnected help displays the material unknown-capacity warning
+and restores the opener. Known reconnect context removes that warning. Native
+Close click and Escape both dispose the original dialog and restore focus.
+
+Two actual Monitor CPU help controls at 1440/390 retain the original 480/342px
+panel widths, native Dialog/DescriptionList structure and no Resource hooks.
+Seven focused help/accounting/freshness tests and 28 Resource/RDF/ownership/focus
+tests pass through the unchanged queue. The bounded native run takes 40465ms,
+with zero page errors, unexpected operations or live network/socket transports.
+Original browser/context close and server join are positively awaited. Final
+short/doubled technical and Monitor-control captures are visually inspected.
+
+The initial keyboard oracle sampled before native key scrolling settled; the
+retained failed receipt is not a product defect. Final oracles use bounded
+waits for measured Home/PageDown/End targets. Product source is unchanged by
+that fixture repair. Main outside help(), the ontology prefix, metricHelp,
+resource accounting, nearby renderer, shared graph/transport, pins and assets
+are verified identical to the accepted base. Independent composition/rebuild,
+real transport lifecycle and full UX acceptance remain open.
+
+## Focused help-tooltip geometry reproduction — fix not allocated
+
+At 390px, focusing the CPU help icon produces document width 423px; moving focus
+to the filter restores 390px; refocusing reproduces 423px. The existing tooltip
+pseudo-element is 151.703px wide plus padding, centered on the 38px icon button;
+its calculated right edge is 422.8514px, matching the document width. Both
+390×900 and 390×320 reproduce the result. All visible DOM rectangles fit,
+explaining why the earlier element-only probe found no offender. Existing
+Resource-only help layout leaves the 416–427px post-help observation intact.
+No product tooltip, graph, shell or global style fix is included. Proposed
+allocation is additive app.ttl styles scoped to existing ResourceSurface native
+help IconButtons, aligning/bounding their tooltip at the inline end while
+preserving its content, keyboard focus and native types.
+
+## Resource tooltip viewport correction — CSS-only owner evidence
+
+The [source-bound record](validation/ux-resource-tooltips-2026-10-29.json)
+preserves `a75c1fe` main lifecycle and all shared source, pins and generated
+assets. Only additive ResourceSurface IconButton styles change product behavior.
+The four-case desktop/narrow/short/actual doubled-token matrix passes all twenty
+existing help/readability/context/disposal cases, 56 rendered tooltip focus/
+refocus/hover samples and eight top/bottom hover checks. Native pseudo border
+and painted text line bounds fit the viewport, full generated text matches its
+accessible label, and focus/blur/refocus/hover do not widen the document. Narrow
+width remains 390px. Body/technical tokens retain asserted 15px/13px and
+30px/26px values; native tooltip font behavior is unchanged.
+
+Original Close click/Escape focus and disposal, deliberate focus elsewhere,
+rapid reopening, changed context and removal of the original opener pass.
+The changed-context case receives only the existing native restoration; no
+extra focus callback exists. Two native Monitor controls retain their original
+panel dimensions, centered tooltip transform, content-box sizing and 320px
+limit. Their preexisting narrow tooltip overflow remains outside this scoped
+correction. Twenty-eight focused RDF/ownership/focus tests pass. The bounded
+full native run takes 70962ms with zero viewport findings, page errors,
+unexpected operations or live transports. Native probe detachment, context/
+browser close and Vite server join are positively awaited. Final narrow and
+short/doubled edge-hover captures are visually inspected.
+
+### Causal qualification of the vertical tooltip state
+
+The horizontal-only correction retained a failed full-viewport control: after
+reading, the original CPU tooltip could lie at y=-36.109375 to -7.3125.
+Clean untouched Escape, simple native End/Home, copied programmatic reading
+probes and keyboard navigation back from nearby reports did not reproduce it.
+Their passing controls are retained; no product defect was inferred from those
+results alone. The exact original sequence trace then showed prose/facts
+probes leave document scroll unchanged, with the first background movement
+occurring during native keys before the final tail/Close probes.
+
+A separate clean-start native Home/PageDown/End/Home/Escape sequence reproduces
+the failure without any reading measurement probes. At 1440px, native End moves
+the background to y=849 while the panel reaches its end; Home leaves background
+y=984 while returning the panel to zero. At 390px, the corresponding background
+positions are 2386/2387. Escape restores original focus at opener y=-0.3125,
+leaving the above-opener tooltip outside the viewport. Both native panel
+targets are positively reached. Simpler End/Home controls omit the decisive
+PageDown transition and therefore do not establish absence of this case.
+
+With only the Resource scroll margin added, all twelve causal paths fit; the
+original opener is at y=63.6875 and the tooltip at y=27.890625 to 56.6875.
+Before/after runs use identical main, fixture and shared sources; only app
+styles differ. Original failed receipts and all interim evidence remain
+private and preserved. This correction does not claim to stop background
+scrolling or change shared modal keyboard semantics. Independent current
+composition/rebuild and broader UX acceptance remain open.
+
+The original causal helper recorded diagnostic target/viewport booleans without
+failing on them; those historical exits are not counted as passing regressions.
+Review tightened the corrected helper to assert every reached target and full
+tooltip result after recording each case. The final bounded causal rerun passes
+twelve cases, including eight native End/Home target pairs, in 17512ms with
+positive original cleanup. The full-matrix receipt retains its earlier fixture
+hash; the final fixture differs only by added assertions in the inactive
+causality-only branch. Product/shared source hashes are identical between those
+runs. Both exact fixture hashes are retained in the normalized record.

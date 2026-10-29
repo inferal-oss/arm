@@ -1,5 +1,16 @@
 # Backend and CLI implementation
 
+## Resource help and tooltip composition
+
+Resource help uses full-width stacked technical fields and a bounded reading
+panel. Resource-only native tooltip alignment, wrapping and opener scroll margin
+preserve readable focus restoration after keyboard scrolling. Native dialog,
+button, authentication and accounting behavior stay unchanged; Monitor retains
+its existing presentation. Independent tests, guarded source-runtime rendering
+and deterministic embedded assets support the
+[scoped acceptance](validation/ux-resource-help-composed-2026-10-29.json).
+This source change is not installed or activated in a running backend.
+
 ## Resource presentation composition
 
 Consumer wrapping, labeled metadata and expanded desktop/tablet reading width
@@ -3420,3 +3431,53 @@ The correction adds only Resource-scoped ontology styles and native evidence
 checks. Existing resource nodes, ordering, filters, callbacks, budget arithmetic
 and warnings are unchanged. Historical clipping evidence alone did not establish
 useful expanded reading width; independent composition remains required.
+
+## Synthetic Resources route inventory
+
+The task-owned native runner imports the unchanged actual main route. A Vite
+resolver substitutes only Backend with synthetic read-only status/peer responses
+and deferred/error states. Existing static Screen Sharing dependencies resolve
+without starting that view. A refusing WebSocket class and network interception
+block live transports; no product authentication exchange or mutation is used.
+
+The fixture inspects initial loading/status errors, discovery failure, disconnect
+retention, reconnect, nearby summary/claim disclosures and five actual Resource
+help dialogs. Pixel text tokens are doubled explicitly. Complete box/text bounds
+use actual clipping ancestors, and modal geometry selects the role=dialog panel
+rather than its nested technical disclosure. Native Enter/Escape, close disposal
+and original filter node/focus checks remain real renderer behavior. This is
+inventory evidence with a reproduced technical-field width defect; no product
+remediation has been implemented in this continuation.
+
+## Resource-only help technical layout
+
+Only help kinds beginning with `resource-` mark their existing native dialog
+body and technical DescriptionList with ResourceHelpBody/ResourceHelpFacts.
+The dialog uses at most 52rem of available viewport width. Complete technical
+labels and values stack, wrap unbroken data and preserve paragraph whitespace.
+The stock native panel continues scrolling; no font reduction, ellipsis, hidden
+warning or new interaction is introduced. Current-context lookup, metricHelp
+copy/accounting, native Dialog/IconButton types, opener and close/disposal
+callbacks remain unchanged. Non-resource Monitor help keeps its original
+layout and receives no hooks.
+
+A read-only focus/blur/refocus probe separately reproduces narrow document
+width growth in the existing focused help-icon tooltip pseudo-element. Its
+centered max-content box extends beyond the viewport even while all visible
+DOM boxes fit. This correction does not change tooltip behavior; a scoped
+product allocation is proposed separately.
+
+## Resource help tooltip viewport bounds
+
+Only native help IconButtons inside ResourceSurface receive inline-end tooltip
+alignment, border-box viewport width and unbroken-value wrapping. The original
+tooltip content, ARIA label, native keyboard/hover activation and font remain
+unchanged. A 4rem scroll margin on those existing buttons gives the stock
+opener-restoration path readable space at the viewport edge. No main lifecycle
+callback, new interactive marker or shared tooltip/focus behavior is added.
+
+Native pseudo-element border geometry and painted text line bounds are read
+from the browser's layout data, including generated content absent from the
+ordinary DOM. The fixture distinguishes native pointer Close, which may leave
+a tooltip inactive, from keyboard refocus and hover, which must render it.
+Non-resource Monitor controls retain their centered stock tooltip styling.

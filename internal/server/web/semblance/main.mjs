@@ -156,7 +156,15 @@ window.addEventListener('popstate',connectionLinks.change);window.addEventListen
 let paused=false,lastMonitorStale=null;
 const pause=ui.check('Pause monitor display',{checked:false},()=>{paused=pause.checked;if(!paused)renderMonitor();}),monitorFresh=ui.text(''),monitorCards=ui.stack();roots.monitor.replace(ui.toolbar('Monitor display',[pause,monitorFresh]),monitorCards);
 const ioSelections={disk_io:allDevices(),network:allDevices()};
-function help(kind,options={}){const get=()=>typeof options==='function'?options():options,title=metricHelp(kind,get()).title;return ui.iconButton('About '+title,'?',()=>{const info=metricHelp(kind,get()),body=info.paragraphs.map(x=>ui.text(x));if(info.technical.length)body.push(ui.disclosure('Technical details',[ui.descriptions(info.technical)]));const d=ui.dialog(info.title,body);d.on('close',()=>d.dispose());d.showModal();});}
+function help(kind,options={}){
+ const get=()=>typeof options==='function'?options():options,title=metricHelp(kind,get()).title,resource=kind.startsWith('resource-');
+ return ui.iconButton('About '+title,'?',()=>{
+  const info=metricHelp(kind,get()),body=info.paragraphs.map(x=>ui.text(x));
+  if(info.technical.length){const facts=ui.descriptions(info.technical);if(resource)ui.put(facts.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'ResourceHelpFacts',true);body.push(ui.disclosure('Technical details',[facts]));}
+  const d=ui.dialog(info.title,body);if(resource)ui.put(d.body.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'ResourceHelpBody',true);
+  d.on('close',()=>d.dispose());d.showModal();
+ });
+}
 const GiB=1024**3;
 function series(get,{scale=1}={}){const cadence=Number(state.monitor?.cadence_ns??2e9)/1e6,rows=state.history.map(p=>{const v=numeric(get(p));return{id:String(p.sequence),x:Date.parse(p.at)/1000,value:v===null||!Number.isFinite(v)?null:v/scale,label:new Date(p.at).toLocaleTimeString()};});for(let i=0;i<rows.length-1;i++)rows[i].connectNext=Number.isFinite(rows[i].x)&&Number.isFinite(rows[i+1].x)&&rows[i+1].x>rows[i].x&&(rows[i+1].x-rows[i].x)*1000<=cadence*1.6;return rows;}
 let monitorModel=null;

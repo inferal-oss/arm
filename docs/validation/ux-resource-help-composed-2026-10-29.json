@@ -1,0 +1,138 @@
+{
+  "scope": "Independent Resource-only help and tooltip composition; no runtime activation",
+  "review_source": "6fec031e4997cdba86281b95271a5d11af6a3e94",
+  "owner_commits": [
+    "1233ba1d85a78eb5b63307a9fa1aec169757528f",
+    "a75c1feb7df8b862f4798c526d8ae3ca3f6581f6",
+    "2a1d728d3ee5db1d4a5fd12fa211c2036a4e9c5c"
+  ],
+  "sources": {
+    "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+    "internal/server/web/semblance/app.ttl": "9d28b18de7363df65c241d4727ca8f02fa672f2beafc1f04fc0ef8313a107ed3",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+    "internal/server/web/peer-poll.mjs": "2b76967697500dbac3644c528e98d2bec9ff908e3d02c1f67b996a5152c99b10",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+    "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815"
+  },
+  "test_sources": {
+    "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+    "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+    "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+  },
+  "protected": {
+    "go_modules_pins_shared_tooltip_graph_unchanged": true,
+    "accepted_ontology_prefix_unchanged": true,
+    "dialog_lifecycle_byte_identical_to_help_cut": true
+  },
+  "independent": {
+    "normal_fifo": true,
+    "js": {
+      "passed": 445,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native_component_lifecycle": {
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0
+    },
+    "phases": [
+      {
+        "name": "web-build",
+        "exit": 0,
+        "seconds": 1.014
+      },
+      {
+        "name": "node",
+        "exit": 0,
+        "seconds": 6.398
+      },
+      {
+        "name": "native",
+        "exit": 0,
+        "seconds": 2.863
+      },
+      {
+        "name": "route-browser",
+        "exit": 0,
+        "seconds": 71.325
+      },
+      {
+        "name": "native-build",
+        "exit": 0,
+        "seconds": 17.594
+      },
+      {
+        "name": "web-rebuild",
+        "exit": 0,
+        "seconds": 0.78
+      }
+    ],
+    "total_active_seconds": 100.24,
+    "deterministic_bundle": true,
+    "bundle_sha256": "77a4979fa03b415ad4c728574669d5ad519915537daf83c03265f3287a58c5ce",
+    "native_build_sha256": "50ad2d285859f2cf455cc640e0475b7d66e7beaca7becf4caefa88d50be30b89"
+  },
+  "guarded_source_runtime_browser": {
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "selected_text_token_scale": 1
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "selected_text_token_scale": 1
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "selected_text_token_scale": 2
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "selected_text_token_scale": 1
+      }
+    ],
+    "resource_dialogs": 20,
+    "rendered_tooltip_samples": 56,
+    "visible_edge_hover_checks": 8,
+    "monitor_controls": 2,
+    "tooltip_viewport_findings": 0,
+    "page_errors": 0,
+    "forbidden_operations": 0,
+    "nonfixture_network_requests": 0,
+    "real_websockets": 0,
+    "cleanup": {
+      "nativeProbeDetached": true,
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    },
+    "elapsed_ms": 71056,
+    "visually_reviewed": [
+      "resource-tooltip-live-cpu-headroom-390-900-1.png",
+      "route-help-live-cpu-headroom-768-600-2.png",
+      "route-help-live-cpu-headroom-390-320-1.png"
+    ]
+  },
+  "reviewed_images": {
+    "resource-tooltip-live-cpu-headroom-390-900-1.png": "67b0f379036bc67e7ae90ac634c9cf3d2354f48de9623d592e6c12fc333e1a11",
+    "route-help-live-cpu-headroom-768-600-2.png": "3c9aa0686463445586ed3607492b067d94fb7c6fe47a11a00e4777fffebf75d3",
+    "route-help-live-cpu-headroom-390-320-1.png": "720af8899904632da8ec235e1616d47e98aff69c91ac373247d21370731ce49d"
+  },
+  "limits": [
+    "Native keyboard background scrolling itself is not changed; existing opener restoration gains Resource-only scroll margin.",
+    "Earlier diagnostic causal exits are not counted as passing regressions; final asserting owner causal evidence has its own fixture hash.",
+    "Browser fixture imports actual route source through development tooling with a read-only synthetic Backend; no compiled-bundle or real backend/transport acceptance.",
+    "Selected token doubling is not universal browser zoom.",
+    "Monitor narrow tooltip overflow and full UX/terminal/Linux/full-Go coverage remain open.",
+    "No installed path replacement, backend restart, policy/enrollment or runtime activation."
+  ]
+}

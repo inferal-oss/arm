@@ -1,0 +1,405 @@
+{
+  "scope": "Synthetic actual Resources route-state, nearby-instance and help-dialog inventory; findings only, no product remediation or full route acceptance",
+  "base": "03f8a408294110951f0c57ee6a0abdf0d3664986",
+  "sources": {
+    "internal/server/web/semblance/main.mjs": "068288c634866abb0f719b8ba2595a1c3ca67e76c791cc1cca68535b33affef5",
+    "internal/server/web/semblance/app.ttl": "01cf45bf593a5ec8b7b37c29e69e4bf9fb8b4267c33dda4050146f18a02b1d88",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+    "internal/server/web/peer-poll.mjs": "2b76967697500dbac3644c528e98d2bec9ff908e3d02c1f67b996a5152c99b10",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "scripts/dashboard-screenshots/ux-resources-route.mjs": "bb98b2c94ad6404bec70ea09f26c9dfbaf0444806683ad3e0cd869eba6e0a5f9",
+    "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "29764933f421532925cc621e1c847c4e119965540e02cb27e1035b225035f8cc"
+  },
+  "source_binding": {
+    "all_product_files_unchanged_from_base": true,
+    "actual_main_route_imported": true,
+    "only_Backend_replaced_by_synthetic_module": true,
+    "screen_static_paths_resolve_existing_sources": true
+  },
+  "execution": {
+    "scenario_cases": 4,
+    "resource_help_dialog_cases": 20,
+    "disconnected_cpu_help_cases": 4,
+    "initial_status_error_cases": 1,
+    "page_errors": 0,
+    "unexpected_operations": 0,
+    "live_network_or_socket_transports": 0,
+    "elapsed_ms": 30458,
+    "cleanup": {
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    }
+  },
+  "cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "text_token_scale": 1,
+      "initial_authenticating_visible": true,
+      "initial_resource_specific_loading_label": false,
+      "pending_peer_label": "Partial view \u00b7 some peers unavailable",
+      "discovery_status_error_and_disconnected_text_fit": true,
+      "status_error_preserves_filter_focus": true,
+      "reconnect_preserves_original_filter_node": true,
+      "disconnected_help_warns_unknown_and_restores_opener": true,
+      "nearby_summary_advisory_exact_host_heading_active_expiry_and_queue_text_fit": true,
+      "nearby_document_width": 1440,
+      "post_help_document_width": 1440,
+      "help": [
+        {
+          "title": "Live CPU headroom",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 162.359375,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 852,
+          "dialog_top": 24,
+          "dialog_bottom": 876,
+          "body_content_height": 1229,
+          "whole_value_box_or_text_not_fitting_count": 0,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Memory reservations",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 270,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 542.75,
+          "dialog_top": 178.625,
+          "dialog_bottom": 721.375,
+          "body_content_height": 455,
+          "whole_value_box_or_text_not_fitting_count": 0,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Storage reservations",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 201.109375,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 852,
+          "dialog_top": 24,
+          "dialog_bottom": 876,
+          "body_content_height": 992,
+          "whole_value_box_or_text_not_fitting_count": 0,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Port reservations",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 270,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 387.25,
+          "dialog_top": 256.375,
+          "dialog_bottom": 643.625,
+          "body_content_height": 299,
+          "whole_value_box_or_text_not_fitting_count": 0,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Coordination pool",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 270,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 418.5,
+          "dialog_top": 240.75,
+          "dialog_bottom": 659.25,
+          "body_content_height": 331,
+          "whole_value_box_or_text_not_fitting_count": 0,
+          "native_close_fits_and_escape_restores_opener": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "text_token_scale": 1,
+      "initial_authenticating_visible": true,
+      "initial_resource_specific_loading_label": false,
+      "pending_peer_label": "Partial view \u00b7 some peers unavailable",
+      "discovery_status_error_and_disconnected_text_fit": true,
+      "status_error_preserves_filter_focus": true,
+      "reconnect_preserves_original_filter_node": true,
+      "disconnected_help_warns_unknown_and_restores_opener": true,
+      "nearby_summary_advisory_exact_host_heading_active_expiry_and_queue_text_fit": true,
+      "nearby_document_width": 390,
+      "post_help_document_width": 417,
+      "help": [
+        {
+          "title": "Live CPU headroom",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 24.359375,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 852,
+          "dialog_top": 24,
+          "dialog_bottom": 876,
+          "body_content_height": 5069,
+          "whole_value_box_or_text_not_fitting_count": 2,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Memory reservations",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 132,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 768.5,
+          "dialog_top": 65.75,
+          "dialog_bottom": 834.25,
+          "body_content_height": 681,
+          "whole_value_box_or_text_not_fitting_count": 0,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Storage reservations",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 63.109375,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 852,
+          "dialog_top": 24,
+          "dialog_bottom": 876,
+          "body_content_height": 2200,
+          "whole_value_box_or_text_not_fitting_count": 0,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Port reservations",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 132,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 566.5,
+          "dialog_top": 166.75,
+          "dialog_bottom": 733.25,
+          "body_content_height": 479,
+          "whole_value_box_or_text_not_fitting_count": 0,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Coordination pool",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 132,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 644.25,
+          "dialog_top": 127.875,
+          "dialog_bottom": 772.125,
+          "body_content_height": 556,
+          "whole_value_box_or_text_not_fitting_count": 0,
+          "native_close_fits_and_escape_restores_opener": true
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "text_token_scale": 2,
+      "initial_authenticating_visible": true,
+      "initial_resource_specific_loading_label": false,
+      "pending_peer_label": "Partial view \u00b7 some peers unavailable",
+      "discovery_status_error_and_disconnected_text_fit": true,
+      "status_error_preserves_filter_focus": true,
+      "reconnect_preserves_original_filter_node": true,
+      "disconnected_help_warns_unknown_and_restores_opener": true,
+      "nearby_summary_advisory_exact_host_heading_active_expiry_and_queue_text_fit": true,
+      "nearby_document_width": 768,
+      "post_help_document_width": 768,
+      "help": [
+        {
+          "title": "Live CPU headroom",
+          "body_font_px": 30,
+          "technical_font_px": 26,
+          "minimum_technical_value_width": 0.0,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 552,
+          "dialog_top": 24,
+          "dialog_bottom": 576,
+          "body_content_height": 28911,
+          "whole_value_box_or_text_not_fitting_count": 8,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Memory reservations",
+          "body_font_px": 30,
+          "technical_font_px": 26,
+          "minimum_technical_value_width": 158,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 552,
+          "dialog_top": 24,
+          "dialog_bottom": 576,
+          "body_content_height": 1766,
+          "whole_value_box_or_text_not_fitting_count": 1,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Storage reservations",
+          "body_font_px": 30,
+          "technical_font_px": 26,
+          "minimum_technical_value_width": 63.28125,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 552,
+          "dialog_top": 24,
+          "dialog_bottom": 576,
+          "body_content_height": 7599,
+          "whole_value_box_or_text_not_fitting_count": 4,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Port reservations",
+          "body_font_px": 30,
+          "technical_font_px": 26,
+          "minimum_technical_value_width": 158,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 552,
+          "dialog_top": 24,
+          "dialog_bottom": 576,
+          "body_content_height": 1239,
+          "whole_value_box_or_text_not_fitting_count": 1,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Coordination pool",
+          "body_font_px": 30,
+          "technical_font_px": 26,
+          "minimum_technical_value_width": 158,
+          "actual_dialog_width": 480,
+          "actual_dialog_height": 552,
+          "dialog_top": 24,
+          "dialog_bottom": 576,
+          "body_content_height": 1386,
+          "whole_value_box_or_text_not_fitting_count": 1,
+          "native_close_fits_and_escape_restores_opener": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "text_token_scale": 1,
+      "initial_authenticating_visible": true,
+      "initial_resource_specific_loading_label": false,
+      "pending_peer_label": "Partial view \u00b7 some peers unavailable",
+      "discovery_status_error_and_disconnected_text_fit": true,
+      "status_error_preserves_filter_focus": true,
+      "reconnect_preserves_original_filter_node": true,
+      "disconnected_help_warns_unknown_and_restores_opener": true,
+      "nearby_summary_advisory_exact_host_heading_active_expiry_and_queue_text_fit": true,
+      "nearby_document_width": 390,
+      "post_help_document_width": 417,
+      "help": [
+        {
+          "title": "Live CPU headroom",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 24.359375,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 272,
+          "dialog_top": 24,
+          "dialog_bottom": 296,
+          "body_content_height": 5069,
+          "whole_value_box_or_text_not_fitting_count": 4,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Memory reservations",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 132,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 272,
+          "dialog_top": 24,
+          "dialog_bottom": 296,
+          "body_content_height": 681,
+          "whole_value_box_or_text_not_fitting_count": 1,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Storage reservations",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 63.109375,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 272,
+          "dialog_top": 24,
+          "dialog_bottom": 296,
+          "body_content_height": 2200,
+          "whole_value_box_or_text_not_fitting_count": 3,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Port reservations",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 132,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 272,
+          "dialog_top": 24,
+          "dialog_bottom": 296,
+          "body_content_height": 479,
+          "whole_value_box_or_text_not_fitting_count": 1,
+          "native_close_fits_and_escape_restores_opener": true
+        },
+        {
+          "title": "Coordination pool",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 132,
+          "actual_dialog_width": 342,
+          "actual_dialog_height": 272,
+          "dialog_top": 24,
+          "dialog_bottom": 296,
+          "body_content_height": 556,
+          "whole_value_box_or_text_not_fitting_count": 1,
+          "native_close_fits_and_escape_restores_opener": true
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "priority": 2,
+      "area": "Resources metric help technical descriptions",
+      "reproduction": "Open CPU help, expand Technical details with native Enter, inspect values at narrow and actual doubled text sizes",
+      "evidence": "CPU value columns measure 24.359375px at 390px; at 768px doubled text they measure effectively zero, with technical body content reaching 28911px. The actual native modal remains within the viewport and Close/Escape remain reachable. Storage technical columns also narrow to 63.109375px at 390px.",
+      "proposed_allocation": [
+        "internal/server/web/semblance/main.mjs: Resource-only branch of help(), body and technical DescriptionList markers; preserve original callbacks, copy, native Dialog/Button types and disposal",
+        "internal/server/web/semblance/app.ttl: additive ResourceHelpBody/ResourceHelpFacts styles scoped to those markers; useful value widths and bounded Resource-only dialog reading width",
+        "scripts/dashboard-screenshots/ux-resources-route.mjs: minimum reading-width and complete control/text regressions"
+      ],
+      "not_allocated": [
+        "shared graph helpers",
+        "shared shell/theme/pins",
+        "metric-help copy/accounting",
+        "nearby-instance product renderer",
+        "backend/protocol/transport"
+      ]
+    }
+  ],
+  "unresolved_observations": [
+    {
+      "area": "Post-help narrow document geometry",
+      "evidence": "Before help, native Resources and nearby reports have document width390. After help disposal, document scrollWidth is416\u2013427 in a390px viewport despite no visible element bounding box exceeding it. This inventory preserves the observation without assigning a product cause.",
+      "requires": "Focused reproduction before proposing any graph/shell/product change"
+    }
+  ],
+  "fixture_qualifications": [
+    "Initial bring-up required resolving existing Screen Sharing static imports and making the synthetic Backend resolver run before the Vite filesystem resolver. The real-socket refusal guard prevented live transport.",
+    "An early nearby clipping candidate used overlong synthetic host identities; contract-shaped32-character host IDs do not reproduce it. That candidate is withdrawn.",
+    "An early help panel probe selected the nested disclosure panel. Final measurements use the actual role=dialog panel; the modal itself remains viewport-bounded.",
+    "Raw historical and final receipts/captures remain outside version control. No initial failures or withdrawn candidates establish product acceptance."
+  ],
+  "remaining": [
+    "Independent source/evidence review and explicit product-file allocation before remediation",
+    "Investigate post-help document geometry separately if allocated",
+    "Real transport/authentication/timing/cancellation/recovery and full UX acceptance remain outside this synthetic inventory"
+  ]
+}

@@ -1,0 +1,656 @@
+{
+  "scope": "Resource help technical reading-width remediation owner evidence; independent composition pending",
+  "product_base": "03f8a408294110951f0c57ee6a0abdf0d3664986",
+  "preceding_inventory": "1233ba1d85a78eb5b63307a9fa1aec169757528f",
+  "sources": {
+    "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+    "internal/server/web/semblance/app.ttl": "a87f06bc61fbd5c436c083df26edc64ecb27c7995ce67c99a24ed2e8952c0a88",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+    "internal/server/web/peer-poll.mjs": "2b76967697500dbac3644c528e98d2bec9ff908e3d02c1f67b996a5152c99b10",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "scripts/dashboard-screenshots/ux-resources-route.mjs": "eec044d18f8325f676d06a623a8ad39a5420a3f10ab671cdab1838dab76a5df1",
+    "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815"
+  },
+  "test_sources": {
+    "internal/server/web/metric-help.test.mjs": "606ed9144f1e949979f440f345a9c540717100af726d4337107d75a5e308b47d",
+    "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+    "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+    "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+  },
+  "protected_behavior": {
+    "main_outside_help_byte_identical": true,
+    "preexisting_app_ontology_prefix_unchanged": true,
+    "metricHelp_get_current_context_copy_and_accounting_unchanged": true,
+    "native_dialog_and_icon_button_types_unchanged": true,
+    "nearby_renderer_graph_transport_pins_assets_unchanged": true
+  },
+  "regressions": {
+    "help_copy_accounting_freshness": 7,
+    "resource_rdf_ownership_focus": 28
+  },
+  "native": {
+    "resource_viewport_cases": [
+      {
+        "width": 1440,
+        "height": 900,
+        "text_token_scale": 1,
+        "stale_context_warning_readable": true,
+        "exact_cpu_technical_values_preserved": true,
+        "native_keyboard_scroll": {
+          "before": 0,
+          "after": 31,
+          "home": 0,
+          "tail": {
+            "value": "ngaccounting",
+            "box": {
+              "left": 400.890625,
+              "right": 483.515625,
+              "top": 804.5,
+              "bottom": 820.5
+            },
+            "clip": {
+              "left": 305,
+              "right": 1135,
+              "top": 25,
+              "bottom": 875
+            },
+            "fits": true
+          }
+        },
+        "help": [
+          {
+            "title": "Live CPU headroom",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 742,
+            "panel": {
+              "width": 832,
+              "height": 852,
+              "top": 24,
+              "bottom": 876,
+              "viewportHeight": 900,
+              "bodyClientHeight": 882,
+              "bodyScrollHeight": 882,
+              "readingHeight": 802,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Memory reservations",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 742,
+            "panel": {
+              "width": 832,
+              "height": 457.25,
+              "top": 221.375,
+              "bottom": 678.625,
+              "viewportHeight": 900,
+              "bodyClientHeight": 369,
+              "bodyScrollHeight": 369,
+              "readingHeight": 407,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Storage reservations",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 742,
+            "panel": {
+              "width": 832,
+              "height": 834.75,
+              "top": 32.625,
+              "bottom": 867.375,
+              "viewportHeight": 900,
+              "bodyClientHeight": 747,
+              "bodyScrollHeight": 747,
+              "readingHeight": 785,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Port reservations",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 742,
+            "panel": {
+              "width": 832,
+              "height": 325,
+              "top": 287.5,
+              "bottom": 612.5,
+              "viewportHeight": 900,
+              "bodyClientHeight": 237,
+              "bodyScrollHeight": 237,
+              "readingHeight": 275,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Coordination pool",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 742,
+            "panel": {
+              "width": 832,
+              "height": 379.5,
+              "top": 260.25,
+              "bottom": 639.75,
+              "viewportHeight": 900,
+              "bodyClientHeight": 292,
+              "bodyScrollHeight": 292,
+              "readingHeight": 330,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          }
+        ],
+        "post_help_document_width": 1440
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "text_token_scale": 1,
+        "stale_context_warning_readable": true,
+        "exact_cpu_technical_values_preserved": true,
+        "native_keyboard_scroll": {
+          "before": 0,
+          "after": 192,
+          "home": 0,
+          "tail": {
+            "value": "ngaccounting",
+            "box": {
+              "left": 113.796875,
+              "right": 196.421875,
+              "top": 804.25,
+              "bottom": 820.25
+            },
+            "clip": {
+              "left": 25,
+              "right": 365,
+              "top": 25,
+              "bottom": 875
+            },
+            "fits": true
+          }
+        },
+        "help": [
+          {
+            "title": "Live CPU headroom",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 852,
+              "top": 24,
+              "bottom": 876,
+              "viewportHeight": 900,
+              "bodyClientHeight": 1306,
+              "bodyScrollHeight": 1306,
+              "readingHeight": 802,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Memory reservations",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 651.5,
+              "top": 124.25,
+              "bottom": 775.75,
+              "viewportHeight": 900,
+              "bodyClientHeight": 564,
+              "bodyScrollHeight": 564,
+              "readingHeight": 602,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Storage reservations",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 852,
+              "top": 24,
+              "bottom": 876,
+              "viewportHeight": 900,
+              "bodyClientHeight": 1147,
+              "bodyScrollHeight": 1147,
+              "readingHeight": 802,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Port reservations",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 449.5,
+              "top": 225.25,
+              "bottom": 674.75,
+              "viewportHeight": 900,
+              "bodyClientHeight": 362,
+              "bodyScrollHeight": 362,
+              "readingHeight": 400,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Coordination pool",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 527.25,
+              "top": 186.375,
+              "bottom": 713.625,
+              "viewportHeight": 900,
+              "bodyClientHeight": 439,
+              "bodyScrollHeight": 439,
+              "readingHeight": 477,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          }
+        ],
+        "post_help_document_width": 417
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "text_token_scale": 2,
+        "stale_context_warning_readable": true,
+        "exact_cpu_technical_values_preserved": true,
+        "native_keyboard_scroll": {
+          "before": 0,
+          "after": 185,
+          "home": 0,
+          "tail": {
+            "value": "ngaccounting",
+            "box": {
+              "left": 415.1875,
+              "right": 568.84375,
+              "top": 487.796875,
+              "bottom": 517.796875
+            },
+            "clip": {
+              "left": 25,
+              "right": 743,
+              "top": 25,
+              "bottom": 575
+            },
+            "fits": true
+          }
+        },
+        "help": [
+          {
+            "title": "Live CPU headroom",
+            "body_font_px": 30,
+            "technical_font_px": 26,
+            "minimum_value_width": 630,
+            "panel": {
+              "width": 720,
+              "height": 552,
+              "top": 24,
+              "bottom": 576,
+              "viewportHeight": 600,
+              "bodyClientHeight": 2143,
+              "bodyScrollHeight": 2143,
+              "readingHeight": 502,
+              "lineHeight": 46.5
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Memory reservations",
+            "body_font_px": 30,
+            "technical_font_px": 26,
+            "minimum_value_width": 630,
+            "panel": {
+              "width": 720,
+              "height": 552,
+              "top": 24,
+              "bottom": 576,
+              "viewportHeight": 600,
+              "bodyClientHeight": 817,
+              "bodyScrollHeight": 817,
+              "readingHeight": 502,
+              "lineHeight": 46.5
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Storage reservations",
+            "body_font_px": 30,
+            "technical_font_px": 26,
+            "minimum_value_width": 630,
+            "panel": {
+              "width": 720,
+              "height": 552,
+              "top": 24,
+              "bottom": 576,
+              "viewportHeight": 600,
+              "bodyClientHeight": 1860,
+              "bodyScrollHeight": 1860,
+              "readingHeight": 502,
+              "lineHeight": 46.5
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Port reservations",
+            "body_font_px": 30,
+            "technical_font_px": 26,
+            "minimum_value_width": 630,
+            "panel": {
+              "width": 720,
+              "height": 552,
+              "top": 24,
+              "bottom": 576,
+              "viewportHeight": 600,
+              "bodyClientHeight": 568,
+              "bodyScrollHeight": 568,
+              "readingHeight": 502,
+              "lineHeight": 46.5
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Coordination pool",
+            "body_font_px": 30,
+            "technical_font_px": 26,
+            "minimum_value_width": 630,
+            "panel": {
+              "width": 720,
+              "height": 552,
+              "top": 24,
+              "bottom": 576,
+              "viewportHeight": 600,
+              "bodyClientHeight": 669,
+              "bodyScrollHeight": 669,
+              "readingHeight": 502,
+              "lineHeight": 46.5
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          }
+        ],
+        "post_help_document_width": 768
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "text_token_scale": 1,
+        "stale_context_warning_readable": true,
+        "exact_cpu_technical_values_preserved": true,
+        "native_keyboard_scroll": {
+          "before": 0,
+          "after": 86,
+          "home": 0,
+          "tail": {
+            "value": "ngaccounting",
+            "box": {
+              "left": 113.796875,
+              "right": 196.421875,
+              "top": 224.25,
+              "bottom": 240.25
+            },
+            "clip": {
+              "left": 25,
+              "right": 365,
+              "top": 25,
+              "bottom": 295
+            },
+            "fits": true
+          }
+        },
+        "help": [
+          {
+            "title": "Live CPU headroom",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 272,
+              "top": 24,
+              "bottom": 296,
+              "viewportHeight": 320,
+              "bodyClientHeight": 1306,
+              "bodyScrollHeight": 1306,
+              "readingHeight": 222,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Memory reservations",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 272,
+              "top": 24,
+              "bottom": 296,
+              "viewportHeight": 320,
+              "bodyClientHeight": 564,
+              "bodyScrollHeight": 564,
+              "readingHeight": 222,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Storage reservations",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 272,
+              "top": 24,
+              "bottom": 296,
+              "viewportHeight": 320,
+              "bodyClientHeight": 1147,
+              "bodyScrollHeight": 1147,
+              "readingHeight": 222,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Port reservations",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 272,
+              "top": 24,
+              "bottom": 296,
+              "viewportHeight": 320,
+              "bodyClientHeight": 362,
+              "bodyScrollHeight": 362,
+              "readingHeight": 222,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          },
+          {
+            "title": "Coordination pool",
+            "body_font_px": 15,
+            "technical_font_px": 13,
+            "minimum_value_width": 252,
+            "panel": {
+              "width": 342,
+              "height": 272,
+              "top": 24,
+              "bottom": 296,
+              "viewportHeight": 320,
+              "bodyClientHeight": 439,
+              "bodyScrollHeight": 439,
+              "readingHeight": 222,
+              "lineHeight": 23.25
+            },
+            "full_paragraph_label_value_and_control_clipping_checks": true,
+            "long_value_end_reachable": true,
+            "close_or_escape_restores_opener_and_disposes_original": true
+          }
+        ],
+        "post_help_document_width": 417
+      }
+    ],
+    "resource_help_dialog_cases": 20,
+    "disconnected_cpu_help_cases": 4,
+    "initial_status_error_cases": 1,
+    "monitor_controls": [
+      {
+        "width": 1440,
+        "height": 900,
+        "panel": {
+          "width": 480,
+          "root": "dialog"
+        },
+        "noResourceHooks": true,
+        "escapeRestoresOpener": true,
+        "disposed": true
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "panel": {
+          "width": 342,
+          "root": "dialog"
+        },
+        "noResourceHooks": true,
+        "escapeRestoresOpener": true,
+        "disposed": true
+      }
+    ],
+    "elapsed_ms": 40465,
+    "live_transports": 0,
+    "unexpected_operations": 0,
+    "page_errors": 0,
+    "cleanup": {
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    }
+  },
+  "separate_geometry_reproduction": {
+    "cause": "The stock centered CSS tooltip pseudo-element of the focused Resource help icon extends beyond the viewport. Focus/blur/refocus and calculated pseudo-element right-edge measurements reproduce the document width.",
+    "product_fix_included": false,
+    "source": "web/third_party/semblance/ontology/layers/tooltip.ttl",
+    "source_sha256": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+    "cases": [
+      {
+        "width": 390,
+        "height": 900,
+        "focused_document_width": 423,
+        "blurred_document_width": 390,
+        "refocused_document_width": 423,
+        "pseudo": {
+          "label": "About Live CPU headroom",
+          "content": "\"About Live CPU headroom\"",
+          "position": "absolute",
+          "width": "151.703px",
+          "transform": "matrix(1, 0, 0, 1, -84.8516, 0)",
+          "left": "18px",
+          "buttonRight": 357,
+          "buttonWidth": 38,
+          "calculatedRight": 422.85139999999996
+        },
+        "visible_dom_rectangles_overflow": false
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "focused_document_width": 423,
+        "blurred_document_width": 390,
+        "refocused_document_width": 423,
+        "pseudo": {
+          "label": "About Live CPU headroom",
+          "content": "\"About Live CPU headroom\"",
+          "position": "absolute",
+          "width": "151.703px",
+          "transform": "matrix(1, 0, 0, 1, -84.8516, 0)",
+          "left": "18px",
+          "buttonRight": 357,
+          "buttonWidth": 38,
+          "calculatedRight": 422.85139999999996
+        },
+        "visible_dom_rectangles_overflow": false
+      }
+    ],
+    "proposed_allocation": "app.ttl only: scope an inline-end-aligned, viewport-bounded tooltip to existing ResourceSurface native help IconButtons. Preserve tooltips/focus and stock interactive types; no global tooltip, graph, shell or theme edit without separate allocation."
+  },
+  "qualifications": [
+    "Historical inventory and all private raw artifacts are preserved. Earlier unaccepted fixture candidates remain qualified.",
+    "An initial native keyboard oracle read scrollTop before browser key scrolling settled. Final native waits require measured Home/PageDown/End targets with bounded2-second waits; product behavior was unchanged.",
+    "Resource-specific layout does not fix the separate focused-tooltip document-width issue.",
+    "Synthetic read-only Backend and Monitor sample exercise renderer behavior; real transport/authentication/cancellation and full UX acceptance remain outside this evidence."
+  ],
+  "remaining": [
+    "Independent current-composition review and central asset rebuild",
+    "Separate explicit tooltip product allocation and review",
+    "Broader route/state/terminal UX coverage"
+  ]
+}

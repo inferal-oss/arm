@@ -121,29 +121,28 @@ state remain unchanged. Historical clipping-only evidence remains qualified. See
 
 Resources route inventory `1233ba1` uses unchanged actual main with a read-only
 synthetic backend: route error/reconnect/filter and contract-shaped nearby data
-have scoped evidence. Independent review confirms a P2 resource-help technical
-grid with 24px or effectively zero value columns. Remediation is allocated only
-to the resource-kind path of `main.mjs` help() plus additive Resource-help styles
-and focused fixtures; Monitor helpers, copy/accounting, native controls/disposal,
-transport and shared graph/shell remain protected. Returned fix `a75c1fe` passes
-source-boundary review; final current-composition acceptance remains pending.
-Focused A/B/A reproduction identifies the separate narrow-width cause as the
-Resource help button's centered tooltip pseudo-element: focus widens the page,
-blur restores it and refocus reproduces it. A separate correction is allocated
-only to ResourceSurface help-tooltip app styles with complete viewport-bounded
-text and preserved keyboard/hover semantics. The horizontal candidate exposes
-an additional restored-focus case with the opener at the viewport top and the
-above-button tooltip outside it. Full-tooltip acceptance remains open. A bounded
-Resource-only help lifecycle/scroll-visibility follow-up is conditional on native
-user-action reproduction. First compare untouched/native keyboard paths with
-programmatic fixture probes; a fixture-induced background scroll is not a product
-focus defect. Any actual correction must preserve the original live focused
-opener/context, with no forced focus or weakening of native End/Home/Close/Escape. Stock tooltip/pin/graph/shell and
-non-resource Monitor styles remain protected. Full transport/auth/timing,
-route and broader UX acceptance remain open; installation is separate. Keep the validated
-build staged while the reviewed upgrade design addresses immutable runtime
-paths. Broader shell/Mesh/global helper and backend/pin changes remain centrally
-coordinated. No full route/state/terminal UX acceptance is claimed.
+have scoped evidence. Fix `a75c1fe` replaces 24px or effectively zero technical
+value columns with stacked readable fields in Resource-only help. Correction
+`2a1d728` bounds Resource-native tooltips at the inline end and adds opener scroll
+margin. Native Home/PageDown/End/Home/Escape reproduces the original clipped
+restoration without measurement probes; CSS alone corrects it. Existing main
+dialog lifecycle and shared tooltip engine remain unchanged. Earlier diagnostic
+causal exits are not counted as passing regressions; the final asserting causal
+mode has separately bound source evidence.
+
+Independent composition passes 445 JS, 29 native component/lifecycle tests,
+native build, deterministic assets and the actual-route guarded development
+fixture: twenty Resource dialogs, 56 full painted tooltip samples, eight visible
+edge checks, four viewport/text scenarios and two unchanged Monitor controls.
+Original browser/context/probe/server owners close/join, with no real transport
+or mutation. See the [composed record](validation/ux-resource-help-composed-2026-10-29.json).
+Source publication is separate from installation and activation; the installed
+runtime stays unchanged while the upgrade design addresses immutable paths.
+Monitor's existing narrow tooltip overflow, full transport/auth and complete
+route/state/terminal UX coverage remain open. Historical owner review-pending
+notes below retain their original source scope and are superseded by this
+independent acceptance. Broader shell/Mesh/global helper and backend/pin changes
+remain centrally coordinated.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
@@ -1283,3 +1282,61 @@ filter, original node identity, refresh and doubled-text checks pass. Resource
 JavaScript, shared sources, pins and generated assets remain unchanged from the
 initial slice. Independent composition/rebuild remain required; full UX remains
 open.
+
+## Resources route/help inventory — findings awaiting allocation
+
+Owner: `codex/ux-resource-route-state`, from accepted Resources composition
+`03f8a4`. The prior layout branch/evidence is preserved. This continuation adds
+only a synthetic route Backend fixture, native inventory runner and evidence/docs;
+all product source remains byte-identical to the accepted base.
+
+The [inventory record](validation/ux-resources-route-inventory-2026-10-29.json)
+covers four viewport/text cases, twenty Resource help dialogs, four disconnected
+CPU help states and initial status failure. A P2 technical-help reading-width
+defect is reproduced. Proposed next allocation is only the Resource branch of
+`main.mjs` help() and additive marker-scoped `app.ttl` styles plus focused
+regressions. Product edits await explicit allocation and independent review.
+Valid nearby-instance IDs/claim lines fit; an invalid-fixture clipping candidate
+is withdrawn. Post-help narrow document-width drift remains unattributed and
+requires its own reproduction before any shared-file allocation. Full UX remains
+open; no live backend, transport, resource mutation, broad suite or bundle work
+is included.
+
+## Resource help reading width — owner correction ready for review
+
+Following the `1233ba1` inventory, the Resource-only help branch now marks its
+noninteractive body and technical facts. Additive scoped styles give the native
+dialog a bounded 52rem reading width and put complete labels above complete
+values. Monitor help retains its stock width/types and no Resource hooks.
+
+The [remediation record](validation/ux-resource-help-2026-10-29.json) binds
+7 help/accounting tests, 28 RDF/ownership/focus tests, twenty Resource dialogs,
+four disconnected help states and two native Monitor controls. It verifies
+actual panel/value/control clipping, useful reading width/space, full exact
+values, native PageDown/Home/End, long-value end access and original opener/
+disposal. Independent current composition/rebuild remain required.
+
+The separate document-width reproduction now identifies a focused native help
+icon's centered tooltip pseudo-element: width 423 on focus, 390 on blur, 423 on
+refocus at a 390px viewport, matching its calculated right edge. Resource help
+layout leaves that observation unchanged. Proposed next allocation is app.ttl
+only, using existing ResourceSurface scope to align/bound those native tooltips;
+no tooltip/graph/shell/global product fix is included pending explicit allocation.
+
+## Resource tooltips — CSS-only correction ready for review
+
+Owner: `codex/ux-resource-route-state`, following `a75c1fe`. Native Resource
+help tooltips now align to the card's inline end, use border-box viewport limits
+and retain complete wrapping text. A scoped 4rem opener scroll margin lets the
+existing native focus restoration leave the tooltip readable after the full
+keyboard reading sequence. Main lifecycle remains byte-identical to `a75c1fe`.
+
+The [tooltip record](validation/ux-resource-tooltips-2026-10-29.json) binds
+28 focused RDF/ownership/focus tests, twenty help/tooltip groups, 56 rendered
+focus/refocus/hover samples, eight visible-edge hover checks, original
+Close/Escape, rapid reopen, deliberate focus elsewhere, changed context and
+removed-opener checks. Two unchanged Monitor controls retain stock styling.
+Before/after causal runs preserve the native Home/PageDown/End/Home/Escape
+failure and its CSS-only correction. No shared focus, tooltip engine, shell,
+backend, pins or generated assets change. Independent composition/rebuild and
+broader UX gates remain open.
