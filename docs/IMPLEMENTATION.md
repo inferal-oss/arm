@@ -17,6 +17,23 @@ remain visible. Missing/uninstalled instructions report not ready and suggest
 installation. Existing rollout policy and obligations remain intact. Matching
 files do not prove that an ongoing session loaded them.
 
+Status also inspects recorded directory/Git identities and reports ready, stale,
+unknown or removed boundaries. Projects with no verified active boundary are
+visibly blocked even when instructions match. Removed project records require
+`--include-removed`; session/audit history remains retained. Exact-reviewed
+`rollout project remove` and `rollout binding remove` accept missing recorded
+paths or client mappings, revoke affected participation and retain filesystem
+fences against broader fallback. Explicit rebinding cannot restore revoked
+identities. No instruction, job, lease or cleanup obligation is removed. Existing
+capacity bounds include removed records; compaction remains separate.
+
+The removal continuation is independently reviewed on source `95f16ed`.
+Onboarding prefers an active same-root replacement over an older removed fence;
+keeping its policy is a byte-preserving no-op, including retained revoked history.
+Core normal/race and affected CLI race, vet, native compilation and disposable
+terminal replay pass. Publication and executable installation are separate gates;
+see the [scoped record](validation/rollout-removal-integration-2026-10-28.json).
+
 `arm rollout project onboard` uses Charm Bubble Tea/Bubbles/Lip Gloss for
 directory discovery/filtering, manual entry, scope, project naming, policy and
 default-no review. Generic Codex/Claude adapters suggest canonical existing
@@ -45,9 +62,9 @@ revoke and policy audit are implemented in source. Resource commands, existing
 leases, ownership and cleanup obligations are unchanged.
 
 Complete rollout/installation race suites and scoped CLI regressions pass after
-source self-review fixes. This does not establish full-suite, independent review
-or Linux runtime acceptance. Native project identity attestation, web/dashboard
-policy editors, binding removal and history compaction remain unsupported. See
+review fixes. Independent acceptance is source-qualified in the validation record;
+full-suite and Linux runtime acceptance remain separate. Native project identity attestation, web/dashboard
+policy editors and history compaction remain unsupported. See
 [the scoped design](design/gradual-agent-rollout.md) and the validation record.
 
 ## Execution runs and durable logs

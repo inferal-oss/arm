@@ -1,0 +1,108 @@
+{
+  "status": "scoped source review and composed validation accepted; publication and executable installation pending",
+  "base": "53d706203cf9f4f78de2874a47b7cb103baa6a9b",
+  "source": "95f16ed4297e667d03f762fadfaca1c7d72bb883",
+  "focused_commits": [
+    "928fd3b",
+    "cdbc082",
+    "95f16ed"
+  ],
+  "source_sha256": {
+    "internal/cli/help.go": "d9d7b43ad27cd7f1423000bd96cd4779cda02d40beabe7095c1fb7679142f518",
+    "internal/cli/rollout.go": "ec9f2c0f27671524fa9af2c88ef6baf27b9831ca1886320defd979ffe9311b1f",
+    "internal/cli/rollout_onboard.go": "230c71f37aaa5f8a1bedaef9974d8f0ae26dd22819180e87797946bb22367ee0",
+    "internal/cli/rollout_removal_test.go": "70fb419b265d17f17d15c5e83ecc97d25d4a555cc615fbd65d8b52a9abbb7b23",
+    "internal/rollout/boundaries.go": "d4a67f1e8eee918bd881f814ab3c482a6d0458e4a44aba478fdc25d64a5f8e04",
+    "internal/rollout/removal_test.go": "a6d6eb5d1593fd527ab0a9ebb311305f957a3e079b46bf7d72ef47674caa29ef",
+    "internal/rollout/rollout.go": "c72612dbbd0413cef1a07f0d96785a0e751663f26677ba58eecf2bc04db4f123"
+  },
+  "protected_sha256": {
+    "internal/cli/cli.go": "70e3c2b728ba171844409412d910d802c08e702116ae2f6b3f15f5075d00080b",
+    "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+    "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6"
+  },
+  "review": {
+    "finding": "Onboarding selected an older removed fence ahead of the active same-root replacement.",
+    "correction": "Prefer active bindings; preserve replacement policy, pause, revision and byte-exact revoked session/audit history on unchanged-policy apply.",
+    "causal_control": {
+      "old_selector_overlay_exit": 1,
+      "expected_failure": "removed fence selected over active project old"
+    },
+    "older_binary_refusal": {
+      "source": "5b625b1",
+      "exit": 1,
+      "reason": "unknown removal field",
+      "ledger_unchanged": true,
+      "backend_created": false
+    }
+  },
+  "validation": [
+    {
+      "name": "core-normal",
+      "exit": 0,
+      "roots": 52,
+      "names": 81,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "core-race",
+      "exit": 0,
+      "roots": 52,
+      "names": 81,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "cli-race",
+      "exit": 0,
+      "roots": 89,
+      "names": 284,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "vet",
+      "exit": 0
+    },
+    {
+      "name": "native-build",
+      "exit": 0
+    }
+  ],
+  "native_binary": {
+    "go": "go1.27.3",
+    "os": "darwin",
+    "arch": "arm64",
+    "sha256": "211f99819754370720be5599543385945b663abc7f1eff8d45566cdb98772cc2",
+    "clean_vcs_source": "95f16ed4297e667d03f762fadfaca1c7d72bb883"
+  },
+  "terminal_replay": {
+    "source": "95f16ed4297e667d03f762fadfaca1c7d72bb883",
+    "checks": 35,
+    "original_joined_sessions": 7,
+    "all_terminal_exit_zero": true,
+    "scope": [
+      "ready instructions independently of stale Git boundaries",
+      "wrong digest refusal and read-only previews/status",
+      "reviewed missing-path removal and retained fences",
+      "retired project hidden by default and explicitly inspectable",
+      "complete audit retention and zero enrolled sessions",
+      "uninstall preserves exact rollout bytes"
+    ],
+    "backend_started": false,
+    "synthetic_instructions_uninstalled": true
+  },
+  "boundaries": [
+    "Rollout removal changes cooperative future participation only; jobs, resource promises, ownership and cleanup obligations remain intact.",
+    "Removed IDs and filesystem fences remain retained and count against existing capacity bounds.",
+    "Matching filesystem identity does not establish agent activity, loaded instructions or identity attestation.",
+    "Shared finishCommand cancellation contract, backend, resource accounting, schema, modules and web inputs remain unchanged."
+  ],
+  "limits": [
+    "No full Go suite or Linux rollout-runtime acceptance.",
+    "Original owner Linux amd64 check is compile-only on source928fd3b.",
+    "No real policy mutation, agent enrollment, native client attestation or web policy editor acceptance.",
+    "Pending executable installation and publication are not established by these checks."
+  ]
+}

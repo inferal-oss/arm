@@ -6,6 +6,33 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Rollout removal and stale-boundary continuation
+
+Owner: `codex/rollout-removal`, based on main `53d7062`. Scope is reviewed
+project/filesystem/client-binding removal, retained history and deny fences,
+stale-boundary status, onboarding compatibility and focused regressions. No
+actual rollout policy or agent adoption is changed. Review/validation and
+coordinator composition precede the user-requested push and executable install.
+Feature source: `928fd3b`. Core normal/race suites, selected CLI race regressions
+(266 passing nodes), affected vet and native/Linux CLI compilation pass after
+owner source review. A clean-source disposable terminal replay passes 35 checks
+across seven joined sessions. Publication and executable installation remain
+pending following the independent acceptance below.
+
+Coordinator source review found onboarding selecting an older removed fence over
+an active same-root replacement. Correction `95f16ed` selects active bindings;
+its wizard regression preserves replacement policy/revision/pause and byte-exact
+revoked session/audit history. Independent current-base validation accepts that
+source: complete core normal/race each pass 52 roots / 81 names; scoped CLI race
+passes 89 roots / 284 names, with no failures/skips. Four-package vet, a clean
+native build and 35 checks across seven original joined terminal sessions pass.
+Restoring the original selector reproduces the regression failure; the previous
+accepted binary refuses the extended removal ledger without altering it. See
+the [scoped acceptance record](validation/rollout-removal-integration-2026-10-28.json).
+Publication and the requested executable installation remain pending. Earlier
+owner evidence stays source-qualified; no real adoption or resource backend was
+started. Full Go suite and Linux rollout-runtime acceptance remain open.
+
 ## Project-scoped gradual agent adoption — scoped milestone accepted
 
 Installation/status UX continuation `379e41d` implements interactive diff review, a

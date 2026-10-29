@@ -1,5 +1,70 @@
 # Validation record
 
+## Rollout removal — independent composed acceptance
+
+Focused owner commits `928fd3b`, `cdbc082` and review correction `95f16ed`
+compose on accepted main `53d7062`. Exact final-source independent normal and
+race cohorts each pass all 52 core roots / 81 named cases across rollout,
+installation and project discovery. Affected CLI race passes 89 roots / 284
+names; all cohorts have zero failures/skips. Four-package vet and native build
+pass. The binary records clean VCS source `95f16ed`.
+
+The old production selector alone, restored through a compiler overlay while
+retaining the permanent regression, reproduces selection of the removed old
+project. Corrected source preserves the active replacement's policy, pause,
+revision and byte-exact revoked history. The previously accepted binary refuses
+a removal ledger with an unknown-field error, leaving exact bytes unchanged.
+
+Final-source replay passes 35 checks across seven original joined terminal
+sessions, all exit zero: instruction readiness versus stale scope, reviewed
+missing-path removal, retained project/history inspection and uninstall retaining
+the exact policy. Synthetic instructions are uninstalled; no sessions enroll and
+no rollout fixture backend starts. Go/module input hashes stay unchanged through
+the independent gate. Full Go suite, Linux rollout runtime and native identity
+attestation remain unaccepted. Publication and executable installation are pending
+separate checks. Source hashes and boundaries are recorded in the
+[normalized acceptance record](validation/rollout-removal-integration-2026-10-28.json).
+
+## Rollout removal and stale boundaries — owner continuation
+
+Coordinator source review found and corrected wizard selection of a removed
+fence before an active same-root replacement. The permanent wizard regression
+selects the replacement and applies an unchanged-policy no-op, preserving its
+manual policy, pause and revision plus byte-exact retained revoked history. The
+selected rollout CLI race suite passes on the corrected source. Earlier binary
+and terminal evidence below remains scoped to `928fd3b`.
+
+Feature source `928fd3b`, based on accepted main `53d7062`. Complete
+rollout/installation/discovery normal and race
+suites pass with one Go worker. The selected CLI race roster passes 266 test
+nodes without failures, covering removal, status, onboarding, confirmation,
+instruction lifecycle, shared help/completion and interruption reporting.
+Core normal output records 81 passing test nodes. Affected rollout/CLI vet,
+native clean-VCS CLI build and Linux amd64 compile-only pass. Private Go/module source hashes and CLI JSON
+receipts are retained outside version control.
+
+New cases cover project retirement with session/audit retention; missing-path
+binding removal; exact/stale review refusal; narrower removal refusing enabled
+ancestor fallback; explicit replacement with a fresh identity; persistent
+revocation after path/client rebinding; unrelated participant preservation;
+directory and Git-identity replacement; canceled diagnostic inspection; terminal
+and JSON stale warnings with ready instructions and no sessions; read-only
+ledger preservation; removed-project listing and onboarding name selection.
+No actual client metadata, rollout policy, contacts, jobs or leases are changed.
+
+The clean-source native binary passes 35 disposable smoke checks across seven
+original joined terminal sessions (all exit zero): ready instructions versus
+stale Git scope, refused wrong digest, nonmutating previews/status, missing-path
+binding removal, project retirement, explicit retained-project listing, complete
+audit history, zero identified sessions and uninstall preserving the exact policy
+bytes. Synthetic instruction files are uninstalled; private ledgers, transcripts,
+source hashes and binary are retained. No fixture backend starts.
+
+At that owner handoff, coordinator review, current-main integration, publication
+and executable installation were pending; the independent acceptance above
+supersedes the review gate. Full Go suite, Linux runtime, native identity attestation and
+web policy editors are outside this evidence.
+
 ## Guided project onboarding — scoped owner validation
 
 An additional shared-interruption correction follows `b213640`; its evidence

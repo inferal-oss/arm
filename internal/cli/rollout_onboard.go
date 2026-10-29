@@ -108,13 +108,13 @@ func (a *app) rolloutOnboard(args []string) error {
 	return model.result(e)
 }
 
-func (m *rolloutOnboardModel) outcomeUnknown(err error) error {
-	return model.Err("rollout_outcome_unknown", fmt.Sprintf("onboarding policy may have been applied; inspect `%s` and `%s` before retrying: %v", installNextCommand(m.home, "rollout status"), installNextCommand(m.home, "rollout history"), err))
+func rolloutOutcomeUnknown(home string, err error) error {
+	return model.Err("rollout_outcome_unknown", fmt.Sprintf("rollout policy may have been applied; inspect `%s` and `%s` before retrying: %v", installNextCommand(home, "rollout status"), installNextCommand(home, "rollout history"), err))
 }
 
 func (m *rolloutOnboardModel) result(e error) error {
 	if e != nil && m.applyStarted {
-		return m.outcomeUnknown(e)
+		return rolloutOutcomeUnknown(m.home, e)
 	}
 	if e != nil {
 		return e
@@ -291,7 +291,7 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		m.notice = ""
 		m.plan = msg.plan
 		if msg.err != nil {
-			m.err = m.outcomeUnknown(msg.err)
+			m.err = rolloutOutcomeUnknown(m.home, msg.err)
 		}
 		return m, tea.Quit
 	case tea.KeyPressMsg:
@@ -403,8 +403,11 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 					}
 					existingBinding := false
 					for _, p := range st.Projects {
+						if p.Removed {
+							continue
+						}
 						for _, b := range p.Bindings {
-							if b.Root == m.binding.Root {
+							if !b.Removed && b.Root == m.binding.Root {
 								m.id = p.ID
 								existingBinding = true
 								break
@@ -553,7 +556,7 @@ func (m *rolloutOnboardModel) setPolicies() {
 		return
 	}
 	for _, p := range st.Projects {
-		if p.ID == m.id {
+		if p.ID == m.id && !p.Removed {
 			m.choices = append([]onboardChoice{{"Keep current policy: " + p.Mode, "Other project bindings and pause state are retained.", p.Mode}}, m.choices...)
 			break
 		}
@@ -588,7 +591,11 @@ func (m *rolloutOnboardModel) reviewText() string {
 		fmt.Fprintln(&b, "Enrollment remains PAUSED.")
 	}
 	for _, binding := range p.After.Bindings {
-		fmt.Fprintln(&b, "  "+binding.Kind+": "+terminalSafe(binding.Root))
+		state := ""
+		if binding.Removed {
+			state = " (removed; blocks broader fallback)"
+		}
+		fmt.Fprintln(&b, "  "+binding.Kind+state+": "+terminalSafe(binding.Root))
 	}
 	for _, client := range p.After.Clients {
 		fmt.Fprintln(&b, "  "+client.Adapter+" project mapping: "+terminalSafe(client.ID))

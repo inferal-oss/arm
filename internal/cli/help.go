@@ -16,8 +16,10 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"rollout project remove":            {summary: "Preview removal of an exact project from active rollout. Retain audit/session history and boundary fences; existing jobs, leases and cleanup obligations remain intact. Apply requires the identical --expect digest and --yes.", max: 0},
+	"rollout binding remove":            {summary: "Preview removal of an exact recorded filesystem path or client-project mapping. Missing paths can be removed. Filesystem fences prevent broader fallback; affected sessions are revoked. Apply requires the identical --expect digest and --yes.", max: 0},
 	"rollout project onboard":           {summary: "Discover Codex/Claude project-directory metadata and interactively select a boundary, name and adoption policy with a default-no review. --json, pipes and --dry-run discover only. No transcripts, native delivery, agent registration or automatic enrollment.", max: 0},
-	"rollout status":                    {summary: "Show managed-instruction readiness, project adoption policies and session observations. Human-readable in a terminal; JSON for pipes or --json. Read-only: no backend, client discovery or enrollment is started.", max: 0},
+	"rollout status":                    {summary: "Show managed-instruction and filesystem/Git boundary readiness, project policies and session observations. Stale paths are flagged independently of instruction readiness. --include-removed exposes retained removed projects. Human-readable in a terminal; JSON for pipes or --json. Read-only: no backend, client discovery or enrollment is started.", max: 0},
 	"rollout check":                     {summary: "Resolve the working directory and optional client project to cooperative adoption policy. Read-only; never registers or enrolls a session.", max: 0},
 	"rollout history":                   {summary: "Read retained rollout policy and enrollment audit history locally.", max: 0},
 	"rollout project":                   {summary: "Preview an explicit directory or Git checkout binding to an ARM project. Use rollout project onboard for guided client-project discovery and selection. Direct new bindings are disabled; direct apply requires the exact --expect digest and --yes.", max: 0},
