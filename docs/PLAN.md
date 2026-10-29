@@ -98,7 +98,9 @@ current-main review: 445 JS, 29 native component/lifecycle tests, native build a
 deterministic composed asset rebuild. Resource math, accounting, main/graph,
 pins and callbacks remain unchanged. Expanded desktop cards use useful reading
 width; collapse, nested state, focus, filters and exact IDs survive refresh.
-Historical clipping-only evidence remains qualified. See the
+Published source `03f8a40` passes website workflow `40910106616`. Its staged
+carrier and four payload streams verify; installed binary and protected runtime
+state remain unchanged. Historical clipping-only evidence remains qualified. See the
 [composed record](validation/ux-resources-composed-2026-10-29.json).
 
 The Resources route loading/transport/disconnect, help and nearby-instance visual

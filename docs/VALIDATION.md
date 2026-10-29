@@ -12,7 +12,11 @@ original nodes/focus/filter/disclosure state retained. Final images are visually
 reviewed and hashed. Text-token tests verify selected body15px/30px and metadata
 13px/26px, not universal browser zoom. No real backend/resource mutation, new
 Go-suite/Linux/terminal visual or complete route acceptance is inferred. Build
-staging and activation remain distinct.
+staging and activation remain distinct. Published source `03f8a40` passes
+[website workflow 40910106616](https://github.com/inferal-oss/arm/actions/runs/40910106616).
+A clean-source private carrier build and all four payload streams verify; the
+installed executable and protected policy/instruction/endpoint hashes remain
+unchanged. No installation or activation was performed.
 [Normalized record](validation/ux-resources-composed-2026-10-29.json).
 
 ## Pools layout — independent composed acceptance

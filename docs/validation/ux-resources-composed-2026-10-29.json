@@ -100,5 +100,38 @@
     "No Go source changed; no new full-Go/Linux/terminal visual claim",
     "Full resource-route loading/transport/disconnect and help/nearby-instance visuals remain open",
     "Runtime installation/activation is separate; validated build remains staged while upgrade design is discussed"
-  ]
+  ],
+  "published_source": "03f8a408294110951f0c57ee6a0abdf0d3664986",
+  "carrier_stage": {
+    "source": "ff1a715590d12720fcadade3824cf936d6d2b4b2",
+    "phases": [
+      {
+        "name": "knowledge",
+        "exit": 0,
+        "seconds": 1.542
+      },
+      {
+        "name": "carrier-build",
+        "exit": 0,
+        "seconds": 35.331
+      },
+      {
+        "name": "catalog-proof",
+        "exit": 0,
+        "seconds": 2.264
+      }
+    ],
+    "carrier_sha256": "899ca56adb83e020ba820b1df5ef88ad425275db758e0fe3e0768afb5bf4528a",
+    "catalog_digest": "ca48a4a0f6d4ff9aa0f20cb082d5d90e66a72a3dd7a655499b058608e2e232d2",
+    "payload_streams_verified": 4,
+    "installed_binary_unchanged": true,
+    "protected_state_unchanged": true,
+    "source_unchanged": true,
+    "installation_performed": false
+  },
+  "public_website_ci": {
+    "run": 40910106616,
+    "conclusion": "success",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40910106616"
+  }
 }
