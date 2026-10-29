@@ -277,3 +277,28 @@ rebuild, real transport, broader route/state/live-drawer/terminal and full UX
 acceptance remain open. The later composed record supplies the scoped source/
 rebuild/browser gates only and qualifies the original broader menu-removal
 control; it does not close those remaining real/full UX gates.
+
+## Shared-dialog read-only findings and proposed boundaries
+
+The [shared-dialog inventory](validation/ux-shared-dialog-inventory-2026-10-29.json)
+adds four P2 findings from the accepted source without changing product code:
+
+1. Resource names intrinsic-width overflow clips body/action text at desktop
+   and medium sizes. Review a distinct noninteractive names body hook and scoped
+   available-width rules, preserving native controls and full values.
+2. Search button opening leaves focus on the panel, so immediate typing misses
+   the query; the stock shortcut works. Review only its app-owned opening path,
+   preserving native palette/query routing and shared engine behavior.
+3. An unchanged naming read replaces the same-reference unsaved draft. Review
+   load/selection dirty-draft handling with exact binding/source/context; keep
+   naming writes, CAS revisions and unknown-intent authority unchanged.
+4. Long palette labels collapse help to zero width. Review a distinct app-only
+   palette presentation scope with useful label/help allocation, preserving
+   native search/highlight/navigation/entry identities and existing compaction.
+
+These are proposals, not remediation allocations. The four-case native matrix
+also records containment, private Display changes, exact IDs/revisions,
+read-error/pending/disconnected/empty states, cancellation and qualified scroll/
+focus behavior. Negative probes remain source-qualified; collection success is
+not visual acceptance. Independent review/composition and full UX gates remain
+open; no palette command, naming write or real operation is exercised.

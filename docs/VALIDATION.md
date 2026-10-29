@@ -9105,3 +9105,55 @@ and native keyboard behavior are tested. Selected doubled pixel tokens are not
 universal zoom, and fixed native fonts are recorded. Independent final-diff
 review, composed checks and central asset rebuilding remain open, as do real
 transport, broader routes/states, live drawer, terminal and complete UX gates.
+
+## Shared-dialog actual-source inventory — read-only findings
+
+The [shared-dialog record](validation/ux-shared-dialog-inventory-2026-10-29.json)
+binds accepted `e580148` product bytes to three sequential unchanged-FIFO cohorts
+with identical frozen source maps. Search, Display settings and Resource names
+each cover 1440×900, 390×900, 390×320 and 768×600 with selected text tokens doubled.
+Each cohort stays within the two-CPU/two-GiB, 120-second active allocation,
+including compilation and original browser/context/server cleanup. Held synthetic
+reads are released. No native CDP is needed. There are no real sockets, API/
+external requests, clipboard attempts, forbidden calls, naming writes or palette
+command activations. No broad suite/build/install is part of this inventory.
+
+Four concrete P2 findings remain open. Resource names desktop/medium bodies grow
+beyond the native panel and clip read/set/clear button text; native action focus
+does not contain those controls. Search button opening focuses its panel and
+immediate physical typing leaves the query empty; the stock shortcut focuses
+the query and accepts the same typing in all four cases. Read current names
+replaces a valid unsaved draft with the selected saved name despite the same
+exact binding/revision, while ordinary status refresh retains the original
+focused field/draft. Long valid non-command palette labels collapse native help
+to zero width; deliberate label compaction/ellipsis alone is not the finding.
+Exact IDs remain searchable in keywords.
+
+Positive scoped controls include 97 dense palette options, ten command-only
+empty options, exact-ID search, native arrows and retained query/input under
+status refresh. Naming has 76 dense targets and one loaded-host target when
+empty; the exact naming revision renders without Number rounding. Native
+panel End/Home is observed after original scrollers settle, and action focus
+reachability is distinguished from initial visibility and horizontal fit.
+Pending read Escape closes Search/naming and late release does not reopen them.
+Naming busy state disables form actions/footer Close while the native header
+Close/Escape path remains available. Disconnected draft retention and disabled
+write controls are recorded without claiming backend cancellation or authority.
+
+Display settings stays contained in the measured matrix, including short useful
+reading. Its choices affect only private fixture presentation storage/graph and
+are restored. In this headless native Theme picker check, Space/Escape preserves
+the value and closes the containing dialog; native OS popup semantics/glyphs
+are not generalized. Native field/select painted glyph bounds are unavailable:
+full stored values, DOM labels, control metrics and keyboard behavior are
+qualified separately. Selected-token scaling is not universal browser zoom;
+fixed native control fonts are measured.
+
+Initial failed probes preserve wrong accessible-name/nested-panel/Close-shape
+assumptions, raw BigInt report serialization and native picker-close handling.
+Earlier End/Home timing and a Display reference from before close/reopen are
+not accepted as current-opening retention proof. Final source guards preserve
+all product/native/accepted Activity/Host/Monitor/Resource files and reverify
+142 original inventory plus 505 previous correction artifacts. Independent
+source review, product allocation/composition and broader route/state, live
+transport, drawer, terminal and full UX acceptance remain open.

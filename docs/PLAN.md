@@ -1949,3 +1949,25 @@ qualified scrolling and retained failed candidates. The original inventory and
 accepted Monitor/Resource work remain unchanged. Independent final-diff review,
 current composition checks and central asset rebuild remain open. No owner
 build/install/activation, real operation or full UX acceptance is claimed.
+
+## Shared-dialog inventory — findings awaiting allocation
+
+Owner: `codex/ux-shared-dialog-inventory`, from accepted `e580148`.
+Search palette, Display settings and Resource names are inspected through fresh
+read-only synthetic fixtures. Product, naming/CAS authority, shared graph,
+native modules/styles, Go/protocol and embedded assets remain unchanged.
+
+The [shared-dialog record](validation/ux-shared-dialog-inventory-2026-10-29.json)
+prioritizes four P2 findings: Resource names intrinsic-width clipping at desktop/
+medium, Search button opening without query focus, naming read replacing a
+same-reference draft, and long palette labels collapsing visible help width.
+Proposed boundaries are a distinct names body hook/scoped presentation,
+palette-only opening focus, naming load/selection draft handling and a distinct
+palette presentation scope. These are review proposals, not remediation grants.
+
+Three sequential bounded cohorts cover the four allocated viewport/token cases,
+including dense/empty/read-error/disconnected/pending read state where applicable,
+native cancellation, current-opening identity, read refresh and private display
+choices. Earlier fixture-shape/timing failures remain preserved. Independent
+review/composition, any product correction and broader/full UX acceptance remain
+separate gates; no real operation, build/install or runtime activation occurs.

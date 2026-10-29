@@ -3788,3 +3788,28 @@ native reading/lifecycle checks. Generated assets remain unchanged; independent
 current-composition review/validation and central rebuilding were required.
 The composed acceptance above now supplies those gates; historical owner source
 and original receipts retain their separate scope.
+
+## Read-only shared-dialog inventory
+
+New dedicated fixtures load the accepted actual Search/Display/Resource names
+routes and replace only Backend with an in-memory read allowlist. Published
+Status/namedStatus, node registry, pool view, message and custom-name document
+shapes supply synthetic valid 128-character ASCII labels, canonical exact IDs,
+76 dense naming entries and revisions above JavaScript safe integer precision.
+Existing snapshot/name validators check responses. Every allowed operation has
+bounded exact read arguments; mutations including name_mutate, login, real
+transport, clipboard and external requests refuse.
+
+Search records native button/shortcut opening focus, immediate typing, exact-ID
+matching, native arrow selection, retained query and pending/error/empty state.
+Resource names records current field/control/label clips, manual draft/cancel,
+same-binding status versus explicit-read draft behavior and busy/disconnected
+controls. Display uses only its existing private presentation graph/storage;
+choice changes are restored. It has no data-read operation to invent.
+
+The [normalized inventory](validation/ux-shared-dialog-inventory-2026-10-29.json)
+records negative geometry and focus/draft findings as findings. It adds no
+product correction or authority change. Native fonts/glyph limits, headless
+picker cancellation, settled scroll timing and failed fixture assumptions are
+qualified; original owners close/join. Independent review/allocation remains
+required before any remediation or full UX claim.
