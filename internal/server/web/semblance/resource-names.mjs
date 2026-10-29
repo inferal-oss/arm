@@ -20,6 +20,7 @@ export function createNamingConsole({ui,call,connected=()=>false,local=()=>false
  const save=ui.button('Set custom name',()=>mutate('set')),clear=ui.button('Clear exact reservation',()=>mutate('clear')),read=ui.button('Read current names',()=>load()),close=ui.button('Close',()=>dialog.close());
  root.replace(ui.text('Names change local presentation. Resource IDs, permissions and existing actions remain unchanged.'),selection,manual,manualHost,manualKind,manualID,manualBinding,referenceNote,name,reserved,feedback,read,save,clear);
  const dialog=ui.dialog('Resource names',[root],[close]);
+ for(const body of [root,dialog.body])if(body)ui.put?.(body.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type','https://arm.local/ui#NamingBody',true);
  let snapshot=null,current=null,inventory=new Map(),generation=0,openedSource='',openedOwner='',openedContext=null,busy=false,disposed=false,unknowns=[],pendingLoaded=false,pendingError=false,storageUnavailable=!storage;
  const storageKey=()=>`arm-custom-name-unknown:${openedSource}:${openedOwner}`;
  function allowed(){return !disposed&&local()&&connected()&&source()===openedSource&&context()===openedContext&&(!owner()||owner()===openedOwner);}

@@ -578,3 +578,29 @@ arm:HostMetadataBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-host-
 [] a sty:StyleRule ; sty:appliesTo c:AppBar ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part ".sem-more[data-open=true] > .sem-more-body > [data-sem-c=\"icon-button\"][data-sem-tooltip]::after" ;
  sty:declares [ sty:property "left" ; sty:raw "0" ],
               [ sty:property "transform" ; sty:raw "none" ] .
+
+# Bound only the existing noninteractive Resource names form, not its Dialog.
+arm:NamingBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-naming-body" .
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ; sty:part "> *" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ; sty:part ":is(input,select,textarea)" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ; sty:part "> button" ;
+ sty:declares [ sty:property "white-space" ; sty:raw "normal" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# Keep native naming captions from shrinking beneath their fixed control height.
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ; sty:part "> [data-sem-c=\"choice\"] > span" ;
+ sty:declares [ sty:property "flex-shrink" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ] .
