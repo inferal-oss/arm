@@ -223,13 +223,35 @@ function renderLeaseDetail(lease,leases,request,resultNote=''){ui.batch(()=>{det
  detailReviews=createLeaseReviews({ui,root:reviews,lease,call:(...args)=>current.call(...args),connected:()=>state.connected&&connection===current,supported:!session?.context&&(state.status?.capabilities??[]).includes(REVIEW_CAPABILITY),busy:()=>pendingReviewConfigurations.has(lease.id),onPending:pending=>{if(pending)pendingReviewConfigurations.add(lease.id);else pendingReviewConfigurations.delete(lease.id);detailReviews?.updateConnection();if(!pending&&request!==detailRequest&&detailLeaseID===lease.id&&detail.open)loadLease(lease.id);},onRefresh:()=>loadLease(lease.id)});detail.focus();});}
 const activityTimeline=ui.timeline('Durable operational events',50),activityDetails=ui.stack(),activityPage=ui.select('History page',[{value:'0',label:'Latest events'}],{},()=>renderActivity()),eventChoice=ui.select('Inspect an event',[],{},()=>renderEventDetail());
 roots.activity.replace(ui.text('Latest 200 durable events · newest first'),activityPage,activityTimeline,eventChoice,activityDetails);
-let activityRows=[];
+let activityRows=[],activityDetail=null,activityContext=null;
 function eventCaption(e){return String(e.kind??e.type??'Event').replaceAll(/[._-]/g,' ').replace(/^./,c=>c.toUpperCase());}
 function eventSummary(e){return [e.data?.request?.reason??e.data?.reason??e.data?.detail??e.message??e.reason,e.entity].filter(Boolean).join(' · ').slice(0,320);}
-function renderEventDetail(){const e=activityRows.find(e=>String(e.sequence)===eventChoice.value);activityDetails.replace(...(e?[ui.descriptions([['Type',e.type??e.kind],['At',when(e.at)],['Entity',e.entity],['Sequence',String(e.sequence)]]),...(String(e.type).startsWith('lease.')&&e.entity?[ui.button('Inspect lease',()=>showLease(e.entity))]:[]),ui.json(e,'Exact event record')]:[]));}
-function renderActivity(){ui.batch(()=>{const all=state.events.slice().reverse(),pages=Math.max(1,Math.ceil(all.length/50)),page=Math.max(0,Math.min(pages-1,Number(activityPage.value)||0));activityPage.set({options:Array.from({length:pages},(_,i)=>({value:String(i),label:i===0?'Latest 50 events':`Events ${i*50+1}–${Math.min(all.length,(i+1)*50)}`})),value:String(page)});
+function activitySource(){return{host:state.status?.host??'',connection,session};}
+function sameActivitySource(a,b){return Boolean(a&&b&&a.host===b.host&&a.connection===b.connection&&a.session===b.session);}
+function retireEventDetail(){activityDetail=null;if(!activityDetails.disposed)owned(activityDetails,[]);}
+function renderEventDetail(){
+ if(activityDetails.disposed){activityDetail=null;return;}
+ const context=activitySource(),e=activityRows.find(e=>String(e.sequence)===eventChoice.value);
+ if(!sameActivitySource(activityContext,context)||!e){retireEventDetail();return;}
+ const sequence=String(e.sequence),old=activityDetail;
+ if(!old||old.sequence!==sequence||!sameActivitySource(old.context,context)||[old.fields,old.record,old.code,old.inspect].some(h=>h?.disposed)||!activityDetails.children.includes(old.fields)||!activityDetails.children.includes(old.record)){
+  retireEventDetail();const fields=ui.descriptions([]),code=ui.code(''),record=ui.disclosure('Exact event record',[code]);
+  activityDetail={context,sequence,fields,code,record,inspect:null,raw:null,entity:null};
+ }
+ const m=activityDetail,raw=stringifyJSON(e);
+ if(m.raw!==raw){
+  m.fields.setPairs([['Type',e.type??e.kind],['At',when(e.at)],['Entity',e.entity],['Sequence',sequence]]);
+  m.code.set({value:raw.length>256000?raw.slice(0,256000)+'\n[display truncated]':raw});m.raw=raw;m.entity=e.entity;
+ }
+ const inspect=String(e.type).startsWith('lease.')&&e.entity;
+ if(inspect&&!m.inspect)m.inspect=ui.button('Inspect lease',()=>showLease(m.entity));
+ const children=[m.fields,...(inspect?[m.inspect]:[]),m.record];
+ if(children.length!==activityDetails.children.length||children.some((h,i)=>activityDetails.children[i]!==h))owned(activityDetails,children);
+ if(!inspect)m.inspect=null;
+}
+function renderActivity(){ui.batch(()=>{const context=activitySource(),sameSource=sameActivitySource(activityContext,context);activityContext=context;const all=state.events.slice().reverse(),pages=Math.max(1,Math.ceil(all.length/50)),page=Math.max(0,Math.min(pages-1,Number(activityPage.value)||0));activityPage.set({options:Array.from({length:pages},(_,i)=>({value:String(i),label:i===0?'Latest 50 events':`Events ${i*50+1}–${Math.min(all.length,(i+1)*50)}`})),value:String(page)});
  activityRows=all.slice(page*50,(page+1)*50);activityTimeline.setEvents(activityRows.slice().reverse().map(e=>({id:String(e.sequence),kind:eventCaption(e),at:e.at,summary:eventSummary(e)})));
- const selected=eventChoice.value;eventChoice.set({options:[{value:'',label:'Choose an event for its exact record'},...activityRows.map(e=>({value:String(e.sequence),label:`${eventCaption(e)} · ${when(e.at)}`}))],value:activityRows.some(e=>String(e.sequence)===selected)?selected:''});renderEventDetail();});}
+ const selected=sameSource?eventChoice.value:'';eventChoice.set({options:[{value:'',label:'Choose an event for its exact record'},...activityRows.map(e=>({value:String(e.sequence),label:`${eventCaption(e)} · ${when(e.at)}`}))],value:activityRows.some(e=>String(e.sequence)===selected)?selected:''});renderEventDetail();});}
 function updateActivityFeed(){ui.batch(()=>{liveStatus.set({label:remoteDashboard?'Destination activity unavailable':holdActivity.checked?'Updates paused':state.connected?'Live':'Disconnected · observations retained',tone:state.connected&&!holdActivity.checked?'success':'warning'});if(remoteDashboard||holdActivity.checked)return;
  const entries=activityItems({events:state.events,messages:state.messages,leases:state.status?.leases??[],ownerContext:state.status},12);liveTimeline.setEvents(entries.slice().reverse().map(e=>({id:e.key,kind:e.title,at:e.at,summary:[e.body.length>120?e.body.slice(0,117)+'…':e.body,e.actor,e.status].filter(Boolean).join(' · ')})));
 });}
