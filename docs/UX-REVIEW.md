@@ -61,7 +61,7 @@ states; no principal view is declared complete from source inspection.
 | Principal surface | Components and source | State/viewport evidence in this slice | Remaining gate |
 | --- | --- | --- | --- |
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
-| Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Read-only native inventory: 32 cores, 12 devices/scope, four viewport/token cases, six help kinds, pause/selection/gaps/reconnect | Three reproduced P2 visual findings await explicit Monitor-only allocation; real transport and full acceptance remain open |
+| Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Read-only native inventory: 32 cores, 12 devices/scope, four viewport/token cases, six help kinds, pause/selection/gaps/reconnect | Monitor-only owner correction and strict regression evidence completed; independent review/composition, real transport and full acceptance remain open |
 | Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Layout composition accepted in 03f8a4; Resource-only help/tooltips pass independent composed source-runtime checks; real transport/auth and complete route/state acceptance remain open |
 | Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, actual doubled text-token coverage (15px/30px), short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild accepted; native subpool/drain/resume/delete and broader pagination/hierarchy density remain pending |
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |
@@ -207,3 +207,22 @@ plain help prose, Close/Escape, dense-core bounds and native identity/state/gap
 controls provide positive scoped evidence. Stale CPU retention is recorded
 without classifying it as a new defect. Broader Monitor UX, native-user causal
 qualification of vertical tooltip states and real transport remain open.
+
+## Monitor owner correction awaiting independent composition
+
+The allocated Monitor-only change addresses the three inventory findings with
+noninteractive selector/surface/help hooks and scoped native-component styles.
+A further doubled-token negative control found whole-Stat overflow and inline
+RAM/storage value columns collapsing to 0px; bounded Monitor-only corrections
+contain the Stats and stack compact/medium inline facts. The final owner matrix
+asserts complete labels, technical prose/fields/tails, full native tooltip
+border/painted text, short reading floors, opened inline values and whole Stats.
+Existing pause/selection/identity/focus/gap/reconnect semantics remain checked.
+
+Failed rapid native Home sequences are preserved. Settling both native panel
+and document scrollers between inputs reaches the original targets without
+product focus, listener or lifecycle changes; background chaining and arbitrary
+rapid timing remain unclaimed. The
+[normalized owner record](validation/ux-monitor-layout-2026-10-29.json) binds
+source, controls and positive cleanup. This does not close independent
+composition/rebuild, live transport, terminal parity or the full UX pass.

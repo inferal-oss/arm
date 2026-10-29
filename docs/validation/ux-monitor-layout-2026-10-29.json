@@ -1,0 +1,2586 @@
+{
+  "scope": "Monitor-only owner layout correction; independent composition and full UX acceptance pending",
+  "base": "2b218061e6cb3e765943e850087b71d4f1642b8a",
+  "current_sources": {
+    "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+    "internal/server/web/semblance/app.ttl": "e95dc0b5ba7008be9e97321f6e3888700ebd3b8eaa43bc41825c49a6ab5032b0",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/monitor-capacity.mjs": "fe3058f1b81ced5a88704a7f30ea7fca4e303035428e20b881e5eddaa7295fa2",
+    "internal/server/web/io-devices.mjs": "85118f54d54fd1f68331bbd3198e5cb5c8ebf274747634fac503bed895e13d32",
+    "internal/model/monitor.go": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c",
+    "internal/model/measurement.go": "446e28b25fc78192cbac58926df74ee37aec4206e1f62895b200ec2b58b808e1",
+    "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+    "scripts/dashboard-screenshots/ux-monitor.mjs": "7a442417732462c9dbf2eea1c62334581c4882d1cdbf3691437bf5139d39dc4f",
+    "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843"
+  },
+  "source_guards": {
+    "base": "2b218061e6cb3e765943e850087b71d4f1642b8a",
+    "main_after_stripping_exact_allocated_hooks_matches_base": true,
+    "ontology_base_is_exact_prefix": true,
+    "protected_sources": {
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+      "internal/server/web/monitor-capacity.mjs": "fe3058f1b81ced5a88704a7f30ea7fca4e303035428e20b881e5eddaa7295fa2",
+      "internal/server/web/io-devices.mjs": "85118f54d54fd1f68331bbd3198e5cb5c8ebf274747634fac503bed895e13d32",
+      "internal/model/monitor.go": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c",
+      "internal/model/measurement.go": "446e28b25fc78192cbac58926df74ee37aec4206e1f62895b200ec2b58b808e1",
+      "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+      "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+      "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+      "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815",
+      "internal/server/web/assets/arm.mjs": "77a4979fa03b415ad4c728574669d5ad519915537daf83c03265f3287a58c5ce",
+      "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843"
+    }
+  },
+  "execution": {
+    "unchanged_shared_fifo": true,
+    "cohorts_sequential": true,
+    "allocated_cpu_max": 2,
+    "allocated_memory_gib_max": 2,
+    "allocated_seconds_including_cleanup_max": 120,
+    "real_sockets": 0,
+    "forbidden_operations": 0,
+    "page_errors": 0,
+    "cohorts": {
+      "help": {
+        "elapsed_ms": 68480,
+        "viewport_cases": 4,
+        "receipt_sha256": "d0ecbeab592e4658156cc043598bfe7c76ed3a02371764418dc51d79d371a8ed",
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "assertions_pass": true
+      },
+      "states": {
+        "elapsed_ms": 32397,
+        "viewport_cases": 4,
+        "receipt_sha256": "b838bcc0c21153e0f8a408fb7c11839810b6fea3f3c1b52b6b1ae7bdf011db32",
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "assertions_pass": true
+      },
+      "details": {
+        "elapsed_ms": 10652,
+        "viewport_cases": 4,
+        "receipt_sha256": "1783d4c9df9d8cd21950c4ace913f0909ab2fea74f8e723eb1e5a79cac51f7c8",
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "assertions_pass": true
+      },
+      "causal": {
+        "elapsed_ms": 7317,
+        "viewport_cases": 2,
+        "receipt_sha256": "ada43121590ded63d6c3c7c4849ce51a468c097ac6b6fb38d2128ce61093bb77",
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "assertions_pass": true
+      },
+      "timing": {
+        "elapsed_ms": 8246,
+        "viewport_cases": 2,
+        "receipt_sha256": "159f066c63f9611a081b0efb8c26c3f3e5bc691ce5915f5371205c6d2e8a2f2f",
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "assertions_pass": true
+      }
+    }
+  },
+  "help_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "text_scale": 1,
+      "document_width": 1440,
+      "logical_cores": 32,
+      "whole_stats_fit": true,
+      "pickers": {
+        "Disk I/O": {
+          "native_inputs": 12,
+          "complete_labels_fit": true,
+          "complete_inputs_fit": true,
+          "overlaps": []
+        },
+        "Network": {
+          "native_inputs": 12,
+          "complete_labels_fit": true,
+          "complete_inputs_fit": true,
+          "overlaps": []
+        }
+      },
+      "dialogs": [
+        {
+          "kind": "CPU activity",
+          "plain_paragraphs": 2,
+          "technical_fields": 5,
+          "minimum_value_width": 742,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [
+            13
+          ],
+          "panel": {
+            "left": 304,
+            "right": 1136,
+            "top": 150.125,
+            "bottom": 749.875,
+            "readingHeight": 550,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Memory & swap",
+          "plain_paragraphs": 2,
+          "technical_fields": 15,
+          "minimum_value_width": 742,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [
+            13
+          ],
+          "panel": {
+            "left": 304,
+            "right": 1136,
+            "top": 24,
+            "bottom": 876,
+            "readingHeight": 802,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Storage space",
+          "plain_paragraphs": 3,
+          "technical_fields": 7,
+          "minimum_value_width": 742,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [
+            13
+          ],
+          "panel": {
+            "left": 304,
+            "right": 1136,
+            "top": 24.125,
+            "bottom": 875.875,
+            "readingHeight": 802,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Disk activity",
+          "plain_paragraphs": 3,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 304,
+            "right": 1136,
+            "top": 312.625,
+            "bottom": 587.375,
+            "readingHeight": 225,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Network activity",
+          "plain_paragraphs": 3,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 304,
+            "right": 1136,
+            "top": 312.625,
+            "bottom": 587.375,
+            "readingHeight": 225,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "GPU monitoring",
+          "plain_paragraphs": 1,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 304,
+            "right": 1136,
+            "top": 390.375,
+            "bottom": 509.625,
+            "readingHeight": 69,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": [
+            {
+              "edge": "top",
+              "box_fits": true,
+              "painted_text_fits": true
+            },
+            {
+              "edge": "bottom",
+              "box_fits": true,
+              "painted_text_fits": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "text_scale": 1,
+      "document_width": 390,
+      "logical_cores": 32,
+      "whole_stats_fit": true,
+      "pickers": {
+        "Disk I/O": {
+          "native_inputs": 12,
+          "complete_labels_fit": true,
+          "complete_inputs_fit": true,
+          "overlaps": []
+        },
+        "Network": {
+          "native_inputs": 12,
+          "complete_labels_fit": true,
+          "complete_inputs_fit": true,
+          "overlaps": []
+        }
+      },
+      "dialogs": [
+        {
+          "kind": "CPU activity",
+          "plain_paragraphs": 2,
+          "technical_fields": 5,
+          "minimum_value_width": 252,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [
+            13
+          ],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 97.625,
+            "bottom": 802.375,
+            "readingHeight": 655,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Memory & swap",
+          "plain_paragraphs": 2,
+          "technical_fields": 15,
+          "minimum_value_width": 252,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [
+            13
+          ],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 876,
+            "readingHeight": 802,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Storage space",
+          "plain_paragraphs": 3,
+          "technical_fields": 7,
+          "minimum_value_width": 252,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [
+            13
+          ],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 876,
+            "readingHeight": 802,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Disk activity",
+          "plain_paragraphs": 3,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 231.25,
+            "bottom": 668.75,
+            "readingHeight": 388,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Network activity",
+          "plain_paragraphs": 3,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 231.25,
+            "bottom": 668.75,
+            "readingHeight": 388,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "GPU monitoring",
+          "plain_paragraphs": 1,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 367.125,
+            "bottom": 532.875,
+            "readingHeight": 116,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": [
+            {
+              "edge": "top",
+              "box_fits": true,
+              "painted_text_fits": true
+            },
+            {
+              "edge": "bottom",
+              "box_fits": true,
+              "painted_text_fits": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "text_scale": 1,
+      "document_width": 390,
+      "logical_cores": 32,
+      "whole_stats_fit": true,
+      "pickers": {
+        "Disk I/O": {
+          "native_inputs": 12,
+          "complete_labels_fit": true,
+          "complete_inputs_fit": true,
+          "overlaps": []
+        },
+        "Network": {
+          "native_inputs": 12,
+          "complete_labels_fit": true,
+          "complete_inputs_fit": true,
+          "overlaps": []
+        }
+      },
+      "dialogs": [
+        {
+          "kind": "CPU activity",
+          "plain_paragraphs": 2,
+          "technical_fields": 5,
+          "minimum_value_width": 252,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [
+            13
+          ],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Memory & swap",
+          "plain_paragraphs": 2,
+          "technical_fields": 15,
+          "minimum_value_width": 252,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [
+            13
+          ],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Storage space",
+          "plain_paragraphs": 3,
+          "technical_fields": 7,
+          "minimum_value_width": 252,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [
+            13
+          ],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Disk activity",
+          "plain_paragraphs": 3,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Network activity",
+          "plain_paragraphs": 3,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "GPU monitoring",
+          "plain_paragraphs": 1,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            15
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222,
+            "lineHeight": 23.25
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": [
+            {
+              "edge": "top",
+              "box_fits": true,
+              "painted_text_fits": true
+            },
+            {
+              "edge": "bottom",
+              "box_fits": true,
+              "painted_text_fits": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "text_scale": 2,
+      "document_width": 768,
+      "logical_cores": 32,
+      "whole_stats_fit": true,
+      "pickers": {
+        "Disk I/O": {
+          "native_inputs": 12,
+          "complete_labels_fit": true,
+          "complete_inputs_fit": true,
+          "overlaps": []
+        },
+        "Network": {
+          "native_inputs": 12,
+          "complete_labels_fit": true,
+          "complete_inputs_fit": true,
+          "overlaps": []
+        }
+      },
+      "dialogs": [
+        {
+          "kind": "CPU activity",
+          "plain_paragraphs": 2,
+          "technical_fields": 5,
+          "minimum_value_width": 630,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            30
+          ],
+          "technical_font_sizes": [
+            26
+          ],
+          "panel": {
+            "left": 24,
+            "right": 744,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502,
+            "lineHeight": 46.5
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Memory & swap",
+          "plain_paragraphs": 2,
+          "technical_fields": 15,
+          "minimum_value_width": 630,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            30
+          ],
+          "technical_font_sizes": [
+            26
+          ],
+          "panel": {
+            "left": 24,
+            "right": 744,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502,
+            "lineHeight": 46.5
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Storage space",
+          "plain_paragraphs": 3,
+          "technical_fields": 7,
+          "minimum_value_width": 630,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            30
+          ],
+          "technical_font_sizes": [
+            26
+          ],
+          "panel": {
+            "left": 24,
+            "right": 744,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502,
+            "lineHeight": 46.5
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Disk activity",
+          "plain_paragraphs": 3,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            30
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 24,
+            "right": 744,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502,
+            "lineHeight": 46.5
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "Network activity",
+          "plain_paragraphs": 3,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            30
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 24,
+            "right": 744,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502,
+            "lineHeight": 46.5
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": []
+        },
+        {
+          "kind": "GPU monitoring",
+          "plain_paragraphs": 1,
+          "technical_fields": 0,
+          "minimum_value_width": null,
+          "complete_fields_and_prose_fit": true,
+          "technical_tails_fit": true,
+          "body_font_sizes": [
+            30
+          ],
+          "technical_font_sizes": [],
+          "panel": {
+            "left": 24,
+            "right": 744,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502,
+            "lineHeight": 46.5
+          },
+          "close_fits": true,
+          "original_focus": true,
+          "disposed": true,
+          "keyboard_tooltip_fits": true,
+          "hover_tooltip_fits": true,
+          "visible_edge_tooltips": [
+            {
+              "edge": "top",
+              "box_fits": true,
+              "painted_text_fits": true
+            },
+            {
+              "edge": "bottom",
+              "box_fits": true,
+              "painted_text_fits": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "inline_details_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "text_scale": 1,
+      "document_width": 1440,
+      "stats": {
+        "All-core activity": {
+          "box": {
+            "left": 16,
+            "right": 482,
+            "top": 262.4375,
+            "bottom": 342.9375
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        },
+        "RAM remaining": {
+          "box": {
+            "left": 487,
+            "right": 953,
+            "top": 262.4375,
+            "bottom": 342.9375
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        },
+        "Space remaining": {
+          "box": {
+            "left": 958,
+            "right": 1424,
+            "top": 262.4375,
+            "bottom": 342.9375
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        }
+      },
+      "facts": [
+        {
+          "title": "Memory & swap",
+          "native_component": "description-list",
+          "columns": "112px 298px",
+          "value_count": 5,
+          "value_widths": [
+            286,
+            286,
+            286,
+            286,
+            286
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Storage space",
+          "native_component": "description-list",
+          "columns": "112px 298px",
+          "value_count": 2,
+          "value_widths": [
+            286,
+            286
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Disk I/O",
+          "native_component": "description-list",
+          "columns": "112px 555.5px",
+          "value_count": 2,
+          "value_widths": [
+            543.5,
+            543.5
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Network",
+          "native_component": "description-list",
+          "columns": "112px 555.5px",
+          "value_count": 2,
+          "value_widths": [
+            543.5,
+            543.5
+          ],
+          "all_labels_and_values_fit": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "text_scale": 1,
+      "document_width": 390,
+      "stats": {
+        "All-core activity": {
+          "box": {
+            "left": 16,
+            "right": 374,
+            "top": 248.328125,
+            "bottom": 328.828125
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        },
+        "RAM remaining": {
+          "box": {
+            "left": 16,
+            "right": 374,
+            "top": 333.828125,
+            "bottom": 414.328125
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        },
+        "Space remaining": {
+          "box": {
+            "left": 16,
+            "right": 374,
+            "top": 409.328125,
+            "bottom": 489.828125
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        }
+      },
+      "facts": [
+        {
+          "title": "Memory & swap",
+          "native_component": "description-list",
+          "columns": "302px",
+          "value_count": 5,
+          "value_widths": [
+            294,
+            294,
+            294,
+            294,
+            294
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Storage space",
+          "native_component": "description-list",
+          "columns": "302px",
+          "value_count": 2,
+          "value_widths": [
+            294,
+            294
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Disk I/O",
+          "native_component": "description-list",
+          "columns": "324px",
+          "value_count": 2,
+          "value_widths": [
+            316,
+            316
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Network",
+          "native_component": "description-list",
+          "columns": "324px",
+          "value_count": 2,
+          "value_widths": [
+            316,
+            316
+          ],
+          "all_labels_and_values_fit": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "text_scale": 1,
+      "document_width": 390,
+      "stats": {
+        "All-core activity": {
+          "box": {
+            "left": 16,
+            "right": 374,
+            "top": 119.328125,
+            "bottom": 199.828125
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        },
+        "RAM remaining": {
+          "box": {
+            "left": 16,
+            "right": 374,
+            "top": 119.828125,
+            "bottom": 200.328125
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        },
+        "Space remaining": {
+          "box": {
+            "left": 16,
+            "right": 374,
+            "top": 119.328125,
+            "bottom": 199.828125
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        }
+      },
+      "facts": [
+        {
+          "title": "Memory & swap",
+          "native_component": "description-list",
+          "columns": "302px",
+          "value_count": 5,
+          "value_widths": [
+            294,
+            294,
+            294,
+            294,
+            294
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Storage space",
+          "native_component": "description-list",
+          "columns": "302px",
+          "value_count": 2,
+          "value_widths": [
+            294,
+            294
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Disk I/O",
+          "native_component": "description-list",
+          "columns": "324px",
+          "value_count": 2,
+          "value_widths": [
+            316,
+            316
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Network",
+          "native_component": "description-list",
+          "columns": "324px",
+          "value_count": 2,
+          "value_widths": [
+            316,
+            316
+          ],
+          "all_labels_and_values_fit": true
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "text_scale": 2,
+      "document_width": 768,
+      "stats": {
+        "All-core activity": {
+          "box": {
+            "left": 16,
+            "right": 258,
+            "top": 200.078125,
+            "bottom": 399.078125
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        },
+        "RAM remaining": {
+          "box": {
+            "left": 263,
+            "right": 505,
+            "top": 200.078125,
+            "bottom": 399.078125
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        },
+        "Space remaining": {
+          "box": {
+            "left": 510,
+            "right": 752,
+            "top": 200.078125,
+            "bottom": 399.078125
+          },
+          "full_box_fits": true,
+          "full_text_fits": true
+        }
+      },
+      "facts": [
+        {
+          "title": "Memory & swap",
+          "native_component": "description-list",
+          "columns": "186px",
+          "value_count": 5,
+          "value_widths": [
+            178,
+            178,
+            178,
+            178,
+            178
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Storage space",
+          "native_component": "description-list",
+          "columns": "186px",
+          "value_count": 2,
+          "value_widths": [
+            178,
+            178
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Disk I/O",
+          "native_component": "description-list",
+          "columns": "331.5px",
+          "value_count": 2,
+          "value_widths": [
+            323.5,
+            323.5
+          ],
+          "all_labels_and_values_fit": true
+        },
+        {
+          "title": "Network",
+          "native_component": "description-list",
+          "columns": "331.5px",
+          "value_count": 2,
+          "value_widths": [
+            323.5,
+            323.5
+          ],
+          "all_labels_and_values_fit": true
+        }
+      ]
+    }
+  ],
+  "state_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "text_scale": 1,
+      "pause_retains_reading": true,
+      "pause_retains_focus": true,
+      "resumed_cpu": "0.0%",
+      "zero_memory": "0 B",
+      "initial_gap_assertions": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "selectors": {
+        "Disk I/O": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "reconnectIdentityRetained": true,
+            "reconnectFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          },
+          "none_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "selected_rates": [
+            [
+              "Read",
+              "1 MiB/s"
+            ],
+            [
+              "Write",
+              "2 MiB/s"
+            ]
+          ],
+          "missing_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "returned_rates": [
+            [
+              "Read",
+              "1 MiB/s"
+            ],
+            [
+              "Write",
+              "2 MiB/s"
+            ]
+          ],
+          "reset_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "zero_rates": [
+            [
+              "Read",
+              "0 B/s"
+            ],
+            [
+              "Write",
+              "0 B/s"
+            ]
+          ]
+        },
+        "Network": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          },
+          "none_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "selected_rates": [
+            [
+              "Receive",
+              "1 MiB/s"
+            ],
+            [
+              "Send",
+              "2 MiB/s"
+            ]
+          ],
+          "missing_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "returned_rates": [
+            [
+              "Receive",
+              "1 MiB/s"
+            ],
+            [
+              "Send",
+              "2 MiB/s"
+            ]
+          ],
+          "reset_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "zero_rates": [
+            [
+              "Receive",
+              "0 B/s"
+            ],
+            [
+              "Send",
+              "0 B/s"
+            ]
+          ]
+        }
+      },
+      "unknown_headlines": {
+        "cpu": "unavailable",
+        "ram": "unavailable",
+        "space": "unavailable"
+      },
+      "stale_headlines": {
+        "cpu": "46.5%",
+        "ram": "unavailable",
+        "space": "unavailable"
+      },
+      "empty_disk_inputs": 0,
+      "document_width": 1440
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "text_scale": 1,
+      "pause_retains_reading": true,
+      "pause_retains_focus": true,
+      "resumed_cpu": "0.0%",
+      "zero_memory": "0 B",
+      "initial_gap_assertions": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "selectors": {
+        "Disk I/O": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "reconnectIdentityRetained": true,
+            "reconnectFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          },
+          "none_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "selected_rates": [
+            [
+              "Read",
+              "1 MiB/s"
+            ],
+            [
+              "Write",
+              "2 MiB/s"
+            ]
+          ],
+          "missing_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "returned_rates": [
+            [
+              "Read",
+              "1 MiB/s"
+            ],
+            [
+              "Write",
+              "2 MiB/s"
+            ]
+          ],
+          "reset_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "zero_rates": [
+            [
+              "Read",
+              "0 B/s"
+            ],
+            [
+              "Write",
+              "0 B/s"
+            ]
+          ]
+        },
+        "Network": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          },
+          "none_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "selected_rates": [
+            [
+              "Receive",
+              "1 MiB/s"
+            ],
+            [
+              "Send",
+              "2 MiB/s"
+            ]
+          ],
+          "missing_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "returned_rates": [
+            [
+              "Receive",
+              "1 MiB/s"
+            ],
+            [
+              "Send",
+              "2 MiB/s"
+            ]
+          ],
+          "reset_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "zero_rates": [
+            [
+              "Receive",
+              "0 B/s"
+            ],
+            [
+              "Send",
+              "0 B/s"
+            ]
+          ]
+        }
+      },
+      "unknown_headlines": {
+        "cpu": "unavailable",
+        "ram": "unavailable",
+        "space": "unavailable"
+      },
+      "stale_headlines": {
+        "cpu": "46.5%",
+        "ram": "unavailable",
+        "space": "unavailable"
+      },
+      "empty_disk_inputs": 0,
+      "document_width": 390
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "text_scale": 1,
+      "pause_retains_reading": true,
+      "pause_retains_focus": true,
+      "resumed_cpu": "0.0%",
+      "zero_memory": "0 B",
+      "initial_gap_assertions": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "selectors": {
+        "Disk I/O": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "reconnectIdentityRetained": true,
+            "reconnectFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          },
+          "none_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "selected_rates": [
+            [
+              "Read",
+              "1 MiB/s"
+            ],
+            [
+              "Write",
+              "2 MiB/s"
+            ]
+          ],
+          "missing_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "returned_rates": [
+            [
+              "Read",
+              "1 MiB/s"
+            ],
+            [
+              "Write",
+              "2 MiB/s"
+            ]
+          ],
+          "reset_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "zero_rates": [
+            [
+              "Read",
+              "0 B/s"
+            ],
+            [
+              "Write",
+              "0 B/s"
+            ]
+          ]
+        },
+        "Network": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          },
+          "none_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "selected_rates": [
+            [
+              "Receive",
+              "1 MiB/s"
+            ],
+            [
+              "Send",
+              "2 MiB/s"
+            ]
+          ],
+          "missing_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "returned_rates": [
+            [
+              "Receive",
+              "1 MiB/s"
+            ],
+            [
+              "Send",
+              "2 MiB/s"
+            ]
+          ],
+          "reset_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "zero_rates": [
+            [
+              "Receive",
+              "0 B/s"
+            ],
+            [
+              "Send",
+              "0 B/s"
+            ]
+          ]
+        }
+      },
+      "unknown_headlines": {
+        "cpu": "unavailable",
+        "ram": "unavailable",
+        "space": "unavailable"
+      },
+      "stale_headlines": {
+        "cpu": "46.5%",
+        "ram": "unavailable",
+        "space": "unavailable"
+      },
+      "empty_disk_inputs": 0,
+      "document_width": 390
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "text_scale": 2,
+      "pause_retains_reading": true,
+      "pause_retains_focus": true,
+      "resumed_cpu": "0.0%",
+      "zero_memory": "0 B",
+      "initial_gap_assertions": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "selectors": {
+        "Disk I/O": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "reconnectIdentityRetained": true,
+            "reconnectFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          },
+          "none_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "selected_rates": [
+            [
+              "Read",
+              "1 MiB/s"
+            ],
+            [
+              "Write",
+              "2 MiB/s"
+            ]
+          ],
+          "missing_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "returned_rates": [
+            [
+              "Read",
+              "1 MiB/s"
+            ],
+            [
+              "Write",
+              "2 MiB/s"
+            ]
+          ],
+          "reset_rates": [
+            [
+              "Read",
+              "unavailable"
+            ],
+            [
+              "Write",
+              "unavailable"
+            ]
+          ],
+          "zero_rates": [
+            [
+              "Read",
+              "0 B/s"
+            ],
+            [
+              "Write",
+              "0 B/s"
+            ]
+          ]
+        },
+        "Network": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          },
+          "none_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "selected_rates": [
+            [
+              "Receive",
+              "1 MiB/s"
+            ],
+            [
+              "Send",
+              "2 MiB/s"
+            ]
+          ],
+          "missing_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "returned_rates": [
+            [
+              "Receive",
+              "1 MiB/s"
+            ],
+            [
+              "Send",
+              "2 MiB/s"
+            ]
+          ],
+          "reset_rates": [
+            [
+              "Receive",
+              "unavailable"
+            ],
+            [
+              "Send",
+              "unavailable"
+            ]
+          ],
+          "zero_rates": [
+            [
+              "Receive",
+              "0 B/s"
+            ],
+            [
+              "Send",
+              "0 B/s"
+            ]
+          ]
+        }
+      },
+      "unknown_headlines": {
+        "cpu": "unavailable",
+        "ram": "unavailable",
+        "space": "unavailable"
+      },
+      "stale_headlines": {
+        "cpu": "46.5%",
+        "ram": "unavailable",
+        "space": "unavailable"
+      },
+      "empty_disk_inputs": 0,
+      "document_width": 768
+    }
+  ],
+  "causal_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "text_scale": 1,
+      "sequences": [
+        {
+          "mode": "untouched-escape",
+          "home_reached": null,
+          "home": null,
+          "page_down": null,
+          "end": null,
+          "final_home": null,
+          "original_focus": true,
+          "tooltip_full_box": true,
+          "tooltip_full_text": true
+        },
+        {
+          "mode": "native-home-pagedown-end-home-escape",
+          "home_reached": true,
+          "home": {
+            "documentY": 0,
+            "panelScroll": 0,
+            "active": {
+              "tag": "SECTION",
+              "role": "dialog",
+              "label": null
+            },
+            "opener": {
+              "top": 356.9375,
+              "bottom": 388.9375
+            }
+          },
+          "page_down": {
+            "documentY": 0,
+            "panelScroll": 487,
+            "active": {
+              "tag": "SECTION",
+              "role": "dialog",
+              "label": null
+            },
+            "opener": {
+              "top": 356.9375,
+              "bottom": 388.9375
+            }
+          },
+          "end": {
+            "documentY": 339,
+            "panelScroll": 487,
+            "active": {
+              "tag": "SECTION",
+              "role": "dialog",
+              "label": null
+            },
+            "opener": {
+              "top": 17.9375,
+              "bottom": 49.9375
+            }
+          },
+          "final_home": {
+            "documentY": 339,
+            "panelScroll": 0,
+            "active": {
+              "tag": "SECTION",
+              "role": "dialog",
+              "label": null
+            },
+            "opener": {
+              "top": 17.9375,
+              "bottom": 49.9375
+            }
+          },
+          "original_focus": true,
+          "tooltip_full_box": true,
+          "tooltip_full_text": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "text_scale": 1,
+      "sequences": [
+        {
+          "mode": "untouched-escape",
+          "home_reached": null,
+          "home": null,
+          "page_down": null,
+          "end": null,
+          "final_home": null,
+          "original_focus": true,
+          "tooltip_full_box": true,
+          "tooltip_full_text": true
+        },
+        {
+          "mode": "native-home-pagedown-end-home-escape",
+          "home_reached": true,
+          "home": {
+            "documentY": 0,
+            "panelScroll": 0,
+            "active": {
+              "tag": "SECTION",
+              "role": "dialog",
+              "label": null
+            },
+            "opener": {
+              "top": 804.375,
+              "bottom": 836.375
+            }
+          },
+          "page_down": {
+            "documentY": 0,
+            "panelScroll": 779,
+            "active": {
+              "tag": "SECTION",
+              "role": "dialog",
+              "label": null
+            },
+            "opener": {
+              "top": 804.375,
+              "bottom": 836.375
+            }
+          },
+          "end": {
+            "documentY": 1492,
+            "panelScroll": 779,
+            "active": {
+              "tag": "SECTION",
+              "role": "dialog",
+              "label": null
+            },
+            "opener": {
+              "top": -687.625,
+              "bottom": -655.625
+            }
+          },
+          "final_home": {
+            "documentY": 1492,
+            "panelScroll": 0,
+            "active": {
+              "tag": "SECTION",
+              "role": "dialog",
+              "label": null
+            },
+            "opener": {
+              "top": -687.625,
+              "bottom": -655.625
+            }
+          },
+          "original_focus": true,
+          "tooltip_full_box": true,
+          "tooltip_full_text": true
+        }
+      ]
+    }
+  ],
+  "timing_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "text_scale": 1,
+      "sequences": [
+        {
+          "mode": "end-then-single-home",
+          "stages": [
+            {
+              "key": "End",
+              "documentY": 0,
+              "panelScroll": 487,
+              "panelMax": 487,
+              "active": true,
+              "settledFor": 206.2000000178814
+            },
+            {
+              "key": "Home",
+              "documentY": 0,
+              "panelScroll": 0,
+              "panelMax": 487,
+              "active": true,
+              "settledFor": 206.5
+            }
+          ],
+          "navigation_key_targets": [
+            {
+              "key": "End",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            },
+            {
+              "key": "Home",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            }
+          ],
+          "original_focus": true,
+          "tooltip_full_box": true,
+          "tooltip_full_text": true
+        },
+        {
+          "mode": "complete-home-pagedown-end-home",
+          "stages": [
+            {
+              "key": "Home",
+              "documentY": 0,
+              "panelScroll": 0,
+              "panelMax": 487,
+              "active": true,
+              "settledFor": 212.7999999821186
+            },
+            {
+              "key": "PageDown",
+              "documentY": 0,
+              "panelScroll": 487,
+              "panelMax": 487,
+              "active": true,
+              "settledFor": 204.69999998807907
+            },
+            {
+              "key": "End",
+              "documentY": 339,
+              "panelScroll": 487,
+              "panelMax": 487,
+              "active": true,
+              "settledFor": 200.7000000178814
+            },
+            {
+              "key": "Home",
+              "documentY": 339,
+              "panelScroll": 0,
+              "panelMax": 487,
+              "active": true,
+              "settledFor": 207.89999997615814
+            }
+          ],
+          "navigation_key_targets": [
+            {
+              "key": "Home",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            },
+            {
+              "key": "PageDown",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            },
+            {
+              "key": "End",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            },
+            {
+              "key": "Home",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            }
+          ],
+          "original_focus": true,
+          "tooltip_full_box": true,
+          "tooltip_full_text": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "text_scale": 1,
+      "sequences": [
+        {
+          "mode": "end-then-single-home",
+          "stages": [
+            {
+              "key": "End",
+              "documentY": 0,
+              "panelScroll": 779,
+              "panelMax": 779,
+              "active": true,
+              "settledFor": 200
+            },
+            {
+              "key": "Home",
+              "documentY": 0,
+              "panelScroll": 0,
+              "panelMax": 779,
+              "active": true,
+              "settledFor": 200.19999998807907
+            }
+          ],
+          "navigation_key_targets": [
+            {
+              "key": "End",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            },
+            {
+              "key": "Home",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            }
+          ],
+          "original_focus": true,
+          "tooltip_full_box": true,
+          "tooltip_full_text": true
+        },
+        {
+          "mode": "complete-home-pagedown-end-home",
+          "stages": [
+            {
+              "key": "Home",
+              "documentY": 0,
+              "panelScroll": 0,
+              "panelMax": 779,
+              "active": true,
+              "settledFor": 210.30000001192093
+            },
+            {
+              "key": "PageDown",
+              "documentY": 0,
+              "panelScroll": 779,
+              "panelMax": 779,
+              "active": true,
+              "settledFor": 216.40000000596046
+            },
+            {
+              "key": "End",
+              "documentY": 1492,
+              "panelScroll": 779,
+              "panelMax": 779,
+              "active": true,
+              "settledFor": 201.90000000596046
+            },
+            {
+              "key": "Home",
+              "documentY": 1492,
+              "panelScroll": 0,
+              "panelMax": 779,
+              "active": true,
+              "settledFor": 215.2999999821186
+            }
+          ],
+          "navigation_key_targets": [
+            {
+              "key": "Home",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            },
+            {
+              "key": "PageDown",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            },
+            {
+              "key": "End",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            },
+            {
+              "key": "Home",
+              "target": "SECTION",
+              "role": "dialog",
+              "before": false,
+              "after": false
+            }
+          ],
+          "original_focus": true,
+          "tooltip_full_box": true,
+          "tooltip_full_text": true
+        }
+      ]
+    }
+  ],
+  "preserved_controls": [
+    {
+      "control": "native-causal-before",
+      "receipt_sha256": "2e237b2dc667cc8daf98a0d03761713c79f322d349b3840d2070f712b95c01ba",
+      "source_hashes": {
+        "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+        "internal/server/web/semblance/app.ttl": "9d28b18de7363df65c241d4727ca8f02fa672f2beafc1f04fc0ef8313a107ed3",
+        "scripts/dashboard-screenshots/ux-monitor.mjs": "9480332556ab63a779322e7872f5f0b91433e76b5db865516444a1cb90b83274"
+      },
+      "failure": "page.waitForFunction: Timeout 2000ms exceeded.",
+      "elapsed_ms": 4456,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Baseline native final Home timed out after a first-crossing scroll oracle; preserved failure."
+    },
+    {
+      "control": "native-causal-before-2",
+      "receipt_sha256": "27dc9967c3bfd61343e45b8d8500d50b3ad72b892d062c792407c2eb909cab2b",
+      "source_hashes": {
+        "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+        "internal/server/web/semblance/app.ttl": "9d28b18de7363df65c241d4727ca8f02fa672f2beafc1f04fc0ef8313a107ed3",
+        "scripts/dashboard-screenshots/ux-monitor.mjs": "73c217bbbe8ed6d165cf983d576e2fc080b90bed7163383c11659f604ff69d05"
+      },
+      "failure": null,
+      "elapsed_ms": 6853,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Diagnostic collection completed, but desktop finalHomeReached=false and restored tooltip top=-17.859375; not a passing regression."
+    },
+    {
+      "control": "native-causal-after",
+      "receipt_sha256": "781a6b5c8218514ed3dbbc4457b04f1cf035b74121a652e51255c5a17eeecfce",
+      "source_hashes": {
+        "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+        "internal/server/web/semblance/app.ttl": "105291a829f156fc92dded02700a52a55bf8b0fbe4cc2a977e698eba6c2ad033",
+        "scripts/dashboard-screenshots/ux-monitor.mjs": "023638b131490227f41b76e6ec95cf5b72e1d2a4f414e76bc2d6383d21a37c05"
+      },
+      "failure": "Corrected native Home must reach the panel beginning",
+      "elapsed_ms": 4513,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Scoped initial CSS fixes full restored tooltip geometry, but strict final Home fails before scroll-settlement repair; preserved failure."
+    },
+    {
+      "control": "native-key-timing",
+      "receipt_sha256": "60838cecf6b19c7985eba6219d19aea0488e99a14bd34e19ee3737815c334c12",
+      "source_hashes": {
+        "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+        "internal/server/web/semblance/app.ttl": "3578eb147a2f0d12839c37d0db534c7766b44df6e0769f0a8b8d577964504081",
+        "scripts/dashboard-screenshots/ux-monitor.mjs": "549b82b74a13c77b6cb673891408354288894892b38d66c42a69c62a99d8a3b8"
+      },
+      "failure": null,
+      "elapsed_ms": 8345,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Read-only native key/default-prevention diagnostic. With both scrollers stable200ms between inputs, single and complete sequences reach panel0 at both widths. Collection alone is not acceptance; final asserting timing cohort repeats these targets."
+    },
+    {
+      "control": "help-probe",
+      "receipt_sha256": "a5d4af65ea17e23da4a9f49630fc59004d5c2a0b733ca85f5e83f242e7228620",
+      "source_hashes": {
+        "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+        "internal/server/web/semblance/app.ttl": "105291a829f156fc92dded02700a52a55bf8b0fbe4cc2a977e698eba6c2ad033",
+        "scripts/dashboard-screenshots/ux-monitor.mjs": "7d65109d101a3a058a431a24984107aaea77e31d0146bc90f95aad7609e5f14f"
+      },
+      "failure": "Expected values to be strictly equal:\n\n786 !== 768\n",
+      "elapsed_ms": 56081,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Strict four-viewport cohort fails document786 versus viewport768 before the allocated Stat containment rule."
+    },
+    {
+      "control": "help-geometry",
+      "receipt_sha256": "311fc1c8d4e98286ca1970a028a56fa5bef4d1edf02915d938b4c95d714669ba",
+      "source_hashes": {
+        "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+        "internal/server/web/semblance/app.ttl": "105291a829f156fc92dded02700a52a55bf8b0fbe4cc2a977e698eba6c2ad033",
+        "scripts/dashboard-screenshots/ux-monitor.mjs": "39333b253431826ce690f714a10a05e5445feadbfdb4a655c8c7d50a1bba9138"
+      },
+      "failure": "Expected values to be strictly equal:\n\n786 !== 768\n",
+      "elapsed_ms": 55717,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Repeated786/768 failure identifies whole Space remaining Stat ending786; value-only checks had missed its padding."
+    },
+    {
+      "control": "visible-details-before",
+      "receipt_sha256": "30329ddee46c14969c258b3c12de5b7f6c5069421b71414e01f6d4cb4bde533a",
+      "source_hashes": {
+        "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+        "internal/server/web/semblance/app.ttl": "3578eb147a2f0d12839c37d0db534c7766b44df6e0769f0a8b8d577964504081",
+        "scripts/dashboard-screenshots/ux-monitor.mjs": "f935dbe4c30157e07d1b1e6d9f5e472e3bdd73755e015cad1bc458959bf44bdd"
+      },
+      "failure": null,
+      "elapsed_ms": 8523,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Collection completes but all5 memory/swap and2 storage inline values have width0 at doubled768; columns224px/0px. This is a negative visual control, not passing acceptance."
+    }
+  ],
+  "focused_tests": {
+    "helper_tests": 13,
+    "helper_failures": 0,
+    "helper_duration_ms": 119.595875,
+    "native_graph_ownership_tests": 27,
+    "native_failures": 0,
+    "native_duration_ms": 1900,
+    "native_workers_max": 2,
+    "logs_sha256": {
+      "helpers": "77abed875d56b679c078a57e2124dc886fc6bf87f4dd109c20a81a1027993be3",
+      "native": "6b55e3dc84dfaf978569d33a563aa483b1e20420204fafb5a2f6b21707c58b71"
+    },
+    "syntax_and_diff_checks": "pass",
+    "test_sources": {
+      "internal/server/web/metric-help.test.mjs": "606ed9144f1e949979f440f345a9c540717100af726d4337107d75a5e308b47d",
+      "internal/server/web/monitor-capacity.test.mjs": "a648288d5059d04f253df78ca77963b25360d68ee3f02ecb3203e0affa659b83",
+      "internal/server/web/io-devices.test.mjs": "bbb35ef692f6407cd7edf51ce82252e82003b49d21f60131e8f09a160c362702",
+      "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+      "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+    }
+  },
+  "limitations": [
+    "Independent review/composition and central embedded-asset rebuild pending",
+    "No build, install, runtime activation, real backend/socket/auth or mutations",
+    "Selected pixel text-token doubling, not universal zoom; native checkbox/tooltip fonts retain existing sizes",
+    "SVG plot marks use platform title tooltips, outside native HTML CSS tooltip bounds scope",
+    "Native End background scroll chaining remains observed and unchanged; rapid-key timings are not universally validated",
+    "No Linux, full Go, terminal parity or full UX acceptance"
+  ],
+  "inventory_reference": {
+    "file": "ux-monitor-inventory-2026-10-29.json",
+    "sha256": "a70143dee0da30962074208cedc4adcc99d40555f654ea0b79675ed48e9a6a86",
+    "qualification": "Original label overlap/clipping, cramped help width and centered tooltip overflow findings remain preserved and unchanged."
+  },
+  "inline_zero_column_negative": {
+    "viewport": {
+      "width": 768,
+      "height": 600,
+      "text_scale": 2
+    },
+    "facts": [
+      {
+        "title": "Memory & swap",
+        "native_columns": "224px 0px",
+        "value_widths": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "complete_text_fit": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "title": "Storage space",
+        "native_columns": "224px 0px",
+        "value_widths": [
+          0,
+          0
+        ],
+        "complete_text_fit": [
+          false,
+          false
+        ]
+      }
+    ]
+  },
+  "help_width_before_after": {
+    "narrow_memory_before": 38.734375,
+    "narrow_filesystem_before": 33.859375,
+    "doubled_memory_before": 16.78125,
+    "doubled_filesystem_before": 8.234375,
+    "narrow_minimum_after": 252,
+    "doubled_minimum_after": 630,
+    "desktop_minimum_after": 742
+  },
+  "whole_stat_before_after": {
+    "doubled_viewport": 768,
+    "previous_space_stat_right": 786,
+    "final_space_stat_right": 752,
+    "qualification": "The first strict whole-document failure led to the scoped Stat rule; value-only bounds had missed its padding."
+  }
+}

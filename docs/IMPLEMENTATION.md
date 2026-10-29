@@ -39,7 +39,8 @@ Resource help uses full-width stacked technical fields and a bounded reading
 panel. Resource-only native tooltip alignment, wrapping and opener scroll margin
 preserve readable focus restoration after keyboard scrolling. Native dialog,
 button, authentication and accounting behavior stay unchanged; Monitor retains
-its existing presentation. Independent tests, guarded source-runtime rendering
+its existing presentation in this accepted Resource cut. The later Monitor-only
+owner correction is recorded below and awaits composition. Independent tests, guarded source-runtime rendering
 and deterministic embedded assets support the
 [scoped acceptance](validation/ux-resource-help-composed-2026-10-29.json).
 This source change is not installed or activated in a running backend.
@@ -3530,3 +3531,32 @@ The state cohort records pause, All/None/subset, original input identity/focus,
 removal/reconnect, zero versus unavailable, stale/disconnected headlines and
 native history-gap geometry. These fixtures collect findings; they do not
 implement Monitor remediation or establish full UX acceptance.
+
+## Monitor layout and reading width
+
+Monitor initialization marks only the existing noninteractive monitorCards root
+and device-selector grids. The six explicit Monitor help kinds mark only their
+existing dialog body and technical DescriptionList. Native direct Checkbox,
+Dialog and IconButton types, IDs, callbacks and ownership remain intact. The
+help lookup still reads current context when opened; metricHelp text and
+measurement formatting are unchanged.
+
+Monitor selector labels wrap unbroken names with a flexible grid, while input
+controls retain their size. Technical fields stack at a useful width inside a
+viewport-bounded native panel. Short windows retain at least 120px/four computed
+reading lines through scoped panel sizing. Monitor-only inline-end native
+help tooltips wrap within the viewport; a scoped opener scroll margin supports
+existing native restoration after scrolling. No new focus/hover listener or
+lifecycle callback is added. Whole Monitor Stats contain their native padding;
+compact/medium native inline DescriptionLists stack labels and values so doubled
+text cannot collapse the value column. Wider desktop keeps paired columns.
+
+The read-only fixture now asserts the corrected geometry as well as the
+existing selection/identity, pause, unknown/zero/reset, reconnect and history-gap
+controls. A native keyboard diagnostic found that waiting only for a target
+crossing sent subsequent keys during an unfinished scroll. The final oracle
+observes both panel and document stability before the next input and retains
+strict Home/End targets, original focus and full tooltip checks. Background
+End chaining is observed and unchanged; arbitrary rapid timing is not claimed.
+[Owner evidence](validation/ux-monitor-layout-2026-10-29.json) does not establish
+independent composition or full UX acceptance. Generated assets stay unchanged.

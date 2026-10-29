@@ -157,11 +157,11 @@ let paused=false,lastMonitorStale=null;
 const pause=ui.check('Pause monitor display',{checked:false},()=>{paused=pause.checked;if(!paused)renderMonitor();}),monitorFresh=ui.text(''),monitorCards=ui.stack();roots.monitor.replace(ui.toolbar('Monitor display',[pause,monitorFresh]),monitorCards);
 const ioSelections={disk_io:allDevices(),network:allDevices()};
 function help(kind,options={}){
- const get=()=>typeof options==='function'?options():options,title=metricHelp(kind,get()).title,resource=kind.startsWith('resource-');
+ const get=()=>typeof options==='function'?options():options,title=metricHelp(kind,get()).title,resource=kind.startsWith('resource-'),monitor=['cpu','memory','filesystem','disk_io','network','gpu'].includes(kind);
  return ui.iconButton('About '+title,'?',()=>{
   const info=metricHelp(kind,get()),body=info.paragraphs.map(x=>ui.text(x));
-  if(info.technical.length){const facts=ui.descriptions(info.technical);if(resource)ui.put(facts.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'ResourceHelpFacts',true);body.push(ui.disclosure('Technical details',[facts]));}
-  const d=ui.dialog(info.title,body);if(resource)ui.put(d.body.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'ResourceHelpBody',true);
+  if(info.technical.length){const facts=ui.descriptions(info.technical);if(resource)ui.put(facts.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'ResourceHelpFacts',true);else if(monitor)ui.put(facts.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'MonitorHelpFacts',true);body.push(ui.disclosure('Technical details',[facts]));}
+  const d=ui.dialog(info.title,body);if(resource)ui.put(d.body.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'ResourceHelpBody',true);else if(monitor)ui.put(d.body.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'MonitorHelpBody',true);
   d.on('close',()=>d.dispose());d.showModal();
  });
 }
@@ -169,6 +169,7 @@ const GiB=1024**3;
 function series(get,{scale=1}={}){const cadence=Number(state.monitor?.cadence_ns??2e9)/1e6,rows=state.history.map(p=>{const v=numeric(get(p));return{id:String(p.sequence),x:Date.parse(p.at)/1000,value:v===null||!Number.isFinite(v)?null:v/scale,label:new Date(p.at).toLocaleTimeString()};});for(let i=0;i<rows.length-1;i++)rows[i].connectNext=Number.isFinite(rows[i].x)&&Number.isFinite(rows[i+1].x)&&rows[i+1].x>rows[i].x&&(rows[i+1].x-rows[i].x)*1000<=cadence*1.6;return rows;}
 let monitorModel=null;
 function initMonitor(){
+ ui.put(monitorCards.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'MonitorSurface',true);
  const cpuValue=ui.stat('All-core activity','unavailable'),cores=ui.grid([],{columns:6,minWidth:'120px',gap:2}),cpuChart=ui.line('CPU activity over time',[],{min:0,max:100,unit:'%'}),cpuNote=ui.text('');
  const ramValue=ui.stat('RAM remaining','unavailable'),ramChart=ui.line('Available RAM over time',[],{min:0,max:1,unit:'GiB'}),ramFacts=ui.descriptions([]),ramNote=ui.text('');
  const diskValue=ui.stat('Space remaining','unavailable'),diskChart=ui.line('Available filesystem space over time',[],{min:0,max:1,unit:'GiB'}),diskFacts=ui.descriptions([]),diskNote=ui.text('');
@@ -177,6 +178,7 @@ function initMonitor(){
  diskCard=ui.card('Storage space',[diskNote,diskChart,ui.disclosure('Space details',[diskFacts])],{actions:[help('filesystem',()=>({filesystem:state.monitor?.latest?.filesystem.filesystem,measurements:[['Available space',state.monitor?.latest?.filesystem.available]]}))]});
  const io={};for(const[key,title]of [['disk_io','Disk I/O'],['network','Network']]){
   const summary=ui.text(''),rates=ui.descriptions([]),readChart=ui.line(title+' '+(key==='network'?'receive':'read'),[],{min:0,max:1,unit:'MiB/s'}),writeChart=ui.line(title+' '+(key==='network'?'send':'write'),[],{min:0,max:1,unit:'MiB/s'}),selectors=ui.grid([],{columns:4,minWidth:'128px',gap:2}),quality=ui.badge(''),deviceMap=new Map();
+  ui.put(selectors.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'MonitorDeviceSelectors',true);
   const all=ui.button('All',()=>{ioSelections[key]=allDevices();renderMonitor();}),none=ui.button('None',()=>{ioSelections[key]=noDevices();renderMonitor();});
   const selector=ui.disclosure('Choose devices',[ui.toolbar('Device selection',[all,none]),selectors]);
   const card=ui.card(title,[quality,summary,rates,ui.grid([readChart,writeChart],{columns:2,minWidth:'140px',gap:2}),selector,ui.text('Reported counters may overlap. Unknown or reset counters leave gaps.')],{actions:[help(key)]});io[key]={summary,rates,readChart,writeChart,selectors,quality,deviceMap,card};

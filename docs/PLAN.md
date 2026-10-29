@@ -1421,3 +1421,27 @@ tokens, six help kinds, dense valid cores/devices and read-only pause/selection/
 unknown/reset/stale/disconnect/reconnect behavior. Native identity/selection/
 focus and gap controls are observed intact. All product edits, independent
 review/composition and broader UX acceptance remain separate gates.
+
+## Monitor layout — owner implementation, independent review pending
+
+Owner: `codex/ux-monitor-layout`, from frozen inventory `2b21806`. The allocated
+correction adds distinct noninteractive Monitor selector/surface/help hooks;
+only Monitor presentation rules change. Native checkbox/dialog/button types,
+selection callbacks, current-context help, close/disposal and graph/math remain
+unchanged. Compact and medium inline facts stack after the doubled-token
+inventory exposed zero-width values; whole Monitor Stats keep their padding
+inside the existing grid tracks. No shared component, Resource code, backend,
+protocol, pin or generated asset change is included.
+
+The [Monitor layout record](validation/ux-monitor-layout-2026-10-29.json)
+binds final source and bounded owner cohorts to label/technical reading widths,
+short-dialog reading floors, full tooltip border/painted text and native
+selection/focus/gap controls. Failed rapid key sequences remain preserved;
+settling both native scrollers between keys reaches every Home/End target.
+This qualifies the fixture timing, without claiming to fix background scroll
+chaining or all rapid input sequences. Original owners close and join.
+
+Review gates: independent final-diff review, composed validation and central
+asset rebuild remain open. No build, install, runtime activation or live
+transport was performed in this allocation. Broader Monitor routes/states,
+universal zoom, terminal parity and the full UX pass remain open.

@@ -74,7 +74,8 @@ correction uses existing opener restoration. The final asserting causal mode
 has separate source-qualified owner evidence. Backend/module/pin/shared-engine
 bytes remain unchanged. No installed activation, compiled-bundle browser run,
 universal zoom, Linux/full-Go or complete UX acceptance is inferred. Monitor's
-existing narrow tooltip overflow remains open.
+existing narrow tooltip overflow remained open at this Resource checkpoint;
+the later Monitor owner correction below awaits independent composition.
 Published integration `ab4f06b` passes
 [Public website workflow 40922316270](https://github.com/inferal-oss/arm/actions/runs/40922316270).
 [Normalized record](validation/ux-resource-help-composed-2026-10-29.json).
@@ -8529,3 +8530,52 @@ source hashes. Some vertical tooltip flags follow measurement/navigation scroll
 state; no focus compensation is proposed without a native-user causal test.
 Independent source review, explicit product allocation and broader UX/real
 transport acceptance remain open.
+
+## Monitor layout — scoped owner regression evidence
+
+The [source-bound Monitor layout record](validation/ux-monitor-layout-2026-10-29.json)
+retains the accepted inventory and failed controls, then records the corrected
+actual-route renderer with a synthetic, contract-shaped Backend. Separate
+unchanged-FIFO cohorts run one at a time within the allocated two-CPU/two-GiB,
+120-second window including cleanup. No broad suite, build, installation,
+backend/socket activation or real mutation is included.
+
+The four cases are 1440×900, 390×900, short 390×320 and 768×600 with selected
+pixel tokens doubled. All 24 help dialogs assert complete prose, technical
+labels/values/tails, useful widths, bounded panels, native controls and original
+Close/Escape disposal. Short panels assert 120px/four computed reading lines.
+Native help body text is 15/30px and technical text 13/26px; this is selected-token
+scaling, not universal browser zoom. All 48 keyboard/hover tooltip samples plus
+eight visible-edge samples assert native pseudo-element borders and painted
+text. Both twelve-device selector sets assert every complete label/input and
+no pair overlap. Whole Stats and all seven opened RAM/storage values plus four
+inline rate facts fit actual clipping ancestors; desktop remains paired and
+compact/medium facts stack.
+
+State regressions assert pause/resume, All/None/subset/missing/returned/new-ID
+membership, the original checked input and focus through removal/reconnect,
+1/2 MiB/s custom rates, unavailable/reset gaps versus genuine 0 B/s, unknown and
+stale/disconnected remaining headlines, and empty inventory. Initial native
+CPU/disk/network dots/lines preserve their expected discontinuities. A stale
+CPU last observation is recorded under its stale label; this patch does not
+change measurement semantics.
+
+The failed native rapid Home/PageDown/End/Home sequence remains evidence. A
+read-only diagnostic observes native SECTION focus and unprevented keys; End
+then single Home and the full sequence reach panel 0 after both panel/document
+scrollers settle. The corrected causal oracle waits for both scrollers before
+subsequent input and keeps every reached-target assertion. It does not suppress
+native background chaining or establish all rapid-key timings. Original
+Close/Escape focus, full tooltip geometry and disposal pass.
+
+Thirteen focused helper tests and 27 native graph/ownership tests pass with
+zero failures/skips and complement the browser checks.
+Source guards prove the main file matches the inventory base after removing
+only the exact allocated noninteractive hooks, and the entire pre-existing
+ontology is an unchanged prefix. Protected renderer/math/help/backend/model,
+Resource fixtures/tests, shared tooltip ontology and embedded asset bytes match
+the base. All original CDP/context/browser/server owners positively close/join;
+no page errors, real sockets or forbidden calls occur. Representative compact,
+short and doubled-text captures are visually inspected. Independent final-diff
+review, composed checks/rebuild, installed activation and full UX acceptance
+remain separate gates.
