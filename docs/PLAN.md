@@ -401,6 +401,19 @@ pass is insufficient without resizing the open panel. Return before any script,
 anchor repositioning, wider ancestor or pinned-engine change. Earlier successful
 collection with an offscreen control remains failed reading acceptance.
 
+The bounded menu probe preserves and reaches all five controls through native
+focus scrolling and open-panel resizing. Its scroll clip exposes the centered
+Display settings tooltip extending beyond the panel's inline-start edge.
+Allocate one compact/medium app-owned pseudo-element alignment rule only for
+direct native tooltip IconButtons inside the existing opened More panel: start
+at the control's left edge and remove horizontal centering. Preserve all native
+content, typography, geometry, activation and ARIA behavior; do not change global
+tooltip rules or suppress clipping. Verify actual native pseudo-element border
+and painted label bounds within the real menu/viewport during focus, hover,
+forward/backward traversal, resize and Escape. Keep raw browser/protocol handles
+private and positively close owned measurement sessions. Earlier menu controls
+passing does not accept their clipped tooltip.
+
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
 readable sizing, responsive containment, navigation/focus and action clarity.
