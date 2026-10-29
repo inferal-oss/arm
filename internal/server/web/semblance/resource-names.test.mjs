@@ -101,3 +101,50 @@ test('wrong-owner snapshots and malformed successful mutation bodies cannot beco
   const f=fixture({reply:op=>op==='name_list'?doc():result});await f.console.open();f.ui.get('Custom name').value='build-cache';await f.ui.get('Set custom name').emit('activate');assert.equal(f.console.pendingRecords.length,1);assert.equal(f.console.pendingRecords[0].source,host);assert.equal(f.console.pendingRecords[0].owner,'501');assert.equal(f.ui.get('Set custom name').disabled,true);
  }
 });
+
+
+test('unchanged exact naming read preserves dirty value and original CAS/write arguments',async()=>{
+ const revision=9223372036854775806n,saved=[entry(ref,'saved-name'),entry(ref,'retained-name',false)];let reads=0;
+ const f=fixture({reply:(op,args)=>op==='name_list'?doc(++reads===1?saved:[...saved].reverse(),revision):doc([entry(ref,args.name)],revision+1n)});
+ await f.console.open();f.ui.get('Custom name').value='dirty-name';await f.ui.get('Read current names').emit('activate');assert.equal(f.ui.get('Custom name').value,'dirty-name');
+ await f.ui.get('Set custom name').emit('activate');assert.deepEqual(f.calls.at(-1),['name_mutate',{operation:'set',...ref,name:'dirty-name',expected_revision:revision}]);assert.equal(f.console.pending,null);
+});
+
+test('pending read disables edits and applies the eligible current value rather than a captured draft',async()=>{
+ for(const [before,atReply,expected] of [['saved-name','later-draft','later-draft'],['early-draft','later-draft','later-draft'],['early-draft','saved-name','saved-name']]){
+  let resolve,reads=0;const saved=doc([entry(ref,'saved-name')],9007199254740993n),f=fixture({reply:()=>++reads===1?saved:new Promise(r=>resolve=r)});
+  await f.console.open();const name=f.ui.get('Custom name');name.value=before;const pending=f.ui.get('Read current names').emit('activate');
+  assert.equal(name.disabled,true);assert.equal(f.ui.get('Resource to name').disabled,true);assert.equal(f.ui.get('Close').disabled,true);
+  // Native edits cannot occur while disabled; deliberately simulate an external
+  // interleaving to prove the result does not restore a stale captured string.
+  name.value=atReply;resolve(doc([entry(ref,'saved-name')],9007199254740993n));await pending;assert.equal(name.value,expected);assert.equal(name.disabled,false);assert.equal(f.calls.filter(([op])=>op==='name_mutate').length,0);
+ }
+});
+
+test('changed revision or saved reservation resets selection without rebasing a dirty name',async()=>{
+ for(const next of [doc([entry(ref,'saved-name')],9007199254740994n),doc([entry(ref,'changed-name')],9007199254740993n),doc([entry(ref,'saved-name'),entry(ref,'retained-name',false)],9007199254740993n),doc([],9007199254740993n)]){
+  let reads=0;const f=fixture({reply:()=>++reads===1?doc([entry(ref,'saved-name')],9007199254740993n):next});await f.console.open();f.ui.get('Custom name').value='dirty-name';await f.ui.get('Read current names').emit('activate');
+  assert.equal(f.ui.get('Custom name').value,next.entries.find(e=>e.active)?.name??'');assert.equal(f.calls.filter(([op])=>op==='name_mutate').length,0);
+ }
+});
+
+test('changed selected canonical binding and removed loaded target cannot inherit a dirty name',async()=>{
+ const second={...ref,id:portLease},saved=doc([entry(ref,'first-name'),entry(second,'second-name')],7),f=fixture({reply:()=>saved});f.targets([{...ref,label:'First'},{...second,label:'Second'}]);await f.console.open();f.ui.get('Custom name').value='first-draft';
+ const selection=f.ui.get('Resource to name');selection.value=JSON.stringify([second.kind,second.authority_host,second.id,second.binding_lease]);await selection.emit('change');assert.equal(f.ui.get('Custom name').value,'second-name');
+ f.ui.get('Custom name').value='second-draft';f.targets([{...ref,label:'First'}]);await f.ui.get('Read current names').emit('activate');assert.equal(f.ui.get('Custom name').value,'second-name');assert.equal(f.ui.get('Set custom name').disabled,true);
+});
+
+test('late naming read cannot transfer its draft across source owner context closure or disposal',async()=>{
+ for(const change of ['source','owner','context','remote','closed','dispose']){
+  let reads=0,resolve,currentOwner='501';const f=fixture({owner:()=>currentOwner,reply:()=>++reads===1?doc([entry(ref,'saved-name')],7):new Promise(r=>resolve=r)});await f.console.open();const name=f.ui.get('Custom name');name.value='early-draft';const pending=f.ui.get('Read current names').emit('activate');
+  if(change==='source')f.source(other);else if(change==='owner')currentOwner='502';else if(change==='context')f.context({});else if(change==='remote')f.local(false);else if(change==='closed')f.console.dialog.close();else f.console.dispose();
+  name.value='later-draft';resolve(doc([entry(ref,'saved-name')],7));await pending;
+  assert.equal(name.value,change==='closed'?'saved-name':'later-draft');assert.equal(f.calls.filter(([op])=>op==='name_mutate').length,0);
+ }
+});
+
+test('unknown naming intents and failed reads retain original protocol without preserving a draft over a fresh selection',async()=>{
+ let fail=false;const f=fixture({reply:op=>{if(op==='name_mutate')throw Error('lost');if(fail)throw Error('read failed');return doc([entry(ref,'saved-name')],7);}});await f.console.open();f.ui.get('Custom name').value='unknown-name';await f.ui.get('Set custom name').emit('activate');const pending=f.console.pendingRecords;
+ f.ui.get('Custom name').value='unrelated-draft';await f.ui.get('Read current names').emit('activate');assert.equal(f.ui.get('Custom name').value,'saved-name');assert.deepEqual(f.console.pendingRecords,pending);assert.equal(f.calls.filter(([op])=>op==='name_mutate').length,1);
+ f.ui.get('Custom name').value='read-error-draft';fail=true;await f.ui.get('Read current names').emit('activate');assert.equal(f.ui.get('Custom name').value,'read-error-draft');assert.equal(f.ui.get('Set custom name').disabled,true);assert.deepEqual(f.console.pendingRecords,pending);
+});
