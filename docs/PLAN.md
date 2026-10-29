@@ -6,6 +6,25 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Activity, Host and compact header — reviewed composition
+
+Inventory `3705be6` and focused cuts `188e3fa`, `de562c8`, `b6eb1be` are
+independently composed on current main `630e015`. All 34 unique owner/protected
+hashes match before the reviewed embedded rebuild. Product changes remain
+limited to the allocated Activity/Host helpers and appended app-owned styles.
+Host exact metadata/native scrolling, retained Activity readers and compact
+header/menu/tooltip containment pass fresh source-runtime checks.
+
+The broader cohort exposes three outdated Host lifecycle doubles; their native
+namespace/body/value contract is corrected with original assertions retained.
+The menu negative fixture is also narrowed to retain the tooltip rule, qualifying
+the owner's earlier broader rule-removal result. Final composition passes 445
+JS and 43 native UI tests, native build, deterministic embedded assets, sixteen
+browser cases and both isolated expected-failure controls with positive cleanup.
+See the [composed record](validation/ux-activity-host-composed-2026-10-29.json).
+Installation, real transport/authenticated journal, live drawer, broader route/
+state/terminal and complete UX acceptance remain separate gates.
+
 ## Stage-two read-grant contract — reviewed, production grants inactive
 
 Owner: `codex/resident-read-grant-contract`, from accepted Stage-one composition
@@ -1667,3 +1686,47 @@ no main/native/global style or interactive hook changes. The
 [selector-grid record](validation/ux-monitor-selector-grid-2026-10-29.json)
 preserves the failing computed-track control and affected final revalidation.
 Independent review/composition remains the landing gate.
+
+## Activity and Host inventory — findings awaiting allocation
+
+Owner: `codex/ux-activity-host-inventory`, from accepted `2e58e7e`. The clean
+Monitor correction and earlier branches/evidence remain preserved. This slice
+adds only fresh synthetic read-only Backend/route fixtures, normalized evidence
+and required documentation; no product or accepted fixture/style change.
+
+The [Activity/Host inventory](validation/ux-activity-host-inventory-2026-10-29.json)
+reproduces three P2 findings: populated Host technical/infrastructure records
+render empty Code, Activity refresh replaces the open selected exact-record
+reader and loses focus, and a valid long host name overflows the shared narrow
+header. Proposed correction boundaries are respectively the two Host value
+setters, Activity-only selected-detail retention, and a separately allocated
+shell host-label containment review. No correction is authorized by this report.
+
+Four viewport/token cases cover dense/empty Activity, exact int64 records,
+page/selection retention, Host identity/capability/fallback/draining states and
+disclosure/node/focus retention through refresh/reconnect. Separate large-record
+controls qualify the source-defined display cap and native scrolling. Inventory
+collection is not visual acceptance. Independent review, exact product
+allocation, live transport and the broader/full UX task remain open.
+
+## Activity, Host and compact header — owner corrections awaiting composition
+
+Owner: `codex/ux-activity-host-layout`, from frozen inventory `3705be6`.
+Focused dependency order is Host `188e3fa`, then Activity `de562c8`, then the
+compact/medium header correction and final shared-source evidence. Host uses
+its existing native Code handles with correct values, block rendering and
+bounded noninteractive disclosure bodies. Activity retains the selected exact
+record within its host/connection/session context and retires genuine changes.
+
+The incremental header allocation contains its existing byline/Text, bounds
+only the opened native More menu, preserves child minimum sizes and aligns only
+the direct native Settings tooltip. Original native types, content, callbacks,
+anchor, labels and focus behavior remain intact. Menu-only and tooltip-only
+absence controls fail the actual offscreen-control/full-label assertions.
+
+The [owner record](validation/ux-activity-host-layout-2026-10-29.json) binds five
+sequential final source cohorts, the focused native tests, original-node checks,
+qualified scrolling and retained failed candidates. The original inventory and
+accepted Monitor/Resource work remain unchanged. Independent final-diff review,
+current composition checks and central asset rebuild remain open. No owner
+build/install/activation, real operation or full UX acceptance is claimed.

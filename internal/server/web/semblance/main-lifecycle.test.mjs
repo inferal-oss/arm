@@ -169,9 +169,9 @@ test('backend close refreshes peer status without replacing reported claims or m
 });
 
 function hostFixture(){
- const all=[],ui={activeComponent:null,batch:fn=>fn()};
+ const all=[],puts=[],ui={activeComponent:null,batch:fn=>fn()};
  function handle(kind,label,children=[]){
-  const h={kind,label,children:[],parents:new Set(),ownedChildren:new Set(),open:false,disposed:false,
+  const h={iri:'urn:host-fixture:'+all.length,kind,label,children:[],parents:new Set(),ownedChildren:new Set(),open:false,disposed:false,
    set(props){Object.assign(this,props);return this;},
    replace(...next){const orphaned=replaceOwnership(this,next);this.children=next;for(const child of orphaned)child.dispose();return this;},
    dispose(){if(this.disposed)return;this.disposed=true;if(ui.activeComponent===this)ui.activeComponent=null;for(const child of releaseOwnership(this))child.dispose();},
@@ -179,24 +179,29 @@ function hostFixture(){
   };all.push(h);h.replace(...children);return h;
  }
  Object.assign(ui,{
-  text:label=>handle('Text',label),heading:(label,level)=>Object.assign(handle('Heading',label),{level}),code:code=>Object.assign(handle('Code',''),{code}),
+  text:label=>handle('Text',label),heading:(label,level)=>Object.assign(handle('Heading',label),{level}),code:value=>Object.assign(handle('Code',''),{value}),
   descriptions:pairs=>Object.assign(handle('DescriptionList',''),{pairs,setPairs(next){this.pairs=next;}}),
   card:(label,children)=>handle('Card',label,children),grid:children=>handle('Grid','',children),
-  disclosure:(label,children)=>handle('AccordionItem',label,children),json:(value,label)=>ui.disclosure(label,[ui.code(JSON.stringify(value))]),
+  disclosure:(label,children)=>{const h=handle('AccordionItem',label,children);h.body={iri:h.iri+'/body'};return h;},json:(value,label)=>ui.disclosure(label,[ui.code(JSON.stringify(value))]),
+  put(subject,predicate,value,isIRI=false){assert.ok(all.some(h=>h.iri===subject||h.body?.iri===subject));puts.push({subject,predicate,value,isIRI});},
  });
- const scope={ui,roots:{host:handle('Stack','')},state:{status:null},namedLabel,owner:value=>'Operator '+value.owner,count:value=>String(value),stringifyJSON:JSON.stringify};
+ const scope={ui,C:'https://semblance.dev/ns/component#',ARM:'https://arm.local/ui#',roots:{host:handle('Stack','')},state:{status:null},namedLabel,owner:value=>'Operator '+value.owner,count:value=>String(value),stringifyJSON:JSON.stringify};
  const api=runInNewContext([
   'let hostView=null;',between('function owned(root,children){','\nfunction connectionState'),
   between('function renderHost(){','\nfunction updateFreshness'), '\n({renderHost})',
  ].join('\n'),scope);
  const walk=h=>[h,...h.children.flatMap(walk)];
- return {ui,scope,all,render(status){scope.state.status=status;api.renderHost();},find(label){return walk(scope.roots.host).find(h=>h.label===label);}};
+ return {ui,scope,all,puts,render(status){scope.state.status=status;api.renderHost();},find(label){return walk(scope.roots.host).find(h=>h.label===label);}};
 }
 const hostStatus=(props={})=>({host:'a'.repeat(32),owner:'501',display_name:'BrowserHost',cursor:1n,capabilities:['live-cpu-admission'],infrastructure_ports:[],...props});
 
 test('Host disclosure identity, open state and focus survive fresh status and name-clear refreshes',()=>{
  const f=hostFixture();f.render(hostStatus());
  const exact=f.find('Exact identity & cursor'),authority=f.find('Local authority'),technical=f.find('Technical identifiers · 1 capabilities'),infrastructure=f.find('Infrastructure ports');
+ for(const disclosure of [technical,infrastructure]){
+  assert.ok(f.puts.some(p=>p.subject===disclosure.children[0].iri&&p.predicate===f.scope.C+'block'&&p.value===true&&!p.isIRI));
+  assert.ok(f.puts.some(p=>p.subject===disclosure.body.iri&&p.predicate==='http://www.w3.org/1999/02/22-rdf-syntax-ns#type'&&p.value===f.scope.ARM+'HostMetadataBody'&&p.isIRI));
+ }
  for(const disclosure of [technical,infrastructure,exact])disclosure.userToggle();
  for(const [index,display_name] of ['BrowserHost',undefined,''].entries()){
   const status=hostStatus({host:(index===2?'b':'a').repeat(32),display_name,cursor:9007199254740993n+BigInt(index),capabilities:index===1?[]:['native-port-inventory'],infrastructure_ports:[{port:5000+index}]});
@@ -206,8 +211,8 @@ test('Host disclosure identity, open state and focus survive fresh status and na
   assert.equal(f.ui.activeComponent,exact);
   assert.equal(exact.children[0].pairs[0][1],status.host);assert.equal(exact.children[0].pairs[1][1],String(status.cursor));
   assert.equal(authority.children[0].pairs[0][1],display_name||status.host.slice(0,12)+'…');
-  assert.equal(technical.label,`Technical identifiers · ${status.capabilities.length} capabilities`);assert.equal(technical.children[0].code,status.capabilities.join('\n'));
-  assert.equal(infrastructure.children[0].code,JSON.stringify(status.infrastructure_ports));
+  assert.equal(technical.label,`Technical identifiers · ${status.capabilities.length} capabilities`);assert.equal(technical.children[0].value,status.capabilities.join('\n'));
+  assert.equal(infrastructure.children[0].value,JSON.stringify(status.infrastructure_ports));
  }
  assert.equal(f.all.filter(h=>h.kind==='AccordionItem').length,3);
 });

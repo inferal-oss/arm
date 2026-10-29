@@ -1,5 +1,44 @@
 # Validation record
 
+## Activity, Host and compact header — independent composition
+
+Reviewed inventory `3705be6`, Host `188e3fa`, Activity `de562c8` and final header/
+evidence `b6eb1be` compose on main `630e015` in an isolated checkout. All 34 unique
+owner/protected input hashes initially match. Main source outside the allocated
+Activity/Host helpers and the original ontology prefix are byte-identical; graph,
+engine/theme/pins, shared formatting and accepted Monitor/Resource inputs remain
+unchanged. All 142 inventory and 505 owner correction artifacts rehash unchanged.
+
+Initial broader JS testing passes 442 and fails three old Host doubles with an
+undefined native namespace; their body/property surface and old `code`-field
+expectation also predate the real native interface. The corrected doubles assert
+native block/body declarations and Code `value`, retaining disclosure/open/focus/
+disposal coverage. Final affected JS is 445 passed, zero failures/skips. Seven
+native UI files pass 43 cases with two-worker concurrency. Native CLI build and
+two byte-identical web builds pass; only the composed embedded module changes.
+
+Fresh unchanged-FIFO browser cohorts pass header four, Host four, Activity four,
+lifecycle two and truncation two cases. They verify actual clip bounds, exact
+payloads/int64s, ordinary keyboard reading and retained nodes/focus, genuine
+selection/context retirement, all five More actions, native painted tooltips,
+resize/Escape, caps/markers and qualified maximum-record tails. No page error,
+external/API request, real page socket, clipboard or forbidden call occurs.
+Original CDP detach/context/browser/server close operations all complete.
+Short Host, doubled-token Activity and native hovered Settings images are
+visually inspected. Selected token scaling is not universal browser zoom.
+
+Source review finds the original `without-menu` override also removes the later
+tooltip rule. That original result remains a broader removal control, not an
+isolated menu proof. The reviewer fixture now retains the tooltip tail; default
+fixture behavior is unchanged. Menu-only and tooltip-only controls each fail
+their exact offscreen-action/full-painted-label assertion and positively clean
+up. They remain expected failed controls, not production passes. All receipts,
+including the first three JS failures and raw browser handles, stay private.
+The [normalized composed record](validation/ux-activity-host-composed-2026-10-29.json)
+binds final source, artifact hashes, counts and qualifications. No full Go, Linux,
+real transport/authenticated journal, live drawer, terminal, install or complete
+UX acceptance is inferred.
+
 ## Stage-two read-grant refinement — source inspection only
 
 The [contract](design/resident-read-grants.md) is inspected against accepted
@@ -8780,3 +8819,124 @@ focused native graph/ownership tests pass with two workers, zero failures/skips.
 Earlier separate inline-detail, native-key timing and helper-test receipts keep
 their original `889923e` source qualification. All 339 original artifact hashes
 are reverified without changing those artifacts.
+
+## Activity and Host actual-route inventory — read-only findings
+
+The [source-bound inventory](validation/ux-activity-host-inventory-2026-10-29.json)
+uses accepted `2e58e7e` product bytes with fresh read-only synthetic fixtures.
+Sequential unchanged-FIFO cohorts remain within the allocated two-CPU/two-GiB,
+120-second active window including original context/browser/server cleanup.
+There are no real Backend/socket/API/clipboard writes, discovery, mutations,
+configuration/policy/enrollment changes, builds, installs or broad suites.
+Successful collection means fixture/safety completion; the negative rendering
+and retained-reader results are findings and are not counted as acceptance.
+
+The common matrix is 1440×900, 390×900, 390×320 and 768×600 with selected pixel
+text tokens doubled. Actual capability prose scales 15/30px, timeline summary
+11/22px and DescriptionList fields 13/26px; native selects remain 13px and inline
+Code 13.2px. Native select painted glyph bounds are unavailable here: their
+control boxes, labels, selected text and selection behavior are qualified
+separately. This is not whole-browser zoom. Complete DOM labels/text/controls
+are measured against actual clipping ancestors and fixed shell bounds; tall
+code cannot all fit simultaneously in a short viewport, so native End/tail
+reachability is recorded separately.
+
+Dense Activity retains 200 events in four 50-row pages. The ordinary selected Event JSON matches
+all source characters and preserves int64 sequence/data values beyond JS safe
+integer precision. Page and native Choice identity/selection remain under
+refresh; focusing that Choice survives a new event. Replaying the selected
+Event or appending a new Event while its exact reader is open replaces the
+original disclosure, closes it and loses focus in all four cases. This is the
+selected-reader P2; genuine page changes still clear an out-of-page selection.
+Empty Activity has zero timeline rows and one placeholder per native Choice.
+The existing 320-character summary cut is observed, with its full value retained
+in the exact record. The lease inspection affordance is measured but not used.
+
+Host human/exact identity, owner/mode and 23 known-capability labels fit. Existing
+authority/identity/technical/infrastructure nodes, open states and focused
+technical control survive draining/unknown/empty/fresh refresh, disconnection
+and reconnect. Null versus empty capability arrays produce the same empty
+known-feature projection; this is observed behavior, not an invented semantic
+requirement. Yet 26 capability IDs (1073 characters) and 8 populated ports (3409
+JSON characters) yield two empty native Code elements. The source updates the
+wrong Code predicate; no populated technical-reading geometry is accepted.
+
+At 390px a valid long host display name makes the shared header/document reach
+562.859375/563px. Activity/Host body fields remain bounded; this is a shared-shell
+finding, not an Activity body width diagnosis. The separately measured large
+Activity record displays 256000 characters plus the 20-character truncation
+marker, with its tail reachable by settled native End at desktop/short sizes.
+Host infrastructure still renders empty in the corresponding truncation case.
+Initial fixture assumptions about Choice values and Code nesting failed and
+remain preserved. An early large-record probe was also closed by the real
+startup refresh; its hidden-body geometry is not treated as a separate defect.
+The final baseline waits for that refresh, then tests explicit new/replayed
+Event refresh causally. No focus or product scroll behavior is manufactured.
+
+Exact source guards preserve main/app, event/identity/auth/operation semantics,
+accepted Monitor/Resource fixtures/styles/tests, graph/engine/pins/modules and
+embedded assets. Representative native captures are visually reviewed. Focused
+findings/proposed boundaries await independent review and explicit allocation;
+full route/state/real-transport, live drawer, terminal and complete UX gates
+remain open.
+
+The final frozen-source cohorts take 18183ms for Activity (four cases), 28239ms
+for Host (four) and 5246ms for large-record/truncation diagnostics (two). Source
+maps are identical across all three. Original context/browser/server owners
+positively close/join; no page errors, forbidden calls, real sockets, external
+requests or clipboard attempts occur. The private artifact roster retains all
+initial fixture-assumption and timing diagnostics; no earlier negative was
+silently relabeled as a passing visual test.
+
+## Activity, Host and compact header — final owner source evidence
+
+The [focused owner record](validation/ux-activity-host-layout-2026-10-29.json)
+binds the final main/app/fixture hashes to five sequential unchanged-FIFO
+cohorts: Activity, Host and header each have four viewport/token cases;
+source-context lifecycle and cap/marker checks each have desktop/short cases.
+Each cohort finishes within 120 seconds including original cleanup. All
+original context/browser/server owners close/join; header CDP sessions detach.
+No forbidden call, page error, external request, real socket or clipboard
+attempt occurs. The three focused native test files pass 36 cases with two
+workers, zero failures/skips. No broad suite or build is inferred.
+
+Host technical/infrastructure native text matches all 1073/3409 characters,
+including existing boundary whitespace. All 26 capability IDs retain distinct
+source-line starts at native block Code fonts 13/26px. Scoped body/PRE widths
+permit native ArrowRight to reach ordinary rightmost data with focus retained;
+settled End reaches the meaningful tail. An unchanged refresh preserves the
+original focused PRE and scroll position. Draining/null/empty/fresh,
+disconnect/reconnect and native disclosure identities remain checked. Maximum
+infrastructure and Activity display exactly 256000 characters plus the existing
+20-character marker. The huge Host line proves positive keyboard movement and
+uses bounded native wheel for its far endpoint; full keyboard traversal of that
+line is not claimed. Tall records require scrolling rather than simultaneous
+full visibility.
+
+Activity preserves original exact-reader nodes/open/focus on replay and new
+events while the exact selection remains valid, and preserves deliberate Choice
+focus. Exact int64 JSON, history pages, summary bounds and genuine out-of-page
+retirement pass. Separate synthetic changed-source/same-sequence, cancellation,
+changed payload/Inspect target and child/root disposal controls pass. This is
+cached-reader lifecycle evidence; broader real-auth/shared-journal isolation
+remains outside the correction.
+
+At 390px the complete valid 111-character header label fits its brand and the
+document stays 390px wide, versus the original 563px. Short reading space stays
+above 120px. Native Views keyboard selection/cancellation, updated full names,
+original AppBar/Text nodes, action traversal in both directions, focused/hovered
+full native Settings pseudo border and painted glyphs, open tall-short-tall
+resize, and Escape to the original More opener pass. Desktop inline controls
+remain present. Removing only the menu rules fails an original action's true
+panel/viewport fit; removing only tooltip alignment fails the full painted-label
+clip assertion. Both failures and positive original cleanup are retained.
+
+Original inventory artifacts are rehashed unchanged. Earlier inline-newline,
+intrinsic-PRE clipping, extra-key scroll chaining, offscreen-menu and clipped-
+tooltip candidates retain their original source/timing qualifications. Initial
+missing namespace/Choice/Code shape harness failures are identified separately.
+Native select painted glyph bounds remain unavailable: DOM labels/control boxes
+and native keyboard behavior are tested. Selected doubled pixel tokens are not
+universal zoom, and fixed native fonts are recorded. Independent final-diff
+review, composed checks and central asset rebuilding remain open, as do real
+transport, broader routes/states, live drawer, terminal and complete UX gates.

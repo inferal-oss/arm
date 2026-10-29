@@ -5,6 +5,8 @@ This is an ongoing remediation pass. Inventory is not acceptance. Messages and
 separate lease/run/private-input cuts have scoped composition evidence in
 `c830982`; Pools, Resources, Resource-only help/tooltips and the scoped Monitor
 readability cut also pass independent composition. Full UX coverage remains open.
+The scoped Activity/Host and compact header/menu/tooltip corrections now also
+pass [independent composition](validation/ux-activity-host-composed-2026-10-29.json).
 All other rows require current rendering and keyboard checks. Existing
 feature tests and earlier screenshots do not close those gates.
 
@@ -45,8 +47,12 @@ feature tests and earlier screenshots do not close those gates.
    reading width and pairs desktop consumer text/accounting. Tablet details use
    the full width; nested open details do not prevent compact outer collapse.
    Budget arithmetic, freshness and warning construction are byte-identical.
-4. **Host metadata: source candidate, reproduction pending.** Capability labels
-   still require dense/long/empty native fixtures before any presentation change.
+4. **Activity/Host: scoped corrections independently accepted.** Correct native
+   Code values/block/body containment expose exact metadata with scroll access.
+   Activity retains its current selected subtree and retires genuine context/
+   selection changes. Compact/medium name wrapping, native More scrolling and
+   Settings tooltip alignment fix reproduced header/control clipping. Broader
+   state/live-drawer/transport and terminal coverage remain open.
 5. **Shell and small terminal geometry: reproduction pending.** Validate sticky
    shell controls during scrolling, zoom and short viewports, and terminal action
    hints/scrolling at narrow widths. Full-page browser screenshots place fixed
@@ -67,8 +73,8 @@ states; no principal view is declared complete from source inspection.
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |
 | Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Accepted focused default/detail/lifecycle cut in c830982 | Remaining route/geometry coverage; preserve reader and cleanup invariants |
 | Messages | `messages.mjs`; composer, recipient/reply review, conversation, deliveries, saved-send recovery | Corrected slice: 320/390/768/1440/1920 widths, 768 at actual doubled text-token coverage (15px/30px); long/unbroken values, stale/disconnected review, held focus, restored unknown/offline, empty and validation error | Message product source accepted in c830982; corrected text-scale evidence accepted with Pools composition; broader broadcast density and recorded-result visual states |
-| Activity | `main.mjs`; history pages, timeline, event picker/detail, live drawer | Source inventory only | Dense/empty/long events, exact record, pause, disconnected retention and keyboard scrolling |
-| Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Source inventory only | Many/empty capabilities, long IDs, disclosure retention and read-only context |
+| Activity | `main.mjs`; history pages, timeline, event picker/detail, live drawer | Four-case selected-reader refresh/focus and two-case context/selection/cap checks pass independent composition | Live drawer/transport, broader states and full acceptance remain open |
+| Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Four-case exact metadata/line/scroll/freshness retention and scoped header/menu/tooltip checks pass independent composition | Real transport, broader states and full acceptance remain open |
 | Mesh | `mesh.mjs`; roster, node detail, connect/reconnect, installation, stop, uninstall, handoff, operations | Source inventory only | Dense nodes, every draft/review/unknown/cancel/error state, exact pins/revisions and control visibility |
 | Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Source inventory only | Dense inventory, unverified/stale/unavailable states; no cluster operations |
 | Forwarding | `forward.mjs`; preparation/review, tunnel list and retained operations | Source inventory only | Long endpoints, narrow dialogs, uncertainty and cleanup warnings; no real forwarding |
@@ -239,3 +245,35 @@ and doubled-token cards one. The
 [focused correction evidence](validation/ux-monitor-selector-grid-2026-10-29.json)
 preserves the negative baseline and original layout record. Independent
 composition remains open.
+
+## Activity and Host inventory boundary
+
+The [read-only inventory](validation/ux-activity-host-inventory-2026-10-29.json)
+records concrete P2 findings and positive native controls from accepted
+`2e58e7e`. Proposed product boundaries are the two Host technical/infrastructure
+value setters, Activity-only stable selected-record handles, and separate
+shell-owned long host-label containment. No product correction is included.
+Original failed probes and negative controls remain preserved; selected-token
+scaling and fixed native-font limits are explicit. Full UX acceptance stays open.
+
+## Activity/Host owner corrections and compact header follow-through
+
+The [final owner record](validation/ux-activity-host-layout-2026-10-29.json)
+addresses the inventory's empty Host Code, selected-reader loss and narrow
+shared header findings within reviewed incremental boundaries. Host retains
+full values/native line and scroll behavior; Activity retains current selected
+subtrees by exact identity/context and retires genuine changes. Compact/medium
+AppBar byline wrapping, opened More scrolling and one direct Settings tooltip
+alignment preserve native controls and original node/focus behavior.
+
+The final matrix checks full text against actual clips, useful short reading,
+ordinary native keyboard endpoints, qualified maximum-record reading, duplicate/
+new-event retention, changed-source/selection/disposal, every More control in
+both directions, native tooltip focus/hover, open resize and Escape return.
+Causal omission of menu or tooltip rules fails the corresponding true geometry
+assertion. Earlier failures, original inventory and source-qualified receipts
+remain preserved. This is owner validation; independent current composition,
+rebuild, real transport, broader route/state/live-drawer/terminal and full UX
+acceptance remain open. The later composed record supplies the scoped source/
+rebuild/browser gates only and qualifies the original broader menu-removal
+control; it does not close those remaining real/full UX gates.

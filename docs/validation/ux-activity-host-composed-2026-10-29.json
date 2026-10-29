@@ -1,0 +1,330 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "scope": "Independent scoped Activity/Host and compact/medium header/menu/tooltip composition",
+  "status": "Source reviewed and validated; installation and complete UX coverage not accepted",
+  "composition_base": "630e015",
+  "inventory_commit": "3705be698e8169e145a35b0174532b710db7dccb",
+  "focused_commits": [
+    "188e3fad99e9b91778778df7252d1b5f4574519d",
+    "de562c8abe149d41c7a7fe4ba5f93ccb690d02b8",
+    "b6eb1bef0c9368fdd3d86c2217b6e6cbdc5f68df"
+  ],
+  "coordinator_fixture_correction_commit": "e916486",
+  "toolchain": {
+    "go": "go1.27.3 darwin/arm64",
+    "node": "v26.12.1"
+  },
+  "source_sha256": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "016b3ccabd6f88d0885b8707eeff337d13e5406b58f98ddf67259ec1da27a9c2",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "internal/server/web/activity-feed.mjs": "78a4225ddc8580e2614fe3c6a5bc6fc6d8c85d606ca758204224cfe442f87e8e",
+    "web/third_party/semblance/ontology/components/type.ttl": "80bc0082a1cecab49f7f68cccf7f42c0f6cb356416b353d94fa4346f960d6ad0",
+    "web/third_party/semblance/src/components/type.ts": "b00e05c8010fdd3f78ef53d0748e4509061eb10956fc266863743de078caddd8",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/named_views.go": "a9452987a249df10e53b66b85ab552b20dad727acf5b7219885aaa76f1ffbc21",
+    "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+    "internal/model/ports.go": "5878a419ce1efd05b32e3eff7c8bd30a9bdde3f3fb0c13996d0302bb0984f42e",
+    "internal/model/node_metadata.go": "37f47880669571a310d5e0a84df56097c60c7e8fcfb94b7a234769872f526441",
+    "internal/local/identity.go": "0e67003d24d448e10c5b3f65101e52ae4fbef66ea530fc572d3d7ebcbbf21ad8",
+    "internal/manager/manager.go": "5470903ce0081c7fecfe4718d5e9e8ef624207cde9c5c450cf9aa65b45515927",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+    "web/third_party/semblance/ontology/theme/data.ttl": "5dfefcfb38b77459150851b67a386faf419f9c4f0eb26cb681b5997007fbaeff",
+    "scripts/dashboard-screenshots/ux-activity-host.mjs": "96c0b83b82c6cd614ab34f5f81b49935690ad34372fcc34a2695a5741f7ad31f",
+    "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "62ea64429383d840e68be501ccf21c6ba94b8c2999ad85f74ee7ef18b8afc344",
+    "web/test/activity-host-details.test.mjs": "021a5430af3f5e248ac2b306f48bc64d3f1c913130970df9916b6020ee841253",
+    "internal/server/web/semblance/main-lifecycle.test.mjs": "09a30fb40318640ac69b9eb5a9c7a76369a220d726f2587a514468cccac55388"
+  },
+  "unchanged_protected_sha256": {
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "internal/server/web/semblance/lease-controls.mjs": "f5dd804d8e2e4f6b12897f121b8cb8bb4b32fb1987e4238c9748f75497387466",
+    "scripts/dashboard-screenshots/ux-monitor.mjs": "94c315a605775dd143704cc88248b2cb87d528489dc45a15a5593f47c15854be",
+    "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843",
+    "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+    "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815",
+    "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+    "web/third_party/semblance/src/components/type.ts": "b00e05c8010fdd3f78ef53d0748e4509061eb10956fc266863743de078caddd8",
+    "web/third_party/semblance/ontology/components/type.ttl": "80bc0082a1cecab49f7f68cccf7f42c0f6cb356416b353d94fa4346f960d6ad0",
+    "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+    "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+    "docs/validation/ux-activity-host-inventory-2026-10-29.json": "830f517acf8565cfd92c1997f999adbc21971c93aed9d15f478b0ab70ae9bd89",
+    "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "internal/server/web/activity-feed.mjs": "78a4225ddc8580e2614fe3c6a5bc6fc6d8c85d606ca758204224cfe442f87e8e",
+    "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+    "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+  },
+  "review": {
+    "unique_owner_protected_hashes_verified_before_rebuild": 34,
+    "main_outside_allocated_helpers": "byte-identical",
+    "ontology_original_prefix": "byte-identical",
+    "original_inventory_artifacts_verified": 142,
+    "owner_correction_artifacts_verified": 505,
+    "production_scope": "Activity/Host helpers and appended Host body plus native AppBar presentation styles only",
+    "blocking_source_findings": 0
+  },
+  "tests": {
+    "node": {
+      "passed": 445,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native": {
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0,
+      "files": 7,
+      "max_concurrent_workers": 2,
+      "file_roster": [
+        "resource-layout.test.mjs",
+        "pool-layout.test.mjs",
+        "graph-ui.test.mjs",
+        "ownership-regression.test.mjs",
+        "messages-layout.test.mjs",
+        "run-log-windows.test.mjs",
+        "activity-host-details.test.mjs"
+      ]
+    },
+    "core_phases": [
+      {
+        "name": "web-build",
+        "exit": 0,
+        "seconds": 0.734
+      },
+      {
+        "name": "node",
+        "exit": 0,
+        "seconds": 6.463
+      },
+      {
+        "name": "native",
+        "exit": 0,
+        "seconds": 3.276
+      },
+      {
+        "name": "native-build",
+        "exit": 0,
+        "seconds": 14.371
+      },
+      {
+        "name": "web-rebuild",
+        "exit": 0,
+        "seconds": 0.621
+      }
+    ],
+    "deterministic_embedded_module": true
+  },
+  "browser": {
+    "matrix": [
+      [
+        1440,
+        900,
+        1
+      ],
+      [
+        390,
+        900,
+        1
+      ],
+      [
+        390,
+        320,
+        1
+      ],
+      [
+        768,
+        600,
+        2
+      ]
+    ],
+    "positive_cases": 16,
+    "cohorts": {
+      "header": {
+        "name": "header",
+        "exit": 0,
+        "seconds": 33.664,
+        "failure": null,
+        "cases": 4,
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "network_requests": 0,
+        "websockets": 0,
+        "clipboard_attempts": 0,
+        "forbidden": 0,
+        "receipt_sha256": "becf733df60a699d299e384fffb55595fa71d0e6b4bbc2dc71d41919e0a5fc34"
+      },
+      "host": {
+        "name": "host",
+        "exit": 0,
+        "seconds": 37.863,
+        "failure": null,
+        "cases": 4,
+        "cleanup": {
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "network_requests": 0,
+        "websockets": 0,
+        "clipboard_attempts": 0,
+        "forbidden": 0,
+        "receipt_sha256": "2c73e983de16c65f8b752988426b13076542a5ba83640456f053c7fb3473b9d8"
+      },
+      "activity": {
+        "name": "activity",
+        "exit": 0,
+        "seconds": 17.444,
+        "failure": null,
+        "cases": 4,
+        "cleanup": {
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "network_requests": 0,
+        "websockets": 0,
+        "clipboard_attempts": 0,
+        "forbidden": 0,
+        "receipt_sha256": "5bbac06fb6a12122985cda55384c3764ec38107378b619ac2cb56a66aec0c92b"
+      },
+      "lifecycle": {
+        "name": "lifecycle",
+        "exit": 0,
+        "seconds": 7.921,
+        "failure": null,
+        "cases": 2,
+        "cleanup": {
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "network_requests": 0,
+        "websockets": 0,
+        "clipboard_attempts": 0,
+        "forbidden": 0,
+        "receipt_sha256": "c8191d22dba9baa902492ff57d230d8f59e20ca0b6301533e13965eb0ea1ddab"
+      },
+      "truncation": {
+        "name": "truncation",
+        "exit": 0,
+        "seconds": 7.867,
+        "failure": null,
+        "cases": 2,
+        "cleanup": {
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "network_requests": 0,
+        "websockets": 0,
+        "clipboard_attempts": 0,
+        "forbidden": 0,
+        "receipt_sha256": "918ef4e9278cd2b3f860d4870d4fa764eb0514934fd35b22cc3ed4008ff47435"
+      },
+      "causal-menu": {
+        "name": "causal-menu",
+        "exit": 1,
+        "seconds": 7.992,
+        "failure": "Each original focused More action must fit its true panel and viewport",
+        "cases": 1,
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "network_requests": 0,
+        "websockets": 0,
+        "clipboard_attempts": 0,
+        "forbidden": 0,
+        "expected_failed_control": true,
+        "receipt_sha256": "e719284359bf2c58ad756b6c8410d41f5caa6b570bc23a43a02a1e7eb6933c26"
+      },
+      "causal-tooltip": {
+        "name": "causal-tooltip",
+        "exit": 1,
+        "seconds": 5.279,
+        "failure": "Full native More tooltip must fit its scroll clip",
+        "cases": 1,
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "network_requests": 0,
+        "websockets": 0,
+        "clipboard_attempts": 0,
+        "forbidden": 0,
+        "expected_failed_control": true,
+        "receipt_sha256": "4254e1bca1a20a205a0a03dbc1656cf8476aaae3b7296b2042865c64f2e8888c"
+      }
+    },
+    "transport": "Synthetic Backend replacement; real sockets/API/external requests and clipboard forbidden",
+    "cleanup": "Original CDP detach, context/browser and Vite close methods complete in every cohort; no actual backend was started"
+  },
+  "retained_failures": [
+    {
+      "kind": "Inherited Host test-double mismatch",
+      "passed": 442,
+      "failed": 3,
+      "cause": "Missing native namespace/body/put surface and obsolete Code.code expectations",
+      "fix": "Actual namespace/metadata targets, native Code.value and retained lifecycle assertions; no product changes"
+    },
+    {
+      "kind": "Owner menu control removes additional tooltip rule",
+      "qualification": "Original frozen owner control is broader than isolated menu sizing. Reviewer override preserves tooltip tail and fails only the true offscreen-action assertion; default fixture behavior unchanged"
+    }
+  ],
+  "artifacts": {
+    "embedded_module_sha256": "79717dcecd672cd68e7322010e63fa94cedad7675465fba2d5670653edae56d0",
+    "native_cli_sha256": "4ae62dcf733c685df86d8be17f38ccd069a5e43be4fb884a4a69f933c61a8955",
+    "native_cli_scope": "Build only; not installed or executed. VCS metadata refers to reviewer head plus dirty rebuild/fixture state; content inputs are bound above.",
+    "visually_reviewed_png_sha256": {
+      "header/header-menu-resize-host-forward-4-hover.png": "b79e4bdf50d28bfa75227dda59c8c1b9eb177edb34a111d99be9c462576efa9e",
+      "host/host-infrastructure-390-320-1.png": "9078ef2dc2b37b52f8335ec7fe5c2010845218f0787deac4470cefd6bb4e8607",
+      "activity/activity-exact-768-600-2.png": "505a47a827ab79f3e871db52160f41e063c8e6a01a0cbfe2826fe6cfdb293abf"
+    },
+    "native_cli_build_vcs": {
+      "revision": "0575b7ba165fa01de4fd55145b6465e193836659",
+      "modified": true,
+      "qualification": "Source-equivalent final inputs are bound explicitly; this is not a final integration-revision stamp"
+    }
+  },
+  "execution": {
+    "queue": "Unchanged shared FIFO",
+    "sequential_cohorts": true,
+    "active_limit_seconds": 115,
+    "allocation": "Up to2CPU/2GiB; cooperative allocation, not measured RSS or kernel enforcement",
+    "GOMAXPROCS": 1,
+    "node_test_concurrency": 2
+  },
+  "limitations": [
+    "No real backend/authenticated journal isolation or transport acceptance",
+    "Maximum-cap Host line endpoint uses bounded native wheel after positive keyboard motion; ordinary endpoints use native keys",
+    "Native select glyph bounds unavailable; control/label/keyboard behavior checked",
+    "Selected doubled tokens are not universal browser zoom; no new Activity raw-Code scaling claim",
+    "Raw exact metadata formatting and existing display caps are retained",
+    "No full Go suite, Linux runtime, browser cross-engine, terminal/live-drawer/broader full-UX acceptance",
+    "No installation, default/shared-state change, new feature/protocol or worker activation"
+  ]
+}

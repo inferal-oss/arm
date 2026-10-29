@@ -1,5 +1,16 @@
 # Backend and CLI implementation
 
+## Activity, Host and compact header composition
+
+Host technical fields now show their exact current values in native bounded
+Code blocks; Activity keeps its selected reader and focus on unchanged refresh.
+Compact/medium host names wrap inside the original brand, and the native More
+menu and Settings tooltip stay reachable within their scroll/viewport bounds.
+Independent [composed validation](validation/ux-activity-host-composed-2026-10-29.json)
+accepts these scoped changes and regenerated embedded assets. Stock controls,
+data/format/caps, auth and resource behavior remain intact. The installed backend
+is unchanged; this is not a complete web/terminal UX acceptance.
+
 ## Stage-two read grants — proposed only
 
 The [read-grant refinement](design/resident-read-grants.md) adds no implementation.
@@ -3642,3 +3653,62 @@ computed track count/minimum and usable label width, including 390px and actual
 doubled tokens at 768px. Both the failed baseline and corrected evidence remain
 [source-bound](validation/ux-monitor-selector-grid-2026-10-29.json); the original
 Monitor layout evidence is preserved unchanged.
+
+## Read-only Activity and Host inventory
+
+Fresh fixtures import the unchanged actual main routes. Synthetic Event,
+Status, namedStatus and PortBinding shapes follow the published Go contracts;
+large integer sequences/cursors stay exact. The journal can publish 200 entries
+between the first status snapshot and catch-up (manager limit 256, UI cap 200),
+then replay an identical event or append new ones. All non-allowlisted calls
+refuse, including mutations and lease inspection. No real transport, clipboard,
+OS/host/cluster discovery, configuration, policy or resource action occurs.
+
+Activity records native page/event Choice identities, an exact JSON/int64
+control, long 320-character summaries, native labels/controls, empty state and
+reading retention under duplicate/new events. Host records human/exact identity,
+known and unknown capability identifiers, populated/empty/null infrastructure,
+draining/fallback/disconnected/reconnected states and original disclosure nodes.
+The local Host route does not request NodeMetadata; no unrendered OS/inventory
+fields are invented for it.
+
+The fixtures expose existing behavior without changing it. Host updates c:code
+while native Code reads c:label/c:value, so technical and infrastructure Code
+remain empty despite populated records. Activity recreates its selected reader
+on every render, closing a focused exact disclosure on refresh. Long valid
+host names cross the shared narrow header. Product corrections await separate
+review/allocation; the [normalized findings](validation/ux-activity-host-inventory-2026-10-29.json)
+retain source/contract hashes, qualified controls and cleanup evidence.
+
+## Activity selected readers, Host metadata and compact header containment
+
+Host now writes technical/infrastructure data to the existing Code value
+predicate. Native block Code preserves capability line boundaries and exposes
+its native keyboard scroll surface. A distinct noninteractive Stack subtype
+on those two existing disclosure bodies and direct-PRE sizing contain their
+intrinsic widths. The formatter, exact integer serialization, display cap and
+marker, native disclosures and existing handles remain unchanged.
+
+Activity retains one selected detail model by exact sequence plus loaded host,
+connection and session identity. Unchanged replay/arrival keeps its native
+DescriptionList/Disclosure/Code/Inspect subtree and open/focus state. Changed
+selected content updates existing values and the current Inspect target;
+selection/page/context changes or disposal retire owned handles. Timeline
+projection, 200/50 history bounds, summaries, Choice/disclosure callbacks and
+shared journal/auth/backend lifecycle remain unchanged. Source-context tests
+cover this cached reader, not broader authenticated journal isolation.
+
+Compact/medium app-owned native AppBar rules stretch its current byline into
+the brand allocation and wrap the full Text label. Only its opened More body
+gets a viewport-relative height/vertical scroll boundary; direct children keep
+native minimum sizes. Only the direct native Settings IconButton tooltip gets
+left alignment without translation. No native type promotion, content/font/
+padding/ARIA changes, global theme/engine edits, script positioning or forced
+focus is introduced. Desktop inline controls keep their existing behavior.
+
+The [source-bound owner evidence](validation/ux-activity-host-layout-2026-10-29.json)
+preserves negative candidates, causal style-absence controls and qualified
+native reading/lifecycle checks. Generated assets remain unchanged; independent
+current-composition review/validation and central rebuilding were required.
+The composed acceptance above now supplies those gates; historical owner source
+and original receipts retain their separate scope.
