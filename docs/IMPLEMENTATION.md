@@ -3354,6 +3354,10 @@ changed.
 
 ## Pool dialog layout remediation
 
+Independent composed review accepts `f4cc89d` plus `8c3f935` with protected
+protocol/pin bytes unchanged and deterministic rebuilt assets.
+[Scoped acceptance](validation/ux-pools-composed-2026-10-29.json).
+
 The custom-pool manager and editor use pool-specific viewport-bounded widths,
 internal body scrolling and native action footers. Direct stock Dialog/Button
 types and existing action callbacks remain intact. Budget descriptions and

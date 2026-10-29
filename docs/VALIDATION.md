@@ -1,5 +1,18 @@
 # Validation record
 
+## Pools layout — independent composed acceptance
+
+Focused owner source `f4cc89d`/`8c3f935` passes current-main review and a normal-FIFO
+gate: 445 JS and 28 native component/lifecycle tests, zero failures/skips, native
+CLI build and two byte-identical asset builds. All recorded inputs stay unchanged
+through testing except the intentional composed bundle. Accepted style-prefix and
+protected graph/protocol/pin/module bytes are verified. Source-qualified owner
+captures show the stale short review with 197px visible body, actual panel-bound
+control/text reachability, complete exact values and computed 15px/30px text.
+Desktop/narrow/doubled-text images are independently visually reviewed and hashed.
+No real pool/backend/policy/credential mutation or Linux/full-Go/new-terminal
+acceptance is inferred. [Normalized record](validation/ux-pools-composed-2026-10-29.json).
+
 ## Dashboard presentation — independent composed acceptance
 
 Published runtime `c830982` passes the public website build/deploy workflow
@@ -8120,11 +8133,12 @@ claimed.
 
 The original Pools owner result above was not accepted: independent review
 found the stale 390×320 case left only 8px of body height. Its positive-height
-assertion did not establish usable reading. The original normalized records and
-private raw evidence are preserved unchanged. Both original scaled fixtures
+assertion did not establish usable reading. The original numerical/source-hash results and private raw evidence are retained;
+historical scale claims are qualified explicitly. Both original scaled fixtures
 changed root rem sizing only, so their earlier results establish no doubled
 pixel-font coverage. Accepted Messages/run/lease/private-input runtime `c830982`
-remains the accepted baseline; the Pools correction is still review-pending.
+remains the accepted baseline; the Pools correction is accepted by the independent
+composition record above.
 
 The [correction record](validation/ux-pools-short-window-2026-10-29.json) binds
 final source hashes to 43 pool behavior/protocol and 30 real RDF/focus tests,
@@ -8136,8 +8150,9 @@ reading space and verify native PageUp/PageDown plus individual warning, Back,
 Cancel and disabled-confirmation reachability. Actual stale content, whole
 before/after values and action captures are visually inspected. Native mutation/
 transport calls remain zero; original browser/context/server handles close and
-join positively in each fixture. Independent composition/rebuild and broader UX
-coverage remain open; Resources implementation stays held.
+join positively in each fixture. Independent composition/rebuild now pass as
+recorded above; broader UX coverage remains open. Resources follows this accepted
+base.
 
 The final short-window action oracle checks each complete control box and its
 text against the actual panel reading bounds after native scrolling settles.

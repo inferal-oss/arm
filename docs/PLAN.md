@@ -61,13 +61,19 @@ hosting/domain/settings migration occurred. See the
 
 ## Full dashboard layout and UX remediation — in progress
 
-The first Messages slice is accepted in `c830982`, alongside the separately
-reviewed lease/run/sign-in changes. Pools candidate `f4cc89d` remains isolated:
-independent review reproduced an 8px stale-review body in a short viewport, so
-its geometric containment checks do not establish usable reading. A focused
-short-height correction and actual stale-state capture are in progress. Resources
-implementation is held until that finding is resolved; broader inventory remains
-read-only. No full UX acceptance is claimed.
+The Messages and targeted run/lease/private-input cuts are accepted in `c830982`.
+Pools `f4cc89d` plus correction `8c3f935` now pass independent composition:
+445 JS and 28 native component/lifecycle cases, native build and deterministic
+asset rebuild. Review rejected both the original 8px stale body and a viewport-
+only control oracle; corrected short panels provide 197px visible content and
+verify complete warning/control text inside actual panel bounds. Separate
+source-qualified fixtures prove 15px/30px text in Pools and Messages. Historical
+failed/rem-only artifacts remain qualified. See the
+[composed record](validation/ux-pools-composed-2026-10-29.json).
+
+Resources consumer/accounting presentation is the next bounded slice after this
+accepted base is supplied. Shell/Mesh/global helpers and backend/pins remain
+coordinated separately. Full route/state/terminal acceptance remains open.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,

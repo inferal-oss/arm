@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-29",
+  "scope": "Independent current-main composition of focused Pools presentation and short-window correction",
+  "owner_commits": [
+    "f4cc89d5bec92c7ff6c0d9d0fb112486b597e759",
+    "8c3f9357c938881ede011901e4dddfd2876fef7f"
+  ],
+  "validated_source": "9cd35f8a3eadfc11dbc81172e1b8dc29a4cc8ac8",
+  "feature_inputs": {
+    "internal/server/web/assets/arm.mjs": "8b6806660f2624aef5d52d4754a7a62f89c7a3bd17b8ac6158786356f39b94d0",
+    "internal/server/web/semblance/app.ttl": "2e2128580b0d0f62c9430180db9278fcf39b1d74b1ef5fb6afe1932999cc895d",
+    "internal/server/web/semblance/pools.mjs": "50656cd5f8652212a9adc83a734231ff3e6c11aac3ed0d4395286df825757468",
+    "internal/server/web/semblance/pools.test.mjs": "12c2ce2288ae1906d0aede4413ecf641a7a761341e84796494a8a7c2379aec68",
+    "scripts/dashboard-screenshots/ux-messages.mjs": "71bd46b742283e84e9ea628751a903a233f33de9dec28c76f3428acab10cae73",
+    "scripts/dashboard-screenshots/ux-pools.mjs": "ce414fd7135c294d26b839c46564f42b787449439f7885f3d93ec77fbf599205",
+    "web/test/pool-layout.test.mjs": "8f9ea7892d0f4b75cf9d4c2a632173ac90c7ff813a875d696f8e7887b2ff93ab"
+  },
+  "phases": [
+    {
+      "name": "web-build",
+      "exit": 0,
+      "seconds": 0.687
+    },
+    {
+      "name": "node",
+      "exit": 0,
+      "seconds": 6.336
+    },
+    {
+      "name": "native",
+      "exit": 0,
+      "seconds": 2.369
+    },
+    {
+      "name": "native-build",
+      "exit": 0,
+      "seconds": 13.41
+    },
+    {
+      "name": "web-rebuild",
+      "exit": 0,
+      "seconds": 0.62
+    }
+  ],
+  "javascript": {
+    "passed": 445,
+    "failed": 0,
+    "skipped": 0
+  },
+  "native_component_tests": {
+    "passed": 28,
+    "failed": 0
+  },
+  "bundle_sha256": "8b6806660f2624aef5d52d4754a7a62f89c7a3bd17b8ac6158786356f39b94d0",
+  "deterministic_bundle": true,
+  "native_cli_sha256": "7f5a6b52c60b733c919ab8dce2a786f3f55ea6cb11660e486dd8eb8dc92aec62",
+  "visual_review": {
+    "source": "8c3f9357c938881ede011901e4dddfd2876fef7f",
+    "owner_browser_cases": {
+      "pools": 12,
+      "messages": 8
+    },
+    "short_stale_visible_body_px": 197,
+    "short_stale_reading_scrollport_px": 222,
+    "minimum_reading_px": 120,
+    "computed_body_font_sizes_px": [
+      15,
+      30
+    ],
+    "full_control_and_text_within_actual_panel_bounds": true,
+    "artifacts": [
+      {
+        "file": "pools-review-1440-800-1.png",
+        "bytes": 138516,
+        "sha256": "ff57b6d8952e2455df85968f671205fd78e6a59f2904e4ec62a197ee09e10d93"
+      },
+      {
+        "file": "pools-review-768-600-2.png",
+        "bytes": 44399,
+        "sha256": "8dbb6e143ec9122cdde5e596e46c4e3a0e629c26f8982d6002feb27b2915e730"
+      },
+      {
+        "file": "pools-stale-content-390-320-1.png",
+        "bytes": 30176,
+        "sha256": "d27f62327e0421e3f23f56824ba1f49cef2ef6115bda9745069215a5c6bc0155"
+      },
+      {
+        "file": "pools-stale-values-390-320-1.png",
+        "bytes": 19274,
+        "sha256": "a5fd2dcb0edbe47ba62b79cc22484baca163160e89036a3ae0ec2c509894dc66"
+      },
+      {
+        "file": "pools-stale-actions-390-320-1.png",
+        "bytes": 27024,
+        "sha256": "4947fa8167059b92d8dc76960211b859cb5cf6fb356d9e2ae1f970382e688098"
+      },
+      {
+        "file": "pools-stale-control-390-320-1-2.png",
+        "bytes": 27024,
+        "sha256": "4947fa8167059b92d8dc76960211b859cb5cf6fb356d9e2ae1f970382e688098"
+      },
+      {
+        "file": "messages-review-768-2.png",
+        "bytes": 64511,
+        "sha256": "b412dec2ba46fa2fc349d6163fd6d6894f90cf4e5a2af94064f7c8e8b34072cc"
+      }
+    ]
+  },
+  "protected_contracts": "Accepted style prefix, graph adapter, pool model/operations, messaging protocol, module and pinned dependency bytes are unchanged. No Go source changed.",
+  "limitations": [
+    "Owner browser evidence is source-qualified; independent combined component tests/builds verify current composition",
+    "No real backend, pool mutation, enrollment, policy edit or credential operation",
+    "No full Go suite or Linux runtime claim; no new terminal visual acceptance",
+    "Native subpool, pause/resume/delete visuals and broader route/state coverage remain open",
+    "Historical root-rem-only and clipped results remain excluded from successor acceptance"
+  ]
+}
