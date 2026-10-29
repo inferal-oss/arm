@@ -1,0 +1,772 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "status": "Separate native path-bound review correction; independent composition review pending",
+  "parent_commit": "222155b18147284497ea6ff7c9f1f7cbe970b66d",
+  "finding": "Byte-length refusal previously followed filepath.Clean, doing whole-input normalization before the advertised byte bound. Old byte/component fixtures could fail for native path reasons even without the policy caps.",
+  "correction": "Cheap len check first, before IsAbs/Clean/whole-input work; meaningful existing fd-relative native fixtures independently isolate each cap and assert refusal before acquisitionFailure/native ownership. No constructor/ownership/retirement API widening.",
+  "protected_baseline_source_count": 42,
+  "protected_baseline_sha256": {
+    "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+    "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+    "internal/childowner/observe_darwin.go": "e9149ff478819417178d9b9ca8997b039ed23f3e84df09aa9496cd05b35b3c85",
+    "internal/childowner/observe_linux.go": "9645effe47b3991c94580d874ee8f5aa251cdb4170caf893951d099bbc70a4a2",
+    "internal/childowner/owner.go": "b7065ffbc4ccd5b251322d96d6f9cb68413d073f73eb5309d001d4fbb741d1a2",
+    "internal/cli/cli.go": "885a1a8b15a13844ef065eca214e98553250c8352ab27f6e43cb1447622c5be0",
+    "internal/database/create.go": "25115f9d263facdc5b77a095e7d9301fcd0f61e4f10dc7db46e6a260e3263dde",
+    "internal/database/files.go": "1ab086be241938c3c02cfc67c2a8ecebee6d7883cbf26e4f35517dd5c525b7f9",
+    "internal/database/proof.go": "79bbb9a8d99662cb134a3e56c335f3266d97fb61cd6362348e6824921a468edf",
+    "internal/database/resident_worker_format_test.go": "f14a5c576e0bafad58774bf16eae2b1364641e061e8d57e6a56258ed2f8d090d",
+    "internal/database/resident_worker_proof_test.go": "15213eb202f5ca66513c73669c72a243124de80dedbea1b8b31a1dd7a55d7dec",
+    "internal/database/startup_read.go": "a3b5befbfc7d2a98199d3d76d6569938885bbd3551862ee8ae54f95a884d82be",
+    "internal/database/stop_scope.go": "3bbb660713660c407ffb54981a9a1899fd1d2cc8afc06213b6c9a135c15b1f01",
+    "internal/database/workspace_format.go": "be44b4e4f58fab5b9efbc4a5c465bb0e8716aa16a68b89ea3956dbcbdf8f3a3b",
+    "internal/database/workspace_format_proof_test.go": "4d0daabdf8fbbe767ba8d68f665b4e3528c0ae9961c5a398e21398f074d53cac",
+    "internal/database/workspace_format_test.go": "4cfd837f201967389528e9b35244eeacdc09c9d488bea9a15ac0090cb8fa59a4",
+    "internal/manager/cargo_launch.go": "c7b4ba8762e68d0ce54eef9d0eb30bce36457c86603c374e45f5d9d2b847e1c1",
+    "internal/manager/database.go": "267afe67a250335f0b8967ee1966c2d05166f6bb971a7945dfec5293af3c21f0",
+    "internal/manager/lease_clock.go": "3abddb8203b2c3805b2a6d94b3f3111ae1c764ede3abacfce62b62109f02bb46",
+    "internal/manager/manager.go": "d3218b4e248cf3c452677d8e40ee60e76297bfd6f146823484161f5beb3f7faf",
+    "internal/manager/node_stop.go": "84e7629733ee291e1be537d06594b2cd4cfeb4ec11f3c962aa033e58fed204fa",
+    "internal/manager/resident_worker_refusal_test.go": "06b893779e28599fe9eca64afa51747ada539a5a6a7fd5ece5c8ce98a7dc4a9f",
+    "internal/manager/retained_cancellation.go": "198a9a1e669e9e891bb4b911e71b14b1787e5971d66e0384573d51025c5c2490",
+    "internal/manager/shutdown.go": "d742340a0edad90580bd06d2402899ebfe22ed3df0f3c7676e26662a51902704",
+    "internal/manager/storage_pools.go": "93c8b3090d3e7c383dbe78068ef5cd71f1b90af6f869916ab0cfc29e4f1f05c5",
+    "internal/manager/sync_admission.go": "68f0c7e6fa84db395238f6162462d955a7f024ba299e177a839a29321b4ef4d8",
+    "internal/manager/sync_preparation.go": "28b124c9e654aface775acd6b8e8c270efc8d04f288610ba0e4eb002be221351",
+    "internal/mesh/artifact_stream.go": "4b1b75170c6408fd0c047bc8ddc9d48e4183fdfbd63f1efe3d0eaf82579d8a00",
+    "internal/mesh/artifacts.go": "c00647b8335e60f475fbf9016dc872d16de20d0d121dc6813023e2595d06dd2c",
+    "internal/mesh/install_ownership.go": "298e3cebdd5e4c867d8d9f43794807b2cf93627ad3f90baf6910d5e34292666b",
+    "internal/mesh/runtime_identity.go": "7f84fc2cc8e39384a2492561115886eccd6e98fc3127c82a7b6b9f9f277aed79",
+    "internal/nodestop/records.go": "a8f8680747d2979f2f9d69d25406b895026a396f8aae7349d64abc18bc30cd29",
+    "internal/resident/README.md": "d769edead7d1bfe73c50fa55d1ca1103ff0b4fa9ab6173b28bc7d90c2aab0b79",
+    "internal/resident/authority.go": "b8def86a31d355f52e8e63c6a9cd1e5f9cc84062a4ff5012c8f29a31a09f4681",
+    "internal/resident/journal.go": "50b0d787bd1fa045ce09cedd7df40a61c658b7b77ed297f923ade79c7f273d13",
+    "internal/resident/native_test.go": "9179c00c52c52203fe7c9d23cbad9d43521ebcc8a80a59785ab05682753b3dc6",
+    "internal/server/node_stop.go": "72317c05aac5470531a5a828080760008cda800b105cceaf40148ee990c3d3c2",
+    "internal/server/resident_auth.go": "e95728d19a9c3618ef9f5192face86732f5a2a4829cfc447050872c20cb58755",
+    "internal/server/resident_dispatch.go": "f0944a2972c4f73ab6abd853da8e440e7d8576b032cd9f89971d56a43ee6a6d6",
+    "internal/server/resident_response.go": "b17076e7bdd749df179cc8e0c634d5fbef8a6f772a2fb239c7d724f8b77eecdf",
+    "internal/server/server.go": "7e08bd79239d987a8bea54371aec6beca55313a0c7ce7538e84417e54ec035aa",
+    "internal/server/shutdown.go": "0d9914636f0cc23b8bda51cc754a7cf4a97fd2cc4c722bdaa7ad95c56e43e3cb"
+  },
+  "corrected_source_sha256": {
+    "internal/authoritylifetime/lifetime.go": "f4ea2af1666d5d3f846e093b76c5108f62ef758e54641e8a41d69620803e3cfe",
+    "internal/authoritylifetime/lifetime_test.go": "37d79c6a90745420842c5c8e40dfe75e4659889072fccacd92d3d9e042591472"
+  },
+  "validation_method": {
+    "kind": "Original shared FIFO direct queued-command evidence, no ARM grant/backend/enrollment",
+    "sequential_original_exits": true,
+    "active_limit_seconds": 115,
+    "allocation": "CPU2/memory2GiB, GOMAXPROCS1/-p1/GOMEMLIMIT1536MiB target; no hard RSS claim",
+    "linux_scope": "Package test compilation only, binary not run or installed"
+  },
+  "cohorts": [
+    {
+      "name": "bounds-normal",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds_including_command_exit": 0.741564625,
+      "original_command_exited": true,
+      "worktree_source_unchanged": true,
+      "passed_roots": 7,
+      "passed_nodes": 39,
+      "skips": 0
+    },
+    {
+      "name": "bounds-race",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds_including_command_exit": 1.808932416,
+      "original_command_exited": true,
+      "worktree_source_unchanged": true,
+      "passed_roots": 7,
+      "passed_nodes": 39,
+      "skips": 0
+    },
+    {
+      "name": "bounds-vet",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds_including_command_exit": 0.24217025,
+      "original_command_exited": true,
+      "worktree_source_unchanged": true
+    },
+    {
+      "name": "bounds-linux-compile",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds_including_command_exit": 0.556561292,
+      "original_command_exited": true,
+      "worktree_source_unchanged": true
+    },
+    {
+      "name": "bounds-causal-byte",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "elapsed_seconds_including_command_exit": 0.43572225,
+      "original_command_exited": true,
+      "worktree_source_unchanged": true,
+      "passed_roots": 0,
+      "passed_nodes": 0,
+      "skips": 0
+    },
+    {
+      "name": "bounds-causal-parts",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "elapsed_seconds_including_command_exit": 0.450492583,
+      "original_command_exited": true,
+      "worktree_source_unchanged": true,
+      "passed_roots": 0,
+      "passed_nodes": 0,
+      "skips": 0
+    }
+  ],
+  "passed_test_roster": [
+    "TestNativeLifetimeChangedIdentityStaysSticky",
+    "TestNativeLifetimeChangedIdentityStaysSticky/directory-missing",
+    "TestNativeLifetimeChangedIdentityStaysSticky/directory-mode",
+    "TestNativeLifetimeChangedIdentityStaysSticky/directory-name",
+    "TestNativeLifetimeChangedIdentityStaysSticky/lock-link",
+    "TestNativeLifetimeChangedIdentityStaysSticky/lock-missing",
+    "TestNativeLifetimeChangedIdentityStaysSticky/lock-mode",
+    "TestNativeLifetimeChangedIdentityStaysSticky/lock-name",
+    "TestNativeLifetimeChangedIdentityStaysSticky/lock-symlink",
+    "TestNativeLifetimeChangedIdentityStaysSticky/lock-type",
+    "TestNativeLifetimeConcurrentValidateAndRetire",
+    "TestNativeLifetimeOriginalAcquisitionAndRetirement",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/ancestor-symlink",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/directory-file",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/directory-mode",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/directory-symlink",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-directory",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-fifo",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-hardlink",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-mode",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-symlink",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/missing-directory",
+    "TestNativeLifetimePartialAcquisitionClosesOriginals/missing-lock",
+    "TestNativeLifetimePolicyBoundsExistingPaths",
+    "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+    "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+    "TestNativeLifetimeRefusesBoundedNoncanonicalPaths",
+    "TestNativeLifetimeRefusesBoundedNoncanonicalPaths/empty",
+    "TestNativeLifetimeRefusesBoundedNoncanonicalPaths/nul",
+    "TestNativeLifetimeRefusesBoundedNoncanonicalPaths/parent",
+    "TestNativeLifetimeRefusesBoundedNoncanonicalPaths/relative",
+    "TestNativeLifetimeRefusesBoundedNoncanonicalPaths/root",
+    "TestNativeLifetimeRefusesBoundedNoncanonicalPaths/trailing",
+    "TestNativeLifetimeRejectsCopiedForeignAndZeroHandles",
+    "TestNativeLifetimeRejectsCopiedForeignAndZeroHandles/copy",
+    "TestNativeLifetimeRejectsCopiedForeignAndZeroHandles/foreign",
+    "TestNativeLifetimeRejectsCopiedForeignAndZeroHandles/nil",
+    "TestNativeLifetimeRejectsCopiedForeignAndZeroHandles/zero"
+  ],
+  "native_and_fixture_receipts": {
+    "bounds-normal": {
+      "native_cleanup": [
+        {
+          "test": "TestNativeLifetimeOriginalAcquisitionAndRetirement",
+          "kind": "contended_cleanup",
+          "opened": 7,
+          "closed": 7,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimeOriginalAcquisitionAndRetirement",
+          "kind": "native_cleanup",
+          "opened": 77,
+          "closed": 77,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeRejectsCopiedForeignAndZeroHandles",
+          "kind": "native_cleanup",
+          "opened": 42,
+          "closed": 42,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+          "kind": "native_cleanup",
+          "opened": 132,
+          "closed": 132,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+          "kind": "native_cleanup",
+          "opened": 46,
+          "closed": 46,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/missing-directory",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/directory-file",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/missing-lock",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/directory-mode",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-mode",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-directory",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-fifo",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-symlink",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-hardlink",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/directory-symlink",
+          "kind": "partial_cleanup",
+          "opened": 5,
+          "closed": 5,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/ancestor-symlink",
+          "kind": "partial_cleanup",
+          "opened": 5,
+          "closed": 5,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/directory-mode",
+          "kind": "native_cleanup",
+          "opened": 14,
+          "closed": 14,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-mode",
+          "kind": "native_cleanup",
+          "opened": 14,
+          "closed": 14,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-link",
+          "kind": "native_cleanup",
+          "opened": 14,
+          "closed": 14,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/directory-name",
+          "kind": "native_cleanup",
+          "opened": 20,
+          "closed": 20,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/directory-missing",
+          "kind": "native_cleanup",
+          "opened": 19,
+          "closed": 19,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-name",
+          "kind": "native_cleanup",
+          "opened": 21,
+          "closed": 21,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-missing",
+          "kind": "native_cleanup",
+          "opened": 20,
+          "closed": 20,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-symlink",
+          "kind": "native_cleanup",
+          "opened": 20,
+          "closed": 20,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-type",
+          "kind": "native_cleanup",
+          "opened": 20,
+          "closed": 20,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeConcurrentValidateAndRetire",
+          "kind": "native_cleanup",
+          "opened": 14,
+          "closed": 14,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        }
+      ],
+      "fixture_cleanup": [
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+          "opened": 65,
+          "closed": 65,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+          "opened": 22,
+          "closed": 22,
+          "complete": true
+        }
+      ],
+      "policy_rejections": [
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+          "bytes": 165,
+          "parts": 65,
+          "before_native": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+          "bytes": 4239,
+          "parts": 22,
+          "before_native": true
+        }
+      ],
+      "expected_regression_message": false
+    },
+    "bounds-race": {
+      "native_cleanup": [
+        {
+          "test": "TestNativeLifetimeOriginalAcquisitionAndRetirement",
+          "kind": "contended_cleanup",
+          "opened": 7,
+          "closed": 7,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimeOriginalAcquisitionAndRetirement",
+          "kind": "native_cleanup",
+          "opened": 77,
+          "closed": 77,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeRejectsCopiedForeignAndZeroHandles",
+          "kind": "native_cleanup",
+          "opened": 42,
+          "closed": 42,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+          "kind": "native_cleanup",
+          "opened": 132,
+          "closed": 132,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+          "kind": "native_cleanup",
+          "opened": 46,
+          "closed": 46,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/missing-directory",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/directory-file",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/missing-lock",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/directory-mode",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-mode",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-directory",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-fifo",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-symlink",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/lock-hardlink",
+          "kind": "partial_cleanup",
+          "opened": 6,
+          "closed": 6,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/directory-symlink",
+          "kind": "partial_cleanup",
+          "opened": 5,
+          "closed": 5,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePartialAcquisitionClosesOriginals/ancestor-symlink",
+          "kind": "partial_cleanup",
+          "opened": 5,
+          "closed": 5,
+          "unknown": 0,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/directory-mode",
+          "kind": "native_cleanup",
+          "opened": 14,
+          "closed": 14,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-mode",
+          "kind": "native_cleanup",
+          "opened": 14,
+          "closed": 14,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-link",
+          "kind": "native_cleanup",
+          "opened": 14,
+          "closed": 14,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/directory-name",
+          "kind": "native_cleanup",
+          "opened": 20,
+          "closed": 20,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/directory-missing",
+          "kind": "native_cleanup",
+          "opened": 19,
+          "closed": 19,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-name",
+          "kind": "native_cleanup",
+          "opened": 21,
+          "closed": 21,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-missing",
+          "kind": "native_cleanup",
+          "opened": 20,
+          "closed": 20,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-symlink",
+          "kind": "native_cleanup",
+          "opened": 20,
+          "closed": 20,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeChangedIdentityStaysSticky/lock-type",
+          "kind": "native_cleanup",
+          "opened": 20,
+          "closed": 20,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimeConcurrentValidateAndRetire",
+          "kind": "native_cleanup",
+          "opened": 14,
+          "closed": 14,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        }
+      ],
+      "fixture_cleanup": [
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+          "opened": 65,
+          "closed": 65,
+          "complete": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+          "opened": 22,
+          "closed": 22,
+          "complete": true
+        }
+      ],
+      "policy_rejections": [
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+          "bytes": 165,
+          "parts": 65,
+          "before_native": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+          "bytes": 4240,
+          "parts": 22,
+          "before_native": true
+        }
+      ],
+      "expected_regression_message": false
+    },
+    "bounds-causal-byte": {
+      "native_cleanup": [
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+          "kind": "native_cleanup",
+          "opened": 46,
+          "closed": 46,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+          "kind": "native_cleanup",
+          "opened": 48,
+          "closed": 48,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        }
+      ],
+      "fixture_cleanup": [
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/bytes",
+          "opened": 22,
+          "closed": 22,
+          "complete": true
+        }
+      ],
+      "policy_rejections": [],
+      "expected_regression_message": true
+    },
+    "bounds-causal-parts": {
+      "native_cleanup": [
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+          "kind": "native_cleanup",
+          "opened": 132,
+          "closed": 132,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        },
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+          "kind": "native_cleanup",
+          "opened": 134,
+          "closed": 134,
+          "unknown": 0,
+          "complete": true,
+          "lock_acquired": true
+        }
+      ],
+      "fixture_cleanup": [
+        {
+          "test": "TestNativeLifetimePolicyBoundsExistingPaths/parts",
+          "opened": 65,
+          "closed": 65,
+          "complete": true
+        }
+      ],
+      "policy_rejections": [],
+      "expected_regression_message": true
+    }
+  },
+  "causal_overlay_inputs": {
+    "byte": {
+      "effective_source_sha256": "c42f26b4c24052f4e1cad96d36af75801d074b7a8dc2d4bcbf3fe0bbdf76174b",
+      "single_removed_predicate": "len(path) > maxPathBytes ||"
+    },
+    "parts": {
+      "effective_source_sha256": "46aa1cca13bc3614cc1e518ca23048b8d6e872d3c0dbeb999d8f3f967482c423",
+      "single_removed_predicate": "||\n\t\tlen(strings.Split(strings.TrimPrefix(path, \"/\"), \"/\")) > maxPathParts"
+    }
+  },
+  "causal_scope": "Private overlays remove ONLY the byte predicate or ONLY the component predicate from final production source. Corrected tests acquire actual native originals, retire them, fail intentionally and perform complete fd-relative fixture cleanup. Overlay effective-source hashes differ from qualified worktree source and are recorded separately.",
+  "material_limits": [
+    "Actual existing byte witness exceeds4096 bytes with22 total parts; component witness has65 parts with short legal components and remains below4096 bytes. Both execute without skip on the qualified host.",
+    "The byte fixture reports unsupported native creation/open as a platform limit, not successful proof; no assumption of cross-platform runtime support.",
+    "Policy correction tests retain unexpected returned original handles through positive retirement; uncertain retirement preserves the owned fixture rather than deleting it.",
+    "No benchmark, huge input allocation, platform Close-error injection or privilege-dependent foreign-owner fixture added. Those native fault/account limitations remain unchanged.",
+    "No production caller, borrower/Manager/Server bootstrap/stop binding, worker/staging/controller/schema/module/install/default state or arm start scope.",
+    "arm start initial/repeated wiring and actual A-to-B API/UI active-job preservation remain incomplete."
+  ],
+  "static_checks": {
+    "changed_paths": 7,
+    "corrected_go_sources": 2,
+    "protected_baseline_hashes_unchanged": 42,
+    "original_evidence_unchanged": true,
+    "new_local_links_checked": 2,
+    "no_production_package_imports": true,
+    "privacy_added_lines": "pass",
+    "whitespace_gofmt": "pass"
+  }
+}

@@ -87,8 +87,9 @@ func (e *acquisitionFailure) Unwrap() error { return e.cause }
 // A nonnil handle WITH an error retains uncertain original cleanup and must be
 // kept by its caller. No positive construction/test bypass or FD wrapper exists.
 func acquire(path string) (result *lifetime, resultErr error) {
-	if !filepath.IsAbs(path) || filepath.Clean(path) != path || path == "/" ||
-		len(path) > maxPathBytes || strings.ContainsRune(path, 0) ||
+	// Refuse byte excess before normalization or any other whole-input work.
+	if len(path) > maxPathBytes || !filepath.IsAbs(path) || filepath.Clean(path) != path || path == "/" ||
+		strings.ContainsRune(path, 0) ||
 		len(strings.Split(strings.TrimPrefix(path, "/"), "/")) > maxPathParts {
 		return nil, fmt.Errorf("bounded canonical absolute existing directory required")
 	}

@@ -30,6 +30,19 @@ backend and accepted surfaces remain protected. Preserve frozen branches/artifac
 Use sequential unchanged-FIFO cohorts within 120s/two CPU/two GiB, positive
 original cleanup and no builds/install/environment/new task/subagent.
 
+## Native lifetime path-bound correction — separate review commit
+
+Owner: `codex/resident-native-lifetime`, correcting `222155b` after independent
+review. Byte length now refuses before normalization/whole-input work. Real
+fd-relative existing path fixtures replace non-existent/impossible-name witnesses;
+each isolates its own cap and rejects before native acquisition. Private
+single-predicate overlay controls prove actual acquisition without that cap and
+positive original/fixture cleanup even on the expected regression failure.
+The [correction evidence](validation/resident-native-path-bounds-2026-10-29.json)
+qualifies exact corrected source. All 42 protected baseline inputs stay unchanged.
+No ownership/borrower/bootstrap/worker/startup integration is added; `arm start`
+and actual A-to-B API/UI job preservation remain mandatory completion gates.
+
 ## Private unbound native lifetime — source pending independent review
 
 Owner: `codex/resident-native-lifetime`, from accepted

@@ -36,6 +36,25 @@ See the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
 Private native build is not installed/executed. No maximum-density/every-theme/
 language, full-Go/Linux runtime, real auth/transport, TUI or complete UX claim.
 
+## Native path bounds — meaningful correction qualification
+
+The [separate correction record](validation/resident-native-path-bounds-2026-10-29.json)
+binds corrected source after `222155b`. Normal/race each pass seven roots / 39
+nodes, zero skips/failures; package vet and Linux test compilation pass. Actual
+byte witnesses exceed 4096 bytes with 22 components, while the component witness
+has 65 legal short components below 4096 bytes; both execute on this host. Each
+refuses before acquisitionFailure/native ownership. A real within-limit prefix
+first acquires and retires through the implementation.
+
+Private single-predicate overlay controls fail each matching test as expected:
+without its cap the actual oversized path acquires, the unexpected original
+retires positively, and fd-relative fixture cleanup completes. Qualified and
+overlay source hashes, original command exits, native/fixture closure logs and
+all 42 protected unchanged inputs are recorded. Original/earlier receipts remain
+private and preserved. No huge-allocation benchmark or native Close-error/account
+fault fixture is added; Linux remains compile-only. No production/borrower/
+bootstrap/worker or `arm start`/A-to-B completion follows.
+
 ## Private native lifetime — focused synthetic native qualification
 
 The [record](validation/resident-native-lifetime-2026-10-29.json) binds two new Go

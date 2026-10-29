@@ -121,13 +121,233 @@ func TestNativeLifetimeRefusesBoundedNoncanonicalPaths(t *testing.T) {
 	home := fixture(t)
 	for name, path := range map[string]string{
 		"relative": "relative", "empty": "", "root": "/", "trailing": home + "/",
-		"parent": home + "/../other", "nul": home + "\x00", "bytes": "/" + strings.Repeat("a", maxPathBytes),
-		"parts": "/" + strings.Repeat("a/", maxPathParts) + "a",
+		"parent": home + "/../other", "nul": home + "\x00",
 	} {
 		t.Run(name, func(t *testing.T) {
-			if h, err := acquire(path); h != nil || err == nil {
+			h, err := acquire(path)
+			if h != nil {
+				if report, cleanupErr := h.retire(); !report.complete {
+					t.Error("unexpected policy receiver cleanup uncertain", report, cleanupErr)
+				}
+			}
+			if h != nil || err == nil {
 				t.Fatal("unbounded/noncanonical path acquired", h, err)
 			}
+		})
+	}
+}
+
+// This fixture uses fd-relative setup/cleanup so every legal component and the
+// actual final private lock exist even beyond a platform's absolute-path limit.
+// It never supplies a descriptor or positive ownership bypass to acquire.
+type policyPathFixture struct {
+	root, path string
+	files      []*os.File
+	dirs       []struct {
+		parent int
+		name   string
+		child  int
+	}
+	lockParent     int
+	lockFile       int
+	lockExists     bool
+	opened, closed int
+	retained       []*lifetime
+}
+
+func (f *policyPathFixture) add(fd int, name string) int {
+	f.files = append(f.files, os.NewFile(uintptr(fd), name))
+	f.opened++
+	return len(f.files) - 1
+}
+
+func (f *policyPathFixture) close(index int) error {
+	if f.files[index] == nil {
+		return nil
+	}
+	if err := f.files[index].Close(); err != nil {
+		return err
+	}
+	f.files[index] = nil
+	f.closed++
+	return nil
+}
+
+func (f *policyPathFixture) retireReturned(t *testing.T, h *lifetime) {
+	t.Helper()
+	if h == nil {
+		return
+	}
+	report, err := h.retire()
+	t.Logf("native_cleanup opened=%d closed=%d unknown=%d lock_acquired=%t complete=%t", report.opened, report.closed, report.unknown, report.lockAcquired, report.complete)
+	if !report.complete {
+		f.retained = append(f.retained, h)
+		t.Fatal("unexpected returned receiver retains original native cleanup", report, err)
+	}
+}
+
+func (f *policyPathFixture) createLock(parent int) error {
+	fd, err := unix.Openat(int(f.files[parent].Fd()), "daemon.lock", unix.O_CREAT|unix.O_EXCL|unix.O_RDWR|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0600)
+	if err != nil {
+		return err
+	}
+	f.lockParent, f.lockFile, f.lockExists = parent, f.add(fd, "fixture.lock"), true
+	return nil
+}
+
+func (f *policyPathFixture) removeLock() error {
+	if err := f.close(f.lockFile); err != nil {
+		return err
+	}
+	if err := unix.Unlinkat(int(f.files[f.lockParent].Fd()), "daemon.lock", 0); err != nil {
+		return err
+	}
+	f.lockExists = false
+	return nil
+}
+
+func existingPolicyPath(t *testing.T, byteLimit bool) *policyPathFixture {
+	t.Helper()
+	root, err := os.MkdirTemp("", "arm-native-bounds-")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f := &policyPathFixture{root: root}
+	t.Cleanup(func() {
+		if len(f.retained) != 0 {
+			t.Error("retained uncertain native owner; fixture preserved")
+			return
+		}
+		if f.lockExists {
+			if err := f.removeLock(); err != nil {
+				t.Error("fixture lock cleanup failed", err)
+				return
+			}
+		}
+		for i := len(f.dirs) - 1; i >= 0; i-- {
+			d := f.dirs[i]
+			if d.child >= 0 {
+				if err := f.close(d.child); err != nil {
+					t.Error("fixture directory close failed", err)
+					return
+				}
+			}
+			if err := unix.Unlinkat(int(f.files[d.parent].Fd()), d.name, unix.AT_REMOVEDIR); err != nil {
+				t.Error("fixture directory removal failed", err)
+				return
+			}
+		}
+		if len(f.files) > 0 {
+			if err := f.close(0); err != nil {
+				t.Error("fixture root close failed", err)
+				return
+			}
+		}
+		if err := os.Remove(f.root); err != nil {
+			t.Error("fixture root removal failed", err)
+			return
+		}
+		t.Logf("policy_fixture_cleanup opened=%d closed=%d complete=%t", f.opened, f.closed, f.opened == f.closed)
+	})
+	f.path, err = filepath.EvalSymlinks(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.root = f.path
+	fd, err := unix.Open(f.root, unix.O_RDONLY|unix.O_DIRECTORY|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	parent := f.add(fd, "fixture.root")
+	name := "d"
+	if byteLimit {
+		name = strings.Repeat("b", 220)
+	}
+	for {
+		next := f.path + "/" + name
+		parts := len(strings.Split(strings.TrimPrefix(next, "/"), "/"))
+		last := parts > maxPathParts
+		if byteLimit {
+			last = len(next) > maxPathBytes
+		}
+		if last {
+			// This actual native prefix would acquire without the next single
+			// excess component; no hypothetical or fabricated positive witness.
+			if err := f.createLock(parent); err != nil {
+				t.Fatal(err)
+			}
+			h, err := acquire(f.path)
+			f.retireReturned(t, h)
+			if err != nil || h == nil {
+				t.Fatal("real within-limit prefix failed native acquisition", err)
+			}
+			if err := f.removeLock(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if err := unix.Mkdirat(int(f.files[parent].Fd()), name, 0700); err != nil {
+			if byteLimit && (errors.Is(err, unix.ENAMETOOLONG) || errors.Is(err, unix.EOPNOTSUPP)) {
+				t.Skip("platform cannot create meaningful byte-limit fixture:", err)
+			}
+			t.Fatal(err)
+		}
+		f.dirs = append(f.dirs, struct {
+			parent int
+			name   string
+			child  int
+		}{parent, name, -1})
+		fd, err := unix.Openat(int(f.files[parent].Fd()), name, unix.O_RDONLY|unix.O_DIRECTORY|unix.O_NOFOLLOW|unix.O_CLOEXEC, 0)
+		if err != nil {
+			if byteLimit && (errors.Is(err, unix.ENAMETOOLONG) || errors.Is(err, unix.EOPNOTSUPP)) {
+				t.Skip("platform cannot open meaningful byte-limit fixture:", err)
+			}
+			t.Fatal(err)
+		}
+		child := f.add(fd, "fixture.directory")
+		f.dirs[len(f.dirs)-1].child = child
+		parent, f.path = child, next
+		if last {
+			break
+		}
+	}
+	if err := f.createLock(parent); err != nil {
+		t.Fatal(err)
+	}
+	for _, check := range []struct {
+		index      int
+		kind, mode uint32
+	}{
+		{parent, unix.S_IFDIR, 0700}, {f.lockFile, unix.S_IFREG, 0600},
+	} {
+		var stat unix.Stat_t
+		if err := unix.Fstat(int(f.files[check.index].Fd()), &stat); err != nil {
+			t.Fatal(err)
+		}
+		if uint32(stat.Mode)&unix.S_IFMT != check.kind || uint32(stat.Mode)&07777 != check.mode || stat.Uid != uint32(os.Geteuid()) || uint64(stat.Nlink) == 0 || check.kind == unix.S_IFREG && uint64(stat.Nlink) != 1 {
+			t.Fatal("final native policy fixture is not privately owned with the required type/mode/links")
+		}
+	}
+	return f
+}
+
+func TestNativeLifetimePolicyBoundsExistingPaths(t *testing.T) {
+	for _, kind := range []string{"parts", "bytes"} {
+		t.Run(kind, func(t *testing.T) {
+			f := existingPolicyPath(t, kind == "bytes")
+			parts := len(strings.Split(strings.TrimPrefix(f.path, "/"), "/"))
+			if kind == "parts" && (parts != maxPathParts+1 || len(f.path) > maxPathBytes) {
+				t.Fatal("component witness does not isolate component cap")
+			}
+			if kind == "bytes" && (len(f.path) <= maxPathBytes || parts > maxPathParts) {
+				t.Fatal("byte witness does not isolate byte cap")
+			}
+			h, err := acquire(f.path)
+			f.retireReturned(t, h) // also cleans an accidentally successful regression
+			var native *acquisitionFailure
+			if h != nil || err == nil || errors.As(err, &native) {
+				t.Fatal("policy cap did not refuse before native ownership", err)
+			}
+			t.Logf("policy_bounds_rejected bytes=%d parts=%d before_native=true", len(f.path), parts)
 		})
 	}
 }

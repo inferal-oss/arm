@@ -18,6 +18,7 @@ size/content is not identity or an ownership proof.
 
 The path is bounded to 4096 bytes and 64 components. At most four native FDs are
 owned at once: two retained originals and up to two auxiliary validation opens.
+The byte bound is checked before normalization or other whole-input work.
 Closed auxiliary records are reduced to checked counters rather than accumulated
 history. These are count/path bounds, not a CPU/RSS grant or wall-time guarantee
 for kernel/filesystem calls. The package starts no goroutine or process.
@@ -47,6 +48,17 @@ validate/retire. Privilege-dependent wrong-account fixtures and platform native
 Close failure are not exercised; their refusal/retention paths are source-reviewed,
 not claimed as native fault evidence. No fabricated positive callback, readiness
 flag, FD wrapper or test-only ownership bypass exists.
+
+Path-bound regressions use fd-relative construction/removal of actual existing
+directory chains with legal components, a private final directory and real lock.
+A within-limit prefix first acquires and retires through the implementation. The
+excess byte/component witnesses isolate their own cap and must refuse before a
+native acquisition interval. Single-predicate private overlay controls actually
+acquire without the corresponding cap; the test retires that unexpected handle
+before failing and cleans all original fixture FDs. Byte-fixture platform limits
+are reported as skips rather than native proof; both fixtures execute on the
+qualified host. The fixture's bounded setup descriptors are distinct from the
+primitive's four simultaneous owned-FD slots.
 
 Future native bootstrap must review actual Manager/Server lifetime binding,
 mesh-independent local stop revision, borrower registration/closure dependencies,

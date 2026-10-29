@@ -1,5 +1,15 @@
 # Backend and CLI implementation
 
+## Native path-bound review correction
+
+The private lifetime constructor rejects byte excess before filepath normalization
+or other whole-input work. Tests create actual legal-component directory chains
+and private final locks via fd-relative native setup, with a real within-limit
+prefix acquisition/retirement. Excess bytes/parts independently refuse before a
+native ownership interval; accidentally returned handles are retired before test
+failure and fixture cleanup. This changes no original ownership, sticky refusal,
+close accounting, borrowers or production entry points.
+
 ## Unbound native directory/lock owner — private primitive
 
 The new [private package](../internal/authoritylifetime/README.md) has no exported
