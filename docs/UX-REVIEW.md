@@ -3,8 +3,8 @@
 Owner: `codex/ux-layout-review`, starting from accepted source `476f6fc`.
 This is an ongoing remediation pass. Inventory is not acceptance. Messages and
 separate lease/run/private-input cuts have scoped composition evidence in
-`c830982`; Pools, Resources and Resource-only help/tooltips also pass independent
-scoped composition. Full UX coverage remains open.
+`c830982`; Pools, Resources, Resource-only help/tooltips and the scoped Monitor
+readability cut also pass independent composition. Full UX coverage remains open.
 All other rows require current rendering and keyboard checks. Existing
 feature tests and earlier screenshots do not close those gates.
 
@@ -61,7 +61,7 @@ states; no principal view is declared complete from source inspection.
 | Principal surface | Components and source | State/viewport evidence in this slice | Remaining gate |
 | --- | --- | --- | --- |
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
-| Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Read-only native inventory: 32 cores, 12 devices/scope, four viewport/token cases, six help kinds, pause/selection/gaps/reconnect | Monitor-only owner correction and strict regression evidence completed; independent review/composition, real transport and full acceptance remain open |
+| Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | 32 cores, 12 devices/scope, four viewport/token cases, six help kinds, pause/selection/gaps/reconnect, opened facts and settled native keys; final useful grid widths independently checked | Scoped source/build/browser composition accepted; real transport, arbitrary rapid keys, broader density/size/state and complete UX acceptance remain open |
 | Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Layout composition accepted in 03f8a4; Resource-only help/tooltips pass independent composed source-runtime checks; real transport/auth and complete route/state acceptance remain open |
 | Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, actual doubled text-token coverage (15px/30px), short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild accepted; native subpool/drain/resume/delete and broader pagination/hierarchy density remain pending |
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |

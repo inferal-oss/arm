@@ -1,0 +1,283 @@
+{
+  "scope": "Independent composed Monitor readability acceptance; no installed activation",
+  "review_source": "9ef7638d78354569a270d7f5a3707502585e07c7",
+  "owner_commits": [
+    "2b218061e6cb3e765943e850087b71d4f1642b8a",
+    "889923e8a4271bb2b530852f605d44c21e2d8f55",
+    "b00439e29ad8a67573e35dc0e8bd915e9f3496d1"
+  ],
+  "source_sha256": {
+    "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+    "internal/server/web/semblance/app.ttl": "dddf3b27d712a714a74eaa09a91dd32ff2aadab4f11796542fc46b7adcec99ba",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/monitor-capacity.mjs": "fe3058f1b81ced5a88704a7f30ea7fca4e303035428e20b881e5eddaa7295fa2",
+    "internal/server/web/io-devices.mjs": "85118f54d54fd1f68331bbd3198e5cb5c8ebf274747634fac503bed895e13d32",
+    "internal/model/monitor.go": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c",
+    "internal/model/measurement.go": "446e28b25fc78192cbac58926df74ee37aec4206e1f62895b200ec2b58b808e1",
+    "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+    "scripts/dashboard-screenshots/ux-monitor.mjs": "94c315a605775dd143704cc88248b2cb87d528489dc45a15a5593f47c15854be",
+    "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843"
+  },
+  "test_sources": {
+    "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+    "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+  },
+  "guards": {
+    "exact_allocated_hook_removal_reproduces_accepted_main": true,
+    "preexisting_ontology_exact_prefix": true,
+    "selector_followup_only_state_specificity_and_comment": true,
+    "resource_helpers_tests_fixtures_unchanged": true,
+    "graph_engine_math_protocol_module_pins_unchanged": true,
+    "embedded_asset_intentionally_regenerated": true
+  },
+  "independent": {
+    "normal_fifo": true,
+    "js": {
+      "passed": 445,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native_component_ownership_lifecycle": {
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0
+    },
+    "core_phases": [
+      {
+        "name": "web-build",
+        "exit": 0,
+        "seconds": 0.613
+      },
+      {
+        "name": "node",
+        "exit": 0,
+        "seconds": 6.376
+      },
+      {
+        "name": "native",
+        "exit": 0,
+        "seconds": 2.395
+      },
+      {
+        "name": "native-build",
+        "exit": 0,
+        "seconds": 4.069
+      },
+      {
+        "name": "web-rebuild",
+        "exit": 0,
+        "seconds": 0.602
+      }
+    ],
+    "core_seconds": 14.209,
+    "browser_cohort_seconds": {
+      "help": 69.03,
+      "selectors_states_details_keyboard": 74.839
+    },
+    "cohorts": {
+      "selectors": {
+        "cases": 4,
+        "elapsed_ms": 14564,
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "nonfixture_network_requests": 0,
+        "live_backend_websockets": 0
+      },
+      "help": {
+        "cases": 4,
+        "elapsed_ms": 68660,
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "nonfixture_network_requests": 0,
+        "live_backend_websockets": 0
+      },
+      "states": {
+        "cases": 4,
+        "elapsed_ms": 32495,
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "nonfixture_network_requests": 0,
+        "live_backend_websockets": 0
+      },
+      "details": {
+        "cases": 4,
+        "elapsed_ms": 10622,
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "nonfixture_network_requests": 0,
+        "live_backend_websockets": 0
+      },
+      "causal": {
+        "cases": 2,
+        "elapsed_ms": 7334,
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "nonfixture_network_requests": 0,
+        "live_backend_websockets": 0
+      },
+      "timing": {
+        "cases": 2,
+        "elapsed_ms": 8325,
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "page_errors": 0,
+        "nonfixture_network_requests": 0,
+        "live_backend_websockets": 0
+      }
+    },
+    "monitor_dialogs": 24,
+    "rendered_help_tooltip_samples": 48,
+    "visible_edge_tooltip_checks": 8,
+    "computed_grids": [
+      {
+        "width": 1440,
+        "height": 900,
+        "selected_text_token_scale": 1,
+        "pickers": {
+          "Disk I/O": {
+            "track_count": 2,
+            "expected_count": 2,
+            "tracks": [
+              320.25,
+              320.25
+            ],
+            "minimum_label_width": 292.25
+          },
+          "Network": {
+            "track_count": 2,
+            "expected_count": 2,
+            "tracks": [
+              320.25,
+              320.25
+            ],
+            "minimum_label_width": 292.25
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "selected_text_token_scale": 1,
+        "pickers": {
+          "Disk I/O": {
+            "track_count": 1,
+            "expected_count": 1,
+            "tracks": [
+              302
+            ],
+            "minimum_label_width": 274
+          },
+          "Network": {
+            "track_count": 1,
+            "expected_count": 1,
+            "tracks": [
+              302
+            ],
+            "minimum_label_width": 274
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "selected_text_token_scale": 1,
+        "pickers": {
+          "Disk I/O": {
+            "track_count": 1,
+            "expected_count": 1,
+            "tracks": [
+              302
+            ],
+            "minimum_label_width": 274
+          },
+          "Network": {
+            "track_count": 1,
+            "expected_count": 1,
+            "tracks": [
+              302
+            ],
+            "minimum_label_width": 274
+          }
+        }
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "selected_text_token_scale": 2,
+        "pickers": {
+          "Disk I/O": {
+            "track_count": 1,
+            "expected_count": 1,
+            "tracks": [
+              309.5
+            ],
+            "minimum_label_width": 281.5
+          },
+          "Network": {
+            "track_count": 1,
+            "expected_count": 1,
+            "tracks": [
+              309.5
+            ],
+            "minimum_label_width": 281.5
+          }
+        }
+      }
+    ],
+    "deterministic_bundle": true,
+    "bundle_sha256": "d329b2b4efb7f5a7075e29a52891de643aeed927d43d711458d93fb8199e7e42",
+    "native_build_sha256": "ca08270a356db79467478f734f7e83ca5244c85301ee0b1ddd2a561c08fc3d80"
+  },
+  "reviewed_images": {
+    "help/monitor-devices-disk-i-o-390-900-1.png": "72dcd75058ef115c12deedf1567e1d2dfbfc62bde4e55bb366ada3e88dcc6c3d",
+    "help/monitor-devices-network-1440-900-1.png": "1ef06f5493d196d6f827a941d15f3271a0caecd7faebea55662532ec493f3674",
+    "help/monitor-help-details-memory-swap-768-600-2.png": "208a8bf41172c35333829d6f849d6e0d21e7eb91abac973da9c60e7ab0197595",
+    "details/monitor-visible-details-storage-space-768-600-2.png": "e7d4bf7a7799c076528480e6fe9a4199b7d6085bca10ae359aed92748f28a046",
+    "details/monitor-visible-details-memory-swap-390-320-1.png": "3a33d03794d808fa8f6dd917ea97927a4a21a313d8cc69a39c15fa57cb01e254"
+  },
+  "review_findings": {
+    "whole_stat_and_inline_fact_negative_controls_preserved": true,
+    "initial_column_containment_did_not_apply_intended_minimum": true,
+    "native_grid_state_specificity_correction_verified_by_actual_computed_tracks": true,
+    "native_home_fixture_waits_for_both_scrollers_200ms": true,
+    "no_product_overscroll_focus_or_keyboard_handler_change": true
+  },
+  "limits": [
+    "Browser checks import actual route source through development tooling with a read-only synthetic Backend; no real transport/auth/resource mutation or compiled-bundle browser claim.",
+    "Selected body15/30px and technical13/26px tokens are not whole-browser zoom; native checkbox/tooltip fixed fonts are qualified separately.",
+    "Native Home target checks wait for both scrollers; background chaining and arbitrary rapid-key timing are not claimed fixed.",
+    "Earlier source-qualified diagnostics/failed geometries and successful controls remain preserved.",
+    "No full route/state/terminal UX, full Go suite or Linux runtime acceptance.",
+    "No installed executable replacement, backend restart, enrollment/policy mutation or activation."
+  ]
+}

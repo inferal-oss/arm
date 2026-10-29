@@ -1,5 +1,30 @@
 # Validation record
 
+## Monitor layout — independent composed acceptance
+
+Focused inventory `2b21806`, layout `889923e` and selector correction `b00439e`
+pass independent final-source review. The unchanged FIFO passes 445 JS tests,
+34 native component/ownership/lifecycle cases, native build and byte-identical
+asset rebuilds. Six guarded browser cohorts pass on the same final inputs:
+selectors, help, states, opened details, causal keys and timing. They cover four
+viewport/token cases, 24 help dialogs, 48 painted tooltip samples and eight edge
+checks; all original probe/context/browser/server owners close/join. There are
+no page errors, nonfixture requests, live Backend/WebSockets or resource mutations.
+
+Computed device tracks are two at desktop and one at narrow/doubled tablet,
+with 292.25px/274px/281.5px label space. Earlier containment alone left the new
+minimum overridden by native Grid state; that failed control is preserved.
+Complete Stats, all seven memory/storage values and four rate values fit, with
+useful reading widths. Settled native Home reaches the panel top; the fixture
+waits for both scrollers for 200ms. Earlier rapid/insufficiently settled failures
+remain qualified. No product scroll/focus/keyboard behavior is added, and
+background chaining or arbitrary rapid timing is not claimed fixed. Narrow,
+desktop, short and doubled-token images are visually reviewed. Selected text
+token doubling is not universal zoom. Protected math/graph/module/pin and
+Resource sources remain unchanged. No installed activation, real backend/auth,
+compiled-bundle browser, full-Go/Linux/terminal or complete UX acceptance is
+inferred. [Normalized record](validation/ux-monitor-composed-2026-10-29.json).
+
 ## Resident prototype — independent composed acceptance
 
 Focused source `1a9b7ba` and correction `3992f88` pass final isolated review and

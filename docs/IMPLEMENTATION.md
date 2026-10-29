@@ -1,5 +1,15 @@
 # Backend and CLI implementation
 
+## Monitor readability composition
+
+Scoped Monitor styles now provide useful device-label columns, stacked compact
+inline facts, bounded Stats and readable technical help/tooltips. Independent
+composition catches and corrects a native Grid-state specificity conflict; the
+final computed tracks apply the intended minimum. Native controls, IDs, state,
+metric calculations and Resource behavior remain unchanged. See the
+[composed acceptance](validation/ux-monitor-composed-2026-10-29.json).
+This source integration does not install or activate a backend.
+
 ## Resident prototype composition
 
 The unconnected private boundary and typed-alias correction are independently
