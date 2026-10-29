@@ -375,3 +375,13 @@ arm:PoolBudget a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-p
 [] a sty:StyleRule ; sty:appliesTo arm:PoolActions ; sty:part "> [role=\"alert\"]" ;
  sty:declares [ sty:property "flex-basis" ; sty:raw "100%" ] ,
               [ sty:property "min-width" ; sty:raw "0" ] .
+
+# A short viewport cannot keep both a long warning/action footer and readable
+# content fixed in place. Scroll the full native panel, retaining every control.
+arm:PoolShortWindow a sty:WidthClass ; sty:media "(max-height: 40rem)" .
+[] a sty:StyleRule ; sty:atWidth arm:PoolShortWindow ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > :is([data-sem-c=\"arm-pool-manager-body\"],[data-sem-c=\"arm-pool-editor-body\"])) > .sem-panel" ;
+ sty:declares [ sty:property "display" ; sty:raw "block" ],
+              [ sty:property "overflow" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:atWidth arm:PoolShortWindow ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > :is([data-sem-c=\"arm-pool-manager-body\"],[data-sem-c=\"arm-pool-editor-body\"])) > .sem-panel > .sem-body" ;
+ sty:declares [ sty:property "overflow" ; sty:raw "visible" ],
+              [ sty:property "flex" ; sty:raw "none" ] .

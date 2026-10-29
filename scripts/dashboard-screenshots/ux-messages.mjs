@@ -41,10 +41,10 @@ try{
  await context.route('**/*',route=>new URL(route.request().url()).origin===new URL(origin).origin?route.continue():route.abort());
  page=await context.newPage();page.setDefaultTimeout(10000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  async function load(suffix=''){await page.goto(origin+'ux-messages'+suffix);await page.waitForFunction(()=>window.ready).catch(error=>{throw Error(errors.join(' | ')||error.message);});}
- async function geometry(){return page.evaluate(()=>({viewport:innerWidth,document:document.documentElement.scrollWidth,bodyStyles:[...document.querySelectorAll('[data-sem-c="arm-message-body"]')].map(n=>({whiteSpace:getComputedStyle(n).whiteSpace,wrap:getComputedStyle(n).overflowWrap})),facts:[...document.querySelectorAll('[data-sem-c="arm-message-facts"]')].map(n=>({width:n.getBoundingClientRect().width,scroll:n.scrollWidth}))}));}
+ async function geometry(){return page.evaluate(()=>({viewport:innerWidth,document:document.documentElement.scrollWidth,bodyStyles:[...document.querySelectorAll('[data-sem-c="arm-message-body"]')].map(n=>({fontSize:parseFloat(getComputedStyle(n).fontSize),whiteSpace:getComputedStyle(n).whiteSpace,wrap:getComputedStyle(n).overflowWrap})),facts:[...document.querySelectorAll('[data-sem-c="arm-message-facts"]')].map(n=>({width:n.getBoundingClientRect().width,scroll:n.scrollWidth}))}));}
  const getButton=label=>page.getByRole('button',{name:label,exact:true});
  for(const [width,height,scale]of [[320,640,1],[390,844,1],[768,600,1],[1440,900,1],[1920,1080,1],[768,600,2]]){
-  await page.setViewportSize({width,height});await load();await page.evaluate(scale=>document.documentElement.style.fontSize=16*scale+'px',scale);
+  await page.setViewportSize({width,height});await load();await page.evaluate(scale=>{const root=document.documentElement,style=getComputedStyle(root);for(const size of ['xs','sm','md','lg','xl','2xl','3xl']){const value=parseFloat(style.getPropertyValue('--sem-text-'+size));if(Number.isFinite(value))root.style.setProperty('--sem-text-'+size,value*scale+'px');}root.style.fontSize=16*scale+'px';},scale);
   const message=page.locator('[data-sem-c="arm-message-body"]').first();assert.equal(await message.textContent(),await page.evaluate(()=>fixture.body));
   const reply=getButton('Reply');await reply.focus();const original=await reply.elementHandle();await page.evaluate(()=>fixture.refresh());assert(await original.evaluate(n=>n===document.activeElement&&n.isConnected));
   await reply.click();await page.getByRole('textbox',{name:'Message',exact:true}).fill('Please inspect the output.\n\nKeep the exact recipient and request.');
@@ -52,7 +52,7 @@ try{
   const pairs=await page.locator('[data-sem-c="arm-message-facts"] .sem-pair').evaluateAll(nodes=>nodes.map(n=>[n.querySelector('dt').textContent,n.querySelector('dd').textContent]));
   assert(pairs.some(([key,value])=>key==='Registration'&&value==='synthetic-registration-'+ 'b'.repeat(64)));
   const reviewBody=page.locator('[data-sem-c="arm-message-body"]').filter({visible:true}).first();assert.equal(await reviewBody.textContent(),'Please inspect the output.\n\nKeep the exact recipient and request.');
-  const frame=await geometry();assert(frame.document<=frame.viewport+1);assert(frame.bodyStyles.every(n=>n.whiteSpace==='pre-wrap'&&n.wrap==='anywhere'));assert(frame.facts.every(n=>n.scroll<=n.width+1));
+  const frame=await geometry();assert(frame.document<=frame.viewport+1);assert(frame.bodyStyles.every(n=>n.whiteSpace==='pre-wrap'&&n.wrap==='anywhere'&&n.fontSize===15*scale));assert(frame.facts.every(n=>n.scroll<=n.width+1));
   await reviewBody.scrollIntoViewIfNeeded();await page.screenshot({path:resolve(output,`messages-review-${width}-${scale}.png`),animations:'disabled'});
   await page.keyboard.press('Tab');assert(await getButton('Confirm send').evaluate(n=>document.activeElement===n));await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>fixture.calls.length),0);
   await page.evaluate(()=>fixture.setOnline(false));assert(await getButton('Confirm send').isDisabled());await page.evaluate(()=>fixture.setOnline(true));await page.evaluate(()=>fixture.stale());assert(await getButton('Confirm send').isDisabled());

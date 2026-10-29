@@ -3368,3 +3368,12 @@ shared dialog defaults, themes, pins, graph helpers, backend, request preparatio
 and resource admission are unchanged. History keeps its existing readers,
 pagination, expanded records and focus identity. The
 [coverage matrix](UX-REVIEW.md) records remaining visual and composition gates.
+
+## Pool short-window reading correction
+
+At short viewport heights the pool dialogs use a single native panel scroll
+surface, allowing review content to use a readable viewport rather than being
+squeezed between a fixed header and warning/action footer. Existing warnings and
+Back/Cancel/confirmation stay in normal flow and are individually reachable.
+Normal-height panels keep their independent body scroll and footer. No callback,
+request, protocol, Messages product source or theme font behavior changed.

@@ -8048,7 +8048,7 @@ component/visual evidence; coordinator composition/acceptance remains pending.
 On the source hashes in [the normalized record](validation/ux-messages-2026-10-29.json),
 34 affected protocol/control tests and 29 real RDF rendering/ownership/focus
 tests pass. Eight synthetic native-browser cases cover 320/390/768/1440/1920
-pixel widths, 200% text at 768px, long/unbroken body and authority values, review
+pixel widths, doubled root-rem at 768px (pixel body text unscaled), long/unbroken body and authority values, review
 keyboard focus, refresh-held controls, stale/disconnected blocking, restored
 unknown/offline recovery, empty history and validation error. Stock synthetic
 dialog containment and Escape return are checked without claiming acceptance of
@@ -8087,7 +8087,7 @@ actual adoption/policy/lease changes, full Go suite or Linux validation is claim
 The [normalized record](validation/ux-pools-2026-10-29.json) binds final source
 hashes to 43 passing pool behavior/protocol tests and 30 passing real RDF
 rendering/ownership/focus tests. Twelve native synthetic cases cover 320/390/768/
-1440/1920px widths, 200% text at 768px, a 390×320 short window, dense journal
+1440/1920px widths, doubled root-rem at 768px (pixel body text unscaled), a 390×320 short window, dense journal
 scrolling and refresh focus, exact 19-digit before/after values, actual panel/
 action/value bounds, Enter/back/Escape, stale/disconnected blocking with visible
 warning, cancelled pending inspection, deficit context, restored unknown/offline
@@ -8105,3 +8105,34 @@ label were corrected separately from product findings. Raw receipts remain
 private. Current composed review/rebuild and native visual checks of other pool
 operations/modal families/terminal views remain open; full UX acceptance is not
 claimed.
+
+## Pools short-window correction and actual text scaling
+
+The original Pools owner result above was not accepted: independent review
+found the stale 390×320 case left only 8px of body height. Its positive-height
+assertion did not establish usable reading. The original normalized records and
+private raw evidence are preserved unchanged. Both original scaled fixtures
+changed root rem sizing only, so their earlier results establish no doubled
+pixel-font coverage. Accepted Messages/run/lease/private-input runtime `c830982`
+remains the accepted baseline; the Pools correction is still review-pending.
+
+The [correction record](validation/ux-pools-short-window-2026-10-29.json) binds
+final source hashes to 43 pool behavior/protocol and 30 real RDF/focus tests,
+twelve native Pools cases and eight native Messages cases. Corrected fixtures
+explicitly assert 15px/30px body text after scaling computed pixel tokens. The
+stale 390×320 pool case has 197px of visible review body at the top and a 222px
+reading scrollport. Checks require at least 120px/four computed text lines of
+reading space and verify native PageUp/PageDown plus individual warning, Back,
+Cancel and disabled-confirmation reachability. Actual stale content, whole
+before/after values and action captures are visually inspected. Native mutation/
+transport calls remain zero; original browser/context/server handles close and
+join positively in each fixture. Independent composition/rebuild and broader UX
+coverage remain open; Resources implementation stays held.
+
+The final short-window action oracle checks each complete control box and its
+text against the actual panel reading bounds after native scrolling settles.
+At 390×320 those bounds are x=49–341, y=49–271; the disabled long confirmation
+box ends at y=270.6875 and its text at y=269.6875. The warning and all three
+controls fit together in the final bottom capture. Separate content, exact-value,
+warning and per-control captures are retained; earlier clipped captures remain
+private historical evidence and are not acceptance.

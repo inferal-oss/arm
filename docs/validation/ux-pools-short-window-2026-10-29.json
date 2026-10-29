@@ -1,0 +1,333 @@
+{
+  "scope": "Pool short-window correction and actual text-token scaling; isolated source, independent current composition pending",
+  "base": "f4cc89d",
+  "historical_findings": {
+    "pool_short_stale_body_px": 8,
+    "old_readability_assertion": "positive body height only; insufficient",
+    "old_scaled_cases": "Both earlier fixtures changed root rem sizing only; they did not establish doubled px body text."
+  },
+  "sources": {
+    "pools": {
+      "internal/server/web/semblance/pools.mjs": "50656cd5f8652212a9adc83a734231ff3e6c11aac3ed0d4395286df825757468",
+      "internal/server/web/semblance/app.ttl": "7dda0e24adcbbdec2b3f7622612cfa23a4c84e2b794f838c713d017c5d7df0e9",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/pool-model.mjs": "90998db3f04ddb0dd5a743bfcbfc0a3f4621fe924bb48d91478ce8e6000b8e19",
+      "internal/server/web/pool-operations.mjs": "450b46206b14841d82b6c84fdbeb316b9e4a82bf3b31c6b761d0dd5128e4d559",
+      "scripts/dashboard-screenshots/ux-pools.mjs": "ce414fd7135c294d26b839c46564f42b787449439f7885f3d93ec77fbf599205"
+    },
+    "messages": {
+      "internal/server/web/semblance/messages.mjs": "84df62f02f8c8c680e169004f6e25b29c7594b322b83293ebecd967917202022",
+      "internal/server/web/semblance/app.ttl": "7dda0e24adcbbdec2b3f7622612cfa23a4c84e2b794f838c713d017c5d7df0e9",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/operator-messaging.mjs": "ac036d7aeb9a2e61a575c231c8b31e4fa01acb406f98205010bd7ea8fa946fb8",
+      "scripts/dashboard-screenshots/ux-messages.mjs": "71bd46b742283e84e9ea628751a903a233f33de9dec28c76f3428acab10cae73"
+    }
+  },
+  "regressions": {
+    "pool_behavior_protocol": 43,
+    "rdf_rendering_ownership_focus": 30
+  },
+  "native": {
+    "pools": {
+      "cases": [
+        {
+          "width": 320,
+          "height": 640,
+          "text_token_scale": 1,
+          "font_size_px": 15,
+          "line_height_px": 23.25,
+          "scroll_mode": "panel",
+          "reading_scrollport_px": 542,
+          "visible_body_at_top_px": 517,
+          "minimum_reading_px": 120,
+          "page_up_down_verified": true,
+          "stale_warning_and_each_action_reachable": true,
+          "stale_content_values_actions_captured": true,
+          "warning_and_controls_together": true,
+          "individual_control_box_and_text_inside_panel": true
+        },
+        {
+          "width": 390,
+          "height": 800,
+          "text_token_scale": 1,
+          "font_size_px": 15,
+          "line_height_px": 23.25,
+          "scroll_mode": "body",
+          "reading_scrollport_px": 482,
+          "visible_body_at_top_px": 482,
+          "minimum_reading_px": 120,
+          "page_up_down_verified": false,
+          "stale_warning_and_each_action_reachable": true,
+          "stale_content_values_actions_captured": false,
+          "warning_and_controls_together": null,
+          "individual_control_box_and_text_inside_panel": null
+        },
+        {
+          "width": 768,
+          "height": 600,
+          "text_token_scale": 1,
+          "font_size_px": 15,
+          "line_height_px": 23.25,
+          "scroll_mode": "panel",
+          "reading_scrollport_px": 502,
+          "visible_body_at_top_px": 477,
+          "minimum_reading_px": 120,
+          "page_up_down_verified": true,
+          "stale_warning_and_each_action_reachable": true,
+          "stale_content_values_actions_captured": true,
+          "warning_and_controls_together": true,
+          "individual_control_box_and_text_inside_panel": true
+        },
+        {
+          "width": 1440,
+          "height": 800,
+          "text_token_scale": 1,
+          "font_size_px": 15,
+          "line_height_px": 23.25,
+          "scroll_mode": "body",
+          "reading_scrollport_px": 575,
+          "visible_body_at_top_px": 575,
+          "minimum_reading_px": 120,
+          "page_up_down_verified": false,
+          "stale_warning_and_each_action_reachable": true,
+          "stale_content_values_actions_captured": false,
+          "warning_and_controls_together": null,
+          "individual_control_box_and_text_inside_panel": null
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "text_token_scale": 1,
+          "font_size_px": 15,
+          "line_height_px": 23.25,
+          "scroll_mode": "body",
+          "reading_scrollport_px": 790,
+          "visible_body_at_top_px": 790,
+          "minimum_reading_px": 120,
+          "page_up_down_verified": false,
+          "stale_warning_and_each_action_reachable": true,
+          "stale_content_values_actions_captured": false,
+          "warning_and_controls_together": null,
+          "individual_control_box_and_text_inside_panel": null
+        },
+        {
+          "width": 768,
+          "height": 600,
+          "text_token_scale": 2,
+          "font_size_px": 30,
+          "line_height_px": 46.5,
+          "scroll_mode": "panel",
+          "reading_scrollport_px": 454,
+          "visible_body_at_top_px": 414.203125,
+          "minimum_reading_px": 186.0,
+          "page_up_down_verified": true,
+          "stale_warning_and_each_action_reachable": true,
+          "stale_content_values_actions_captured": true,
+          "warning_and_controls_together": true,
+          "individual_control_box_and_text_inside_panel": true
+        },
+        {
+          "width": 390,
+          "height": 320,
+          "text_token_scale": 1,
+          "font_size_px": 15,
+          "line_height_px": 23.25,
+          "scroll_mode": "panel",
+          "reading_scrollport_px": 222,
+          "visible_body_at_top_px": 197,
+          "minimum_reading_px": 120,
+          "page_up_down_verified": true,
+          "stale_warning_and_each_action_reachable": true,
+          "stale_content_values_actions_captured": true,
+          "warning_and_controls_together": true,
+          "individual_control_box_and_text_inside_panel": true,
+          "actual_action_readings": [
+            {
+              "clip": {
+                "left": 49,
+                "right": 341,
+                "top": 49,
+                "bottom": 271
+              },
+              "label": "Cancel change",
+              "left": 49,
+              "right": 187.703125,
+              "top": 186.6875,
+              "bottom": 224.6875,
+              "textTop": 196.6875,
+              "textBottom": 214.6875,
+              "textLeft": 66,
+              "textRight": 170.703125
+            },
+            {
+              "clip": {
+                "left": 49,
+                "right": 341,
+                "top": 49,
+                "bottom": 271
+              },
+              "label": "Back to edit",
+              "left": 195.703125,
+              "right": 313.75,
+              "top": 186.6875,
+              "bottom": 224.6875,
+              "textTop": 196.6875,
+              "textBottom": 214.6875,
+              "textLeft": 212.703125,
+              "textRight": 296.75
+            },
+            {
+              "clip": {
+                "left": 49,
+                "right": 341,
+                "top": 49,
+                "bottom": 271
+              },
+              "label": "Set total capacity to 9,223,372,036,854,775,806",
+              "left": 49,
+              "right": 341,
+              "top": 232.6875,
+              "bottom": 270.6875,
+              "textTop": 233.6875,
+              "textBottom": 269.6875,
+              "textLeft": 95.21875,
+              "textRight": 294.78125
+            }
+          ],
+          "actual_warning_reading": {
+            "clip": {
+              "left": 49,
+              "right": 341,
+              "top": 49,
+              "bottom": 271
+            },
+            "label": "The pool snapshot or connection changed. Cancel this change, refresh the pool, then review again.",
+            "left": 49,
+            "right": 341,
+            "top": 124.9375,
+            "bottom": 194.6875,
+            "textTop": 126.9375,
+            "textBottom": 191.4375,
+            "textLeft": 49,
+            "textRight": 330.1875
+          }
+        },
+        {
+          "state": "pending-inspection-cancelled",
+          "passed": true
+        },
+        {
+          "state": "deficit-review",
+          "passed": true
+        },
+        {
+          "state": "restored-unknown-offline",
+          "passed": true
+        },
+        {
+          "state": "empty-create-validation-cancel",
+          "passed": true
+        },
+        {
+          "state": "inventory-error",
+          "passed": true
+        }
+      ],
+      "elapsed_ms": 16038,
+      "mutation_calls": 0,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      }
+    },
+    "messages": {
+      "cases": [
+        {
+          "width": 320,
+          "height": 640,
+          "text_token_scale": 1,
+          "computed_body_font_sizes_px": [
+            15
+          ],
+          "document_overflow_px": 0
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "text_token_scale": 1,
+          "computed_body_font_sizes_px": [
+            15
+          ],
+          "document_overflow_px": 0
+        },
+        {
+          "width": 768,
+          "height": 600,
+          "text_token_scale": 1,
+          "computed_body_font_sizes_px": [
+            15
+          ],
+          "document_overflow_px": 0
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "text_token_scale": 1,
+          "computed_body_font_sizes_px": [
+            15
+          ],
+          "document_overflow_px": 0
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "text_token_scale": 1,
+          "computed_body_font_sizes_px": [
+            15
+          ],
+          "document_overflow_px": 0
+        },
+        {
+          "width": 768,
+          "height": 600,
+          "text_token_scale": 2,
+          "computed_body_font_sizes_px": [
+            30
+          ],
+          "document_overflow_px": 0
+        },
+        {
+          "state": "restored-unknown-offline",
+          "passed": true
+        },
+        {
+          "state": "empty-validation-error",
+          "passed": true
+        }
+      ],
+      "elapsed_ms": 3587,
+      "transport_calls": 0,
+      "cleanup": {
+        "browserClosed": true,
+        "contextClosed": true,
+        "serverJoined": true
+      }
+    }
+  },
+  "remaining": [
+    "Independent current-composition review and central asset rebuild",
+    "Broader pool operations and full route/state/terminal UX coverage",
+    "Resources implementation held pending correction review"
+  ],
+  "test_sources": {
+    "internal/server/web/semblance/pools.test.mjs": "12c2ce2288ae1906d0aede4413ecf641a7a761341e84796494a8a7c2379aec68",
+    "internal/server/web/pool-console.test.mjs": "1baccca19ce338913b73f1e361453a3bcea8ad5f03b4d8d11dab4a917467be8a",
+    "internal/server/web/pool-wire-review.test.mjs": "9bc296286a182c6cf3ba745e762bbc23b549908944263008240d41030c03ac6e",
+    "internal/server/web/pool-model.test.mjs": "451158d4ec7f231ba84cc0157b28d5e169d08ea4fe2c5ae08b795b6c57446946",
+    "web/test/pool-layout.test.mjs": "8f9ea7892d0f4b75cf9d4c2a632173ac90c7ff813a875d696f8e7887b2ff93ab",
+    "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+    "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974",
+    "web/test/messages-layout.test.mjs": "886508ca0e5b4c3e7d7b951be612a76fdf2f1493a3eaa17b25099732ac128d32"
+  }
+}

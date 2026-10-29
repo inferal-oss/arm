@@ -2,7 +2,7 @@
 
 Owner: `codex/ux-layout-review`, starting from accepted source `476f6fc`.
 This is an ongoing remediation pass. Inventory is not acceptance: only the
-Messages and Pool slices below have current synthetic native-browser evidence. All other
+Messages and Pool slices below have source-qualified synthetic browser evidence. All other
 rows require current composed-source rendering and keyboard checks. Existing
 feature tests and earlier screenshots do not close those gates.
 
@@ -21,7 +21,10 @@ feature tests and earlier screenshots do not close those gates.
    confirmation action. Exact large counts fragmented in cramped columns after
    containment alone. Pool-specific body scrolling, viewport-bounded panels,
    paired Before/After fields and native footers keep full values and actions
-   readable. The exact stale-review warning stays beside disabled actions. An
+   readable. A follow-up review rejected the initial 8px stale body at a short
+   viewport. Short-height panels now scroll as one surface with a tested minimum
+   of 120px/four computed lines of useful reading space; warnings and each
+   action remain reachable. Normal-height panels retain their separate footer. An
    explicit review error now receives reading focus after reproduction showed
    validation above the scrolled form; background refresh preserves draft focus.
    Mesh, forwarding and naming modal width remain source candidates: the stock
@@ -46,17 +49,17 @@ states; no principal view is declared complete from source inspection.
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
 | Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Source inventory only | Dense cores/devices, stale/unknown/reset/disconnected, pause and help dialogs |
 | Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Source inventory only | Long names/IDs, int64 quantities, deficits, stale budgets, filter and held focus |
-| Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, 200% text, short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild; native subpool/drain/resume/delete and broader pagination/hierarchy density |
-| Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Reserved focused presentation cut; no edits | Review accepted cut before remaining layout/state coverage |
-| Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Reserved focused presentation cut; no edits | Preserve original readers, cursors, follow/pause, focus and independent cleanup |
-| Messages | `messages.mjs`; composer, recipient/reply review, conversation, deliveries, saved-send recovery | Corrected slice: 320/390/768/1440/1920 widths, 768 at 200% text; long/unbroken values, stale/disconnected review, held focus, restored unknown/offline, empty and validation error | Independent composed-source review/rebuild; broader broadcast density and recorded-result visual states |
+| Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, actual doubled text-token coverage (15px/30px), short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild; native subpool/drain/resume/delete and broader pagination/hierarchy density |
+| Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Targeted presentation accepted at `c830982`; no edits in this slice | Review accepted cut before remaining layout/state coverage |
+| Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Targeted presentation accepted at `c830982`; no edits in this slice | Preserve original readers, cursors, follow/pause, focus and independent cleanup |
+| Messages | `messages.mjs`; composer, recipient/reply review, conversation, deliveries, saved-send recovery | Corrected slice: 320/390/768/1440/1920 widths, 768 at actual doubled text-token coverage (15px/30px); long/unbroken values, stale/disconnected review, held focus, restored unknown/offline, empty and validation error | Independent composed-source review/rebuild; broader broadcast density and recorded-result visual states |
 | Activity | `main.mjs`; history pages, timeline, event picker/detail, live drawer | Source inventory only | Dense/empty/long events, exact record, pause, disconnected retention and keyboard scrolling |
 | Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Source inventory only | Many/empty capabilities, long IDs, disclosure retention and read-only context |
 | Mesh | `mesh.mjs`; roster, node detail, connect/reconnect, installation, stop, uninstall, handoff, operations | Source inventory only | Dense nodes, every draft/review/unknown/cancel/error state, exact pins/revisions and control visibility |
 | Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Source inventory only | Dense inventory, unverified/stale/unavailable states; no cluster operations |
 | Forwarding | `forward.mjs`; preparation/review, tunnel list and retained operations | Source inventory only | Long endpoints, narrow dialogs, uncertainty and cleanup warnings; no real forwarding |
 | Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | Source inventory only | Scope/staleness/unknown values, long records and unsupported mutation visibility |
-| Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Credential-input cut reserved; no edits | Synthetic native DOM only; cancel/Escape/full view/clipboard and disposal; no VNC sign-in |
+| Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Private-input layout accepted at `c830982`; no edits in this slice | Synthetic native DOM only; cancel/Escape/full view/clipboard and disposal; no VNC sign-in |
 | Resource naming | `resource-names.mjs`; exact reference, name editor, preserved reservations | Source inventory only | Long references, dense options, modal width, stale selection and focus |
 
 ## Terminal inventory
@@ -95,3 +98,20 @@ are refused and none occur. Behavioral tests separately exercise confirmation
 against a pure mock transport. Native pending coverage is an inspection read
 cancelled before its delayed reply, not a real in-flight mutation. Source-qualified
 owner evidence does not replace independent composition or a full UX pass.
+
+## Acceptance and scaling qualification
+
+Accepted runtime `c830982` includes Messages and targeted defaults/run/lease/
+private-input presentation changes. The Pools feature and this short-window
+correction remain subject to independent current-composition review. Resources
+implementation is held pending that correction review. Broader route/state/
+terminal acceptance remains open.
+
+The original Messages and Pools scaled cases varied root rem sizing only,
+because the pinned text tokens use pixel values. Their original source hashes,
+receipts and captures remain historical evidence; they do not establish doubled
+body text. The corrected fixtures explicitly double the computed pixel text
+tokens and assert 15px/30px body text. See the
+[correction record](validation/ux-pools-short-window-2026-10-29.json) for current
+font sizes, usable reading space, actual keyboard scrolling and stale-state
+captures. No product Messages or theme font declarations changed.

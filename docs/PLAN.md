@@ -1158,3 +1158,13 @@ scrolling and bound panel widths; existing actions use native footers with the
 exact stale-review warning beside them. Owner pool/RDF regressions and twelve
 synthetic native cases pass. Independent composition and central asset rebuild
 remain; other modal families and terminal views stay outside this acceptance.
+
+### Pools short-window correction — review pending
+
+Independent review of the initial Pools cut found an 8px stale-review body in a
+390×320 window. The correction uses full-panel scrolling at short heights and
+checks a useful minimum reading viewport, native PageUp/PageDown and reachable
+warnings/actions. The prior scaled Messages/Pool cases are qualified as root-rem
+only; corrected bounded fixtures assert actual doubled pixel text tokens.
+Accepted Messages/run/lease/private-input runtime `c830982` remains unchanged.
+Resources source work is held; composed review/rebuild and broader UX gates remain.
