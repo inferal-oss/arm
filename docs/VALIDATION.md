@@ -1,5 +1,24 @@
 # Validation record
 
+## Resource help and tooltips — independent composed acceptance
+
+Focused source `1233ba1`, `a75c1fe` and `2a1d728` passes independent review and
+the unchanged shared FIFO: 445 JS tests, 29 native component/lifecycle cases,
+native CLI build and byte-identical asset rebuilds. The guarded actual-route
+development fixture passes twenty Resource dialogs across four viewport/text
+scenarios, 56 rendered native focus/hover tooltip samples, eight visible-edge
+checks, retained/disconnected contexts and two unchanged Monitor controls.
+Complete tooltip border and painted text fit; document width stays bounded.
+No real transport or mutation is attempted. Original browser/context/probe/server
+owners close/join. Narrow, short and doubled-token images are visually reviewed.
+The native PageDown/End/Home causal failure remains preserved; the CSS-only
+correction uses existing opener restoration. The final asserting causal mode
+has separate source-qualified owner evidence. Backend/module/pin/shared-engine
+bytes remain unchanged. No installed activation, compiled-bundle browser run,
+universal zoom, Linux/full-Go or complete UX acceptance is inferred. Monitor's
+existing narrow tooltip overflow remains open.
+[Normalized record](validation/ux-resource-help-composed-2026-10-29.json).
+
 ## Resources — independent composed acceptance
 
 Reviewed source `37fa208`/`a70561e` passes a normal-FIFO combined gate: 445 JS and

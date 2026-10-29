@@ -1,5 +1,16 @@
 # Backend and CLI implementation
 
+## Resource help and tooltip composition
+
+Resource help uses full-width stacked technical fields and a bounded reading
+panel. Resource-only native tooltip alignment, wrapping and opener scroll margin
+preserve readable focus restoration after keyboard scrolling. Native dialog,
+button, authentication and accounting behavior stay unchanged; Monitor retains
+its existing presentation. Independent tests, guarded source-runtime rendering
+and deterministic embedded assets support the
+[scoped acceptance](validation/ux-resource-help-composed-2026-10-29.json).
+This source change is not installed or activated in a running backend.
+
 ## Resource presentation composition
 
 Consumer wrapping, labeled metadata and expanded desktop/tablet reading width

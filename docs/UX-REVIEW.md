@@ -1,10 +1,10 @@
 # Layout and usability review coverage
 
 Owner: `codex/ux-layout-review`, starting from accepted source `476f6fc`.
-This is an ongoing remediation pass. Inventory is not acceptance: only the
-Messages and separate lease/run/private-input cuts have accepted scoped
-composition evidence in `c830982`. The Pools correction and actual doubled-text
-fixtures also pass independent scoped composition; full UX coverage is open.
+This is an ongoing remediation pass. Inventory is not acceptance. Messages and
+separate lease/run/private-input cuts have scoped composition evidence in
+`c830982`; Pools, Resources and Resource-only help/tooltips also pass independent
+scoped composition. Full UX coverage remains open.
 All other rows require current rendering and keyboard checks. Existing
 feature tests and earlier screenshots do not close those gates.
 
@@ -31,7 +31,7 @@ feature tests and earlier screenshots do not close those gates.
    validation above the scrolled form; background refresh preserves draft focus.
    Mesh, forwarding and naming modal width remain source candidates: the stock
    480px cap alone is not a defect and their dialogs have not been changed.
-3. **Resources: layout accepted; help correction review pending.** A 568px
+3. **Resources: layout and help corrections accepted in scoped composition.** A 568px
    consumer action clipped inside 338/356px cards at desktop/mobile widths.
    Accounting values, full lease IDs and multiline reasons also clipped or
    collapsed. Resource-specific containment, wrapping, paragraph styling and
@@ -62,7 +62,7 @@ states; no principal view is declared complete from source inspection.
 | --- | --- | --- | --- |
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
 | Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Source inventory only | Dense cores/devices, stale/unknown/reset/disconnected, pause and help dialogs |
-| Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Layout composition accepted in 03f8a4; Resource-only help correction has scoped owner evidence; help/tooltip composition review and real transport/full route acceptance remain open |
+| Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Layout composition accepted in 03f8a4; Resource-only help/tooltips pass independent composed source-runtime checks; real transport/auth and complete route/state acceptance remain open |
 | Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, actual doubled text-token coverage (15px/30px), short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild accepted; native subpool/drain/resume/delete and broader pagination/hierarchy density remain pending |
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |
 | Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Accepted focused default/detail/lifecycle cut in c830982 | Remaining route/geometry coverage; preserve reader and cleanup invariants |
