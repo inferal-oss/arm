@@ -1,5 +1,25 @@
 # Validation record
 
+## Resident dispatcher contract — documentation checks only
+
+The [source-backed interface proposal](design/resident-dispatch-contract.md)
+uses accepted composition `f150f6bfc8693cdfb8a91d2cd9ab98558357a93f`.
+Review traces current listener/authentication, selected-node and separate peer
+paths, WS dispatch/subscriptions/projection, native reporter cancellation,
+domain keys/lifetimes, stop gates and runtime/helper executable proof. Its
+future test matrix distinguishes missing/forged callers, scope and epoch denial,
+exact-key/unknown outcomes, reporting and job continuity, separate dispatch/native
+joins, pinned assets, version mismatch and immutable bootstrap.
+
+Source inspection, added-scope privacy, 55 local-link/file/line or heading checks
+and whitespace checks pass. The changed-file inventory contains only the proposal
+and its three tracking notes; all tracked non-document files match the accepted
+base. No build, unit/race/native fixture, live backend or installed
+upgrade is executed here. Proposed signatures, limits and lifecycle tests are
+not runtime evidence. Central interface review, production-controller recovery,
+actual version-pair replacement and proxy/provider/transport continuity remain
+open; the accepted prototype evidence below is unchanged and separately scoped.
+
 ## Monitor layout — independent composed acceptance
 
 Focused inventory `2b21806`, layout `889923e` and selector correction `b00439e`

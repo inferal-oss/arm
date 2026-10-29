@@ -6,6 +6,27 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Resident dispatcher contract — source-only proposal awaiting review
+
+Owner: `codex/resident-dispatch-contract`, from accepted prototype composition
+`f150f6bfc8693cdfb8a91d2cd9ab98558357a93f`. The
+[interface proposal](design/resident-dispatch-contract.md) traces production
+authentication, selected-node/peer restrictions, dispatch and response projection,
+original request/domain/transport lifetimes and legacy proxy reporting. It
+proposes private resident-verified callers, immutable prepared calls, a closed
+operation catalog and opaque per-call worker grants; worker flags cannot confer
+native authority. Initial worker eligibility is seven local-browser reads.
+
+Replacement ordering distinguishes inactive candidate preparation, old-epoch
+sealing, admitted-dispatch handoff/join, original native worker/I/O joins and
+durable successor activation. Stable resident reporting/origin, coherent pinned
+assets, immutable resident/helper paths and exact-key uncertainty remain gates.
+The proposal includes module/signature/call-site ownership, minimal extraction
+stages and future denial/lifecycle checks. No product code, runtime tests,
+installation or controller activation is included. Central interface review is
+required before shared source edits; prior proof branches and evidence remain
+preserved. Production version pairs and broader workload continuity remain open.
+
 ## Resident supervision and replaceable workers — private proof accepted
 
 Owner: `codex/resident-api-workers`, based on reviewed `80ca1ed`. Original design
