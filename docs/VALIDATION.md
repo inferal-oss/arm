@@ -17,6 +17,8 @@ has separate source-qualified owner evidence. Backend/module/pin/shared-engine
 bytes remain unchanged. No installed activation, compiled-bundle browser run,
 universal zoom, Linux/full-Go or complete UX acceptance is inferred. Monitor's
 existing narrow tooltip overflow remains open.
+Published integration `ab4f06b` passes
+[Public website workflow 40922316270](https://github.com/inferal-oss/arm/actions/runs/40922316270).
 [Normalized record](validation/ux-resource-help-composed-2026-10-29.json).
 
 ## Resources — independent composed acceptance

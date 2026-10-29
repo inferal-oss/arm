@@ -134,5 +134,10 @@
     "Selected token doubling is not universal browser zoom.",
     "Monitor narrow tooltip overflow and full UX/terminal/Linux/full-Go coverage remain open.",
     "No installed path replacement, backend restart, policy/enrollment or runtime activation."
-  ]
+  ],
+  "publication": {
+    "source": "ab4f06b46898e5d5189dd8c1c42f491c6a4f6ab5",
+    "workflow_id": 40922316270,
+    "conclusion": "success"
+  }
 }
