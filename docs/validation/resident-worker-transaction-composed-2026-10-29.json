@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "status": "Independently reviewed transaction contract; runtime and worker formats remain inactive",
+  "owner_commit": "9e7aa16b30f844f4d3c98603492ee9dfdbab9c1d",
+  "composed_on": "b30a8b92d92f7722dec8fc44a04e36222ff5b122",
+  "source_inventory": "docs/validation/resident-worker-transaction-contract-2026-10-29.json",
+  "source_inventory_sha256": "87e7f88641c422c88b7a666d4998a2c7babc1fc55b3537cb0e2949b14bf0de84",
+  "contract_sha256": "9e0a5f35d57e0efec8e44d076fb05750e77db8a4136d785ed1bd456eca4abb89",
+  "checks": {
+    "protected_hashes": 37,
+    "matching_refs": [
+      "accepted parent",
+      "owner",
+      "current composition"
+    ],
+    "owner_documentation_paths": 6,
+    "new_local_links": 22,
+    "source_line_anchors": 14,
+    "privacy_whitespace": "pass",
+    "source_review": "No blocking contract finding"
+  },
+  "completion_gate": "arm start must launch the worker-capable resident and supervised worker, reuse it on repeated starts and preserve active jobs during actual compatible distinct-version API/UI replacement",
+  "next_scope": "Refusal-only ordinary writer/admission guards for reserved worker namespace, kinds and attachment; no supported worker format or positive factory",
+  "reserved_future_workspace_format": "4",
+  "not_implemented": [
+    "Worker-aware format/schema/bootstrap and native Lifetime",
+    "Dedicated Manager reservation/intent/lifetime transaction and resource admission",
+    "Worker role/process/controller/activation",
+    "Versioned API data and coherent assets",
+    "arm start integration, installer and actual distinct-version job-preserving upgrade"
+  ],
+  "remaining_policy": [
+    "Version-qualified measured resource floors and finite package/event/WAL/descriptor/task bounds",
+    "Finite history/log/artifact policies remain proposed, not admission",
+    "Conservative unknown/operator recovery and initial idle-only adoption"
+  ],
+  "runtime_evidence_added": false,
+  "production_source_changed": false,
+  "limits": [
+    "Documentation/source review only; no build, test, process, admission, migration, install or state acceptance",
+    "Format 4 is reserved for future review and remains unsupported",
+    "Running resident, jobs, helpers and installed executable remain unchanged"
+  ]
+}

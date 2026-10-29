@@ -1,5 +1,44 @@
 # ARM delivery plan
 
+## Worker transaction/lifetime contract — reviewed prerequisite
+
+Owner: `codex/resident-worker-transaction-contract`, from accepted
+`b30a8b92d92f7722dec8fc44a04e36222ff5b122`. The
+[transaction contract](design/resident-worker-transaction.md) refines dedicated
+records, one original Manager transaction per transition, pre-Start durability,
+original process-local claim, retained unknown outcomes and non-generic settlement.
+A new combined workspace format/older-writer fence and actual native bootstrap
+are prerequisites. Trusted local packages, two unresolved native generations and
+deferred staging at pinned capacity are selected; other finite policy proposals
+and measured profile requirements remain review gates before code.
+
+`arm start` integration is an explicit product completion gate: start the resident
+and its supervised worker, reuse an existing resident on repeated starts, and
+handle legacy adoption only through a complete idle-only fence. Actual compatible
+A-to-B API/UI behavior and active-job preservation still require implementation
+and proof. This cut adds source-inspection/docs only; no native or runtime window.
+
+Independent composition verifies all 37 protected hashes against the accepted
+parent and current main, and resolves the 22 new local links / 14 source anchors.
+No blocking contract finding remains. Finite profile and physical storage/event/
+WAL limits remain proposals and gates, not measured admission or factory proof.
+Reserve combined worker workspace format `4`; it remains unsupported until a
+separately reviewed worker-aware writer/bootstrap exists.
+
+Next existing-owner source allocation is refusal only: protect the
+`resident_worker` metadata/table/index/trigger namespace and reserved
+`resident-worker` / `resident-worker-prepare` lease kinds and `resident_worker`
+lease attachment from ordinary writers. Detect physical and JSON aliases before
+generic interpretation, including forged/missing format markers and partial/
+empty namespaces; ordinary admission must not create these reserved leases.
+Keep all worker formats unsupported, including reserved `4`; preserve supported
+ordinary/named-storage behavior. Add exact read-only database/proof/startup and
+admission regressions and source-bound normal/race/vet checks in sequential
+unchanged-FIFO cohorts within 120s/two CPU/two GiB. No optional schema, migration,
+positive worker factory, bootstrap/role/controller/Start, artifact staging,
+installer/default state, broad suite or environment work is allocated. Return
+shared-source gaps before widening; retain all prior branches/evidence.
+
 ## Native worker-owner prerequisite — reviewed source contract
 
 Owner: `codex/resident-worker-owner-contract`, from accepted response composition

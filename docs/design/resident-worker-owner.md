@@ -34,6 +34,10 @@ stop/activation permits are missing. Names below describe proposed interfaces,
 not available constructors. No role/ready/size flag, arbitrary CheckActive
 interface or test-only positive bypass can manufacture an owned capability.
 
+The [transaction/lifetime refinement](resident-worker-transaction.md) specifies
+the proposed records, format fence, bootstrap origin and keyed durability. It
+adds no positive factory or runtime evidence.
+
 ## Proposed module and handle interfaces
 
 Avoid a Manager/Server import cycle: Manager-side worker modules retain artifact,
