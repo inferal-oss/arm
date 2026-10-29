@@ -10,6 +10,7 @@ import (
 
 	"getarm.org/internal/install"
 	"getarm.org/internal/rollout"
+	"github.com/google/uuid"
 )
 
 func TestRolloutRemovalCLIReviewAndRetainedHistory(t *testing.T) {
@@ -107,4 +108,55 @@ func mustProjectRoot(t *testing.T, home string) string {
 		t.Fatal(err)
 	}
 	return st.Projects[0].Bindings[0].Root
+}
+
+func TestRolloutOnboardActiveReplacementWinsOverRemovedFence(t *testing.T) {
+	m, home := onboardReviewFixture(t, true)
+	root := m.binding.Root
+	rolloutApplyCLI(t, home, "rollout", "project", "--project", "old", "--path", root, "--reason", "Define original scope")
+	rolloutApplyCLI(t, home, "rollout", "policy", "--project", "old", "--mode", "all", "--reason", "Original participation policy")
+	store := rollout.Store{Home: home}
+	in := rollout.Identification{Query: rollout.Query{CWD: root, Adapter: "codex", Session: uuid.NewString()}, Protocol: rollout.Protocol, Needs: "Synthetic coordination need"}
+	d, err := store.Identify(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if d, err = store.Acknowledge(in.Query, d.Session.Identity, d.Project.Revision); err != nil || !d.Coordinate {
+		t.Fatal(d, err)
+	}
+	rolloutApplyCLI(t, home, "rollout", "binding", "remove", "--project", "old", "--path", root, "--reason", "Retire original boundary")
+	rolloutApplyCLI(t, home, "rollout", "project", "--project", "replacement", "--path", root, "--reason", "Explicit replacement scope")
+	rolloutApplyCLI(t, home, "rollout", "policy", "--project", "replacement", "--mode", "observe", "--reason", "Replacement manual pilot")
+	rolloutApplyCLI(t, home, "rollout", "pause", "--project", "replacement", "--reason", "Keep enrollment paused")
+	before, err := os.ReadFile(filepath.Join(home, "rollout.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	m = newRolloutOnboard(t.Context(), home, "Keep reviewed replacement", nil)
+	runOnboardCmd(t, m, m.resolve(root))
+	m.cursor = len(m.choices) - 1
+	onboardKey(m, "enter")
+	if m.id != "replacement" {
+		t.Fatal("removed fence selected over active project", m.id)
+	}
+	onboardKey(m, "enter")
+	if m.choices[0].value != "observe" {
+		t.Fatal("replacement policy was not offered first", m.choices)
+	}
+	runOnboardCmd(t, m, onboardKey(m, "enter"))
+	if !m.plan.Unchanged || !m.plan.After.Paused || m.plan.After.Revision != 3 || m.plan.After.ID != "replacement" {
+		t.Fatal(m.plan)
+	}
+	runOnboardCmd(t, m, onboardKey(m, "y"))
+	if m.err != nil {
+		t.Fatal(m.err)
+	}
+	after, err := os.ReadFile(filepath.Join(home, "rollout.json"))
+	if err != nil || !bytes.Equal(before, after) {
+		t.Fatal("unchanged replacement rewrote ledger", err)
+	}
+	st, err := store.Read()
+	if err != nil || len(st.Sessions) != 1 || st.Sessions[0].Project != "old" || st.Sessions[0].State != "revoked" {
+		t.Fatal("revoked history changed", st, err)
+	}
 }

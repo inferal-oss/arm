@@ -19,6 +19,12 @@ owner source review. A clean-source disposable terminal replay passes 35 checks
 across seven joined sessions. Coordinator review/composition, push and executable
 installation remain pending.
 
+Coordinator source review found onboarding selecting an older removed fence over
+an active same-root replacement. The focused correction selects active bindings;
+its wizard regression preserves replacement policy/revision/pause and byte-exact
+revoked session/audit history. Original source `928fd3b` and its evidence remain
+separate from correction validation and final coordinator composition.
+
 ## Project-scoped gradual agent adoption — scoped milestone accepted
 
 Installation/status UX continuation `379e41d` implements interactive diff review, a

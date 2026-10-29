@@ -2,6 +2,13 @@
 
 ## Rollout removal and stale boundaries — owner continuation
 
+Coordinator source review found and corrected wizard selection of a removed
+fence before an active same-root replacement. The permanent wizard regression
+selects the replacement and applies an unchanged-policy no-op, preserving its
+manual policy, pause and revision plus byte-exact retained revoked history. The
+selected rollout CLI race suite passes on the corrected source. Earlier binary
+and terminal evidence below remains scoped to `928fd3b`.
+
 Feature source `928fd3b`, based on accepted main `53d7062`. Complete
 rollout/installation/discovery normal and race
 suites pass with one Go worker. The selected CLI race roster passes 266 test

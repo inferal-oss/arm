@@ -407,7 +407,7 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 							continue
 						}
 						for _, b := range p.Bindings {
-							if b.Root == m.binding.Root {
+							if !b.Removed && b.Root == m.binding.Root {
 								m.id = p.ID
 								existingBinding = true
 								break
