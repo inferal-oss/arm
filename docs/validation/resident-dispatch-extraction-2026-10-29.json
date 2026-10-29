@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "scope": "Stage-one in-process original-ingress caller and prepared-dispatch extraction",
+  "status": "Owner validated; independent current-composition review pending",
+  "baseline_commit": "e30b1456a4c650b64953cbf3a3bd42134d56917b",
+  "implementation_commit": "01c43ba253ceca7846de4216a86fe48dff797e65",
+  "toolchain": "go version go1.27.3 darwin/arm64",
+  "source_sha256": {
+    "internal/server/resident_auth.go": "5c9f1a9cc09da97fe233cdc93bfccc169eb8e79615ebb0f684096b5c358f853d",
+    "internal/server/resident_dispatch.go": "f0944a2972c4f73ab6abd853da8e440e7d8576b032cd9f89971d56a43ee6a6d6",
+    "internal/server/resident_dispatch_test.go": "430836ca922280616e1b176e70c21d6268431b8c528ffce2c39877729a1cde97",
+    "internal/server/resident_outcomes.go": "88ee38e378605f5bc756bb745074f88e6177e7cb89c53639a2751c9dbe057482",
+    "internal/server/server.go": "ec0d0ff6005758157d55ff1efc3d78a6bb805e32627a76afb5c6cd0b873e95a0",
+    "internal/server/browser_test.go": "692e9690a92b20941d7f348c7436efb29cb71fac9609e1cde293ddeea81a956e",
+    "internal/server/dashboard_login_link_test.go": "ec79c2562d1338b5c2d42f00bad62011b3f6fe69e7fa48b9f4843f32d1af8f74",
+    "internal/server/native_node_context_test.go": "9096203d9a577bd09c477096999a3557e9ee73329a8a43620093ecc793b0916c",
+    "internal/server/node_sessions_test.go": "264ee1173694656e796d64d04dc122da5a3ebe05593d9d238be3e34aaa88ffa2",
+    "internal/server/monitor_limits_test.go": "3fc3115d2b876438c1883380d9f3596adcd0b71be9e3abc615767cf19af620ec"
+  },
+  "unchanged_input_sha256": {
+    "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+    "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+    "internal/cli/runs.go": "11fbe811b55930cf01bc75b2bfbeef1af780cadc50981797dc85dd42c5c0cdd7",
+    "internal/cli/runs_test.go": "68f30f71742b75d101e3a4789c333a622069e533d866da378ee0893fa2d31e2f",
+    "internal/server/mesh_internal_test.go": "86ab4152a6dcd14d3c637ae152a29e8345a3649e58cdee2607fce4eed36a3a90",
+    "internal/server/browser.go": "41ff1f15529800531972e9a9a2ee6ccec7b6b35137cda218154a6df7c9c4a62a",
+    "internal/server/native_node_context.go": "0328344946e60b62b49e1412f27d09a026cb54feb03a1890e410c54766ad598d",
+    "internal/server/mesh.go": "a1d90883c177d6aaff31343b8e40ec9e630dc6eb5ff94cae7b3894cfc83837b9"
+  },
+  "server_tests": {
+    "normal": {
+      "result": "pass",
+      "root_count": 38,
+      "test_node_count": 60,
+      "root_names": [
+        "TestBrowserAuthenticationAndHostScope",
+        "TestBrowserCredentialsAreOneUseBoundedAndExpiring",
+        "TestBrowserSessionExpiryClosesExistingWebSocket",
+        "TestBrowserTicketConcurrentExchangeHasOneWinner",
+        "TestDashboardLoginLinkAuthenticatedRoundTrip",
+        "TestDashboardLoginLinkAuthenticationAndClosedParameters",
+        "TestDashboardLoginLinkPreservesCredentialCaps",
+        "TestDashboardLoginLinkScopedSessionsCannotLiftAuthority",
+        "TestLoopbackRequiresAuthenticationAndBrowserOrigin",
+        "TestMonitorSubscriptionBoundReplacementAndRelease",
+        "TestNamedPoolReadBudgetCountsFinalProjectedBytes",
+        "TestNamedPoolViewsPreserveExactReviewAndWireShapes",
+        "TestNamedViewsPreserveOriginalWireValuesAndRecords",
+        "TestNamedViewsTouchOnlyDeclaredViews",
+        "TestNativeNodeFirstFrameRequiresExactSourceAndTarget",
+        "TestNativeNodeHandshakeCannotExecuteFirstLocalOperation",
+        "TestNativeNodeSessionClosedReadScopeAndLiveRevocation",
+        "TestNodeWindowAdmissionBindingSurvivesExpiryPruningWithoutLocalFallback",
+        "TestNodeWindowChangedSourceEnrollmentClosesWithContextPolicy",
+        "TestNodeWindowDestinationGuardRejectsBroadenBetweenScopeAndData",
+        "TestNodeWindowIdleDestinationOnlyChangeClosesBrowser",
+        "TestNodeWindowReadGatewayNoLocalFallbackOrAdministration",
+        "TestNodeWindowTicketExactTargetNonceSingleUse",
+        "TestNodeWindowWebSocketScopesSpecialSubscriptionsAndRevocation",
+        "TestProvisionRuntimeNeverBrowserAllowed",
+        "TestResidentAdmittedJobOutlivesOriginalIngress",
+        "TestResidentBrowserCallerRetainsRestrictionsAndPrincipal",
+        "TestResidentCallerMasksInheritedAuthorityContext",
+        "TestResidentCallerRejectsIdentityChangeAndResurrection",
+        "TestResidentCallerRequiresAcceptedOriginalIngress",
+        "TestResidentDirectReporterSurvivesCallerRetirementAndStopGate",
+        "TestResidentNativeNegotiationMasksInheritedPrincipalBeforeBinding",
+        "TestResidentNegotiatingIngressHasNoDispatchAuthority",
+        "TestResidentPreparedCallOwnsBytesAndRejectsForeignRetiredReplay",
+        "TestResidentProjectionPreservesRawNumbersAndTypedErrors",
+        "TestRunsBrowserReadOnlyBoundary",
+        "TestStopRegistrationFencesUnrepresentedWorkButAllowsSettlementAndJoins",
+        "TestWebSocketMultiplexesResponsesAndEvents"
+      ],
+      "failures": 0,
+      "skips": 0,
+      "package_elapsed_seconds": 29.731
+    },
+    "race": {
+      "result": "pass",
+      "root_count": 38,
+      "test_node_count": 60,
+      "root_names": [
+        "TestBrowserAuthenticationAndHostScope",
+        "TestBrowserCredentialsAreOneUseBoundedAndExpiring",
+        "TestBrowserSessionExpiryClosesExistingWebSocket",
+        "TestBrowserTicketConcurrentExchangeHasOneWinner",
+        "TestDashboardLoginLinkAuthenticatedRoundTrip",
+        "TestDashboardLoginLinkAuthenticationAndClosedParameters",
+        "TestDashboardLoginLinkPreservesCredentialCaps",
+        "TestDashboardLoginLinkScopedSessionsCannotLiftAuthority",
+        "TestLoopbackRequiresAuthenticationAndBrowserOrigin",
+        "TestMonitorSubscriptionBoundReplacementAndRelease",
+        "TestNamedPoolReadBudgetCountsFinalProjectedBytes",
+        "TestNamedPoolViewsPreserveExactReviewAndWireShapes",
+        "TestNamedViewsPreserveOriginalWireValuesAndRecords",
+        "TestNamedViewsTouchOnlyDeclaredViews",
+        "TestNativeNodeFirstFrameRequiresExactSourceAndTarget",
+        "TestNativeNodeHandshakeCannotExecuteFirstLocalOperation",
+        "TestNativeNodeSessionClosedReadScopeAndLiveRevocation",
+        "TestNodeWindowAdmissionBindingSurvivesExpiryPruningWithoutLocalFallback",
+        "TestNodeWindowChangedSourceEnrollmentClosesWithContextPolicy",
+        "TestNodeWindowDestinationGuardRejectsBroadenBetweenScopeAndData",
+        "TestNodeWindowIdleDestinationOnlyChangeClosesBrowser",
+        "TestNodeWindowReadGatewayNoLocalFallbackOrAdministration",
+        "TestNodeWindowTicketExactTargetNonceSingleUse",
+        "TestNodeWindowWebSocketScopesSpecialSubscriptionsAndRevocation",
+        "TestProvisionRuntimeNeverBrowserAllowed",
+        "TestResidentAdmittedJobOutlivesOriginalIngress",
+        "TestResidentBrowserCallerRetainsRestrictionsAndPrincipal",
+        "TestResidentCallerMasksInheritedAuthorityContext",
+        "TestResidentCallerRejectsIdentityChangeAndResurrection",
+        "TestResidentCallerRequiresAcceptedOriginalIngress",
+        "TestResidentDirectReporterSurvivesCallerRetirementAndStopGate",
+        "TestResidentNativeNegotiationMasksInheritedPrincipalBeforeBinding",
+        "TestResidentNegotiatingIngressHasNoDispatchAuthority",
+        "TestResidentPreparedCallOwnsBytesAndRejectsForeignRetiredReplay",
+        "TestResidentProjectionPreservesRawNumbersAndTypedErrors",
+        "TestRunsBrowserReadOnlyBoundary",
+        "TestStopRegistrationFencesUnrepresentedWorkButAllowsSettlementAndJoins",
+        "TestWebSocketMultiplexesResponsesAndEvents"
+      ],
+      "failures": 0,
+      "skips": 0,
+      "package_elapsed_seconds": 33.54
+    },
+    "new_owned_ingress_roots": [
+      "TestResidentAdmittedJobOutlivesOriginalIngress",
+      "TestResidentBrowserCallerRetainsRestrictionsAndPrincipal",
+      "TestResidentCallerMasksInheritedAuthorityContext",
+      "TestResidentCallerRejectsIdentityChangeAndResurrection",
+      "TestResidentCallerRequiresAcceptedOriginalIngress",
+      "TestResidentDirectReporterSurvivesCallerRetirementAndStopGate",
+      "TestResidentNativeNegotiationMasksInheritedPrincipalBeforeBinding",
+      "TestResidentNegotiatingIngressHasNoDispatchAuthority",
+      "TestResidentPreparedCallOwnsBytesAndRejectsForeignRetiredReplay",
+      "TestResidentProjectionPreservesRawNumbersAndTypedErrors"
+    ]
+  },
+  "cli_tests": {
+    "normal": {
+      "result": "pass",
+      "root_count": 1,
+      "test_node_count": 1,
+      "root_names": [
+        "TestRunTransparencyCLI"
+      ],
+      "failures": 0,
+      "skips": 0,
+      "package_elapsed_seconds": 3.536
+    },
+    "race": {
+      "result": "pass",
+      "root_count": 1,
+      "test_node_count": 1,
+      "root_names": [
+        "TestRunTransparencyCLI"
+      ],
+      "failures": 0,
+      "skips": 0,
+      "package_elapsed_seconds": 4.937
+    },
+    "input_scope": "Production library and CLI inputs match the final cut. Only WS test-fixture localization/retirement changed after these CLI runs; server test files are not CLI test build inputs."
+  },
+  "checks": {
+    "affected_server_vet": "pass",
+    "native_cli_build": "pass; artifact not installed or executed",
+    "linux_amd64_server_test_compile": "pass; not executed",
+    "dispatch_domain_body": "byte-identical to accepted baseline after the proof-checking stop wrapper",
+    "shared_domain_fixture": "byte-identical to accepted baseline",
+    "whitespace": "pass",
+    "production_dispatch_references": [
+      {
+        "file": "internal/server/mesh.go",
+        "line": 366,
+        "expression": "value, e = m.store.WithPeer(peer.Identity.Host, func(current mesh.Peer) (any, error) { return m.dispatch(ctx, current, request) })"
+      },
+      {
+        "file": "internal/server/resident_dispatch.go",
+        "line": 41,
+        "expression": "result, err := s.dispatch(ctx, call.request)"
+      }
+    ],
+    "added_scope_privacy": "pass",
+    "contract_tracking_local_links": 61,
+    "protected_scope": "ten allocated Go files and five documentation/evidence files only"
+  },
+  "production_caller_inventory": {
+    "local": "Server.ws -> prepareCall/dispatchPrepared -> Server.dispatch; no direct WS/domain bypass or method-value reference",
+    "peer": "meshService.serve -> meshService.dispatch, separate unchanged peer authority",
+    "legacy_domain_tests": "Synthetic-context tests of Server.dispatch remain domain validation, not authentication/ingress evidence"
+  },
+  "retained_failures": [
+    {
+      "kind": "owned fixture privacy",
+      "cohort_root_counts": {
+        "passed": 27,
+        "failed": 5,
+        "skipped": 0
+      },
+      "qualification": "Initial combined cohort failed because bare temporary roots were not private authority directories. Corrected by creating owned private child directories; directory validation was not weakened. Earlier passes do not establish final-source acceptance."
+    },
+    {
+      "kind": "causal first-frame masking regression",
+      "root": "TestResidentNativeNegotiationMasksInheritedPrincipalBeforeBinding",
+      "result": "fails before restoration before negotiation; passes in both final cohorts",
+      "qualification": "Initial extraction working tree, not an independently frozen pre-fix commit; raw failure retained privately. No pre-fix source hash is claimed."
+    },
+    {
+      "kind": "validation wrapper argument failure",
+      "qualification": "A multiline shell argument was split by the unchanged FIFO wrapper; the intended Linux subcommand did not run. Wrapper exit zero is excluded as acceptance. A private script through the same FIFO produced separate final successful vet/compile statuses."
+    }
+  ],
+  "execution_bounds": {
+    "queue": "unchanged normal shared FIFO",
+    "GOMAXPROCS": 1,
+    "go_parallelism": 1,
+    "GOMEMLIMIT": "1536MiB runtime target; not an observed RSS or kernel limit",
+    "active_limit_seconds": 115,
+    "cohort_order": "sequential; compilation split where needed"
+  },
+  "observations": [
+    "Credential recognition creates no registry entry; only original accepted ingress activates a caller after required node negotiation.",
+    "Missing, copied, foreign, negotiating and retired caller denial; original request byte ownership and one-shot prepared dispatch.",
+    "All legacy authority context keys are restored or masked before first-frame binding and dispatch.",
+    "Original first-frame ACK ownership, browser/node restrictions and subscription guards remain.",
+    "A real generic job completes after original ingress retirement; direct run reporting continues on a fresh accepted connection to the same resident.",
+    "Raw large integer/decimal bytes, naming diagnostics and typed domain uncertainty retain existing v1 projection/encoding.",
+    "Registry membership locks are not held across domain, directory or peer work."
+  ],
+  "limitations": [
+    "No worker process, IPC/grant/controller/role, activation or asset routing is added.",
+    "No actual worker replacement, distinct-build version pair or API/UI reconnect acceptance follows from this stage.",
+    "Current direct native CLI reporting is exercised; heartbeat continuity during a worker outage is not exercised.",
+    "No broader provider, SSH/sync/forward/screen transport, mesh-replacement or resident-core continuity claim.",
+    "Linux is compilation only; no full Go suite, browser capture, installation or default/shared state change.",
+    "Central current-main review and separately gated later extraction/controller/bootstrap stages remain required."
+  ]
+}

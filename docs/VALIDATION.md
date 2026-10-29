@@ -1,5 +1,45 @@
 # Validation record
 
+## Resident caller extraction — scoped owner evidence
+
+Source `01c43ba253ceca7846de4216a86fe48dff797e65`, from reviewed contract
+`e30b145`, passes the final focused normal and race cohorts: 38 Server roots /
+60 test nodes each, zero failures/skips, in 29.731s and 33.540s. Ten new roots
+use owned ingress/authentication fixtures for pending/copied/foreign/retired
+caller denial, request-byte ownership, context masking, first-frame binding,
+typed projection, direct reporting and original job lifetime. Existing synthetic
+context/domain tests remain domain validation, not authentication evidence.
+See the [source-bound record](validation/resident-dispatch-extraction-2026-10-29.json).
+
+A real generic producer completes under its original Manager after its caller
+connection closes. Reporting on another accepted connection retains direct
+append/finish and stop-gate behavior. The unchanged native CLI transparency root
+passes normal/race in private authority/loopback fixtures, including proxy/log
+and small leased-child execution; its production inputs match this cut. This
+does not exercise reporting heartbeats during a worker outage. Affected vet,
+native CLI build and Linux amd64 test compilation pass; neither the built native
+CLI artifact nor the Linux artifact is installed or executed. The CLI fixture
+executes the native CLI library, not that build artifact.
+
+The first combined run retains five fixture privacy failures; private child
+directories fix those fixtures without weakening authority-directory checks.
+A targeted regression fails before context restoration is moved ahead of native
+first-frame binding, and passes in both final cohorts. An argument-splitting
+validation-wrapper attempt is excluded despite its zero exit; the unchanged FIFO
+then runs a private script with separate successful vet/Linux statuses. Earlier
+passing cuts remain separate. Raw IDs/process/state receipts stay private.
+
+Added-scope privacy, 61 contract/tracking local-file/line/heading links and
+whitespace checks pass. All ten source/test hashes remain fixed through final
+checks. The dispatch domain body and shared domain-only fixture match the
+accepted base byte-for-byte.
+Production reference inventory has one local `Server.dispatch` caller, the
+proof-checked prepared adapter, plus the separate unchanged mesh dispatcher.
+No protected CLI/startup, worker IPC/controller/assets, Manager/provider/mesh/
+model/schema/module/frontend or installed state changes occur. Current-main
+independent review, actual worker/version-pair replacement, immutable bootstrap
+and broader provider/transport/core continuity remain open.
+
 ## Resident dispatch contract — independent source review
 
 Documentation `159dd34` is reviewed against current native/browser admission,

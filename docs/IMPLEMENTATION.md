@@ -1,22 +1,35 @@
 # Backend and CLI implementation
 
-## Proposed resident dispatcher extraction — not implemented
+## Resident caller and dispatch extraction — owner cut awaiting review
 
-The source-backed [dispatcher contract](design/resident-dispatch-contract.md)
-proposes private `authenticatedCaller`, `preparedCall` and `dispatchResult`
-types in `internal/server`, followed by a separate bounded `residentipc.Execute`
-DTO carrying only protocol, worker epoch, correlation ID and an opaque grant.
-The resident retains original credentials, operation/params/key/revision, response
-projection and execution authority. Native reporting, job-bearing transports,
-administration and mutations keep their existing resident paths; seven
-local-browser reads form the first proposed worker allowlist.
+The first [contract stage](design/resident-dispatch-contract.md) is implemented
+in process. Credential recognition alone creates no registry entry. After actual
+WS acceptance, the original connection enters a private pending registry; required
+native first-frame negotiation retains its original reader and single ACK writer.
+Only completed admission activates the original caller. Connection teardown
+removes pending/active entries; the same proof cannot be registered again.
 
-The first shared step is an in-process extraction with unchanged public v1
-behavior. Production worker launch, stable-origin asset routing and immutable
-bootstrap come later. Candidate readiness grants no serving/effect authority;
-old-epoch sealing, admitted-dispatch settlement and original worker/I/O joins
-precede successor activation. This documentation adds no implementation or
-evidence beyond the separately accepted private prototype.
+Caller checks retain exact Server/generation, the held private authority directory,
+credential expiry and node binding. Context restoration masks browser, expiry,
+principal and node values, including absence, before negotiation and dispatch.
+Registry locks cover membership/state only, not directory, domain or peer work.
+The original ingress context remains the request parent; admitted jobs retain
+their existing Manager waiter and cancellation/settlement owners.
+
+`prepareCall` owns exact parameter bytes. `dispatchPrepared(call)` accepts no
+substitute context and obtains the original verified ingress internally. It is
+the sole local production caller of the existing trusted `Server.dispatch`
+domain/stop wrapper, which rechecks the caller after its one stop registration.
+Special subscriptions use the same original-caller guard and existing node
+exclusions. The former ordinary response projection is in `resident_outcomes.go`;
+typed v1 responses, raw numeric bytes, diagnostics and the existing WS encoder
+remain. A domain error is not classified as proof of no effect or permission to
+replay. Legacy direct domain-unit fixtures remain domain validation only.
+
+All existing operations still dispatch directly resident. There is no worker
+eligibility activation, IPC/grant registry/controller/role, frontend/asset route,
+Manager/provider/mesh/schema/CLI/startup or installed-runtime change. Future
+worker byte limits and versioned controller/bootstrap remain separate gates.
 
 ## Monitor readability composition
 
