@@ -31,6 +31,22 @@ no blocking issue. See the [composed record](validation/resident-dispatch-compos
 Stage two, real worker replacement/controller recovery,
 version pairs, immutable bootstrap and broader workload continuity remain open.
 
+Next existing-owner scope is documentation only on accepted `06fd436`: refine
+the stage-two seven-local-browser-read grant/transport contract before code.
+Specify the original verified worker/channel construction boundary without a
+role-flag constructor or production test bypass, inactive epoch registration,
+exact caller/request/epoch ownership and the dispatch-versus-seal linearization.
+Define finite control/grant/result/copy budgets, actual UTF-8 byte accounting
+versus public browser UTF-16 parser limits, and compatible pre/post-invocation
+overflow behavior without truncation, eviction, duplicate reads or invented
+no-effect claims. Keep native/proxy/scoped-node/mesh/admin paths resident and
+independent of worker-read capacity. Define expiry, duplicate join/lookup,
+ingress retirement, positive delivery/handling settlement and original-worker
+I/O obligations. Return missing primitives, policy decisions and exact proposed
+modules/signatures/tests before implementation. No worker/controller/source,
+activation, install, runtime tests, environment or shared-state change is
+allocated by this contract continuation; preserve accepted proof branches.
+
 ## Resident dispatcher contract — reviewed; in-process extraction allocated
 
 Owner: `codex/resident-dispatch-contract`, from accepted prototype composition
@@ -304,6 +320,22 @@ positive native keyboard horizontal movement, reachable right-hand text and
 vertical tails at narrow/short/scaled sizes; a contained document alone is
 insufficient. Preserve both earlier failed reading candidates and return any
 additional required selector or presentation scope before broadening.
+
+The contained Host metadata probe now demonstrates positive focused-PRE
+horizontal movement and reachable text within the actual disclosure clip.
+Activity retention and final source-bound review remain pending. Separately,
+source and geometry review trace narrow header overflow to the native AppBar
+brand's compact grid minimum and its unconstrained nowrap Text byline. Allocate
+two appended app-owned CompactWidth/MediumWidth rules only for the existing
+AppBar brand byline containing host Text: bound/stretch that grid child and wrap
+its Text with sufficient native-selector specificity. Preserve the original
+AppBar/Text types, complete label, actions/navigation/More behavior and all data.
+No global overflow hiding, ellipsis substitution, fixed-height clipping,
+renderer/theme edit, label shortening or new shell behavior is allocated.
+Validate actual painted full-name bounds, brand/action non-overlap, document
+width and usable native navigation/More/focus at narrow/short/medium/scaled and
+desktop control sizes. Preserve the earlier overflowing header evidence and
+return any wider shell requirement before implementation.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
