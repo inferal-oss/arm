@@ -144,6 +144,16 @@ notes below retain their original source scope and are superseded by this
 independent acceptance. Broader shell/Mesh/global helper and backend/pin changes
 remain centrally coordinated.
 
+Next bounded inventory: reuse the UX owner on accepted `ab4f06b` for Monitor
+only, preserving all earlier branches/evidence. Render the actual route with
+contract-shaped synthetic observations, dense cores/devices, stale/unknown and
+pause/selection retention, six help kinds and desktop/narrow/short/doubled-token
+geometry. The existing narrow Monitor tooltip overflow is a reproduced starting
+finding. Read-only fixture/report additions are allocated through the unchanged
+bounded FIFO; product main/styles, metric arithmetic and Resource controls stay
+protected until a concrete scoped correction is reviewed. No real transport,
+backend, OS/device discovery or environment setup is allocated.
+
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
 readable sizing, responsive containment, navigation/focus and action clarity.
