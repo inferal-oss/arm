@@ -6,7 +6,7 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
-## Resident dispatcher contract — source-only proposal awaiting review
+## Resident dispatcher contract — reviewed; in-process extraction allocated
 
 Owner: `codex/resident-dispatch-contract`, from accepted prototype composition
 `f150f6bfc8693cdfb8a91d2cd9ab98558357a93f`. The
@@ -23,9 +23,29 @@ durable successor activation. Stable resident reporting/origin, coherent pinned
 assets, immutable resident/helper paths and exact-key uncertainty remain gates.
 The proposal includes module/signature/call-site ownership, minimal extraction
 stages and future denial/lifecycle checks. No product code, runtime tests,
-installation or controller activation is included. Central interface review is
-required before shared source edits; prior proof branches and evidence remain
-preserved. Production version pairs and broader workload continuity remain open.
+installation or controller activation is included. Independent source review
+accepts this as the stage-one extraction contract, clarifying that credentials
+alone do not activate a caller before accepted ingress/node negotiation, and that
+future worker byte limits/overflow must preserve public client semantics. All
+non-document inputs remain unchanged. Prior proof branches/evidence stay
+preserved; production version pairs and broader workload continuity remain open.
+
+The next implementation scope is in-process only: private Server caller/proof,
+prepared-call and dispatch-result helpers; minimal existing WS authentication,
+native-node completion, special-subscription and ordinary dispatch integration;
+and focused tests. Keep actual Host/Origin/subprotocol/node checks, public wire
+parsers/encoding/errors, default direct operation behavior, stop registration,
+domain/request/transport lifetimes and direct proxy reporting unchanged.
+Unclassified operations stay resident; worker eligibility grants nothing here.
+No worker IPC/controller/role/assets, CLI/startup activation, Manager/provider/
+mesh/local-helper/schema/module or frontend changes are allocated. Return any
+missing shared primitive as a concrete interface gap before widening those files.
+Use sequential bounded normal-FIFO tests/builds, one Go worker, at most 2CPU/2GiB
+and 120s active including compilation/cleanup per cohort. Private loopback WS/
+native reporter fixtures may exercise existing paths; no installed/default/live
+backend, policy/enrollment, real peer/SSH/environment work or broad suite is
+allocated. Final source/composition, denial/recovery and original cleanup remain
+acceptance gates before landing.
 
 ## Resident supervision and replaceable workers — private proof accepted
 
@@ -66,13 +86,10 @@ uninterrupted connections remain separate. This milestone integrates only the
 private package and scoped design/evidence. No installed/live backend change or
 production activation is included.
 
-Next allocation is source-backed interface design only on accepted `f150f6b`:
-classify production request/transport ownership, propose exact resident dispatch
-and authentication boundaries, preserve a stable legacy proxy reporter route,
-and map bootstrap/staging/stop responsibilities before shared code extraction.
-Return concrete signatures, affected call sites and denial/recovery scenarios;
-do not edit public Serve/CLI/schema/accounting or activate the prototype. Existing
-design, implementation branches and private proof artifacts remain preserved.
+The source-backed interface proposal `159dd34` is reviewed above. Initial
+implementation remains in-process; the accepted fixture principal/journal stays
+separate from production authority. Existing design/implementation branches and
+private proof artifacts remain preserved.
 
 ## Dashboard visibility and detail presentation — reviewed and integrated
 

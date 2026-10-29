@@ -1,5 +1,20 @@
 # Validation record
 
+## Resident dispatch contract — independent source review
+
+Documentation `159dd34` is reviewed against current native/browser admission,
+selected-node first-frame/gateway, separate peer dispatch, subscriptions, response
+projection, proxy reporting, stop/lifetime and executable-proof source. The
+reviewed contract keeps candidates inactive through sealing, admitted-dispatch
+and original-worker/I/O joins. Clarifications require accepted ingress before
+caller activation and keep native-byte versus browser-string limits distinct;
+future post-read overflow cannot be called a pre-dispatch refusal. Fifty-four
+local-file/line/heading links in the revised contract pass, and all non-document
+files match current accepted source. No runtime test or production continuity
+is inferred. Only the bounded in-process extraction is allocated next; worker
+grants/controller/assets, actual proxy/version-pair replacement and core upgrade
+remain separate gates.
+
 ## Resident dispatcher contract — documentation checks only
 
 The [source-backed interface proposal](design/resident-dispatch-contract.md)
@@ -16,9 +31,10 @@ and whitespace checks pass. The changed-file inventory contains only the proposa
 and its three tracking notes; all tracked non-document files match the accepted
 base. No build, unit/race/native fixture, live backend or installed
 upgrade is executed here. Proposed signatures, limits and lifecycle tests are
-not runtime evidence. Central interface review, production-controller recovery,
-actual version-pair replacement and proxy/provider/transport continuity remain
-open; the accepted prototype evidence below is unchanged and separately scoped.
+not runtime evidence. The independent interface review above supersedes the
+owner's review-pending gate; production-controller recovery, actual version-pair
+replacement and proxy/provider/transport continuity remain open. The accepted
+prototype evidence below is unchanged and separately scoped.
 
 ## Monitor layout — independent composed acceptance
 

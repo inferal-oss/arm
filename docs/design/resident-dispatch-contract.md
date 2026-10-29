@@ -134,6 +134,14 @@ remove the possibility that absent context values on a new entry imply native
 authority. Tests that call the old private dispatcher need explicit resident
 authentication fixtures, not an exported constructor accepting role flags.
 
+Credential recognition alone does not activate a caller. Until the existing
+WebSocket Host/Origin/subprotocol acceptance and any required first-frame node
+negotiation have succeeded on the original owned connection, its proof remains
+non-dispatchable. Rejected/abandoned handshakes must release their pending registry
+entries. Ending an ingress retires unexecuted calls and preserves existing
+per-family cancellation rules; extraction must not reparent an admitted
+resident-owned job to that ingress.
+
 For a later worker bridge, use a new production transport module such as
 `internal/residentipc`; keep the accepted prototype's `local-fixture` principal
 unchanged. Proposed wire DTO and resident entry points:
@@ -203,6 +211,15 @@ ingress request limit, with a proposed fifteen-second ceiling for optional
 browser-read grants. Overflow/expiry refuses a not-yet-dispatched grant rather
 than evicting pending or uncertain outcomes. Native reporting/control capacity
 is independent of these worker-read slots.
+
+Those future bridge bounds do not change stage-one public response behavior.
+The [native client](../../internal/client/client.go#L31) limits incoming bytes,
+while the [browser parser](../../internal/server/web/core.mjs#L4) checks JavaScript
+string length; these limits are not equivalent for non-ASCII data. Stage two
+must specify an exact global retained-byte/copy budget and compatible encoding
+and overflow behavior before implementation. Oversize discovered after a read
+was invoked is an after-dispatch result, never a positive pre-dispatch refusal.
+Keep its original call/outcome binding; do not silently truncate or retry it.
 
 For public v1, the original resident ingress writes the resident-owned response;
 a worker completion message is not that response's authority. Return only a
