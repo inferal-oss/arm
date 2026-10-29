@@ -1,0 +1,3367 @@
+{
+  "scope": "Four allocated shared-dialog owner corrections; independent composition/review pending",
+  "base": "be9af4426ce57e363a3a93ccf29755130126f2ab",
+  "current_sources": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "0a3c61e6dd80e987769fd2d054ac11e6195efd97cc4e0cd15d0f295ec9b6dead",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/command-palette.mjs": "55928c683504bdb4663dc24a623257cb7bd81e666aebb6da84d70a02fc028be4",
+    "internal/server/web/semblance/resource-names.mjs": "ab623ec5fb29dad5b58cea7a6e7f32c7318911c28ff9fb71f9da0c95fed895d9",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/custom_names.go": "5b6ebceb1aab47b8134ceb2d3f22b0646638eae1256ef019623e42fe7e3ec3ff",
+    "internal/customnames/names.go": "7cb7ac769bbe534624101e8ab3b74c84b154f5941ee3ef6c9aecf6611c88ae02",
+    "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+    "internal/model/pools.go": "8a31b35abe6ef06dcaa32a29f6aeb4eb1493db993c86e4debf2b33f05a324414",
+    "internal/model/node_registry.go": "41da35e98ac72453c53a0d27b1276af375c592826c8c493d19569a5b89d5666b",
+    "internal/server/named_views.go": "a9452987a249df10e53b66b85ab552b20dad727acf5b7219885aaa76f1ffbc21",
+    "internal/server/node_registry.go": "e226c631e5d63c4243be3d1a0df6dd59dc25930b3a49c733cf22d034dcabb957",
+    "internal/manager/messages.go": "d686537ef1abb48e59630724c793d480fc7e4dfc1804f3fc835383e8e736c9de",
+    "web/third_party/semblance/ontology/components/palette.ttl": "9d52958dddabcc65f3583ffa372337ee6568ae85ec7b2762fb1c39498da59222",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/theme/palette.ttl": "12e69e8e3ce8aa377ce48cc4c5717703e86f844beab36d38cda7e813b43fd87c",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+    "scripts/dashboard-screenshots/ux-shared-dialogs.mjs": "b48dd858242078880a1a377686a6a9e95e31bba5ca99436c10b82b6b8a311f5a",
+    "scripts/dashboard-screenshots/ux-shared-dialogs-backend.mjs": "420aeb4a619400b5776000f3f54bae256f98aa8cd5f059b1792c80ddfcf4367d"
+  },
+  "source_guards": {
+    "base": "be9af4426ce57e363a3a93ccf29755130126f2ab",
+    "main_all_bytes_unchanged": true,
+    "native_panel_ancestor_and_shared_graph_source_unchanged": true,
+    "app_exact_base_prefix": true,
+    "naming_mutate_validators_persistence_restore_unknown_intent_and_return_exact": true,
+    "naming_changes_only_body_marker_select_and_load": true,
+    "palette_entries_activation_inventory_format_keywords_caps_exact": true,
+    "protected_sources": {
+      "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+      "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+      "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+      "internal/server/custom_names.go": "5b6ebceb1aab47b8134ceb2d3f22b0646638eae1256ef019623e42fe7e3ec3ff",
+      "internal/customnames/names.go": "7cb7ac769bbe534624101e8ab3b74c84b154f5941ee3ef6c9aecf6611c88ae02",
+      "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+      "internal/model/pools.go": "8a31b35abe6ef06dcaa32a29f6aeb4eb1493db993c86e4debf2b33f05a324414",
+      "internal/model/node_registry.go": "41da35e98ac72453c53a0d27b1276af375c592826c8c493d19569a5b89d5666b",
+      "internal/server/named_views.go": "a9452987a249df10e53b66b85ab552b20dad727acf5b7219885aaa76f1ffbc21",
+      "internal/server/node_registry.go": "e226c631e5d63c4243be3d1a0df6dd59dc25930b3a49c733cf22d034dcabb957",
+      "internal/manager/messages.go": "d686537ef1abb48e59630724c793d480fc7e4dfc1804f3fc835383e8e736c9de",
+      "web/third_party/semblance/ontology/components/palette.ttl": "9d52958dddabcc65f3583ffa372337ee6568ae85ec7b2762fb1c39498da59222",
+      "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+      "web/third_party/semblance/ontology/theme/palette.ttl": "12e69e8e3ce8aa377ce48cc4c5717703e86f844beab36d38cda7e813b43fd87c",
+      "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+      "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+      "internal/server/web/assets/arm.mjs": "79717dcecd672cd68e7322010e63fa94cedad7675465fba2d5670653edae56d0",
+      "scripts/dashboard-screenshots/ux-activity-host.mjs": "96c0b83b82c6cd614ab34f5f81b49935690ad34372fcc34a2695a5741f7ad31f",
+      "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "62ea64429383d840e68be501ccf21c6ba94b8c2999ad85f74ee7ef18b8afc344",
+      "scripts/dashboard-screenshots/ux-monitor.mjs": "94c315a605775dd143704cc88248b2cb87d528489dc45a15a5593f47c15854be",
+      "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843",
+      "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+      "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815",
+      "web/test/activity-host-details.test.mjs": "021a5430af3f5e248ac2b306f48bc64d3f1c913130970df9916b6020ee841253",
+      "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+      "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974",
+      "docs/validation/ux-shared-dialog-inventory-2026-10-29.json": "8d037e497580a97fefc0555b275d36e72c1f5dbee543ae427ec987dcb59ca4bf"
+    },
+    "prior_artifacts_verified": {
+      "original_inventory": 142,
+      "activity_host_correction": 505,
+      "shared_dialog_inventory": 164,
+      "original_api_close_audit": 4
+    },
+    "focused_naming_body_cut": {
+      "module_sha256": "61762bd57746613c6c2d122fd8f1b3a55792595779144f1eef226af0b5591e3a",
+      "app_sha256": "3b6e24c702b8cef0c4c61847877a8eb942cce4e20bed90073583256a68e915ac",
+      "earlier_hook_receipt_sha256": "d8359ebee46a31de614e0c225ec0605fe6c8dff78ed3d57eea7b958ad19c8cfe",
+      "final_composed_receipt_sha256": "108518c56d6858bbdb06ce212e9e4195e81d9fd91e2a430109f8705afa7086ce",
+      "qualification": "Focused hook/prefix diffs are reviewed and receive final composed-source native validation. Earlier action-only body evidence failed subsequent caption visual acceptance and is preserved without accepting it as complete field reading."
+    }
+  },
+  "cohorts": {
+    "names": {
+      "cases": 4,
+      "elapsed_ms": 37034,
+      "receipt_sha256": "108518c56d6858bbdb06ce212e9e4195e81d9fd91e2a430109f8705afa7086ce",
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failure": null
+    },
+    "search": {
+      "cases": 4,
+      "elapsed_ms": 28536,
+      "receipt_sha256": "e5d804a7b0458386b4c554e4cffd56993444a9913121454a7452f56bbeed661d",
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failure": null
+    },
+    "display": {
+      "cases": 4,
+      "elapsed_ms": 9970,
+      "receipt_sha256": "155b487c4df2aac5f0ce64aa204c236ab11ccda26b16522f472d245d4cdaa132",
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failure": null
+    }
+  },
+  "causal_omissions": {
+    "naming": {
+      "failure": "Complete native naming action must fit after focus",
+      "elapsed_ms": 2278,
+      "receipt_sha256": "7c7ff45527d8614a339b58c8401fe31e75663f0dd1952fb93e68332018f08e88",
+      "effective_source": "internal/server/web/semblance/app.ttl",
+      "effective_sha256": "6eba8db13c97c738f732c6c9a487a5a8896bec72d17d9702b90b727c550e67c1",
+      "other_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "schema_and_native_types_preserved": {
+        "dialog": "dialog",
+        "bodies": 2,
+        "fields": [
+          "choice",
+          "checkbox",
+          "choice",
+          "choice",
+          "text-field",
+          "text-field",
+          "text-field",
+          "choice",
+          "button",
+          "button",
+          "button",
+          "button"
+        ]
+      },
+      "failed_action": {
+        "box": {
+          "left": 505,
+          "right": 1822.375,
+          "top": 529.6875,
+          "bottom": 567.6875,
+          "width": 1317.375,
+          "height": 38
+        },
+        "textBox": {
+          "left": 1092.46875,
+          "right": 1234.890625,
+          "top": 539.6875,
+          "bottom": 557.6875,
+          "width": 142.421875,
+          "height": 18
+        },
+        "clip": {
+          "left": 481,
+          "right": 959,
+          "top": 154.296875,
+          "bottom": 745.296875
+        },
+        "fullBoxFits": false,
+        "fullTextFits": false
+      }
+    },
+    "caption": {
+      "failure": "Complete native naming caption must fit its control and true clip",
+      "elapsed_ms": 3965,
+      "receipt_sha256": "8698e3702bb68326ae80448882c009fc14f957b6a3b581ea527c11ac52d9ce34",
+      "effective_source": "internal/server/web/semblance/app.ttl",
+      "effective_sha256": "7d061ea2920dee7abd37666403b04529b3286f79e94fbe676bc25402f548c673",
+      "other_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failed_captions": [
+        {
+          "text": "Resource to name",
+          "control": {
+            "left": 505,
+            "right": 935,
+            "top": 274.796875,
+            "bottom": 312.796875,
+            "width": 430,
+            "height": 38
+          },
+          "painted": {
+            "left": 518,
+            "right": 551.921875,
+            "top": 253.546875,
+            "bottom": 332.546875,
+            "width": 33.921875,
+            "height": 79
+          },
+          "within_own_control": false
+        },
+        {
+          "text": "Exact custom reservation",
+          "control": {
+            "left": 505,
+            "right": 935,
+            "top": 429.1875,
+            "bottom": 467.1875,
+            "width": 430,
+            "height": 38
+          },
+          "painted": {
+            "left": 518,
+            "right": 581.453125,
+            "top": 416.1875,
+            "bottom": 478.6875,
+            "width": 63.453125,
+            "height": 62.5
+          },
+          "within_own_control": false
+        }
+      ]
+    },
+    "palette": {
+      "failure": "Native palette help must have useful width",
+      "elapsed_ms": 1439,
+      "receipt_sha256": "6123d3478c815d8d260675324ab2a23c02f6072a6fe2c2973b65b48e407b4a09",
+      "effective_source": "internal/server/web/semblance/app.ttl",
+      "effective_sha256": "3b6e24c702b8cef0c4c61847877a8eb942cce4e20bed90073583256a68e915ac",
+      "other_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failed_help": {
+        "text": "cpu \u00b7 cores \u00b7 ID cccccccccccccccccccccccccccccccc/cpu \u00b7 Host ID cccccccccccccccccccccccccccccccc",
+        "clientWidth": 0,
+        "box": {
+          "left": 1023,
+          "right": 1023,
+          "top": 402.015625,
+          "bottom": 422.15625,
+          "width": 0,
+          "height": 20.140625
+        },
+        "textBox": {
+          "left": 1023,
+          "right": 1663.875,
+          "top": 404.015625,
+          "bottom": 420.015625,
+          "width": 640.875,
+          "height": 16
+        },
+        "clip": {
+          "left": 401,
+          "right": 1039,
+          "top": 166,
+          "bottom": 631
+        },
+        "fullTextFits": false
+      }
+    },
+    "focus": {
+      "failure": "Button-open immediate physical keys must reach the current query",
+      "elapsed_ms": 1184,
+      "receipt_sha256": "223d5fb638773427334d2b25187dfbc5b54a6e5314b01ea7cf47823dba509dd4",
+      "effective_source": "internal/server/web/semblance/command-palette.mjs",
+      "effective_sha256": "6326fe4e7137bc1ced9e0b53468450c63c48cafca94fd57cbd8a48a780e8c6e3",
+      "other_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "typing": {
+        "value": "",
+        "focus": false,
+        "activePresent": true
+      }
+    },
+    "draft": {
+      "failure": "Unchanged exact naming read must preserve dirty draft",
+      "elapsed_ms": 4441,
+      "receipt_sha256": "4d8d7e6c79098b26b9828727da71daa3499bf1568a9aabc9102545b5d2740a26",
+      "effective_source": "internal/server/web/semblance/resource-names.mjs",
+      "effective_sha256": "b5f33c1364657bf15acc96f9c959f59b34e59192f04bfda155dc30c0f69b0b8d",
+      "other_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "read": {
+        "draftBefore": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "draftAfter": "Host-0-longvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalid",
+        "nameRetained": true,
+        "readFocus": true
+      }
+    }
+  },
+  "tests": {
+    "module": {
+      "files": [
+        "internal/server/web/semblance/resource-names.test.mjs",
+        "internal/server/web/semblance/command-palette.test.mjs"
+      ],
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0,
+      "input_hashes": {
+        "internal/server/web/semblance/resource-names.mjs": "ab623ec5fb29dad5b58cea7a6e7f32c7318911c28ff9fb71f9da0c95fed895d9",
+        "internal/server/web/semblance/resource-names.test.mjs": "86f669171def378baa369bb92fa61e42e3e97fdd439d7c46a5f99728b49fc03b",
+        "internal/server/web/semblance/command-palette.mjs": "55928c683504bdb4663dc24a623257cb7bd81e666aebb6da84d70a02fc028be4",
+        "internal/server/web/semblance/command-palette.test.mjs": "b65a3eaca47e8bbbd3700af99bf7f8df0928112980fe9a719c5ce60d5c07277a"
+      },
+      "log_sha256": "fa8d6cf947af7dd50006fcc88052d831b218ab5104728479cc0ed4028272807e"
+    },
+    "native": {
+      "files": [
+        "test/activity-host-details.test.mjs",
+        "test/graph-ui.test.mjs",
+        "test/ownership-regression.test.mjs"
+      ],
+      "workers": 2,
+      "passed": 36,
+      "failed": 0,
+      "skipped": 0,
+      "input_hashes": {
+        "internal/server/web/semblance/app.ttl": "0a3c61e6dd80e987769fd2d054ac11e6195efd97cc4e0cd15d0f295ec9b6dead",
+        "web/test/activity-host-details.test.mjs": "021a5430af3f5e248ac2b306f48bc64d3f1c913130970df9916b6020ee841253",
+        "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+        "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+      },
+      "log_sha256": "37526cd14b500fd8b93efb97a71e1e1117d47edef9e81042185dd3e04b62b157"
+    }
+  },
+  "implementation": {
+    "naming_body": "Only existing inner form and app-created dialog.body Stacks receive a noninteractive NamingBody marker. Scope min/available/max widths to that body and native fields/actions; keep native Choice captions from shrinking, with no native ancestor/panel/type/height/font changes.",
+    "palette_focus": "Arm one request only for a new button opening, preserve showModal, consume before query focus at existing native Focus delivery after batch projection. Require current projected root/query, open/visible/connected/enabled state and active native panel. Clear on close/remote/context/disposal/open failure/repeated-open; never focus on inventory refresh. No timer/poll/microtask/global graph focus change.",
+    "dirty_name": "Only a healthy read-local exact saved baseline with same source/owner/context/canonical loaded binding, same exact revision and unchanged active/retained saved reservations can retain the current dirty string at reply time. Pending native edits are disabled. Unknown intents/manual mode/closed/disposed/context changes cannot gain retention; changed revision/reservation/binding keeps existing fresh-selection reset behavior, without rebasing or caching. Mutation/validation/CAS/persistence/replay remain exact.",
+    "palette_help": "Only app-owned rules on existing native option/label/help/key parts. Grid allocates a compact ellipsis label and full wrapped contextual help; no interactive type promotion, wrappers, keywords/caps/query/highlight/navigation/activation/identity change."
+  },
+  "names": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "selected_token_scale": 1,
+      "panel": {
+        "box": {
+          "left": 480,
+          "right": 960,
+          "top": 153.296875,
+          "bottom": 746.6875,
+          "width": 480,
+          "height": 593.390625
+        },
+        "clientWidth": 478,
+        "scrollWidth": 478,
+        "clientHeight": 591,
+        "scrollHeight": 591
+      },
+      "normal_captions": [
+        {
+          "text": "Resource to name",
+          "font_px": 11,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 274.796875,
+            "bottom": 312.796875,
+            "width": 430,
+            "height": 38
+          },
+          "painted_box": {
+            "left": 518,
+            "right": 646.15625,
+            "top": 286.546875,
+            "bottom": 299.546875,
+            "width": 128.15625,
+            "height": 13
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 154.296875,
+            "bottom": 745.296875
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 654.15625,
+            "right": 930,
+            "top": 279.796875,
+            "bottom": 307.796875,
+            "width": 275.84375,
+            "height": 28
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 169,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Use an exact reference from a registered node",
+          "font_px": 14,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 320.796875,
+            "bottom": 339.6875,
+            "width": 430,
+            "height": 18.890625
+          },
+          "painted_box": {
+            "left": 533,
+            "right": 832.6875,
+            "top": 320.796875,
+            "bottom": 337.796875,
+            "width": 299.6875,
+            "height": 17
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 154.296875,
+            "bottom": 745.296875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Custom name",
+          "font_px": 13,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 355.6875,
+            "bottom": 421.1875,
+            "width": 430,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 505,
+            "right": 592.828125,
+            "top": 356.6875,
+            "bottom": 372.6875,
+            "width": 87.828125,
+            "height": 16
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 154.296875,
+            "bottom": 745.296875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Exact custom reservation",
+          "font_px": 11,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 429.1875,
+            "bottom": 467.1875,
+            "width": 430,
+            "height": 38
+          },
+          "painted_box": {
+            "left": 518,
+            "right": 706.953125,
+            "top": 440.9375,
+            "bottom": 453.9375,
+            "width": 188.953125,
+            "height": 13
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 154.296875,
+            "bottom": 745.296875
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 714.953125,
+            "right": 930,
+            "top": 434.1875,
+            "bottom": 462.1875,
+            "width": 215.046875,
+            "height": 28
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 137,
+          "native_selected_glyph_bounds": "unavailable"
+        }
+      ],
+      "manual_captions": [
+        {
+          "text": "Use an exact reference from a registered node",
+          "font_px": 14,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 166.421875,
+            "bottom": 185.3125,
+            "width": 430,
+            "height": 18.890625
+          },
+          "painted_box": {
+            "left": 533,
+            "right": 832.6875,
+            "top": 166.421875,
+            "bottom": 183.421875,
+            "width": 299.6875,
+            "height": 17
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 45.921875,
+            "bottom": 853.921875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Registered target host",
+          "font_px": 11,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 193.3125,
+            "bottom": 231.3125,
+            "width": 430,
+            "height": 38
+          },
+          "painted_box": {
+            "left": 518,
+            "right": 687.015625,
+            "top": 205.0625,
+            "bottom": 218.0625,
+            "width": 169.015625,
+            "height": 13
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 45.921875,
+            "bottom": 853.921875
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 695.015625,
+            "right": 930,
+            "top": 198.3125,
+            "bottom": 226.3125,
+            "width": 234.984375,
+            "height": 28
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 163,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Reference kind",
+          "font_px": 11,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 239.3125,
+            "bottom": 277.3125,
+            "width": 430,
+            "height": 38
+          },
+          "painted_box": {
+            "left": 518,
+            "right": 624.890625,
+            "top": 251.0625,
+            "bottom": 264.0625,
+            "width": 106.890625,
+            "height": 13
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 45.921875,
+            "bottom": 853.921875
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 632.890625,
+            "right": 731.890625,
+            "top": 244.3125,
+            "bottom": 272.3125,
+            "width": 99,
+            "height": 28
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 5,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Exact resource ID",
+          "font_px": 13,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 285.3125,
+            "bottom": 350.8125,
+            "width": 430,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 505,
+            "right": 617.1875,
+            "top": 286.3125,
+            "bottom": 302.3125,
+            "width": 112.1875,
+            "height": 16
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 45.921875,
+            "bottom": 853.921875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Reservation lease ID (optional assertion)",
+          "font_px": 13,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 358.8125,
+            "bottom": 424.3125,
+            "width": 430,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 505,
+            "right": 763.75,
+            "top": 359.8125,
+            "bottom": 375.8125,
+            "width": 258.75,
+            "height": 16
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 45.921875,
+            "bottom": 853.921875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Custom name",
+          "font_px": 13,
+          "control_box": {
+            "left": 505,
+            "right": 935,
+            "top": 510.0625,
+            "bottom": 575.5625,
+            "width": 430,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 505,
+            "right": 592.828125,
+            "top": 511.0625,
+            "bottom": 527.0625,
+            "width": 87.828125,
+            "height": 16
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 45.921875,
+            "bottom": 853.921875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        }
+      ],
+      "prose_control_nonoverlap": true,
+      "manual_prose_control_nonoverlap": true,
+      "native_types": {
+        "dialog": "dialog",
+        "bodies": 2,
+        "fields": [
+          "choice",
+          "checkbox",
+          "choice",
+          "choice",
+          "text-field",
+          "text-field",
+          "text-field",
+          "choice",
+          "button",
+          "button",
+          "button",
+          "button"
+        ]
+      },
+      "actions": [
+        {
+          "label": "Read current names",
+          "control": {
+            "left": 505,
+            "right": 935,
+            "top": 529.6875,
+            "bottom": 567.6875,
+            "width": 430,
+            "height": 38
+          },
+          "painted": {
+            "left": 648.78125,
+            "right": 791.203125,
+            "top": 539.6875,
+            "bottom": 557.6875,
+            "width": 142.421875,
+            "height": 18
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 154.296875,
+            "bottom": 745.296875
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Set custom name",
+          "control": {
+            "left": 505,
+            "right": 935,
+            "top": 575.6875,
+            "bottom": 613.6875,
+            "width": 430,
+            "height": 38
+          },
+          "painted": {
+            "left": 658.375,
+            "right": 781.625,
+            "top": 585.6875,
+            "bottom": 603.6875,
+            "width": 123.25,
+            "height": 18
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 154.296875,
+            "bottom": 745.296875
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Clear exact reservation",
+          "control": {
+            "left": 505,
+            "right": 935,
+            "top": 621.6875,
+            "bottom": 659.6875,
+            "width": 430,
+            "height": 38
+          },
+          "painted": {
+            "left": 638.0625,
+            "right": 801.9375,
+            "top": 631.6875,
+            "bottom": 649.6875,
+            "width": 163.875,
+            "height": 18
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 154.296875,
+            "bottom": 745.296875
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Close",
+          "control": {
+            "left": 865.734375,
+            "right": 935,
+            "top": 683.6875,
+            "bottom": 721.6875,
+            "width": 69.265625,
+            "height": 38
+          },
+          "painted": {
+            "left": 882.734375,
+            "right": 918,
+            "top": 693.890625,
+            "bottom": 709.890625,
+            "width": 35.265625,
+            "height": 16
+          },
+          "clip": {
+            "left": 481,
+            "right": 959,
+            "top": 154.296875,
+            "bottom": 745.296875
+          },
+          "font_px": 13,
+          "complete": true
+        }
+      ],
+      "ordinary_status_refresh": {
+        "draftBefore": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "draftAfter": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "rootRetained": true,
+        "nameRetained": true,
+        "focus": true
+      },
+      "unchanged_read": {
+        "draftBefore": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "draftAfter": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "readFocus": true,
+        "nameRetained": true
+      },
+      "changed_revision": {
+        "before": "9223372036854775806",
+        "after": "9223372036854775807",
+        "value": "Host-0-longvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalid"
+      },
+      "changed_binding_resets": true,
+      "pending_native_edits_disabled": true,
+      "pending_escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "late_release_does_not_reopen": true,
+      "empty_targets": 1
+    },
+    {
+      "viewport": [
+        390,
+        900
+      ],
+      "selected_token_scale": 1,
+      "panel": {
+        "box": {
+          "left": 24,
+          "right": 366,
+          "top": 88.109375,
+          "bottom": 811.890625,
+          "width": 342,
+          "height": 723.78125
+        },
+        "clientWidth": 340,
+        "scrollWidth": 340,
+        "clientHeight": 722,
+        "scrollHeight": 722
+      },
+      "normal_captions": [
+        {
+          "text": "Resource to name",
+          "font_px": 11,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 232.859375,
+            "bottom": 303.359375,
+            "width": 292,
+            "height": 70.5
+          },
+          "painted_box": {
+            "left": 62,
+            "right": 190.15625,
+            "top": 240.859375,
+            "bottom": 253.859375,
+            "width": 128.15625,
+            "height": 13
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 89.109375,
+            "bottom": 811.109375
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 56,
+            "right": 334,
+            "top": 258.359375,
+            "bottom": 296.359375,
+            "width": 278,
+            "height": 38
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 169,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Use an exact reference from a registered node",
+          "font_px": 14,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 311.359375,
+            "bottom": 349.140625,
+            "width": 292,
+            "height": 37.78125
+          },
+          "painted_box": {
+            "left": 77,
+            "right": 340.46875,
+            "top": 311.359375,
+            "bottom": 347.25,
+            "width": 263.46875,
+            "height": 35.890625
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 89.109375,
+            "bottom": 811.109375
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Custom name",
+          "font_px": 13,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 365.140625,
+            "bottom": 430.640625,
+            "width": 292,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 49,
+            "right": 136.828125,
+            "top": 366.140625,
+            "bottom": 382.140625,
+            "width": 87.828125,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 89.109375,
+            "bottom": 811.109375
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Exact custom reservation",
+          "font_px": 11,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 438.640625,
+            "bottom": 509.140625,
+            "width": 292,
+            "height": 70.5
+          },
+          "painted_box": {
+            "left": 62,
+            "right": 250.953125,
+            "top": 446.640625,
+            "bottom": 459.640625,
+            "width": 188.953125,
+            "height": 13
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 89.109375,
+            "bottom": 811.109375
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 56,
+            "right": 334,
+            "top": 464.140625,
+            "bottom": 502.140625,
+            "width": 278,
+            "height": 38
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 137,
+          "native_selected_glyph_bounds": "unavailable"
+        }
+      ],
+      "manual_captions": [
+        {
+          "text": "Use an exact reference from a registered node",
+          "font_px": 14,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 168.75,
+            "bottom": 206.53125,
+            "width": 292,
+            "height": 37.78125
+          },
+          "painted_box": {
+            "left": 77,
+            "right": 340.46875,
+            "top": 168.75,
+            "bottom": 204.640625,
+            "width": 263.46875,
+            "height": 35.890625
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Registered target host",
+          "font_px": 11,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 214.53125,
+            "bottom": 285.03125,
+            "width": 292,
+            "height": 70.5
+          },
+          "painted_box": {
+            "left": 62,
+            "right": 231.015625,
+            "top": 222.53125,
+            "bottom": 235.53125,
+            "width": 169.015625,
+            "height": 13
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 875
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 56,
+            "right": 334,
+            "top": 240.03125,
+            "bottom": 278.03125,
+            "width": 278,
+            "height": 38
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 163,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Reference kind",
+          "font_px": 11,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 293.03125,
+            "bottom": 363.53125,
+            "width": 292,
+            "height": 70.5
+          },
+          "painted_box": {
+            "left": 62,
+            "right": 168.890625,
+            "top": 301.03125,
+            "bottom": 314.03125,
+            "width": 106.890625,
+            "height": 13
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 875
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 56,
+            "right": 334,
+            "top": 318.53125,
+            "bottom": 356.53125,
+            "width": 278,
+            "height": 38
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 5,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Exact resource ID",
+          "font_px": 13,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 371.53125,
+            "bottom": 437.03125,
+            "width": 292,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 49,
+            "right": 161.1875,
+            "top": 372.53125,
+            "bottom": 388.53125,
+            "width": 112.1875,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Reservation lease ID (optional assertion)",
+          "font_px": 13,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 417.03125,
+            "bottom": 482.53125,
+            "width": 292,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 49,
+            "right": 307.75,
+            "top": 418.03125,
+            "bottom": 434.03125,
+            "width": 258.75,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Custom name",
+          "font_px": 13,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 507.53125,
+            "bottom": 573.03125,
+            "width": 292,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 49,
+            "right": 136.828125,
+            "top": 508.53125,
+            "bottom": 524.53125,
+            "width": 87.828125,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 875
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        }
+      ],
+      "prose_control_nonoverlap": true,
+      "manual_prose_control_nonoverlap": true,
+      "native_types": {
+        "dialog": "dialog",
+        "bodies": 2,
+        "fields": [
+          "choice",
+          "checkbox",
+          "choice",
+          "choice",
+          "text-field",
+          "text-field",
+          "text-field",
+          "choice",
+          "button",
+          "button",
+          "button",
+          "button"
+        ]
+      },
+      "actions": [
+        {
+          "label": "Read current names",
+          "control": {
+            "left": 49,
+            "right": 341,
+            "top": 594.890625,
+            "bottom": 632.890625,
+            "width": 292,
+            "height": 38
+          },
+          "painted": {
+            "left": 123.78125,
+            "right": 266.203125,
+            "top": 604.890625,
+            "bottom": 622.890625,
+            "width": 142.421875,
+            "height": 18
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 89.109375,
+            "bottom": 811.109375
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Set custom name",
+          "control": {
+            "left": 49,
+            "right": 341,
+            "top": 640.890625,
+            "bottom": 678.890625,
+            "width": 292,
+            "height": 38
+          },
+          "painted": {
+            "left": 133.375,
+            "right": 256.625,
+            "top": 650.890625,
+            "bottom": 668.890625,
+            "width": 123.25,
+            "height": 18
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 89.109375,
+            "bottom": 811.109375
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Clear exact reservation",
+          "control": {
+            "left": 49,
+            "right": 341,
+            "top": 686.890625,
+            "bottom": 724.890625,
+            "width": 292,
+            "height": 38
+          },
+          "painted": {
+            "left": 113.0625,
+            "right": 276.9375,
+            "top": 696.890625,
+            "bottom": 714.890625,
+            "width": 163.875,
+            "height": 18
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 89.109375,
+            "bottom": 811.109375
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Close",
+          "control": {
+            "left": 271.734375,
+            "right": 341,
+            "top": 748.890625,
+            "bottom": 786.890625,
+            "width": 69.265625,
+            "height": 38
+          },
+          "painted": {
+            "left": 288.734375,
+            "right": 324,
+            "top": 759.09375,
+            "bottom": 775.09375,
+            "width": 35.265625,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 89.109375,
+            "bottom": 811.109375
+          },
+          "font_px": 13,
+          "complete": true
+        }
+      ],
+      "ordinary_status_refresh": {
+        "draftBefore": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "draftAfter": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "rootRetained": true,
+        "nameRetained": true,
+        "focus": true
+      },
+      "unchanged_read": {
+        "draftBefore": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "draftAfter": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "readFocus": true,
+        "nameRetained": true
+      },
+      "changed_revision": {
+        "before": "9223372036854775806",
+        "after": "9223372036854775807",
+        "value": "Host-0-longvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalid"
+      },
+      "changed_binding_resets": true,
+      "pending_native_edits_disabled": true,
+      "pending_escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "late_release_does_not_reopen": true,
+      "empty_targets": 1
+    },
+    {
+      "viewport": [
+        390,
+        320
+      ],
+      "selected_token_scale": 1,
+      "panel": {
+        "box": {
+          "left": 24,
+          "right": 366,
+          "top": 24,
+          "bottom": 296,
+          "width": 342,
+          "height": 272
+        },
+        "clientWidth": 340,
+        "scrollWidth": 340,
+        "clientHeight": 270,
+        "scrollHeight": 722
+      },
+      "normal_captions": [
+        {
+          "text": "Resource to name",
+          "font_px": 11,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 124.75,
+            "bottom": 195.25,
+            "width": 292,
+            "height": 70.5
+          },
+          "painted_box": {
+            "left": 62,
+            "right": 190.15625,
+            "top": 132.75,
+            "bottom": 145.75,
+            "width": 128.15625,
+            "height": 13
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 56,
+            "right": 334,
+            "top": 150.25,
+            "bottom": 188.25,
+            "width": 278,
+            "height": 38
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 169,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Use an exact reference from a registered node",
+          "font_px": 14,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 141.25,
+            "bottom": 179.03125,
+            "width": 292,
+            "height": 37.78125
+          },
+          "painted_box": {
+            "left": 77,
+            "right": 340.46875,
+            "top": 141.25,
+            "bottom": 177.140625,
+            "width": 263.46875,
+            "height": 35.890625
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Custom name",
+          "font_px": 13,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 127.03125,
+            "bottom": 192.53125,
+            "width": 292,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 49,
+            "right": 136.828125,
+            "top": 128.03125,
+            "bottom": 144.03125,
+            "width": 87.828125,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Exact custom reservation",
+          "font_px": 11,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 124.53125,
+            "bottom": 195.03125,
+            "width": 292,
+            "height": 70.5
+          },
+          "painted_box": {
+            "left": 62,
+            "right": 250.953125,
+            "top": 132.53125,
+            "bottom": 145.53125,
+            "width": 188.953125,
+            "height": 13
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 56,
+            "right": 334,
+            "top": 150.03125,
+            "bottom": 188.03125,
+            "width": 278,
+            "height": 38
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 137,
+          "native_selected_glyph_bounds": "unavailable"
+        }
+      ],
+      "manual_captions": [
+        {
+          "text": "Use an exact reference from a registered node",
+          "font_px": 14,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 140.75,
+            "bottom": 178.53125,
+            "width": 292,
+            "height": 37.78125
+          },
+          "painted_box": {
+            "left": 77,
+            "right": 340.46875,
+            "top": 140.75,
+            "bottom": 176.640625,
+            "width": 263.46875,
+            "height": 35.890625
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Registered target host",
+          "font_px": 11,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 124.53125,
+            "bottom": 195.03125,
+            "width": 292,
+            "height": 70.5
+          },
+          "painted_box": {
+            "left": 62,
+            "right": 231.015625,
+            "top": 132.53125,
+            "bottom": 145.53125,
+            "width": 169.015625,
+            "height": 13
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 56,
+            "right": 334,
+            "top": 150.03125,
+            "bottom": 188.03125,
+            "width": 278,
+            "height": 38
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 163,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Reference kind",
+          "font_px": 11,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 125.03125,
+            "bottom": 195.53125,
+            "width": 292,
+            "height": 70.5
+          },
+          "painted_box": {
+            "left": 62,
+            "right": 168.890625,
+            "top": 133.03125,
+            "bottom": 146.03125,
+            "width": 106.890625,
+            "height": 13
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 56,
+            "right": 334,
+            "top": 150.53125,
+            "bottom": 188.53125,
+            "width": 278,
+            "height": 38
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 5,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Exact resource ID",
+          "font_px": 13,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 127.53125,
+            "bottom": 193.03125,
+            "width": 292,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 49,
+            "right": 161.1875,
+            "top": 128.53125,
+            "bottom": 144.53125,
+            "width": 112.1875,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Reservation lease ID (optional assertion)",
+          "font_px": 13,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 127.03125,
+            "bottom": 192.53125,
+            "width": 292,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 49,
+            "right": 307.75,
+            "top": 128.03125,
+            "bottom": 144.03125,
+            "width": 258.75,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Custom name",
+          "font_px": 13,
+          "control_box": {
+            "left": 49,
+            "right": 341,
+            "top": 127.53125,
+            "bottom": 193.03125,
+            "width": 292,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 49,
+            "right": 136.828125,
+            "top": 128.53125,
+            "bottom": 144.53125,
+            "width": 87.828125,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        }
+      ],
+      "prose_control_nonoverlap": true,
+      "manual_prose_control_nonoverlap": true,
+      "native_types": {
+        "dialog": "dialog",
+        "bodies": 2,
+        "fields": [
+          "choice",
+          "checkbox",
+          "choice",
+          "choice",
+          "text-field",
+          "text-field",
+          "text-field",
+          "choice",
+          "button",
+          "button",
+          "button",
+          "button"
+        ]
+      },
+      "actions": [
+        {
+          "label": "Read current names",
+          "control": {
+            "left": 49,
+            "right": 341,
+            "top": 140.78125,
+            "bottom": 178.78125,
+            "width": 292,
+            "height": 38
+          },
+          "painted": {
+            "left": 123.78125,
+            "right": 266.203125,
+            "top": 150.78125,
+            "bottom": 168.78125,
+            "width": 142.421875,
+            "height": 18
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Set custom name",
+          "control": {
+            "left": 49,
+            "right": 341,
+            "top": 186.78125,
+            "bottom": 224.78125,
+            "width": 292,
+            "height": 38
+          },
+          "painted": {
+            "left": 133.375,
+            "right": 256.625,
+            "top": 196.78125,
+            "bottom": 214.78125,
+            "width": 123.25,
+            "height": 18
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Clear exact reservation",
+          "control": {
+            "left": 49,
+            "right": 341,
+            "top": 232.78125,
+            "bottom": 270.78125,
+            "width": 292,
+            "height": 38
+          },
+          "painted": {
+            "left": 113.0625,
+            "right": 276.9375,
+            "top": 242.78125,
+            "bottom": 260.78125,
+            "width": 163.875,
+            "height": 18
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Close",
+          "control": {
+            "left": 271.734375,
+            "right": 341,
+            "top": 256.78125,
+            "bottom": 294.78125,
+            "width": 69.265625,
+            "height": 38
+          },
+          "painted": {
+            "left": 288.734375,
+            "right": 324,
+            "top": 266.984375,
+            "bottom": 282.984375,
+            "width": 35.265625,
+            "height": 16
+          },
+          "clip": {
+            "left": 25,
+            "right": 365,
+            "top": 25,
+            "bottom": 295
+          },
+          "font_px": 13,
+          "complete": true
+        }
+      ],
+      "ordinary_status_refresh": {
+        "draftBefore": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "draftAfter": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "rootRetained": true,
+        "nameRetained": true,
+        "focus": true
+      },
+      "unchanged_read": {
+        "draftBefore": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "draftAfter": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "readFocus": true,
+        "nameRetained": true
+      },
+      "changed_revision": {
+        "before": "9223372036854775806",
+        "after": "9223372036854775807",
+        "value": "Host-0-longvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalid"
+      },
+      "changed_binding_resets": true,
+      "pending_native_edits_disabled": true,
+      "pending_escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "late_release_does_not_reopen": true,
+      "empty_targets": 1
+    },
+    {
+      "viewport": [
+        768,
+        600
+      ],
+      "selected_token_scale": 2,
+      "panel": {
+        "box": {
+          "left": 144,
+          "right": 624,
+          "top": 24,
+          "bottom": 576,
+          "width": 480,
+          "height": 552
+        },
+        "clientWidth": 478,
+        "scrollWidth": 478,
+        "clientHeight": 550,
+        "scrollHeight": 885
+      },
+      "normal_captions": [
+        {
+          "text": "Resource to name",
+          "font_px": 11,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 280.796875,
+            "bottom": 318.796875,
+            "width": 430,
+            "height": 38
+          },
+          "painted_box": {
+            "left": 182,
+            "right": 310.15625,
+            "top": 292.546875,
+            "bottom": 305.546875,
+            "width": 128.15625,
+            "height": 13
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 318.15625,
+            "right": 594,
+            "top": 285.796875,
+            "bottom": 313.796875,
+            "width": 275.84375,
+            "height": 28
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 169,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Use an exact reference from a registered node",
+          "font_px": 14,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 290.796875,
+            "bottom": 309.6875,
+            "width": 430,
+            "height": 18.890625
+          },
+          "painted_box": {
+            "left": 197,
+            "right": 496.6875,
+            "top": 290.796875,
+            "bottom": 307.796875,
+            "width": 299.6875,
+            "height": 17
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Custom name",
+          "font_px": 13,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 267.6875,
+            "bottom": 333.1875,
+            "width": 430,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 169,
+            "right": 256.828125,
+            "top": 268.6875,
+            "bottom": 284.6875,
+            "width": 87.828125,
+            "height": 16
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Exact custom reservation",
+          "font_px": 11,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 281.1875,
+            "bottom": 319.1875,
+            "width": 430,
+            "height": 38
+          },
+          "painted_box": {
+            "left": 182,
+            "right": 370.953125,
+            "top": 292.9375,
+            "bottom": 305.9375,
+            "width": 188.953125,
+            "height": 13
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 378.953125,
+            "right": 594,
+            "top": 286.1875,
+            "bottom": 314.1875,
+            "width": 215.046875,
+            "height": 28
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 137,
+          "native_selected_glyph_bounds": "unavailable"
+        }
+      ],
+      "manual_captions": [
+        {
+          "text": "Use an exact reference from a registered node",
+          "font_px": 14,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 290.796875,
+            "bottom": 309.6875,
+            "width": 430,
+            "height": 18.890625
+          },
+          "painted_box": {
+            "left": 197,
+            "right": 496.6875,
+            "top": 290.796875,
+            "bottom": 307.796875,
+            "width": 299.6875,
+            "height": 17
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Registered target host",
+          "font_px": 11,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 280.6875,
+            "bottom": 318.6875,
+            "width": 430,
+            "height": 38
+          },
+          "painted_box": {
+            "left": 182,
+            "right": 351.015625,
+            "top": 292.4375,
+            "bottom": 305.4375,
+            "width": 169.015625,
+            "height": 13
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 359.015625,
+            "right": 594,
+            "top": 285.6875,
+            "bottom": 313.6875,
+            "width": 234.984375,
+            "height": 28
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 163,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Reference kind",
+          "font_px": 11,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 280.6875,
+            "bottom": 318.6875,
+            "width": 430,
+            "height": 38
+          },
+          "painted_box": {
+            "left": 182,
+            "right": 288.890625,
+            "top": 292.4375,
+            "bottom": 305.4375,
+            "width": 106.890625,
+            "height": 13
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true,
+          "select_box": {
+            "left": 296.890625,
+            "right": 395.890625,
+            "top": 285.6875,
+            "bottom": 313.6875,
+            "width": 99,
+            "height": 28
+          },
+          "select_font_px": 13,
+          "select_within_control": true,
+          "caption_select_separate": true,
+          "useful_select": true,
+          "full_selected_label_length": 5,
+          "native_selected_glyph_bounds": "unavailable"
+        },
+        {
+          "text": "Exact resource ID",
+          "font_px": 13,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 267.6875,
+            "bottom": 333.1875,
+            "width": 430,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 169,
+            "right": 281.1875,
+            "top": 268.6875,
+            "bottom": 284.6875,
+            "width": 112.1875,
+            "height": 16
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Reservation lease ID (optional assertion)",
+          "font_px": 13,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 267.1875,
+            "bottom": 332.6875,
+            "width": 430,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 169,
+            "right": 427.75,
+            "top": 268.1875,
+            "bottom": 284.1875,
+            "width": 258.75,
+            "height": 16
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        },
+        {
+          "text": "Custom name",
+          "font_px": 13,
+          "control_box": {
+            "left": 169,
+            "right": 599,
+            "top": 267.1875,
+            "bottom": 332.6875,
+            "width": 430,
+            "height": 65.5
+          },
+          "painted_box": {
+            "left": 169,
+            "right": 256.828125,
+            "top": 268.1875,
+            "bottom": 284.1875,
+            "width": 87.828125,
+            "height": 16
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "within_own_control": true,
+          "fully_readable": true
+        }
+      ],
+      "prose_control_nonoverlap": true,
+      "manual_prose_control_nonoverlap": true,
+      "native_types": {
+        "dialog": "dialog",
+        "bodies": 2,
+        "fields": [
+          "choice",
+          "checkbox",
+          "choice",
+          "choice",
+          "text-field",
+          "text-field",
+          "text-field",
+          "choice",
+          "button",
+          "button",
+          "button",
+          "button"
+        ]
+      },
+      "actions": [
+        {
+          "label": "Read current names",
+          "control": {
+            "left": 169,
+            "right": 599,
+            "top": 359.1875,
+            "bottom": 397.1875,
+            "width": 430,
+            "height": 38
+          },
+          "painted": {
+            "left": 312.78125,
+            "right": 455.203125,
+            "top": 369.1875,
+            "bottom": 387.1875,
+            "width": 142.421875,
+            "height": 18
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Set custom name",
+          "control": {
+            "left": 169,
+            "right": 599,
+            "top": 405.1875,
+            "bottom": 443.1875,
+            "width": 430,
+            "height": 38
+          },
+          "painted": {
+            "left": 322.375,
+            "right": 445.625,
+            "top": 415.1875,
+            "bottom": 433.1875,
+            "width": 123.25,
+            "height": 18
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Clear exact reservation",
+          "control": {
+            "left": 169,
+            "right": 599,
+            "top": 451.1875,
+            "bottom": 489.1875,
+            "width": 430,
+            "height": 38
+          },
+          "painted": {
+            "left": 302.0625,
+            "right": 465.9375,
+            "top": 461.1875,
+            "bottom": 479.1875,
+            "width": 163.875,
+            "height": 18
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "font_px": 15,
+          "complete": true
+        },
+        {
+          "label": "Close",
+          "control": {
+            "left": 498.203125,
+            "right": 599,
+            "top": 513.1875,
+            "bottom": 551.1875,
+            "width": 100.796875,
+            "height": 38
+          },
+          "painted": {
+            "left": 515.203125,
+            "right": 582,
+            "top": 516.59375,
+            "bottom": 546.59375,
+            "width": 66.796875,
+            "height": 30
+          },
+          "clip": {
+            "left": 145,
+            "right": 623,
+            "top": 25,
+            "bottom": 575
+          },
+          "font_px": 26,
+          "complete": true
+        }
+      ],
+      "ordinary_status_refresh": {
+        "draftBefore": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "draftAfter": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "rootRetained": true,
+        "nameRetained": true,
+        "focus": true
+      },
+      "unchanged_read": {
+        "draftBefore": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "draftAfter": "Draft-longvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvaliddraftlongvalidd",
+        "readFocus": true,
+        "nameRetained": true
+      },
+      "changed_revision": {
+        "before": "9223372036854775806",
+        "after": "9223372036854775807",
+        "value": "Host-0-longvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalidlabellongvalid"
+      },
+      "changed_binding_resets": true,
+      "pending_native_edits_disabled": true,
+      "pending_escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "late_release_does_not_reopen": true,
+      "empty_targets": 1
+    }
+  ],
+  "search": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "selected_token_scale": 1,
+      "dense_options": 97,
+      "button_immediate_typing": {
+        "value": "Synthetic",
+        "focus": true,
+        "activePresent": true
+      },
+      "shortcut_immediate_typing": {
+        "value": "Synthetic",
+        "focus": true,
+        "activePresent": true
+      },
+      "exact_id_results": 1,
+      "helps": [
+        {
+          "text": "Open the monitor view",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 417,
+            "right": 553.953125,
+            "top": 234.1875,
+            "bottom": 250.1875,
+            "width": 136.953125,
+            "height": 16
+          },
+          "clip": {
+            "left": 401,
+            "right": 1039,
+            "top": 166,
+            "bottom": 631
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "cpu \u00b7 cores \u00b7 ID cccccccccccccccccccccccccccccccc/cpu \u00b7 Host ID cccccccccccccccccccccccccccccccc",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 417,
+            "right": 823.953125,
+            "top": 406.046875,
+            "bottom": 442.1875,
+            "width": 406.953125,
+            "height": 36.140625
+          },
+          "clip": {
+            "left": 401,
+            "right": 1039,
+            "top": 166,
+            "bottom": 631
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "released \u00b7 ID 00000000000000000020000000000001 \u00b7 Host ID cccccccccccccccccccccccccccccccc \u00b7 Owner synthetic \u00b7 synthetic-agent",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 417,
+            "right": 864.15625,
+            "top": 406.359375,
+            "bottom": 442.5,
+            "width": 447.15625,
+            "height": 36.140625
+          },
+          "clip": {
+            "left": 401,
+            "right": 1039,
+            "top": 166,
+            "bottom": 631
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "unobserved \u00b7 synthetic \u00b7 Host ID 00000000000000000020000000000065",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 417,
+            "right": 873.765625,
+            "top": 415.53125,
+            "bottom": 431.53125,
+            "width": 456.765625,
+            "height": 16
+          },
+          "clip": {
+            "left": 401,
+            "right": 1039,
+            "top": 166,
+            "bottom": 631
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "host \u00b7 permits \u00b7 Pool ID pool_000000000000000000200000000000c9 \u00b7 Synthetic pool description descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescrip",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 417,
+            "right": 947.34375,
+            "top": 405.953125,
+            "bottom": 442.09375,
+            "width": 530.34375,
+            "height": 36.140625
+          },
+          "clip": {
+            "left": 401,
+            "right": 1039,
+            "top": 166,
+            "bottom": 631
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "To operator \u00b7 2026-10-29T12:00:00.000Z",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 417,
+            "right": 669.5625,
+            "top": 416.125,
+            "bottom": 432.125,
+            "width": 252.5625,
+            "height": 16
+          },
+          "clip": {
+            "left": 401,
+            "right": 1039,
+            "top": 166,
+            "bottom": 631
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        }
+      ],
+      "native_arrows_complete_help_and_query_focus": true,
+      "query_refresh": {
+        "queryBefore": "Synthetic",
+        "queryAfter": "Synthetic",
+        "rootRetained": true,
+        "inputRetained": true,
+        "focus": true
+      },
+      "deliberate_focus_refresh": {
+        "originalConnected": true,
+        "focusRetained": true
+      },
+      "escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "pending_escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "late_release_does_not_reopen": true,
+      "empty_options": 10,
+      "shortcut_parts_qualification": "No option shortcut badges exist in these actual app entries; source-scoped existing key part is styled without adding wrappers or entries."
+    },
+    {
+      "viewport": [
+        390,
+        900
+      ],
+      "selected_token_scale": 1,
+      "dense_options": 97,
+      "button_immediate_typing": {
+        "value": "Synthetic",
+        "focus": true,
+        "activePresent": true
+      },
+      "shortcut_immediate_typing": {
+        "value": "Synthetic",
+        "focus": true,
+        "activePresent": true
+      },
+      "exact_id_results": 1,
+      "helps": [
+        {
+          "text": "Open the monitor view",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 152.953125,
+            "top": 127.546875,
+            "bottom": 143.546875,
+            "width": 136.953125,
+            "height": 16
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 900
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "cpu \u00b7 cores \u00b7 ID cccccccccccccccccccccccccccccccc/cpu \u00b7 Host ID cccccccccccccccccccccccccccccccc",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 328.578125,
+            "top": 476.234375,
+            "bottom": 532.515625,
+            "width": 312.578125,
+            "height": 56.28125
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 900
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "released \u00b7 ID 00000000000000000020000000000001 \u00b7 Host ID cccccccccccccccccccccccccccccccc \u00b7 Owner synthetic \u00b7 synthetic-agent",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 359.4375,
+            "top": 475.96875,
+            "bottom": 532.25,
+            "width": 343.4375,
+            "height": 56.28125
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 900
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "unobserved \u00b7 synthetic \u00b7 Host ID 00000000000000000020000000000065",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 275.359375,
+            "top": 485.515625,
+            "bottom": 521.65625,
+            "width": 259.359375,
+            "height": 36.140625
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 900
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "host \u00b7 permits \u00b7 Pool ID pool_000000000000000000200000000000c9 \u00b7 Synthetic pool description descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescrip",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 363.671875,
+            "top": 455.625,
+            "bottom": 552.1875,
+            "width": 347.671875,
+            "height": 96.5625
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 900
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "To operator \u00b7 2026-10-29T12:00:00.000Z",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 268.5625,
+            "top": 496.28125,
+            "bottom": 512.28125,
+            "width": 252.5625,
+            "height": 16
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 900
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        }
+      ],
+      "native_arrows_complete_help_and_query_focus": true,
+      "query_refresh": {
+        "queryBefore": "Synthetic",
+        "queryAfter": "Synthetic",
+        "rootRetained": true,
+        "inputRetained": true,
+        "focus": true
+      },
+      "deliberate_focus_refresh": {
+        "originalConnected": true,
+        "focusRetained": true
+      },
+      "escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "pending_escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "late_release_does_not_reopen": true,
+      "empty_options": 10,
+      "shortcut_parts_qualification": "No option shortcut badges exist in these actual app entries; source-scoped existing key part is styled without adding wrappers or entries."
+    },
+    {
+      "viewport": [
+        390,
+        320
+      ],
+      "selected_token_scale": 1,
+      "dense_options": 97,
+      "button_immediate_typing": {
+        "value": "Synthetic",
+        "focus": true,
+        "activePresent": true
+      },
+      "shortcut_immediate_typing": {
+        "value": "Synthetic",
+        "focus": true,
+        "activePresent": true
+      },
+      "exact_id_results": 1,
+      "helps": [
+        {
+          "text": "Open the monitor view",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 152.953125,
+            "top": 127.546875,
+            "bottom": 143.546875,
+            "width": 136.953125,
+            "height": 16
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 320
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "cpu \u00b7 cores \u00b7 ID cccccccccccccccccccccccccccccccc/cpu \u00b7 Host ID cccccccccccccccccccccccccccccccc",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 328.578125,
+            "top": 186.234375,
+            "bottom": 242.515625,
+            "width": 312.578125,
+            "height": 56.28125
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 320
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "released \u00b7 ID 00000000000000000020000000000001 \u00b7 Host ID cccccccccccccccccccccccccccccccc \u00b7 Owner synthetic \u00b7 synthetic-agent",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 359.4375,
+            "top": 185.96875,
+            "bottom": 242.25,
+            "width": 343.4375,
+            "height": 56.28125
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 320
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "unobserved \u00b7 synthetic \u00b7 Host ID 00000000000000000020000000000065",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 275.359375,
+            "top": 195.515625,
+            "bottom": 231.65625,
+            "width": 259.359375,
+            "height": 36.140625
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 320
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "host \u00b7 permits \u00b7 Pool ID pool_000000000000000000200000000000c9 \u00b7 Synthetic pool description descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescrip",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 363.671875,
+            "top": 165.625,
+            "bottom": 262.1875,
+            "width": 347.671875,
+            "height": 96.5625
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 320
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "To operator \u00b7 2026-10-29T12:00:00.000Z",
+          "width": 348,
+          "font_px": 13,
+          "painted": {
+            "left": 16,
+            "right": 268.5625,
+            "top": 206.28125,
+            "bottom": 222.28125,
+            "width": 252.5625,
+            "height": 16
+          },
+          "clip": {
+            "left": 0,
+            "right": 390,
+            "top": 57,
+            "bottom": 320
+          },
+          "complete": true,
+          "label_width": 348,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        }
+      ],
+      "native_arrows_complete_help_and_query_focus": true,
+      "query_refresh": {
+        "queryBefore": "Synthetic",
+        "queryAfter": "Synthetic",
+        "rootRetained": true,
+        "inputRetained": true,
+        "focus": true
+      },
+      "deliberate_focus_refresh": {
+        "originalConnected": true,
+        "focusRetained": true
+      },
+      "escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "pending_escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "late_release_does_not_reopen": true,
+      "empty_options": 10,
+      "shortcut_parts_qualification": "No option shortcut badges exist in these actual app entries; source-scoped existing key part is styled without adding wrappers or entries."
+    },
+    {
+      "viewport": [
+        768,
+        600
+      ],
+      "selected_token_scale": 2,
+      "dense_options": 97,
+      "button_immediate_typing": {
+        "value": "Synthetic",
+        "focus": true,
+        "activePresent": true
+      },
+      "shortcut_immediate_typing": {
+        "value": "Synthetic",
+        "focus": true,
+        "activePresent": true
+      },
+      "exact_id_results": 1,
+      "helps": [
+        {
+          "text": "Open the monitor view",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 81,
+            "right": 217.953125,
+            "top": 260.078125,
+            "bottom": 276.078125,
+            "width": 136.953125,
+            "height": 16
+          },
+          "clip": {
+            "left": 65,
+            "right": 703,
+            "top": 154.6875,
+            "bottom": 523.6875
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "cpu \u00b7 cores \u00b7 ID cccccccccccccccccccccccccccccccc/cpu \u00b7 Host ID cccccccccccccccccccccccccccccccc",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 81,
+            "right": 487.953125,
+            "top": 356.546875,
+            "bottom": 392.6875,
+            "width": 406.953125,
+            "height": 36.140625
+          },
+          "clip": {
+            "left": 65,
+            "right": 703,
+            "top": 154.6875,
+            "bottom": 523.6875
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "released \u00b7 ID 00000000000000000020000000000001 \u00b7 Host ID cccccccccccccccccccccccccccccccc \u00b7 Owner synthetic \u00b7 synthetic-agent",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 81,
+            "right": 528.15625,
+            "top": 356.375,
+            "bottom": 392.515625,
+            "width": 447.15625,
+            "height": 36.140625
+          },
+          "clip": {
+            "left": 65,
+            "right": 703,
+            "top": 154.6875,
+            "bottom": 523.6875
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "unobserved \u00b7 synthetic \u00b7 Host ID 00000000000000000020000000000065",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 81,
+            "right": 537.765625,
+            "top": 367.34375,
+            "bottom": 383.34375,
+            "width": 456.765625,
+            "height": 16
+          },
+          "clip": {
+            "left": 65,
+            "right": 703,
+            "top": 154.6875,
+            "bottom": 523.6875
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "host \u00b7 permits \u00b7 Pool ID pool_000000000000000000200000000000c9 \u00b7 Synthetic pool description descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescrip",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 81,
+            "right": 611.34375,
+            "top": 356.6875,
+            "bottom": 392.828125,
+            "width": 530.34375,
+            "height": 36.140625
+          },
+          "clip": {
+            "left": 65,
+            "right": 703,
+            "top": 154.6875,
+            "bottom": 523.6875
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        },
+        {
+          "text": "To operator \u00b7 2026-10-29T12:00:00.000Z",
+          "width": 596,
+          "font_px": 13,
+          "painted": {
+            "left": 81,
+            "right": 333.5625,
+            "top": 366.65625,
+            "bottom": 382.65625,
+            "width": 252.5625,
+            "height": 16
+          },
+          "clip": {
+            "left": 65,
+            "right": 703,
+            "top": 154.6875,
+            "bottom": 523.6875
+          },
+          "complete": true,
+          "label_width": 596,
+          "label_box_fits": true,
+          "native_label_ellipsis": "ellipsis"
+        }
+      ],
+      "native_arrows_complete_help_and_query_focus": true,
+      "query_refresh": {
+        "queryBefore": "Synthetic",
+        "queryAfter": "Synthetic",
+        "rootRetained": true,
+        "inputRetained": true,
+        "focus": true
+      },
+      "deliberate_focus_refresh": {
+        "originalConnected": true,
+        "focusRetained": true
+      },
+      "escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "pending_escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "late_release_does_not_reopen": true,
+      "empty_options": 10,
+      "shortcut_parts_qualification": "No option shortcut badges exist in these actual app entries; source-scoped existing key part is styled without adding wrappers or entries."
+    }
+  ],
+  "display": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "selected_token_scale": 1,
+      "structure": {
+        "panelTop": 360.25,
+        "panelBottom": 539.75,
+        "viewportHeight": 900,
+        "bodyHeight": 91.5,
+        "visibleBodyHeight": 91.5,
+        "headHeight": 26,
+        "footHeight": 0,
+        "activeTag": "SECTION",
+        "activeLabel": null,
+        "documentWidth": 1440,
+        "viewportWidth": 1440
+      },
+      "panel_box": {
+        "left": 480,
+        "right": 960,
+        "top": 360.25,
+        "bottom": 539.75,
+        "width": 480,
+        "height": 179.5
+      },
+      "refresh": {
+        "originalInitialOpeningConnected": false,
+        "originalConnected": true,
+        "visible": true
+      },
+      "escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "theme_picker_cancellation": {
+        "valueBefore": "https://semblance.dev/ns/style#Semblance",
+        "valueAfter": "https://semblance.dev/ns/style#Semblance",
+        "dialogVisible": false,
+        "focus": false
+      },
+      "private_theme_change_restored": true
+    },
+    {
+      "viewport": [
+        390,
+        900
+      ],
+      "selected_token_scale": 1,
+      "structure": {
+        "panelTop": 338.75,
+        "panelBottom": 561.25,
+        "viewportHeight": 900,
+        "bodyHeight": 134.5,
+        "visibleBodyHeight": 134.5,
+        "headHeight": 26,
+        "footHeight": 0,
+        "activeTag": "SECTION",
+        "activeLabel": null,
+        "documentWidth": 390,
+        "viewportWidth": 390
+      },
+      "panel_box": {
+        "left": 24,
+        "right": 366,
+        "top": 338.75,
+        "bottom": 561.25,
+        "width": 342,
+        "height": 222.5
+      },
+      "refresh": {
+        "originalInitialOpeningConnected": false,
+        "originalConnected": true,
+        "visible": true
+      },
+      "escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "theme_picker_cancellation": {
+        "valueBefore": "https://semblance.dev/ns/style#Semblance",
+        "valueAfter": "https://semblance.dev/ns/style#Semblance",
+        "dialogVisible": false,
+        "focus": false
+      },
+      "private_theme_change_restored": true
+    },
+    {
+      "viewport": [
+        390,
+        320
+      ],
+      "selected_token_scale": 1,
+      "structure": {
+        "panelTop": 48.75,
+        "panelBottom": 271.25,
+        "viewportHeight": 320,
+        "bodyHeight": 134.5,
+        "visibleBodyHeight": 134.5,
+        "headHeight": 26,
+        "footHeight": 0,
+        "activeTag": "SECTION",
+        "activeLabel": null,
+        "documentWidth": 390,
+        "viewportWidth": 390
+      },
+      "panel_box": {
+        "left": 24,
+        "right": 366,
+        "top": 48.75,
+        "bottom": 271.25,
+        "width": 342,
+        "height": 222.5
+      },
+      "refresh": {
+        "originalInitialOpeningConnected": false,
+        "originalConnected": true,
+        "visible": true
+      },
+      "escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "theme_picker_cancellation": {
+        "valueBefore": "https://semblance.dev/ns/style#Semblance",
+        "valueAfter": "https://semblance.dev/ns/style#Semblance",
+        "dialogVisible": false,
+        "focus": false
+      },
+      "private_theme_change_restored": true
+    },
+    {
+      "viewport": [
+        768,
+        600
+      ],
+      "selected_token_scale": 2,
+      "structure": {
+        "panelTop": 202.84375,
+        "panelBottom": 397.140625,
+        "viewportHeight": 600,
+        "bodyHeight": 91.5,
+        "visibleBodyHeight": 91.5,
+        "headHeight": 40.796875,
+        "footHeight": 0,
+        "activeTag": "SECTION",
+        "activeLabel": null,
+        "documentWidth": 768,
+        "viewportWidth": 768
+      },
+      "panel_box": {
+        "left": 144,
+        "right": 624,
+        "top": 202.84375,
+        "bottom": 397.140625,
+        "width": 480,
+        "height": 194.296875
+      },
+      "refresh": {
+        "originalInitialOpeningConnected": false,
+        "originalConnected": true,
+        "visible": true
+      },
+      "escape": {
+        "closed": true,
+        "originalConnected": true,
+        "openerFocus": true
+      },
+      "theme_picker_cancellation": {
+        "valueBefore": "https://semblance.dev/ns/style#Semblance",
+        "valueAfter": "https://semblance.dev/ns/style#Semblance",
+        "dialogVisible": false,
+        "focus": false
+      },
+      "private_theme_change_restored": true
+    }
+  ],
+  "earlier_candidates": [
+    "Inner naming form width rules alone still clipped desktop/medium actions because the existing outer app-owned body Stack kept its automatic minimum; that failed candidate and reviewed scope clarification are preserved.",
+    "The outer Stack fix made actions fit, but panel-only Range checks missed Choice captions wrapping outside fixed-height native controls. Visual QA retained the failed candidate; a NamingBody-only caption shrink rule and own-control/true-clip/select-allocation/nonoverlap checks now supplement action geometry.",
+    "A direct synchronous lookup after showModal passed a naive unit mock but failed real immediate button typing because shared batch projection had not mounted the query. The palette-local native Focus one-shot and a batch/projection timing double fix and test this boundary. Shared adapter/engine remains unchanged.",
+    "One strengthened label oracle initially assumed native Checkbox captions were direct children; its failed fixture-shape diagnostic is retained. Final oracle reads the native nested row label.",
+    "Earlier phase receipts retain their exact production/fixture source maps. Only the final three positive cohorts share the full frozen source map; each final omission differs in exactly one verified effective source file. Naming style omission preserves the schema and all palette rules.",
+    "The initial inventory BigInt report failure has separately verified recovered source/stack proof of awaited original API closes only. Its lost initial inventory error/read diagnostics and stronger OS/group/reap facts remain unknown; no later-run cleanup credit is transferred."
+  ],
+  "limitations": [
+    "Strict synthetic read-only actual-source routes; no real Backend/socket/API/external/clipboard/login/resource/configuration operation, naming write or palette command activation. Unit write stubs verify original arguments only.",
+    "Native selected input/select glyph bounds are unavailable; full stored values/option labels, captions, useful control allocation and native keyboard behavior are tested separately. Selected doubled text tokens are not universal zoom; fixed native fonts are measured.",
+    "Representative dense76 naming targets/97 palette entries, empty/error/pending/disconnected states are covered. No maximum1024-entry visual/performance or every-language/theme/viewport claim.",
+    "No native panel/ancestor policy is widened, and no dirty name is rebased across a changed revision/reservation/context. Closed/offline focus returns to an eligible native destination; disabled openers are not claimed focusable.",
+    "Independent current-source/composed review and central deterministic bundle/native builds remain open; owner does not rebuild assets/install/push/activate. Full UX/TUI/live transport/remote-auth/journal acceptance remains open."
+  ]
+}

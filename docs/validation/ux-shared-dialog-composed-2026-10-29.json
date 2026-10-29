@@ -1,0 +1,218 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "status": "Independently reviewed composed shared-dialog correction; scoped native rendering accepted",
+  "owner_commits": [
+    "be9af4426ce57e363a3a93ccf29755130126f2ab",
+    "0280f4ffaa4d9259ee637cb4e0490cdb11763b10",
+    "c0045a31b3fb6c769dd5f22765f7149ca4511d48",
+    "9fb2e96765a369ff0d8fba724f37f6e0c6fa016f",
+    "8625002722e6ef07e7b88c0fa425fa520afead40"
+  ],
+  "composed_on": "b065f222a387b2b1f43cc94fd5be398eccc72319",
+  "tested_review_commit": "fd889611630129c2ad105e8f6b49d0cb17dfff4a",
+  "owner_record": "docs/validation/ux-shared-dialog-layout-2026-10-29.json",
+  "owner_record_sha256": "325132452c957effeeaf25badf0854d74b28e86238632d6a1c9410a52ea0a5b4",
+  "current_input_sha256": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "0a3c61e6dd80e987769fd2d054ac11e6195efd97cc4e0cd15d0f295ec9b6dead",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/command-palette.mjs": "55928c683504bdb4663dc24a623257cb7bd81e666aebb6da84d70a02fc028be4",
+    "internal/server/web/semblance/resource-names.mjs": "ab623ec5fb29dad5b58cea7a6e7f32c7318911c28ff9fb71f9da0c95fed895d9",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/custom_names.go": "5b6ebceb1aab47b8134ceb2d3f22b0646638eae1256ef019623e42fe7e3ec3ff",
+    "internal/customnames/names.go": "7cb7ac769bbe534624101e8ab3b74c84b154f5941ee3ef6c9aecf6611c88ae02",
+    "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+    "internal/model/pools.go": "8a31b35abe6ef06dcaa32a29f6aeb4eb1493db993c86e4debf2b33f05a324414",
+    "internal/model/node_registry.go": "41da35e98ac72453c53a0d27b1276af375c592826c8c493d19569a5b89d5666b",
+    "internal/server/named_views.go": "a9452987a249df10e53b66b85ab552b20dad727acf5b7219885aaa76f1ffbc21",
+    "internal/server/node_registry.go": "e226c631e5d63c4243be3d1a0df6dd59dc25930b3a49c733cf22d034dcabb957",
+    "internal/manager/messages.go": "d686537ef1abb48e59630724c793d480fc7e4dfc1804f3fc835383e8e736c9de",
+    "web/third_party/semblance/ontology/components/palette.ttl": "9d52958dddabcc65f3583ffa372337ee6568ae85ec7b2762fb1c39498da59222",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/theme/palette.ttl": "12e69e8e3ce8aa377ce48cc4c5717703e86f844beab36d38cda7e813b43fd87c",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+    "scripts/dashboard-screenshots/ux-shared-dialogs.mjs": "ac0501f5cecd5ce25f12a3cfd0e304b35566abb90eedaee1bb49c1df356c942c",
+    "scripts/dashboard-screenshots/ux-shared-dialogs-backend.mjs": "420aeb4a619400b5776000f3f54bae256f98aa8cd5f059b1792c80ddfcf4367d"
+  },
+  "initial_matching_owner_inputs": 23,
+  "initial_matching_protected_inputs": 29,
+  "review": "No blocking finding; native types/panel/graph and mutation/CAS/unknown storage/palette data and activation preserved",
+  "reviewer_fixture_correction": "syntheticReadsReleased equals actual successful capture/release result; original frozen owner reports independently contain eight/eight/four released sessions",
+  "core": {
+    "js_passed": 454,
+    "native_ui_passed": 43,
+    "failures": 0,
+    "skips": 0,
+    "seconds": 19.323,
+    "phases": [
+      {
+        "name": "web-build",
+        "exit": 0,
+        "seconds": 0.77
+      },
+      {
+        "name": "node",
+        "exit": 0,
+        "seconds": 6.385
+      },
+      {
+        "name": "native",
+        "exit": 0,
+        "seconds": 2.958
+      },
+      {
+        "name": "native-build",
+        "exit": 0,
+        "seconds": 8.387
+      },
+      {
+        "name": "web-rebuild",
+        "exit": 0,
+        "seconds": 0.652
+      }
+    ],
+    "deterministic_bundle": true,
+    "bundle_sha256": "256624cce7ee5a2110ea8635b6c6004bb49fc57b331c73ae7668c7579ba09400",
+    "private_native_binary_sha256": "26e92aad3457219325e4bbcd4acd3d8f99623590b86b954ed36bf673191bdf05",
+    "native_build_not_installed_or_executed": true
+  },
+  "browser": {
+    "names": {
+      "cases": 4,
+      "seconds": 36.837,
+      "captured_sessions": 8,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "receipt_sha256": "b1ae991d6ed619cdf634b13e93fd54163f14eab1df95d9c6349a4dabb9d9dcaa"
+    },
+    "search": {
+      "cases": 4,
+      "seconds": 28.677,
+      "captured_sessions": 8,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "receipt_sha256": "9071bca5914b90c518c82e2eaa61aafe3664171d3df833cdc07568b9dcfb9123"
+    },
+    "display": {
+      "cases": 4,
+      "seconds": 10.235,
+      "captured_sessions": 4,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "receipt_sha256": "66cddc1d41b7e79b49f1c1bbc24146dfe7dec8c5833bb692168e84a67719c165"
+    }
+  },
+  "isolated_expected_failures": {
+    "naming": {
+      "seconds": 2.623,
+      "expected_failure_heading": "Complete native naming action must fit after focus",
+      "effective_source": "internal/server/web/semblance/app.ttl",
+      "effective_sha256": "6eba8db13c97c738f732c6c9a487a5a8896bec72d17d9702b90b727c550e67c1",
+      "other_disk_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      }
+    },
+    "caption": {
+      "seconds": 4.196,
+      "expected_failure_heading": "Complete native naming caption must fit its control and true clip",
+      "effective_source": "internal/server/web/semblance/app.ttl",
+      "effective_sha256": "7d061ea2920dee7abd37666403b04529b3286f79e94fbe676bc25402f548c673",
+      "other_disk_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      }
+    },
+    "palette": {
+      "seconds": 1.722,
+      "expected_failure_heading": "Native palette help must have useful width",
+      "effective_source": "internal/server/web/semblance/app.ttl",
+      "effective_sha256": "3b6e24c702b8cef0c4c61847877a8eb942cce4e20bed90073583256a68e915ac",
+      "other_disk_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      }
+    },
+    "focus": {
+      "seconds": 1.514,
+      "expected_failure_heading": "Button-open immediate physical keys must reach the current query",
+      "effective_source": "internal/server/web/semblance/command-palette.mjs",
+      "effective_sha256": "6326fe4e7137bc1ced9e0b53468450c63c48cafca94fd57cbd8a48a780e8c6e3",
+      "other_disk_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      }
+    },
+    "draft": {
+      "seconds": 4.764,
+      "expected_failure_heading": "Unchanged exact naming read must preserve dirty draft",
+      "effective_source": "internal/server/web/semblance/resource-names.mjs",
+      "effective_sha256": "b5f33c1364657bf15acc96f9c959f59b34e59192f04bfda155dc30c0f69b0b8d",
+      "other_disk_sources_exact": true,
+      "cleanup": {
+        "syntheticReadsReleased": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      }
+    }
+  },
+  "initial_control_wrapper_failure": {
+    "scope": "Correct expected browser failure was rejected by whole-message comparison including rendered assertion diff",
+    "retained_privately": true,
+    "correction": "Match exact assertion heading; rerun only draft control with unchanged product/fixture inputs"
+  },
+  "preserved_artifacts": {
+    "owner_correction": 256,
+    "original_inventory": 142,
+    "activity_host_correction": 505,
+    "shared_dialog_inventory": 164,
+    "original_api_close_audit": 4
+  },
+  "method": {
+    "queue": "Original shared FIFO defaults; sequential cohorts and original command exits",
+    "active_limit_seconds": 115,
+    "cpu_ceiling": 2,
+    "memory_ceiling": "2GiB cooperative allocation; not hard RSS proof",
+    "arm_grant_or_lease_claim": false,
+    "synthetic_read_only": true
+  },
+  "limitations": [
+    "Strict synthetic read-only actual-source routes; no real Backend/socket/API/external/clipboard/login/resource/configuration operation, naming write or palette command activation. Unit write stubs verify original arguments only.",
+    "Native selected input/select glyph bounds are unavailable; full stored values/option labels, captions, useful control allocation and native keyboard behavior are tested separately. Selected doubled text tokens are not universal zoom; fixed native fonts are measured.",
+    "Representative dense76 naming targets/97 palette entries, empty/error/pending/disconnected states are covered. No maximum1024-entry visual/performance or every-language/theme/viewport claim.",
+    "No native panel/ancestor policy is widened, and no dirty name is rebased across a changed revision/reservation/context. Closed/offline focus returns to an eligible native destination; disabled openers are not claimed focusable.",
+    "Independent current-source/composed review and central deterministic bundle/native builds remain open; owner does not rebuild assets/install/push/activate. Full UX/TUI/live transport/remote-auth/journal acceptance remains open.",
+    "Browser cleanup is positive original API completion; no stronger OS PID/group/reap facts asserted",
+    "Current composed build incorporates accepted backend source; owner bundle was not imported",
+    "No installed-runtime or completed full UX acceptance"
+  ]
+}

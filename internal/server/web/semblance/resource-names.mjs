@@ -20,6 +20,7 @@ export function createNamingConsole({ui,call,connected=()=>false,local=()=>false
  const save=ui.button('Set custom name',()=>mutate('set')),clear=ui.button('Clear exact reservation',()=>mutate('clear')),read=ui.button('Read current names',()=>load()),close=ui.button('Close',()=>dialog.close());
  root.replace(ui.text('Names change local presentation. Resource IDs, permissions and existing actions remain unchanged.'),selection,manual,manualHost,manualKind,manualID,manualBinding,referenceNote,name,reserved,feedback,read,save,clear);
  const dialog=ui.dialog('Resource names',[root],[close]);
+ for(const body of [root,dialog.body])if(body)ui.put?.(body.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type','https://arm.local/ui#NamingBody',true);
  let snapshot=null,current=null,inventory=new Map(),generation=0,openedSource='',openedOwner='',openedContext=null,busy=false,disposed=false,unknowns=[],pendingLoaded=false,pendingError=false,storageUnavailable=!storage;
  const storageKey=()=>`arm-custom-name-unknown:${openedSource}:${openedOwner}`;
  function allowed(){return !disposed&&local()&&connected()&&source()===openedSource&&context()===openedContext&&(!owner()||owner()===openedOwner);}
@@ -54,7 +55,7 @@ export function createNamingConsole({ui,call,connected=()=>false,local=()=>false
   return id.startsWith(authority+'/ports/')&&printable&&parts.length===3&&parts[0]&&parts[2]&&['tcp4','tcp6','udp4','udp6'].includes(parts[1])&&(binding===''||/^[a-f0-9]{32}$/.test(binding))?ref:null;
  }
  function reservations(){return (snapshot?.entries??[]).filter(entry=>sameNameBinding(entry,current));}
- function select(){current=chooseRef();const entries=reservations();reserved.set({options:entries.map((entry,index)=>({value:String(index),label:`${entry.name}${entry.active?' · active':' · retained'}`})),value:entries.length?'0':''});name.value=entries.find(entry=>entry.active)?.name??'';updateButtons();}
+ function select(draft){current=chooseRef();const entries=reservations();reserved.set({options:entries.map((entry,index)=>({value:String(index),label:`${entry.name}${entry.active?' · active':' · retained'}`})),value:entries.length?'0':''});name.value=draft&&sameNameBinding(current,draft.binding)?draft.value:entries.find(entry=>entry.active)?.name??'';updateButtons();}
  function updateButtons(){
   const can=allowed()&&!busy&&snapshot&&validSnapshot(snapshot)&&!pendingError&&unknowns.length<16,target=manual.checked?manualRef():current;
   save.disabled=!can||!target||!manual.checked&&!targets().some(ref=>sameNameBinding(ref,current));clear.disabled=!can||manual.checked||!reservations()[Number(reserved.value)];manual.disabled=!allowed()||busy;
@@ -63,13 +64,21 @@ export function createNamingConsole({ui,call,connected=()=>false,local=()=>false
   read.disabled=!allowed()||busy;close.disabled=busy;selection.disabled=reserved.disabled=name.disabled=busy||!allowed();selection.hidden=reserved.hidden=manual.checked;
  }
  async function load(){
-  if(!allowed()||busy)return;const request=++generation,host=openedSource,connection=openedContext;busy=true;updateButtons();
+  if(!allowed()||busy)return;const request=++generation,host=openedSource,connection=openedContext;
+  // A read-local saved baseline, never a draft cache or a new CAS authority.
+  const baseline=snapshot&&validSnapshot(snapshot)&&!manual.checked&&!pendingError&&!unknowns.length&&current&&sameNameBinding(current,chooseRef())&&targets().some(ref=>sameNameBinding(ref,current))?{binding:requestBinding(current),owner:snapshot.owner,revision:snapshot.revision,saved:reservations().map(({name,active})=>({name,active})),value:reservations().find(entry=>entry.active)?.name??''}:null;
+  busy=true;updateButtons();
   try{const result=await call('name_list',{all:true});if(disposed||request!==generation||source()!==host||context()!==connection||!local()||!allowed())return;
    if(!validSnapshot(result))throw Error('A healthy naming snapshot for this exact local source and owner is required.');
    if(!openedOwner)openedOwner=result.owner;restore();snapshot=result;if(!pendingError)pruneObserved(result);inventory=new Map(targets().map(ref=>[nameBindingKey(ref),ref]));
    for(const entry of result.entries){const key=nameBindingKey(entry);if(!inventory.has(key))inventory.set(key,{...entry,label:entry.id+' · retained reference'});}
+   const saved=baseline?result.entries.filter(entry=>sameNameBinding(entry,baseline.binding)):[];
+   const keep=baseline&&dialog.open&&!manual.checked&&!pendingError&&!unknowns.length&&baseline.owner===result.owner&&sameRevision(baseline.revision,result.revision)&&sameNameBinding(current,baseline.binding)&&sameNameBinding(chooseRef(),baseline.binding)&&targets().some(ref=>sameNameBinding(ref,baseline.binding))&&saved.length===baseline.saved.length&&baseline.saved.every(old=>saved.some(entry=>entry.name===old.name&&entry.active===old.active))&&typeof name.value==='string'&&name.value!==baseline.value;
+   // Read the current field at reply time. Busy fields are disabled, but a
+   // synthetic interleaving must not restore an earlier captured input value.
+   const draft=keep?{binding:baseline.binding,value:name.value}:null;
    const previous=selection.value;selection.set({options:[...inventory].map(([key,ref])=>({value:key,label:`${ref.kind}: ${ref.label} · ${ref.id}`})),value:inventory.has(previous)?previous:[...inventory.keys()][0]??''});
-   const hosts=knownHosts();manualHost.set({options:[...hosts].map(([id,label])=>({value:id,label:`${label} · ${id}`})),value:hosts.has(manualHost.value)?manualHost.value:openedSource});select();feedback.set({label:pendingText()||`Naming map revision ${result.revision}. Generated names are also reserved by the backend.`});
+   const hosts=knownHosts();manualHost.set({options:[...hosts].map(([id,label])=>({value:id,label:`${label} · ${id}`})),value:hosts.has(manualHost.value)?manualHost.value:openedSource});select(draft);feedback.set({label:pendingText()||`Naming map revision ${result.revision}. Generated names are also reserved by the backend.`});
   }catch(error){if(!disposed&&request===generation){snapshot=null;feedback.set({label:error.message});}}
   finally{if(!disposed&&request===generation){busy=false;updateButtons();}}
  }

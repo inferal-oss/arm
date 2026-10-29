@@ -277,3 +277,52 @@ rebuild, real transport, broader route/state/live-drawer/terminal and full UX
 acceptance remain open. The later composed record supplies the scoped source/
 rebuild/browser gates only and qualifies the original broader menu-removal
 control; it does not close those remaining real/full UX gates.
+
+## Shared-dialog read-only findings and proposed boundaries
+
+The [shared-dialog inventory](validation/ux-shared-dialog-inventory-2026-10-29.json)
+adds four P2 findings from the accepted source without changing product code:
+
+1. Resource names intrinsic-width overflow clips body/action text at desktop
+   and medium sizes. Review a distinct noninteractive names body hook and scoped
+   available-width rules, preserving native controls and full values.
+2. Search button opening leaves focus on the panel, so immediate typing misses
+   the query; the stock shortcut works. Review only its app-owned opening path,
+   preserving native palette/query routing and shared engine behavior.
+3. An unchanged naming read replaces the same-reference unsaved draft. Review
+   load/selection dirty-draft handling with exact binding/source/context; keep
+   naming writes, CAS revisions and unknown-intent authority unchanged.
+4. Long palette labels collapse help to zero width. Review a distinct app-only
+   palette presentation scope with useful label/help allocation, preserving
+   native search/highlight/navigation/entry identities and existing compaction.
+
+These are proposals, not remediation allocations. The four-case native matrix
+also records containment, private Display changes, exact IDs/revisions,
+read-error/pending/disconnected/empty states, cancellation and qualified scroll/
+focus behavior. Negative probes remain source-qualified; collection success is
+not visual acceptance. Independent review/composition and full UX gates remain
+open; no palette command, naming write or real operation is exercised.
+
+## Shared-dialog owner correction boundary
+
+The [source-bound owner record](validation/ux-shared-dialog-layout-2026-10-29.json)
+addresses the four inventory P2s within the allocated modules/app styles. Existing
+noninteractive naming body Stacks contain fields/actions; a scoped caption
+shrink rule also prevents painted labels leaving fixed-height native Choices.
+Actual caption/select allocation and prose/control nonoverlap supplement panel
+and action fit, after visual review exposed the earlier measurement gap.
+
+Palette-local opening focus uses its existing native Focus delivery after batch
+projection; immediate physical typing, token cancellation and deliberate focus
+under refresh pass. Exact unchanged-read dirty naming is read-local, reply-time
+and context/binding/revision/reservation bound; changed/unknown/manual/closed
+cases gain no rebase/storage/authority. Native palette help gets a readable row
+while compact labels, queries/keywords/caps/identities and activation stay intact.
+
+Three final four-case cohorts, 34 module and 36 native tests, five isolated
+omissions and positive original API cleanup are recorded. Earlier failed
+candidates and recovered audit remain preserved and qualified. Independent
+current-main composition, central builds and fresh positive/isolated controls
+are accepted in the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
+No product install, owner asset build or runtime activation occurs. Maximum
+cases, universal zoom and full UX/TUI/live transport acceptance remain open.

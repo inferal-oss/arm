@@ -3788,3 +3788,66 @@ native reading/lifecycle checks. Generated assets remain unchanged; independent
 current-composition review/validation and central rebuilding were required.
 The composed acceptance above now supplies those gates; historical owner source
 and original receipts retain their separate scope.
+
+## Read-only shared-dialog inventory
+
+New dedicated fixtures load the accepted actual Search/Display/Resource names
+routes and replace only Backend with an in-memory read allowlist. Published
+Status/namedStatus, node registry, pool view, message and custom-name document
+shapes supply synthetic valid 128-character ASCII labels, canonical exact IDs,
+76 dense naming entries and revisions above JavaScript safe integer precision.
+Existing snapshot/name validators check responses. Every allowed operation has
+bounded exact read arguments; mutations including name_mutate, login, real
+transport, clipboard and external requests refuse.
+
+Search records native button/shortcut opening focus, immediate typing, exact-ID
+matching, native arrow selection, retained query and pending/error/empty state.
+Resource names records current field/control/label clips, manual draft/cancel,
+same-binding status versus explicit-read draft behavior and busy/disconnected
+controls. Display uses only its existing private presentation graph/storage;
+choice changes are restored. It has no data-read operation to invent.
+
+The [normalized inventory](validation/ux-shared-dialog-inventory-2026-10-29.json)
+records negative geometry and focus/draft findings as findings. It adds no
+product correction or authority change. Native fonts/glyph limits, headless
+picker cancellation, settled scroll timing and failed fixture assumptions are
+qualified; original owners close/join. Independent review/allocation remains
+required before any remediation or full UX claim.
+
+## Scoped naming forms, palette opening and contextual help
+
+The existing inner naming form and app-created dialog.body Stacks receive a
+NamingBody subtype of native Stack. App-only min/available/max widths contain
+its existing fields/actions. Its native Choice captions do not shrink into
+vertical strips; their original font and fixed control height remain unchanged.
+Both normal/manual captions fit their own controls and true clips, retain useful
+select allocation and do not overlap prose/controls. Native Dialog/panel/ancestor
+styles, interactive types, full strings and ownership stay intact.
+
+Palette button opening preserves showModal and arms one request for a new
+opening. Its existing native Focus event delivers that request after the shared
+batch projection mounts the current query; consumption precedes query focus to
+avoid reentry. The current connected/enabled/visible query must belong to the
+current projected root and active native panel. Close, context/remote switch,
+disposal, repeated open and opening failure clear the request. Refresh never
+focuses it. Shared graph/engine focus, timers, polls and microtasks are unchanged.
+
+A naming read captures only the exact healthy saved baseline locally. At reply
+time it may preserve the current dirty string when the loaded canonical target,
+source/owner/context, exact revision and active/retained reservations are still
+unchanged. Native editable fields are disabled during the read; tests also
+simulate clean-to-dirty, later-draft and revert-to-saved interleavings. Manual,
+unknown/undecodable, closed, disposed or changed-context state cannot gain this
+retention. Changed binding/revision/reservation uses existing fresh selection
+behavior; there is no rebase, draft storage or cross-context cache. Existing
+mutation/validation/CAS/unknown-intent/persistence/replay code remains exact.
+
+App-owned rules lay out existing native palette option label/help/key parts.
+The compact ellipsis label stays intact above complete wrapped contextual help;
+keys keep their existing separate slot. No native entries, wrappers, filtering,
+highlighting, keywords, category caps, activation or identity semantics change.
+The [owner record](validation/ux-shared-dialog-layout-2026-10-29.json) qualifies
+failed candidates and source-bound evidence. Independent current-main review,
+central deterministic assets/native build and fresh browser controls are in the
+[composed record](validation/ux-shared-dialog-composed-2026-10-29.json). Broader UX
+and installed/live-runtime acceptance remain open.

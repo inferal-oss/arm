@@ -1,5 +1,41 @@
 # Validation record
 
+## Shared dialogs — independent composition
+
+Inventory `be9af44` and four focused corrections through `8625002` compose on
+`b065f22`, preserving current backend and previously accepted dashboard inputs.
+All 23 owner inputs and 29 protected hashes match before central rebuilding;
+the original ontology prefix, naming mutation/validation/CAS/unknown storage and
+palette entries/activation remain exact. Source review finds no blocking issue.
+
+Fresh original-FIFO composition passes 454 affected JS and 43 native UI tests,
+native CLI build and two byte-identical embedded builds in 19.323 s. Separate
+four-case Names, Search and protected Display browser cohorts pass in 36.837 s,
+28.677 s and 10.235 s. Five isolated omissions fail the exact action, caption,
+help-width, physical-key and dirty-draft assertions. Each changes one effective
+source file, retains the final disk inputs and positively closes original APIs.
+The draft wrapper initially compares a complete assertion message too strictly;
+the preserved browser result has the intended failure and cleanup. After matching
+the exact heading separately from its diff, only that control is rerun (4.764 s).
+No product source changes between these commands.
+
+The reviewer fixture now sets read-release evidence from an actual successful
+capture, rather than an unconditional flag after a possibly absent capture.
+Fresh Names/Search each capture eight released synthetic sessions; Display four;
+all have zero pending reads, forbidden calls, real sockets, external/API requests,
+page errors and clipboard attempts. Context/browser/server close operations return.
+Frozen 256 correction artifacts plus 142/505/164 prior artifacts and four recovered
+audit files rehash unchanged. Original audit scope stays API-close completion
+only; lost diagnostics and stronger OS/group/reap facts are not recovered here.
+
+Desktop naming captions/actions and short native palette images are visually
+reviewed. Native selected glyphs remain unavailable; stored strings, captions,
+control allocation and keyboard behavior are separate checks. Selected tokens
+are not universal zoom; native fixed fonts and tall-form scrolling are qualified.
+See the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
+Private native build is not installed/executed. No maximum-density/every-theme/
+language, full-Go/Linux runtime, real auth/transport, TUI or complete UX claim.
+
 ## Worker refusal guards — focused source qualification
 
 The [evidence record](validation/resident-worker-refusal-2026-10-29.json) qualifies
@@ -37,6 +73,7 @@ expected in 13.608 s. Their corrected full cohorts pass. No blocking source
 finding remains; the [composed record](validation/resident-worker-refusal-composed-2026-10-29.json)
 retains the scope, source hashes and qualifications. No worker, migration, native
 process/controller, full-Go or installed-runtime acceptance is inferred.
+Integration `b065f22` passes its [public source workflow](https://github.com/inferal-oss/arm/actions/runs/40971018312).
 
 ## Worker transaction refinement — source and documentation only
 
@@ -9105,3 +9142,126 @@ and native keyboard behavior are tested. Selected doubled pixel tokens are not
 universal zoom, and fixed native fonts are recorded. Independent final-diff
 review, composed checks and central asset rebuilding remain open, as do real
 transport, broader routes/states, live drawer, terminal and complete UX gates.
+
+## Shared-dialog actual-source inventory — read-only findings
+
+The [shared-dialog record](validation/ux-shared-dialog-inventory-2026-10-29.json)
+binds accepted `e580148` product bytes to three sequential unchanged-FIFO cohorts
+with identical frozen source maps. Search, Display settings and Resource names
+each cover 1440×900, 390×900, 390×320 and 768×600 with selected text tokens doubled.
+Each cohort stays within the two-CPU/two-GiB, 120-second active allocation,
+including compilation and original browser/context/server cleanup. Held synthetic
+reads are released. No native CDP is needed. There are no real sockets, API/
+external requests, clipboard attempts, forbidden calls, naming writes or palette
+command activations. No broad suite/build/install is part of this inventory.
+
+Four concrete P2 findings remain open. Resource names desktop/medium bodies grow
+beyond the native panel and clip read/set/clear button text; native action focus
+does not contain those controls. Search button opening focuses its panel and
+immediate physical typing leaves the query empty; the stock shortcut focuses
+the query and accepts the same typing in all four cases. Read current names
+replaces a valid unsaved draft with the selected saved name despite the same
+exact binding/revision, while ordinary status refresh retains the original
+focused field/draft. Long valid non-command palette labels collapse native help
+to zero width; deliberate label compaction/ellipsis alone is not the finding.
+Exact IDs remain searchable in keywords.
+
+Positive scoped controls include 97 dense palette options, ten command-only
+empty options, exact-ID search, native arrows and retained query/input under
+status refresh. Naming has 76 dense targets and one loaded-host target when
+empty; the exact naming revision renders without Number rounding. Native
+panel End/Home is observed after original scrollers settle, and action focus
+reachability is distinguished from initial visibility and horizontal fit.
+Pending read Escape closes Search/naming and late release does not reopen them.
+Naming busy state disables form actions/footer Close while the native header
+Close/Escape path remains available. Disconnected draft retention and disabled
+write controls are recorded without claiming backend cancellation or authority.
+
+Display settings stays contained in the measured matrix, including short useful
+reading. Its choices affect only private fixture presentation storage/graph and
+are restored. In this headless native Theme picker check, Space/Escape preserves
+the value and closes the containing dialog; native OS popup semantics/glyphs
+are not generalized. Native field/select painted glyph bounds are unavailable:
+full stored values, DOM labels, control metrics and keyboard behavior are
+qualified separately. Selected-token scaling is not universal browser zoom;
+fixed native control fonts are measured.
+
+Initial failed probes preserve wrong accessible-name/nested-panel/Close-shape
+assumptions, raw BigInt report serialization and native picker-close handling.
+Earlier End/Home timing and a Display reference from before close/reopen are
+not accepted as current-opening retention proof. Final source guards preserve
+all product/native/accepted Activity/Host/Monitor/Resource files and reverify
+142 original inventory plus 505 previous correction artifacts. Independent
+source review, product allocation/composition and broader route/state, live
+transport, drawer, terminal and full UX acceptance remain open.
+
+## Shared-dialog final owner source evidence
+
+The [layout record](validation/ux-shared-dialog-layout-2026-10-29.json) binds
+identical final source maps across sequential unchanged-FIFO cohorts: naming
+four cases/37034ms, Search four/28536ms and Display four/9970ms. Matrix: 1440×900,
+390×900, 390×320 and 768×600 with selected pixel text tokens doubled. Every active
+cohort includes compilation and original cleanup within 120 seconds. Synthetic
+held reads release and original context/browser/Vite APIs close/join. No native
+CDP is needed, and no forbidden call, real socket, API/external request,
+clipboard attempt, naming write or palette activation occurs. No owner broad
+suite/build/install/activation is inferred.
+
+Thirty-four focused module tests pass: thirteen palette and twenty-one naming.
+They cover batch/projection-delayed native Focus, current query, no refresh focus,
+close/context/remote/disposal/open-failure/repeated-open clearing, exact loaded
+binding/revision/reservation gates, disabled edits, reply-time interleavings,
+original write/CAS arguments and unchanged unknown-intent behavior. Thirty-six
+native RDF/ownership/Activity/Host tests across three files pass with two workers.
+Module and native inputs are hashed separately; CSS-only changes do not relabel
+an earlier app parse result. Final native tests consume the frozen app styles.
+
+Naming normal/manual field captions fit their own native control borders and
+actual panel/viewport clips, with prose/control nonoverlap. Long host selects
+retain about 235px desktop/medium or 278px narrow; the short Reference kind
+select retains 99px desktop/medium. All native read/set/clear/footer action boxes
+and painted labels fit after focus. Native fields/types/ownership remain intact;
+only the two existing app-owned Stacks get markers. Body/panel widths stay
+bounded, and native scrolling reaches tall/short controls. Full stored names,
+option labels and exact int64 feedback remain unchanged. Same-revision reads
+retain the original dirty field; max-int64 revision and actual binding changes
+reset it without implicit rebase. Pending native edits are disabled; read Escape
+closes and late release does not reopen.
+
+Search accepts physical immediate typing after button and stock shortcut open
+in all four cases. Query/input survive status refresh; deliberately moved Close
+focus is retained too. Native arrow navigation keeps query focus and exposes
+complete help. Help widths are 596px desktop/medium and 348px narrow, versus
+zero-width non-command help in the inventory. Compact ellipsis labels, exact-ID
+matching, dense97/empty10 options, keywords and source caps remain checked. No
+option shortcut badges exist in these actual app entries; their existing native
+part is styled without inventing entries or wrapper ownership. Display remains
+contained and keeps its current-opening node, private choices and Escape return.
+
+Five isolated final omissions fail the intended assertions: naming styles
+(action clip), caption shrink rule (own-control caption clip), palette rows
+(useful help), opening request (physical immediate typing) and draft passing
+(unchanged-read value). Each changes exactly one effective source file; naming
+style omission retains its schema and all palette rules. All original cleanup
+APIs complete in those failed controls. Raw negatives remain preserved.
+
+Earlier inner-only body containment still clipped; adding the reviewed outer
+app-owned Stack fixed action width but panel-only Range checks missed wrapped
+Choice captions leaving fixed-height controls. Visual QA preserved that failure;
+final own-control/true-clip/select-allocation/nonoverlap assertions close that
+measurement gap. Direct post-showModal lookup passed a naive unit double but
+failed real button typing before batch projection. The native Focus boundary
+and explicit batch-timing double now cover it. A later label oracle's direct-
+child Checkbox assumption was a fixture error; final nested-row labels are read.
+
+All 142 original Activity/Host inventory, 505 prior correction, 164 shared-dialog
+inventory and four recovered-audit artifacts are rehashed unchanged. The earlier
+BigInt report failure proves only recovered awaited original API-close completion;
+its lost initial error/read diagnostics and stronger OS/group/reap facts remain
+unknown. No cleanup credit transfers from later fixtures. Native selected input/
+select glyph bounds are unavailable; stored values/captions/control geometry
+and keyboard behavior are qualified separately. Selected-token scaling is not
+universal zoom, and fixed native fonts are recorded. Tall forms require scrolling;
+all controls are not claimed simultaneously visible. Maximum-entry performance,
+every theme/language/viewport, real auth/transport and broader UX/TUI remain open.
+Independent current composition and central rebuilding are recorded above.

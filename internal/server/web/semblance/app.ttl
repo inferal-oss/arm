@@ -578,3 +578,53 @@ arm:HostMetadataBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-host-
 [] a sty:StyleRule ; sty:appliesTo c:AppBar ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part ".sem-more[data-open=true] > .sem-more-body > [data-sem-c=\"icon-button\"][data-sem-tooltip]::after" ;
  sty:declares [ sty:property "left" ; sty:raw "0" ],
               [ sty:property "transform" ; sty:raw "none" ] .
+
+# Bound only the existing noninteractive Resource names form, not its Dialog.
+arm:NamingBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-naming-body" .
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ; sty:part "> *" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ; sty:part ":is(input,select,textarea)" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ; sty:part "> button" ;
+ sty:declares [ sty:property "white-space" ; sty:raw "normal" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# Keep native naming captions from shrinking beneath their fixed control height.
+[] a sty:StyleRule ; sty:appliesTo arm:NamingBody ; sty:part "> [data-sem-c=\"choice\"] > span" ;
+ sty:declares [ sty:property "flex-shrink" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ] .
+
+# Allocate native palette label and complete contextual help on separate rows.
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option]" ;
+ sty:declares [ sty:property "display" ; sty:raw "grid" ],
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr) auto" ],
+              [ sty:property "align-items" ; sty:raw "start" ],
+              [ sty:property "row-gap" ; sty:raw "3px" ],
+              [ sty:property "padding" ; sty:raw "8px 10px" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option] > .sem-ta-label" ;
+ sty:declares [ sty:property "grid-column" ; sty:raw "1" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "white-space" ; sty:raw "nowrap" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option] > .sem-ta-help" ;
+ sty:declares [ sty:property "grid-column" ; sty:raw "1" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "white-space" ; sty:raw "normal" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ],
+              [ sty:property "overflow" ; sty:raw "visible" ],
+              [ sty:property "text-overflow" ; sty:raw "clip" ] .
+[] a sty:StyleRule ; sty:appliesTo c:CommandPalette ; sty:part ".sem-cp-group > [role=option] > .sem-ta-keys" ;
+ sty:declares [ sty:property "grid-column" ; sty:raw "2" ],
+              [ sty:property "grid-row" ; sty:raw "1 / span 2" ],
+              [ sty:property "align-self" ; sty:raw "start" ],
+              [ sty:property "margin-inline-start" ; sty:raw "0" ] .
