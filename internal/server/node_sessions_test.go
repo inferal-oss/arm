@@ -112,6 +112,7 @@ func TestNodeWindowWebSocketScopesSpecialSubscriptionsAndRevocation(t *testing.T
 	if !ok {
 		t.Fatal("exchange failed")
 	}
+	residentFixtureIdentity(t, left)
 	h := httptest.NewServer(http.HandlerFunc(left.ws))
 	defer h.Close()
 	left.authority = strings.TrimPrefix(h.URL, "http://")
@@ -231,6 +232,7 @@ func TestNodeWindowIdleDestinationOnlyChangeClosesBrowser(t *testing.T) {
 			if !ok {
 				t.Fatal("exchange failed")
 			}
+			residentFixtureIdentity(t, left)
 			h := httptest.NewServer(http.HandlerFunc(left.ws))
 			defer h.Close()
 			left.authority = strings.TrimPrefix(h.URL, "http://")
@@ -272,6 +274,7 @@ func TestNodeWindowChangedSourceEnrollmentClosesWithContextPolicy(t *testing.T) 
 	if err = source.Revoke(bound.Host, "private policy-close regression"); err != nil {
 		t.Fatal(err)
 	}
+	residentFixtureIdentity(t, left)
 	h := httptest.NewServer(http.HandlerFunc(left.ws))
 	defer h.Close()
 	left.authority = strings.TrimPrefix(h.URL, "http://")

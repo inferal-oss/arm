@@ -17,6 +17,7 @@ import (
 
 func TestMonitorSubscriptionBoundReplacementAndRelease(t *testing.T) {
 	s := &Server{token: "fixture-token", monitor: observe.NewMonitor("host", nil), monitorSlots: make(chan struct{}, 1)}
+	residentFixtureIdentity(t, s)
 	h := httptest.NewServer(http.HandlerFunc(s.ws))
 	defer h.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
