@@ -1,5 +1,29 @@
 # ARM delivery plan
 
+## Original response settlement — owner cut awaiting independent review
+
+Owner: `codex/resident-response-settlement`, from accepted policy `5765652`.
+Focused source: `a202c1b2ce1a19f58c27c73d17cda9cff1b818c2`;
+[source-bound evidence](validation/resident-response-settlement-2026-10-29.json).
+The [response-owner primitive](design/resident-response-settlement.md) binds one
+private sink to each original accepted caller/connection and its existing writer
+and producer owners. The same typed v1 encoder, 64-entry queue, eight request
+slots and five-second write timeout remain; all routes stay direct. Optional
+receipts use 32 fixed slots per Server, independently of ordinary send capacity.
+Queue ownership, attempted/returned writing and abandonment after original joins
+are separate; no receipt certifies browser handling, domain no-effect or replay.
+
+Enqueue and admission close share a cut; original teardown fences, joins and
+drains accepted payloads. Receipts hold only small identities, not payload,
+ingress or Server references. A causal stopped-authority retention failure is
+fixed and retained privately. Source-bound normal/race, direct CLI lifetime,
+vet/build and compile-only evidence are tracked in VALIDATION.md. Nominal fixed,
+per-connection, queue-entry and tracked-handle costs are explicit; unlimited
+connections, allocator/runtime overhead and consumer-retained stale handles are
+not a global heap bound. Independent current-main review is next. Worker/grant/
+IPC/controller/activation, UI/assets, startup/install and shared state stay outside
+this cut; the user-selected replaceable API/UI objective remains open.
+
 The complete product scope is [SPEC.md](../SPEC.md). This plan records current
 technical ownership, accepted milestones, dependencies and remaining gates.
 Implemented behavior and scoped evidence are detailed in

@@ -1,5 +1,37 @@
 # Validation record
 
+## Original response settlement — scoped owner evidence
+
+The [owner/source ledger](design/resident-response-settlement.md) covers the
+original accepted-ingress sink and optional receipt primitive from `5765652`.
+Permanent actual-connection cases exercise delayed writing versus queueing,
+tracked full-queue closure, cancelled/failed I/O and untouched-payload abandonment,
+enqueue/close races, exact numeric/diagnostic wire data, foreign/copied/cross-
+connection/non-resurrecting receipts, global tracking capacity with direct public
+responses, encoding failure before native writing and payload/authority retention.
+One test reports native logical layout costs; these are not RSS measurements.
+
+A pre-fix weak-reference case retains a stopped Server through a receipt's
+interior owner pointer. A small standalone registry identity fixes it; the same
+owned-ingress case passes after correction. Raw causal output, all four pre-fix
+source hashes and matching source copies stay private. Earlier passing cuts are
+not final-source acceptance. No state or timeout is used as proof of browser
+handling, domain no-effect or replay eligibility. Final tests/build/source hashes
+and remaining review gates are bound by the source record accompanying this cut.
+
+Final source `a202c1b2ce1a19f58c27c73d17cda9cff1b818c2` passes 46 Server
+roots / 69 nodes in both normal (34.131s) and race (38.498s) cohorts, zero
+failures/skips. The direct CLI transparency root passes normally (3.572s) and
+under race (4.965s), with fresh private authority/loopback and original proxy/run/
+log owners. Affected vet, native CLI build and Linux amd64 Server test compilation
+pass. Built artifacts are not installed/executed; Linux is compilation only.
+Four final Go hashes stay fixed; the dispatch domain tail and all protected
+inputs match the accepted base. Added-scope privacy, eleven local-file links,
+whitespace and exact four-Go/six-document scope checks pass. See the
+[normalized record](validation/resident-response-settlement-2026-10-29.json).
+Independent current-main composition, worker/grant/controller/activation and
+complete API/UI replacement remain separate gates.
+
 ## Activity, Host and compact header — independent composition
 
 Reviewed inventory `3705be6`, Host `188e3fa`, Activity `de562c8` and final header/
@@ -41,6 +73,7 @@ UX acceptance is inferred.
 Integration `e580148` passes its
 [public source workflow](https://github.com/inferal-oss/arm/actions/runs/40958937441).
 This source gate does not install or activate the artifact.
+
 
 ## Stage-two read-grant refinement — source inspection only
 

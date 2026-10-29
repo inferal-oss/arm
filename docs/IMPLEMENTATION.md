@@ -1,5 +1,30 @@
 # Backend and CLI implementation
 
+## Original response owner and write settlement — owner cut
+
+The private [sink implementation](../internal/server/resident_response.go) is
+constructed only by original accepted WS ownership after caller activation. The
+existing caller registry binds that sink to the actual connection; the writer
+uses its registered context, socket and encoder. Optional receipts observe one
+handoff and its original write-call return, without replacing the writer or
+accepting caller-reported success/bytes. Public sends reserve no tracking slot.
+
+The queue remains 64 typed responses, each with one optional metadata pointer;
+eight request slots release at their original handoff point. Admission fencing
+and enqueue serialize; teardown joins original writer/producers before dropping
+unattempted queued payloads. A pending write stays pending until it returns.
+Receipts contain only small registry/sink identities and a slot, so retained
+metadata cannot keep the result, ingress or stopped Server alive. Fixed tracking
+capacity, stale/foreign receipt refusal and explicit terminal release avoid an
+unbounded observer/waiter list. There are no per-response goroutines/channels,
+new result serialization/deep copies, public ACKs or wire fields. See the
+[cost/lifetime ledger](design/resident-response-settlement.md).
+
+All current APIs remain direct. This supplies the transport settlement primitive
+for later reviewed work; no worker/grant/controller/bootstrap or API/UI reload
+activation is implemented. Legacy data/encoder/allocator memory and unlimited
+connection population remain separately accountable.
+
 ## Activity, Host and compact header composition
 
 Host technical fields now show their exact current values in native bounded
@@ -10,6 +35,7 @@ Independent [composed validation](validation/ux-activity-host-composed-2026-10-2
 accepts these scoped changes and regenerated embedded assets. Stock controls,
 data/format/caps, auth and resource behavior remain intact. The installed backend
 is unchanged; this is not a complete web/terminal UX acceptance.
+
 
 ## Stage-two read grants — proposed only
 

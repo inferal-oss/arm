@@ -3,6 +3,10 @@
 Status: independently reviewed source-backed contract, against accepted
 `06fd4360f174eb31ae7d716301b44dc315b07b3b`. No production/prototype source,
 protocol, client limit, controller, installation or running state changes here.
+The later [original response-settlement source cut](resident-response-settlement.md)
+implements the private sink/receipt primitive with owner evidence awaiting review;
+it enables no worker or grant route. Other factory/admission/activation gates below
+remain separate. Baseline source observations in this proposal retain their scope.
 The [accepted in-process boundary](../validation/resident-dispatch-composed-2026-10-29.json)
 provides caller ownership and prepared dispatch; it does not provide the worker,
 result-memory or writer-settlement capabilities proposed below.
