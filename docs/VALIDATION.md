@@ -8848,3 +8848,56 @@ positively close/join; no page errors, forbidden calls, real sockets, external
 requests or clipboard attempts occur. The private artifact roster retains all
 initial fixture-assumption and timing diagnostics; no earlier negative was
 silently relabeled as a passing visual test.
+
+## Activity, Host and compact header — final owner source evidence
+
+The [focused owner record](validation/ux-activity-host-layout-2026-10-29.json)
+binds the final main/app/fixture hashes to five sequential unchanged-FIFO
+cohorts: Activity, Host and header each have four viewport/token cases;
+source-context lifecycle and cap/marker checks each have desktop/short cases.
+Each cohort finishes within 120 seconds including original cleanup. All
+original context/browser/server owners close/join; header CDP sessions detach.
+No forbidden call, page error, external request, real socket or clipboard
+attempt occurs. The three focused native test files pass 36 cases with two
+workers, zero failures/skips. No broad suite or build is inferred.
+
+Host technical/infrastructure native text matches all 1073/3409 characters,
+including existing boundary whitespace. All 26 capability IDs retain distinct
+source-line starts at native block Code fonts 13/26px. Scoped body/PRE widths
+permit native ArrowRight to reach ordinary rightmost data with focus retained;
+settled End reaches the meaningful tail. An unchanged refresh preserves the
+original focused PRE and scroll position. Draining/null/empty/fresh,
+disconnect/reconnect and native disclosure identities remain checked. Maximum
+infrastructure and Activity display exactly 256000 characters plus the existing
+20-character marker. The huge Host line proves positive keyboard movement and
+uses bounded native wheel for its far endpoint; full keyboard traversal of that
+line is not claimed. Tall records require scrolling rather than simultaneous
+full visibility.
+
+Activity preserves original exact-reader nodes/open/focus on replay and new
+events while the exact selection remains valid, and preserves deliberate Choice
+focus. Exact int64 JSON, history pages, summary bounds and genuine out-of-page
+retirement pass. Separate synthetic changed-source/same-sequence, cancellation,
+changed payload/Inspect target and child/root disposal controls pass. This is
+cached-reader lifecycle evidence; broader real-auth/shared-journal isolation
+remains outside the correction.
+
+At 390px the complete valid 111-character header label fits its brand and the
+document stays 390px wide, versus the original 563px. Short reading space stays
+above 120px. Native Views keyboard selection/cancellation, updated full names,
+original AppBar/Text nodes, action traversal in both directions, focused/hovered
+full native Settings pseudo border and painted glyphs, open tall-short-tall
+resize, and Escape to the original More opener pass. Desktop inline controls
+remain present. Removing only the menu rules fails an original action's true
+panel/viewport fit; removing only tooltip alignment fails the full painted-label
+clip assertion. Both failures and positive original cleanup are retained.
+
+Original inventory artifacts are rehashed unchanged. Earlier inline-newline,
+intrinsic-PRE clipping, extra-key scroll chaining, offscreen-menu and clipped-
+tooltip candidates retain their original source/timing qualifications. Initial
+missing namespace/Choice/Code shape harness failures are identified separately.
+Native select painted glyph bounds remain unavailable: DOM labels/control boxes
+and native keyboard behavior are tested. Selected doubled pixel tokens are not
+universal zoom, and fixed native fonts are recorded. Independent final-diff
+review, composed checks and central asset rebuilding remain open, as do real
+transport, broader routes/states, live drawer, terminal and complete UX gates.

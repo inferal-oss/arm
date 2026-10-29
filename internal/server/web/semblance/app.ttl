@@ -555,3 +555,26 @@ arm:HostMetadataBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-host-
               [ sty:property "width" ; sty:raw "100%" ],
               [ sty:property "max-width" ; sty:raw "100%" ],
               [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+
+# Keep the app's Host byline inside its compact/medium native brand allocation.
+[] a sty:StyleRule ; sty:appliesTo c:AppBar ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part "> .sem-brand > .sem-byline:has(> [data-sem-c=\"text\"])" ;
+ sty:declares [ sty:property "justify-self" ; sty:raw "stretch" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AppBar ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part "> .sem-brand > .sem-byline > [data-sem-c=\"text\"]" ;
+ sty:declares [ sty:property "white-space" ; sty:raw "normal" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# Bound only the opened native action menu. The 8rem clearance covers the
+# measured header/toggle anchor; padding and border stay outside its content box.
+[] a sty:StyleRule ; sty:appliesTo c:AppBar ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part ".sem-more[data-open=true] > .sem-more-body" ;
+ sty:declares [ sty:property "max-height" ; sty:raw "max(0px, calc(100dvh - 8rem - var(--sem-space-4) - var(--sem-space-4) - 2px))" ],
+              [ sty:property "overflow-y" ; sty:raw "auto" ] .
+[] a sty:StyleRule ; sty:appliesTo c:AppBar ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part ".sem-more[data-open=true] > .sem-more-body > *" ;
+ sty:declares [ sty:property "flex-shrink" ; sty:raw "0" ] .
+
+# Keep the opened native Settings tooltip inside its action-menu scroll clip.
+[] a sty:StyleRule ; sty:appliesTo c:AppBar ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part ".sem-more[data-open=true] > .sem-more-body > [data-sem-c=\"icon-button\"][data-sem-tooltip]::after" ;
+ sty:declares [ sty:property "left" ; sty:raw "0" ],
+              [ sty:property "transform" ; sty:raw "none" ] .

@@ -3668,3 +3668,34 @@ on every render, closing a focused exact disclosure on refresh. Long valid
 host names cross the shared narrow header. Product corrections await separate
 review/allocation; the [normalized findings](validation/ux-activity-host-inventory-2026-10-29.json)
 retain source/contract hashes, qualified controls and cleanup evidence.
+
+## Activity selected readers, Host metadata and compact header containment
+
+Host now writes technical/infrastructure data to the existing Code value
+predicate. Native block Code preserves capability line boundaries and exposes
+its native keyboard scroll surface. A distinct noninteractive Stack subtype
+on those two existing disclosure bodies and direct-PRE sizing contain their
+intrinsic widths. The formatter, exact integer serialization, display cap and
+marker, native disclosures and existing handles remain unchanged.
+
+Activity retains one selected detail model by exact sequence plus loaded host,
+connection and session identity. Unchanged replay/arrival keeps its native
+DescriptionList/Disclosure/Code/Inspect subtree and open/focus state. Changed
+selected content updates existing values and the current Inspect target;
+selection/page/context changes or disposal retire owned handles. Timeline
+projection, 200/50 history bounds, summaries, Choice/disclosure callbacks and
+shared journal/auth/backend lifecycle remain unchanged. Source-context tests
+cover this cached reader, not broader authenticated journal isolation.
+
+Compact/medium app-owned native AppBar rules stretch its current byline into
+the brand allocation and wrap the full Text label. Only its opened More body
+gets a viewport-relative height/vertical scroll boundary; direct children keep
+native minimum sizes. Only the direct native Settings IconButton tooltip gets
+left alignment without translation. No native type promotion, content/font/
+padding/ARIA changes, global theme/engine edits, script positioning or forced
+focus is introduced. Desktop inline controls keep their existing behavior.
+
+The [source-bound owner evidence](validation/ux-activity-host-layout-2026-10-29.json)
+preserves negative candidates, causal style-absence controls and qualified
+native reading/lifecycle checks. Generated assets remain unchanged; independent
+current-composition review/validation and central rebuilding are required.

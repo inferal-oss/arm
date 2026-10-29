@@ -1689,3 +1689,25 @@ disclosure/node/focus retention through refresh/reconnect. Separate large-record
 controls qualify the source-defined display cap and native scrolling. Inventory
 collection is not visual acceptance. Independent review, exact product
 allocation, live transport and the broader/full UX task remain open.
+
+## Activity, Host and compact header — owner corrections awaiting composition
+
+Owner: `codex/ux-activity-host-layout`, from frozen inventory `3705be6`.
+Focused dependency order is Host `188e3fa`, then Activity `de562c8`, then the
+compact/medium header correction and final shared-source evidence. Host uses
+its existing native Code handles with correct values, block rendering and
+bounded noninteractive disclosure bodies. Activity retains the selected exact
+record within its host/connection/session context and retires genuine changes.
+
+The incremental header allocation contains its existing byline/Text, bounds
+only the opened native More menu, preserves child minimum sizes and aligns only
+the direct native Settings tooltip. Original native types, content, callbacks,
+anchor, labels and focus behavior remain intact. Menu-only and tooltip-only
+absence controls fail the actual offscreen-control/full-label assertions.
+
+The [owner record](validation/ux-activity-host-layout-2026-10-29.json) binds five
+sequential final source cohorts, the focused native tests, original-node checks,
+qualified scrolling and retained failed candidates. The original inventory and
+accepted Monitor/Resource work remain unchanged. Independent final-diff review,
+current composition checks and central asset rebuild remain open. No owner
+build/install/activation, real operation or full UX acceptance is claimed.

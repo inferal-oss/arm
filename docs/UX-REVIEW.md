@@ -254,3 +254,23 @@ value setters, Activity-only stable selected-record handles, and separate
 shell-owned long host-label containment. No product correction is included.
 Original failed probes and negative controls remain preserved; selected-token
 scaling and fixed native-font limits are explicit. Full UX acceptance stays open.
+
+## Activity/Host owner corrections and compact header follow-through
+
+The [final owner record](validation/ux-activity-host-layout-2026-10-29.json)
+addresses the inventory's empty Host Code, selected-reader loss and narrow
+shared header findings within reviewed incremental boundaries. Host retains
+full values/native line and scroll behavior; Activity retains current selected
+subtrees by exact identity/context and retires genuine changes. Compact/medium
+AppBar byline wrapping, opened More scrolling and one direct Settings tooltip
+alignment preserve native controls and original node/focus behavior.
+
+The final matrix checks full text against actual clips, useful short reading,
+ordinary native keyboard endpoints, qualified maximum-record reading, duplicate/
+new-event retention, changed-source/selection/disposal, every More control in
+both directions, native tooltip focus/hover, open resize and Escape return.
+Causal omission of menu or tooltip rules fails the corresponding true geometry
+assertion. Earlier failures, original inventory and source-qualified receipts
+remain preserved. This is owner validation; independent current composition,
+rebuild, real transport, broader route/state/live-drawer/terminal and full UX
+acceptance remain open.

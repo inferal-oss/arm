@@ -111,3 +111,12 @@ it('Activity recreates disposed detail children, releases stale graph handles an
   expect(model.record.disposed).toBe(true);expect(x.api.detail).toBeNull();expect(x.ui.handles.size).toBe(remaining);
  }finally{x.close();}
 });
+it('native header and Text identity preserve complete status/auth/node labels without type promotion',()=>{
+ const x=fixture();try{
+  const label=x.ui.bind('host','Text'),header=x.ui.bind('header'),originalLabel=x.node(label),originalHeader=x.node(header);
+  for(const value of ['Local dashboard','Local operator session','Node ffffffff','synthetic-host-'+ 'node'.repeat(24)]){
+   label.set({label:value});expect(x.node(label)).toBe(originalLabel);expect(x.node(header)).toBe(originalHeader);expect(originalLabel.textContent).toBe(value);
+   expect(originalLabel.getAttribute('data-sem-c')).toBe('text');expect(originalHeader.getAttribute('data-sem-c')).toBe('app-bar');
+  }
+ }finally{x.close();}
+});

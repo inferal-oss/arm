@@ -1,0 +1,4606 @@
+{
+  "scope": "Focused Host native Code, Activity selected-reader lifecycle, and incremental app-owned compact/medium header presentation; owner evidence, independent composition pending",
+  "base": "3705be698e8169e145a35b0174532b710db7dccb",
+  "current_sources": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "016b3ccabd6f88d0885b8707eeff337d13e5406b58f98ddf67259ec1da27a9c2",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "internal/server/web/activity-feed.mjs": "78a4225ddc8580e2614fe3c6a5bc6fc6d8c85d606ca758204224cfe442f87e8e",
+    "web/third_party/semblance/ontology/components/type.ttl": "80bc0082a1cecab49f7f68cccf7f42c0f6cb356416b353d94fa4346f960d6ad0",
+    "web/third_party/semblance/src/components/type.ts": "b00e05c8010fdd3f78ef53d0748e4509061eb10956fc266863743de078caddd8",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/named_views.go": "a9452987a249df10e53b66b85ab552b20dad727acf5b7219885aaa76f1ffbc21",
+    "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+    "internal/model/ports.go": "5878a419ce1efd05b32e3eff7c8bd30a9bdde3f3fb0c13996d0302bb0984f42e",
+    "internal/model/node_metadata.go": "37f47880669571a310d5e0a84df56097c60c7e8fcfb94b7a234769872f526441",
+    "internal/local/identity.go": "0e67003d24d448e10c5b3f65101e52ae4fbef66ea530fc572d3d7ebcbbf21ad8",
+    "internal/manager/manager.go": "5470903ce0081c7fecfe4718d5e9e8ef624207cde9c5c450cf9aa65b45515927",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+    "web/third_party/semblance/ontology/theme/data.ttl": "5dfefcfb38b77459150851b67a386faf419f9c4f0eb26cb681b5997007fbaeff",
+    "scripts/dashboard-screenshots/ux-activity-host.mjs": "77e88c24c4e8bb97f9449f34a69d10f18bb663bd8ee0f472eb6c30bcfd65801d",
+    "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "62ea64429383d840e68be501ccf21c6ba94b8c2999ad85f74ee7ef18b8afc344",
+    "web/test/activity-host-details.test.mjs": "021a5430af3f5e248ac2b306f48bc64d3f1c913130970df9916b6020ee841253"
+  },
+  "source_guards": {
+    "main_outside_Activity_Host_helpers_exact": true,
+    "event_caption_summary_history_projection_exact": true,
+    "ontology_base_exact_prefix": true,
+    "protected_sources": {
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+      "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+      "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+      "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+      "internal/server/web/semblance/lease-controls.mjs": "f5dd804d8e2e4f6b12897f121b8cb8bb4b32fb1987e4238c9748f75497387466",
+      "scripts/dashboard-screenshots/ux-monitor.mjs": "94c315a605775dd143704cc88248b2cb87d528489dc45a15a5593f47c15854be",
+      "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843",
+      "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+      "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815",
+      "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+      "internal/server/web/assets/arm.mjs": "d329b2b4efb7f5a7075e29a52891de643aeed927d43d711458d93fb8199e7e42",
+      "web/third_party/semblance/src/components/type.ts": "b00e05c8010fdd3f78ef53d0748e4509061eb10956fc266863743de078caddd8",
+      "web/third_party/semblance/ontology/components/type.ttl": "80bc0082a1cecab49f7f68cccf7f42c0f6cb356416b353d94fa4346f960d6ad0",
+      "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+      "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+      "docs/validation/ux-activity-host-inventory-2026-10-29.json": "830f517acf8565cfd92c1997f999adbc21971c93aed9d15f478b0ab70ae9bd89",
+      "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+      "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+      "internal/server/web/activity-feed.mjs": "78a4225ddc8580e2614fe3c6a5bc6fc6d8c85d606ca758204224cfe442f87e8e",
+      "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+      "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+    },
+    "original_inventory_artifacts_verified": 142
+  },
+  "implementation": {
+    "host": "Existing Code value setters, native block flags and noninteractive disclosure-body Stack hooks. Formatter, cap/marker, payload and native controls remain intact.",
+    "activity": "Retain selected subtree by exact sequence plus host/connection/session context; update changed payload and inspect target in place; retire on genuine selection/page/context/disposal. Shared journal lifecycle/auth/backend remain unchanged.",
+    "header": "Only compact/medium native AppBar byline/Text containment, opened More height/overflow with nonshrinking native children, and direct Settings native tooltip left/transform. No native type promotion, global styles, script positioning, text shortening or forced focus."
+  },
+  "matrix": [
+    [
+      1440,
+      900,
+      1
+    ],
+    [
+      390,
+      900,
+      1
+    ],
+    [
+      390,
+      320,
+      1
+    ],
+    [
+      768,
+      600,
+      2
+    ]
+  ],
+  "final_cohorts": {
+    "header": {
+      "cases": 4,
+      "elapsed_ms": 32940,
+      "receipt_sha256": "1032315edd6121e2c9b5aa6cd3ad57c770e1b398a84c4a6a6882e07a6181ca57",
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failure": null
+    },
+    "host": {
+      "cases": 4,
+      "elapsed_ms": 37784,
+      "receipt_sha256": "4967f7602c485025dcef0e76833d3d2738cda455a29b51eddc7c3bb3bbe1ab7e",
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failure": null
+    },
+    "activity": {
+      "cases": 4,
+      "elapsed_ms": 17621,
+      "receipt_sha256": "0604050e63d11463800fb8005d0d26c333b9b922a34f8802ac57b81aa79a2a89",
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failure": null
+    },
+    "lifecycle": {
+      "cases": 2,
+      "elapsed_ms": 7621,
+      "receipt_sha256": "53df58587bd38d2e3c6f116785a56cd7fdce8c2807d44a1264463c0b4308b6bd",
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failure": null
+    },
+    "truncation": {
+      "cases": 2,
+      "elapsed_ms": 7618,
+      "receipt_sha256": "5d6156d6ac5c860d7f6c852a2592879d4d0bfe076cfc0fb814849161760b107d",
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failure": null
+    }
+  },
+  "tests": {
+    "files": [
+      "test/activity-host-details.test.mjs",
+      "test/graph-ui.test.mjs",
+      "test/ownership-regression.test.mjs"
+    ],
+    "workers": 2,
+    "passed": 36,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "a3401aec607af63b5727cca002e1d99903713c5e1d177077f47a90e662a4a593",
+    "case_names": [
+      "Host exposes exact published capability and infrastructure text through native Code values",
+      "Host refresh keeps original disclosure and Code nodes while null/empty/current data updates",
+      "Host retains the exact display cap/marker and recreates disposed content without stale values",
+      "Activity keeps exact sequence/native reader handles and open state across replay, arrivals and row movement",
+      "Activity updates current data and the inspect callback without replacing the valid selected subtree",
+      "activate",
+      "Activity retires genuine selection/page changes and preserves the exact display cap",
+      "Activity separates identical sequence IDs across authority, connection and session contexts",
+      "Activity recreates disposed detail children, releases stale graph handles and does not recreate a disposed root",
+      "native header and Text identity preserve complete status/auth/node labels without type promotion"
+    ]
+  },
+  "host": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "selected_token_scale": 1,
+      "payloads": {
+        "technical": {
+          "length": 1073,
+          "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+          "exact": true,
+          "boundariesPreserved": true
+        },
+        "infrastructure": {
+          "length": 3409,
+          "sha256": "c0c91362312d968d0b3cad52b1571f6d5fa01e05803331311e212c3322cd23ba",
+          "exact": true,
+          "boundariesPreserved": true
+        }
+      },
+      "technical_line_count": 26,
+      "distinct_line_starts": 26,
+      "code_font_px": 13,
+      "technical": {
+        "length": 1073,
+        "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+        "keyboardHorizontal": {
+          "before": 0,
+          "after": 40,
+          "max": 59,
+          "focus": true
+        },
+        "keyboardRightEnd": {
+          "left": 59,
+          "max": 59,
+          "focus": true
+        },
+        "rightmostText": {
+          "tail": "bilitycapability",
+          "left": 1265.734375,
+          "right": 1390.984375,
+          "top": 689.796875,
+          "bottom": 704.796875,
+          "clip": {
+            "left": 33,
+            "right": 1407,
+            "top": 151.875,
+            "bottom": 724.875
+          },
+          "fullTextFits": true,
+          "documentY": 1112
+        },
+        "nativeEndTail": {
+          "tail": "bilitycapability",
+          "left": 1265.734375,
+          "right": 1390.984375,
+          "top": 689.796875,
+          "bottom": 704.796875,
+          "clip": {
+            "left": 33,
+            "right": 1407,
+            "top": 151.875,
+            "bottom": 724.875
+          },
+          "fullTextFits": true,
+          "documentY": 1112
+        }
+      },
+      "infrastructure": {
+        "length": 3409,
+        "sha256": "c0c91362312d968d0b3cad52b1571f6d5fa01e05803331311e212c3322cd23ba",
+        "keyboardHorizontal": {
+          "before": 0,
+          "after": 40,
+          "max": 25339,
+          "focus": true
+        },
+        "keyboardRightEnd": {
+          "left": 25339,
+          "max": 25339,
+          "focus": true
+        },
+        "rightmostText": {
+          "tail": "ailportdetail\"}]",
+          "left": 1265.84375,
+          "right": 1391.09375,
+          "top": 751.59375,
+          "bottom": 766.59375,
+          "clip": {
+            "left": 33,
+            "right": 1407,
+            "top": 733.59375,
+            "bottom": 786.59375
+          },
+          "fullTextFits": true,
+          "documentY": 1182
+        },
+        "nativeEndTail": {
+          "tail": "ailportdetail\"}]",
+          "left": 1265.84375,
+          "right": 1391.09375,
+          "top": 751.59375,
+          "bottom": 766.59375,
+          "clip": {
+            "left": 33,
+            "right": 1407,
+            "top": 733.59375,
+            "bottom": 786.59375
+          },
+          "fullTextFits": true,
+          "documentY": 1182
+        }
+      },
+      "unchanged_refresh": {
+        "originalConnected": true,
+        "focus": true,
+        "before": {
+          "left": 25339,
+          "top": 0
+        },
+        "left": 25339,
+        "top": 0
+      },
+      "states": [
+        "draining",
+        "unknown",
+        "empty",
+        "fresh"
+      ],
+      "document": {
+        "scrollWidth": 1440,
+        "scrollLeft": 0,
+        "viewport": 1440,
+        "bodyWidth": 1440,
+        "elements": [
+          {
+            "component": null,
+            "tag": "CODE",
+            "left": 49,
+            "right": 1449.984375,
+            "text": "live-cpu-admission\nlive-memory-admission\nlive-disk-admission\ncustom-resource-pools\ncounted-resource-"
+          },
+          {
+            "component": null,
+            "tag": "CODE",
+            "left": 49,
+            "right": 26730.09375,
+            "text": "[{\"name\":\"synthetic-port-0\",\"network\":\"tcp4\",\"address\":\"192.0.2.1\",\"port\":42000,\"mode\":\"hold\",\"names"
+          }
+        ]
+      }
+    },
+    {
+      "viewport": [
+        390,
+        900
+      ],
+      "selected_token_scale": 1,
+      "payloads": {
+        "technical": {
+          "length": 1073,
+          "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+          "exact": true,
+          "boundariesPreserved": true
+        },
+        "infrastructure": {
+          "length": 3409,
+          "sha256": "c0c91362312d968d0b3cad52b1571f6d5fa01e05803331311e212c3322cd23ba",
+          "exact": true,
+          "boundariesPreserved": true
+        }
+      },
+      "technical_line_count": 26,
+      "distinct_line_starts": 26,
+      "code_font_px": 13,
+      "technical": {
+        "length": 1073,
+        "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+        "keyboardHorizontal": {
+          "before": 0,
+          "after": 40,
+          "max": 1109,
+          "focus": true
+        },
+        "keyboardRightEnd": {
+          "left": 1109,
+          "max": 1109,
+          "focus": true
+        },
+        "rightmostText": {
+          "tail": "bilitycapability",
+          "left": 215.734375,
+          "right": 340.984375,
+          "top": 694.640625,
+          "bottom": 709.640625,
+          "clip": {
+            "left": 33,
+            "right": 357,
+            "top": 156.71875,
+            "bottom": 729.71875
+          },
+          "fullTextFits": true,
+          "documentY": 1850
+        },
+        "nativeEndTail": {
+          "tail": "bilitycapability",
+          "left": 215.734375,
+          "right": 340.984375,
+          "top": 694.640625,
+          "bottom": 709.640625,
+          "clip": {
+            "left": 33,
+            "right": 357,
+            "top": 156.71875,
+            "bottom": 729.71875
+          },
+          "fullTextFits": true,
+          "documentY": 1850
+        }
+      },
+      "infrastructure": {
+        "length": 3409,
+        "sha256": "c0c91362312d968d0b3cad52b1571f6d5fa01e05803331311e212c3322cd23ba",
+        "keyboardHorizontal": {
+          "before": 0,
+          "after": 40,
+          "max": 26389,
+          "focus": true
+        },
+        "keyboardRightEnd": {
+          "left": 26389,
+          "max": 26389,
+          "focus": true
+        },
+        "rightmostText": {
+          "tail": "ailportdetail\"}]",
+          "left": 215.84375,
+          "right": 341.09375,
+          "top": 755.4375,
+          "bottom": 770.4375,
+          "clip": {
+            "left": 33,
+            "right": 357,
+            "top": 737.4375,
+            "bottom": 790.4375
+          },
+          "fullTextFits": true,
+          "documentY": 1921
+        },
+        "nativeEndTail": {
+          "tail": "ailportdetail\"}]",
+          "left": 215.84375,
+          "right": 341.09375,
+          "top": 755.4375,
+          "bottom": 770.4375,
+          "clip": {
+            "left": 33,
+            "right": 357,
+            "top": 737.4375,
+            "bottom": 790.4375
+          },
+          "fullTextFits": true,
+          "documentY": 1921
+        }
+      },
+      "unchanged_refresh": {
+        "originalConnected": true,
+        "focus": true,
+        "before": {
+          "left": 26389,
+          "top": 0
+        },
+        "left": 26389,
+        "top": 0
+      },
+      "states": [
+        "draining",
+        "unknown",
+        "empty",
+        "fresh"
+      ],
+      "document": {
+        "scrollWidth": 390,
+        "scrollLeft": 0,
+        "viewport": 390,
+        "bodyWidth": 390,
+        "elements": [
+          {
+            "component": null,
+            "tag": "CODE",
+            "left": 49,
+            "right": 1449.984375,
+            "text": "live-cpu-admission\nlive-memory-admission\nlive-disk-admission\ncustom-resource-pools\ncounted-resource-"
+          },
+          {
+            "component": null,
+            "tag": "CODE",
+            "left": 49,
+            "right": 26730.09375,
+            "text": "[{\"name\":\"synthetic-port-0\",\"network\":\"tcp4\",\"address\":\"192.0.2.1\",\"port\":42000,\"mode\":\"hold\",\"names"
+          }
+        ]
+      }
+    },
+    {
+      "viewport": [
+        390,
+        320
+      ],
+      "selected_token_scale": 1,
+      "payloads": {
+        "technical": {
+          "length": 1073,
+          "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+          "exact": true,
+          "boundariesPreserved": true
+        },
+        "infrastructure": {
+          "length": 3409,
+          "sha256": "c0c91362312d968d0b3cad52b1571f6d5fa01e05803331311e212c3322cd23ba",
+          "exact": true,
+          "boundariesPreserved": true
+        }
+      },
+      "technical_line_count": 26,
+      "distinct_line_starts": 26,
+      "code_font_px": 13,
+      "technical": {
+        "length": 1073,
+        "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+        "keyboardHorizontal": {
+          "before": 0,
+          "after": 40,
+          "max": 1109,
+          "focus": true
+        },
+        "keyboardRightEnd": {
+          "left": 1109,
+          "max": 1109,
+          "focus": true
+        },
+        "rightmostText": {
+          "tail": "bilitycapability",
+          "left": 215.734375,
+          "right": 340.984375,
+          "top": 114.640625,
+          "bottom": 129.640625,
+          "clip": {
+            "left": 33,
+            "right": 357,
+            "top": 80.59375,
+            "bottom": 149.71875
+          },
+          "fullTextFits": true,
+          "documentY": 2430
+        },
+        "nativeEndTail": {
+          "tail": "bilitycapability",
+          "left": 215.734375,
+          "right": 340.984375,
+          "top": 114.640625,
+          "bottom": 129.640625,
+          "clip": {
+            "left": 33,
+            "right": 357,
+            "top": 80.59375,
+            "bottom": 149.71875
+          },
+          "fullTextFits": true,
+          "documentY": 2430
+        }
+      },
+      "infrastructure": {
+        "length": 3409,
+        "sha256": "c0c91362312d968d0b3cad52b1571f6d5fa01e05803331311e212c3322cd23ba",
+        "keyboardHorizontal": {
+          "before": 0,
+          "after": 40,
+          "max": 26389,
+          "focus": true
+        },
+        "keyboardRightEnd": {
+          "left": 26389,
+          "max": 26389,
+          "focus": true
+        },
+        "rightmostText": {
+          "tail": "ailportdetail\"}]",
+          "left": 215.84375,
+          "right": 341.09375,
+          "top": 175.4375,
+          "bottom": 190.4375,
+          "clip": {
+            "left": 33,
+            "right": 357,
+            "top": 157.4375,
+            "bottom": 210.4375
+          },
+          "fullTextFits": true,
+          "documentY": 2501
+        },
+        "nativeEndTail": {
+          "tail": "ailportdetail\"}]",
+          "left": 215.84375,
+          "right": 341.09375,
+          "top": 175.4375,
+          "bottom": 190.4375,
+          "clip": {
+            "left": 33,
+            "right": 357,
+            "top": 157.4375,
+            "bottom": 210.4375
+          },
+          "fullTextFits": true,
+          "documentY": 2501
+        }
+      },
+      "unchanged_refresh": {
+        "originalConnected": true,
+        "focus": true,
+        "before": {
+          "left": 26389,
+          "top": 0
+        },
+        "left": 26389,
+        "top": 0
+      },
+      "states": [
+        "draining",
+        "unknown",
+        "empty",
+        "fresh"
+      ],
+      "document": {
+        "scrollWidth": 390,
+        "scrollLeft": 0,
+        "viewport": 390,
+        "bodyWidth": 390,
+        "elements": [
+          {
+            "component": null,
+            "tag": "CODE",
+            "left": 49,
+            "right": 1449.984375,
+            "text": "live-cpu-admission\nlive-memory-admission\nlive-disk-admission\ncustom-resource-pools\ncounted-resource-"
+          },
+          {
+            "component": null,
+            "tag": "CODE",
+            "left": 49,
+            "right": 26730.09375,
+            "text": "[{\"name\":\"synthetic-port-0\",\"network\":\"tcp4\",\"address\":\"192.0.2.1\",\"port\":42000,\"mode\":\"hold\",\"names"
+          }
+        ]
+      }
+    },
+    {
+      "viewport": [
+        768,
+        600
+      ],
+      "selected_token_scale": 2,
+      "payloads": {
+        "technical": {
+          "length": 1073,
+          "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+          "exact": true,
+          "boundariesPreserved": true
+        },
+        "infrastructure": {
+          "length": 3409,
+          "sha256": "c0c91362312d968d0b3cad52b1571f6d5fa01e05803331311e212c3322cd23ba",
+          "exact": true,
+          "boundariesPreserved": true
+        }
+      },
+      "technical_line_count": 26,
+      "distinct_line_starts": 26,
+      "code_font_px": 26,
+      "technical": {
+        "length": 1073,
+        "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+        "keyboardHorizontal": {
+          "before": 0,
+          "after": 40,
+          "max": 2132,
+          "focus": true
+        },
+        "keyboardRightEnd": {
+          "left": 2132,
+          "max": 2132,
+          "focus": true
+        },
+        "rightmostText": {
+          "tail": "bilitycapability",
+          "left": 468.484375,
+          "right": 718.953125,
+          "top": 346.3125,
+          "bottom": 376.3125,
+          "clip": {
+            "left": 33,
+            "right": 735,
+            "top": 80.59375,
+            "bottom": 398.46875
+          },
+          "fullTextFits": true,
+          "documentY": 2884
+        },
+        "nativeEndTail": {
+          "tail": "bilitycapability",
+          "left": 468.484375,
+          "right": 718.953125,
+          "top": 346.3125,
+          "bottom": 376.3125,
+          "clip": {
+            "left": 33,
+            "right": 735,
+            "top": 80.59375,
+            "bottom": 398.46875
+          },
+          "fullTextFits": true,
+          "documentY": 2884
+        }
+      },
+      "infrastructure": {
+        "length": 3409,
+        "sha256": "c0c91362312d968d0b3cad52b1571f6d5fa01e05803331311e212c3322cd23ba",
+        "keyboardHorizontal": {
+          "before": 0,
+          "after": 40,
+          "max": 52692,
+          "focus": true
+        },
+        "keyboardRightEnd": {
+          "left": 52692,
+          "max": 52692,
+          "focus": true
+        },
+        "rightmostText": {
+          "tail": "ailportdetail\"}]",
+          "left": 468.703125,
+          "right": 719.171875,
+          "top": 422.90625,
+          "bottom": 452.90625,
+          "clip": {
+            "left": 33,
+            "right": 735,
+            "top": 401.90625,
+            "bottom": 475.90625
+          },
+          "fullTextFits": true,
+          "documentY": 2976
+        },
+        "nativeEndTail": {
+          "tail": "ailportdetail\"}]",
+          "left": 468.703125,
+          "right": 719.171875,
+          "top": 422.90625,
+          "bottom": 452.90625,
+          "clip": {
+            "left": 33,
+            "right": 735,
+            "top": 401.90625,
+            "bottom": 475.90625
+          },
+          "fullTextFits": true,
+          "documentY": 2976
+        }
+      },
+      "unchanged_refresh": {
+        "originalConnected": true,
+        "focus": true,
+        "before": {
+          "left": 52692,
+          "top": 0
+        },
+        "left": 52692,
+        "top": 0
+      },
+      "states": [
+        "draining",
+        "unknown",
+        "empty",
+        "fresh"
+      ],
+      "document": {
+        "scrollWidth": 768,
+        "scrollLeft": 0,
+        "viewport": 768,
+        "bodyWidth": 768,
+        "elements": [
+          {
+            "component": null,
+            "tag": "CODE",
+            "left": 49,
+            "right": 2850.953125,
+            "text": "live-cpu-admission\nlive-memory-admission\nlive-disk-admission\ncustom-resource-pools\ncounted-resource-"
+          },
+          {
+            "component": null,
+            "tag": "CODE",
+            "left": 49,
+            "right": 53411.171875,
+            "text": "[{\"name\":\"synthetic-port-0\",\"network\":\"tcp4\",\"address\":\"192.0.2.1\",\"port\":42000,\"mode\":\"hold\",\"names"
+          }
+        ]
+      }
+    }
+  ],
+  "activity": [
+    {
+      "width": 1440,
+      "height": 900,
+      "textScale": 1,
+      "pages": [
+        "Latest 50 events",
+        "Events 51\u2013100",
+        "Events 101\u2013150",
+        "Events 151\u2013200"
+      ],
+      "initialCount": 50,
+      "selected": "9007199254741072",
+      "exactBytesEqual": true,
+      "exactInt64": true,
+      "summaryLength": 320,
+      "duplicate": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "historyNodeRetained": true,
+        "choiceNodeRetained": true,
+        "exactNodeRetained": true,
+        "exactFocusRetained": true,
+        "exactOpen": "true"
+      },
+      "newEventWhileReading": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "exactNodeRetained": true,
+        "exactFocusRetained": true,
+        "exactOpen": "true"
+      },
+      "append": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "choiceNodeRetained": true,
+        "choiceFocusRetained": true
+      },
+      "pageChangeClearsSelection": true,
+      "selectionRetired": true
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "textScale": 1,
+      "pages": [
+        "Latest 50 events",
+        "Events 51\u2013100",
+        "Events 101\u2013150",
+        "Events 151\u2013200"
+      ],
+      "initialCount": 50,
+      "selected": "9007199254741072",
+      "exactBytesEqual": true,
+      "exactInt64": true,
+      "summaryLength": 320,
+      "duplicate": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "historyNodeRetained": true,
+        "choiceNodeRetained": true,
+        "exactNodeRetained": true,
+        "exactFocusRetained": true,
+        "exactOpen": "true"
+      },
+      "newEventWhileReading": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "exactNodeRetained": true,
+        "exactFocusRetained": true,
+        "exactOpen": "true"
+      },
+      "append": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "choiceNodeRetained": true,
+        "choiceFocusRetained": true
+      },
+      "pageChangeClearsSelection": true,
+      "selectionRetired": true
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "textScale": 1,
+      "pages": [
+        "Latest 50 events",
+        "Events 51\u2013100",
+        "Events 101\u2013150",
+        "Events 151\u2013200"
+      ],
+      "initialCount": 50,
+      "selected": "9007199254741072",
+      "exactBytesEqual": true,
+      "exactInt64": true,
+      "summaryLength": 320,
+      "duplicate": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "historyNodeRetained": true,
+        "choiceNodeRetained": true,
+        "exactNodeRetained": true,
+        "exactFocusRetained": true,
+        "exactOpen": "true"
+      },
+      "newEventWhileReading": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "exactNodeRetained": true,
+        "exactFocusRetained": true,
+        "exactOpen": "true"
+      },
+      "append": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "choiceNodeRetained": true,
+        "choiceFocusRetained": true
+      },
+      "pageChangeClearsSelection": true,
+      "selectionRetired": true
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "textScale": 2,
+      "pages": [
+        "Latest 50 events",
+        "Events 51\u2013100",
+        "Events 101\u2013150",
+        "Events 151\u2013200"
+      ],
+      "initialCount": 50,
+      "selected": "9007199254741072",
+      "exactBytesEqual": true,
+      "exactInt64": true,
+      "summaryLength": 320,
+      "duplicate": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "historyNodeRetained": true,
+        "choiceNodeRetained": true,
+        "exactNodeRetained": true,
+        "exactFocusRetained": true,
+        "exactOpen": "true"
+      },
+      "newEventWhileReading": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "exactNodeRetained": true,
+        "exactFocusRetained": true,
+        "exactOpen": "true"
+      },
+      "append": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "choiceNodeRetained": true,
+        "choiceFocusRetained": true
+      },
+      "pageChangeClearsSelection": true,
+      "selectionRetired": true
+    }
+  ],
+  "header": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "selected_token_scale": 1,
+      "routes": {
+        "activity": {
+          "document_width": 1440,
+          "reading_height": 727,
+          "label_box": {
+            "left": 123.703125,
+            "right": 621.828125,
+            "top": 27,
+            "bottom": 62
+          },
+          "brand_box": {
+            "left": 40,
+            "right": 622.5625,
+            "top": 28,
+            "bottom": 61
+          },
+          "updated_label_length": 109,
+          "updated_original_header_text_focus_retained": true,
+          "desktopPickerHidden": true,
+          "desktopMoreHidden": true
+        },
+        "host": {
+          "document_width": 1440,
+          "reading_height": 727,
+          "label_box": {
+            "left": 123.703125,
+            "right": 621.828125,
+            "top": 27,
+            "bottom": 62
+          },
+          "brand_box": {
+            "left": 40,
+            "right": 622.5625,
+            "top": 28,
+            "bottom": 61
+          },
+          "updated_label_length": 109,
+          "updated_original_header_text_focus_retained": true,
+          "desktopPickerHidden": true,
+          "desktopMoreHidden": true
+        }
+      }
+    },
+    {
+      "viewport": [
+        390,
+        900
+      ],
+      "selected_token_scale": 1,
+      "routes": {
+        "activity": {
+          "document_width": 390,
+          "reading_height": 758.40625,
+          "label_box": {
+            "left": 64,
+            "right": 273.734375,
+            "top": 42.59375,
+            "bottom": 88.59375
+          },
+          "brand_box": {
+            "left": 28,
+            "right": 274.203125,
+            "top": 24,
+            "bottom": 87.59375
+          },
+          "updated_label_length": 109,
+          "updated_original_header_text_focus_retained": true,
+          "picker": {
+            "cancelledValue": "https://arm.local/ui#activityView",
+            "originalConnected": true,
+            "openerFocus": true,
+            "routeUnchanged": true,
+            "keyboardTarget": "host"
+          },
+          "more": {
+            "closed": true,
+            "originalConnected": true,
+            "openerFocus": true
+          },
+          "resize": {
+            "short": [
+              {
+                "phase": "forward",
+                "index": 0,
+                "label": "Search\u2026",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 102.796875,
+                  "bottom": 140.796875
+                },
+                "text": {
+                  "left": 163.609375,
+                  "right": 226.46875,
+                  "top": 112.796875,
+                  "bottom": 130.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 0,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "forward",
+                "index": 1,
+                "label": "Resource names",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 152.796875,
+                  "bottom": 190.796875
+                },
+                "text": {
+                  "left": 156.3125,
+                  "right": 273.6875,
+                  "top": 162.796875,
+                  "bottom": 180.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 0,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "forward",
+                "index": 2,
+                "label": "Copy login link",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 202.796875,
+                  "bottom": 240.796875
+                },
+                "text": {
+                  "left": 163.109375,
+                  "right": 266.875,
+                  "top": 212.796875,
+                  "bottom": 230.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 0,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "forward",
+                "index": 3,
+                "label": "Live activity",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 238.796875,
+                  "bottom": 276.796875
+                },
+                "text": {
+                  "left": 172.640625,
+                  "right": 257.34375,
+                  "top": 248.796875,
+                  "bottom": 266.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 14,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "forward",
+                "index": 4,
+                "label": "Display settings",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 123,
+                  "top": 222.796875,
+                  "bottom": 260.796875
+                },
+                "text": {
+                  "left": 99.03125,
+                  "right": 108.96875,
+                  "top": 231.546875,
+                  "bottom": 250.546875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 80,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 16.5,
+                "tooltip": {
+                  "expected": "Display settings",
+                  "text": "Display settings",
+                  "style": {
+                    "content": "\"Display settings\"",
+                    "left": "0px",
+                    "transform": "none",
+                    "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                  },
+                  "border": {
+                    "left": 86,
+                    "right": 196.40625,
+                    "top": 187,
+                    "bottom": 215.796875
+                  },
+                  "painted": [
+                    {
+                      "left": 95,
+                      "top": 193,
+                      "right": 187.40625,
+                      "bottom": 208
+                    }
+                  ],
+                  "clip": {
+                    "left": 69,
+                    "right": 361,
+                    "top": 86.796875,
+                    "bottom": 276.796875
+                  },
+                  "fullBoxFits": true,
+                  "fullTextFits": true
+                },
+                "hoverTooltip": {
+                  "expected": "Display settings",
+                  "text": "Display settings",
+                  "style": {
+                    "content": "\"Display settings\"",
+                    "left": "0px",
+                    "transform": "none",
+                    "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                  },
+                  "border": {
+                    "left": 86,
+                    "right": 196.40625,
+                    "top": 187,
+                    "bottom": 215.796875
+                  },
+                  "painted": [
+                    {
+                      "left": 95,
+                      "top": 193,
+                      "right": 187.40625,
+                      "bottom": 208
+                    }
+                  ],
+                  "clip": {
+                    "left": 69,
+                    "right": 361,
+                    "top": 86.796875,
+                    "bottom": 276.796875
+                  },
+                  "fullBoxFits": true,
+                  "fullTextFits": true
+                }
+              },
+              {
+                "phase": "backward",
+                "index": 3,
+                "label": "Live activity",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 172.796875,
+                  "bottom": 210.796875
+                },
+                "text": {
+                  "left": 172.640625,
+                  "right": 257.34375,
+                  "top": 182.796875,
+                  "bottom": 200.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 80,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "backward",
+                "index": 2,
+                "label": "Copy login link",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 122.796875,
+                  "bottom": 160.796875
+                },
+                "text": {
+                  "left": 163.109375,
+                  "right": 266.875,
+                  "top": 132.796875,
+                  "bottom": 150.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 80,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "backward",
+                "index": 1,
+                "label": "Resource names",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 86.796875,
+                  "bottom": 124.796875
+                },
+                "text": {
+                  "left": 156.3125,
+                  "right": 273.6875,
+                  "top": 96.796875,
+                  "bottom": 114.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 66,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "backward",
+                "index": 0,
+                "label": "Search\u2026",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 102.796875,
+                  "bottom": 140.796875
+                },
+                "text": {
+                  "left": 163.609375,
+                  "right": 226.46875,
+                  "top": 112.796875,
+                  "bottom": 130.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 0,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              }
+            ],
+            "back": {
+              "panelRetained": true,
+              "controlsRetained": [
+                true,
+                true,
+                true,
+                true,
+                true
+              ],
+              "open": true
+            }
+          },
+          "menuTraversal": [
+            {
+              "phase": "forward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 102.796875,
+                "bottom": 140.796875
+              },
+              "text": {
+                "left": 163.609375,
+                "right": 226.46875,
+                "top": 112.796875,
+                "bottom": 130.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 152.796875,
+                "bottom": 190.796875
+              },
+              "text": {
+                "left": 156.3125,
+                "right": 273.6875,
+                "top": 162.796875,
+                "bottom": 180.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 202.796875,
+                "bottom": 240.796875
+              },
+              "text": {
+                "left": 163.109375,
+                "right": 266.875,
+                "top": 212.796875,
+                "bottom": 230.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 252.796875,
+                "bottom": 290.796875
+              },
+              "text": {
+                "left": 172.640625,
+                "right": 257.34375,
+                "top": 262.796875,
+                "bottom": 280.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 4,
+              "label": "Display settings",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 123,
+                "top": 302.796875,
+                "bottom": 340.796875
+              },
+              "text": {
+                "left": 99.03125,
+                "right": 108.96875,
+                "top": 311.546875,
+                "bottom": 330.546875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 16.5,
+              "tooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 86,
+                  "right": 196.40625,
+                  "top": 267,
+                  "bottom": 295.796875
+                },
+                "painted": [
+                  {
+                    "left": 95,
+                    "top": 273,
+                    "right": 187.40625,
+                    "bottom": 288
+                  }
+                ],
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 356.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              },
+              "hoverTooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 86,
+                  "right": 196.40625,
+                  "top": 267,
+                  "bottom": 295.796875
+                },
+                "painted": [
+                  {
+                    "left": 95,
+                    "top": 273,
+                    "right": 187.40625,
+                    "bottom": 288
+                  }
+                ],
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 356.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              }
+            },
+            {
+              "phase": "backward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 252.796875,
+                "bottom": 290.796875
+              },
+              "text": {
+                "left": 172.640625,
+                "right": 257.34375,
+                "top": 262.796875,
+                "bottom": 280.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 202.796875,
+                "bottom": 240.796875
+              },
+              "text": {
+                "left": 163.109375,
+                "right": 266.875,
+                "top": 212.796875,
+                "bottom": 230.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 152.796875,
+                "bottom": 190.796875
+              },
+              "text": {
+                "left": 156.3125,
+                "right": 273.6875,
+                "top": 162.796875,
+                "bottom": 180.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 102.796875,
+                "bottom": 140.796875
+              },
+              "text": {
+                "left": 163.609375,
+                "right": 226.46875,
+                "top": 112.796875,
+                "bottom": 130.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            }
+          ]
+        },
+        "host": {
+          "document_width": 390,
+          "reading_height": 758.40625,
+          "label_box": {
+            "left": 64,
+            "right": 273.734375,
+            "top": 42.59375,
+            "bottom": 88.59375
+          },
+          "brand_box": {
+            "left": 28,
+            "right": 274.203125,
+            "top": 24,
+            "bottom": 87.59375
+          },
+          "updated_label_length": 109,
+          "updated_original_header_text_focus_retained": true,
+          "picker": {
+            "cancelledValue": "https://arm.local/ui#hostView",
+            "originalConnected": true,
+            "openerFocus": true,
+            "routeUnchanged": true,
+            "keyboardTarget": "activity"
+          },
+          "more": {
+            "closed": true,
+            "originalConnected": true,
+            "openerFocus": true
+          },
+          "resize": {
+            "short": [
+              {
+                "phase": "forward",
+                "index": 0,
+                "label": "Search\u2026",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 102.796875,
+                  "bottom": 140.796875
+                },
+                "text": {
+                  "left": 163.609375,
+                  "right": 226.46875,
+                  "top": 112.796875,
+                  "bottom": 130.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 0,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "forward",
+                "index": 1,
+                "label": "Resource names",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 152.796875,
+                  "bottom": 190.796875
+                },
+                "text": {
+                  "left": 156.3125,
+                  "right": 273.6875,
+                  "top": 162.796875,
+                  "bottom": 180.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 0,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "forward",
+                "index": 2,
+                "label": "Copy login link",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 202.796875,
+                  "bottom": 240.796875
+                },
+                "text": {
+                  "left": 163.109375,
+                  "right": 266.875,
+                  "top": 212.796875,
+                  "bottom": 230.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 0,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "forward",
+                "index": 3,
+                "label": "Live activity",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 238.796875,
+                  "bottom": 276.796875
+                },
+                "text": {
+                  "left": 172.640625,
+                  "right": 257.34375,
+                  "top": 248.796875,
+                  "bottom": 266.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 14,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "forward",
+                "index": 4,
+                "label": "Display settings",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 123,
+                  "top": 222.796875,
+                  "bottom": 260.796875
+                },
+                "text": {
+                  "left": 99.03125,
+                  "right": 108.96875,
+                  "top": 231.546875,
+                  "bottom": 250.546875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 80,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 16.5,
+                "tooltip": {
+                  "expected": "Display settings",
+                  "text": "Display settings",
+                  "style": {
+                    "content": "\"Display settings\"",
+                    "left": "0px",
+                    "transform": "none",
+                    "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                  },
+                  "border": {
+                    "left": 86,
+                    "right": 196.40625,
+                    "top": 187,
+                    "bottom": 215.796875
+                  },
+                  "painted": [
+                    {
+                      "left": 95,
+                      "top": 193,
+                      "right": 187.40625,
+                      "bottom": 208
+                    }
+                  ],
+                  "clip": {
+                    "left": 69,
+                    "right": 361,
+                    "top": 86.796875,
+                    "bottom": 276.796875
+                  },
+                  "fullBoxFits": true,
+                  "fullTextFits": true
+                },
+                "hoverTooltip": {
+                  "expected": "Display settings",
+                  "text": "Display settings",
+                  "style": {
+                    "content": "\"Display settings\"",
+                    "left": "0px",
+                    "transform": "none",
+                    "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                  },
+                  "border": {
+                    "left": 86,
+                    "right": 196.40625,
+                    "top": 187,
+                    "bottom": 215.796875
+                  },
+                  "painted": [
+                    {
+                      "left": 95,
+                      "top": 193,
+                      "right": 187.40625,
+                      "bottom": 208
+                    }
+                  ],
+                  "clip": {
+                    "left": 69,
+                    "right": 361,
+                    "top": 86.796875,
+                    "bottom": 276.796875
+                  },
+                  "fullBoxFits": true,
+                  "fullTextFits": true
+                }
+              },
+              {
+                "phase": "backward",
+                "index": 3,
+                "label": "Live activity",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 172.796875,
+                  "bottom": 210.796875
+                },
+                "text": {
+                  "left": 172.640625,
+                  "right": 257.34375,
+                  "top": 182.796875,
+                  "bottom": 200.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 80,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "backward",
+                "index": 2,
+                "label": "Copy login link",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 122.796875,
+                  "bottom": 160.796875
+                },
+                "text": {
+                  "left": 163.109375,
+                  "right": 266.875,
+                  "top": 132.796875,
+                  "bottom": 150.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 80,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "backward",
+                "index": 1,
+                "label": "Resource names",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 86.796875,
+                  "bottom": 124.796875
+                },
+                "text": {
+                  "left": 156.3125,
+                  "right": 273.6875,
+                  "top": 96.796875,
+                  "bottom": 114.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 66,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              },
+              {
+                "phase": "backward",
+                "index": 0,
+                "label": "Search\u2026",
+                "focus": true,
+                "originalConnected": true,
+                "box": {
+                  "left": 85,
+                  "right": 345,
+                  "top": 102.796875,
+                  "bottom": 140.796875
+                },
+                "text": {
+                  "left": 163.609375,
+                  "right": 226.46875,
+                  "top": 112.796875,
+                  "bottom": 130.796875
+                },
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 276.796875
+                },
+                "boxFits": true,
+                "textFits": true,
+                "panelTop": 85.796875,
+                "panelBottom": 277.796875,
+                "viewportHeight": 320,
+                "scrollTop": 0,
+                "scrollHeight": 270,
+                "clientHeight": 190,
+                "fontSize": 15,
+                "tooltip": null
+              }
+            ],
+            "back": {
+              "panelRetained": true,
+              "controlsRetained": [
+                true,
+                true,
+                true,
+                true,
+                true
+              ],
+              "open": true
+            }
+          },
+          "menuTraversal": [
+            {
+              "phase": "forward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 102.796875,
+                "bottom": 140.796875
+              },
+              "text": {
+                "left": 163.609375,
+                "right": 226.46875,
+                "top": 112.796875,
+                "bottom": 130.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 152.796875,
+                "bottom": 190.796875
+              },
+              "text": {
+                "left": 156.3125,
+                "right": 273.6875,
+                "top": 162.796875,
+                "bottom": 180.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 202.796875,
+                "bottom": 240.796875
+              },
+              "text": {
+                "left": 163.109375,
+                "right": 266.875,
+                "top": 212.796875,
+                "bottom": 230.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 252.796875,
+                "bottom": 290.796875
+              },
+              "text": {
+                "left": 172.640625,
+                "right": 257.34375,
+                "top": 262.796875,
+                "bottom": 280.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 4,
+              "label": "Display settings",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 123,
+                "top": 302.796875,
+                "bottom": 340.796875
+              },
+              "text": {
+                "left": 99.03125,
+                "right": 108.96875,
+                "top": 311.546875,
+                "bottom": 330.546875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 16.5,
+              "tooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 86,
+                  "right": 196.40625,
+                  "top": 267,
+                  "bottom": 295.796875
+                },
+                "painted": [
+                  {
+                    "left": 95,
+                    "top": 273,
+                    "right": 187.40625,
+                    "bottom": 288
+                  }
+                ],
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 356.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              },
+              "hoverTooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 86,
+                  "right": 196.40625,
+                  "top": 267,
+                  "bottom": 295.796875
+                },
+                "painted": [
+                  {
+                    "left": 95,
+                    "top": 273,
+                    "right": 187.40625,
+                    "bottom": 288
+                  }
+                ],
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 86.796875,
+                  "bottom": 356.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              }
+            },
+            {
+              "phase": "backward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 252.796875,
+                "bottom": 290.796875
+              },
+              "text": {
+                "left": 172.640625,
+                "right": 257.34375,
+                "top": 262.796875,
+                "bottom": 280.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 202.796875,
+                "bottom": 240.796875
+              },
+              "text": {
+                "left": 163.109375,
+                "right": 266.875,
+                "top": 212.796875,
+                "bottom": 230.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 152.796875,
+                "bottom": 190.796875
+              },
+              "text": {
+                "left": 156.3125,
+                "right": 273.6875,
+                "top": 162.796875,
+                "bottom": 180.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 102.796875,
+                "bottom": 140.796875
+              },
+              "text": {
+                "left": 163.609375,
+                "right": 226.46875,
+                "top": 112.796875,
+                "bottom": 130.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 900,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": [
+        390,
+        320
+      ],
+      "selected_token_scale": 1,
+      "routes": {
+        "activity": {
+          "document_width": 390,
+          "reading_height": 178.40625,
+          "label_box": {
+            "left": 64,
+            "right": 273.734375,
+            "top": 42.59375,
+            "bottom": 88.59375
+          },
+          "brand_box": {
+            "left": 28,
+            "right": 274.203125,
+            "top": 24,
+            "bottom": 87.59375
+          },
+          "updated_label_length": 109,
+          "updated_original_header_text_focus_retained": true,
+          "picker": {
+            "cancelledValue": "https://arm.local/ui#activityView",
+            "originalConnected": true,
+            "openerFocus": true,
+            "routeUnchanged": true,
+            "keyboardTarget": "host"
+          },
+          "more": {
+            "closed": true,
+            "originalConnected": true,
+            "openerFocus": true
+          },
+          "menuTraversal": [
+            {
+              "phase": "forward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 86.796875,
+                "bottom": 124.796875
+              },
+              "text": {
+                "left": 163.609375,
+                "right": 226.46875,
+                "top": 96.796875,
+                "bottom": 114.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 136.796875,
+                "bottom": 174.796875
+              },
+              "text": {
+                "left": 156.3125,
+                "right": 273.6875,
+                "top": 146.796875,
+                "bottom": 164.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 186.796875,
+                "bottom": 224.796875
+              },
+              "text": {
+                "left": 163.109375,
+                "right": 266.875,
+                "top": 196.796875,
+                "bottom": 214.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 222.796875,
+                "bottom": 260.796875
+              },
+              "text": {
+                "left": 172.640625,
+                "right": 257.34375,
+                "top": 232.796875,
+                "bottom": 250.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 14,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 4,
+              "label": "Display settings",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 123,
+                "top": 206.796875,
+                "bottom": 244.796875
+              },
+              "text": {
+                "left": 99.03125,
+                "right": 108.96875,
+                "top": 215.546875,
+                "bottom": 234.546875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 80,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 16.5,
+              "tooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 86,
+                  "right": 196.40625,
+                  "top": 171,
+                  "bottom": 199.796875
+                },
+                "painted": [
+                  {
+                    "left": 95,
+                    "top": 177,
+                    "right": 187.40625,
+                    "bottom": 192
+                  }
+                ],
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 70.796875,
+                  "bottom": 260.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              },
+              "hoverTooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 86,
+                  "right": 196.40625,
+                  "top": 171,
+                  "bottom": 199.796875
+                },
+                "painted": [
+                  {
+                    "left": 95,
+                    "top": 177,
+                    "right": 187.40625,
+                    "bottom": 192
+                  }
+                ],
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 70.796875,
+                  "bottom": 260.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              }
+            },
+            {
+              "phase": "backward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 156.796875,
+                "bottom": 194.796875
+              },
+              "text": {
+                "left": 172.640625,
+                "right": 257.34375,
+                "top": 166.796875,
+                "bottom": 184.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 80,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 106.796875,
+                "bottom": 144.796875
+              },
+              "text": {
+                "left": 163.109375,
+                "right": 266.875,
+                "top": 116.796875,
+                "bottom": 134.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 80,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 70.796875,
+                "bottom": 108.796875
+              },
+              "text": {
+                "left": 156.3125,
+                "right": 273.6875,
+                "top": 80.796875,
+                "bottom": 98.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 66,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 86.796875,
+                "bottom": 124.796875
+              },
+              "text": {
+                "left": 163.609375,
+                "right": 226.46875,
+                "top": 96.796875,
+                "bottom": 114.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            }
+          ]
+        },
+        "host": {
+          "document_width": 390,
+          "reading_height": 178.40625,
+          "label_box": {
+            "left": 64,
+            "right": 273.734375,
+            "top": 42.59375,
+            "bottom": 88.59375
+          },
+          "brand_box": {
+            "left": 28,
+            "right": 274.203125,
+            "top": 24,
+            "bottom": 87.59375
+          },
+          "updated_label_length": 109,
+          "updated_original_header_text_focus_retained": true,
+          "picker": {
+            "cancelledValue": "https://arm.local/ui#hostView",
+            "originalConnected": true,
+            "openerFocus": true,
+            "routeUnchanged": true,
+            "keyboardTarget": "activity"
+          },
+          "more": {
+            "closed": true,
+            "originalConnected": true,
+            "openerFocus": true
+          },
+          "menuTraversal": [
+            {
+              "phase": "forward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 86.796875,
+                "bottom": 124.796875
+              },
+              "text": {
+                "left": 163.609375,
+                "right": 226.46875,
+                "top": 96.796875,
+                "bottom": 114.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 136.796875,
+                "bottom": 174.796875
+              },
+              "text": {
+                "left": 156.3125,
+                "right": 273.6875,
+                "top": 146.796875,
+                "bottom": 164.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 186.796875,
+                "bottom": 224.796875
+              },
+              "text": {
+                "left": 163.109375,
+                "right": 266.875,
+                "top": 196.796875,
+                "bottom": 214.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 222.796875,
+                "bottom": 260.796875
+              },
+              "text": {
+                "left": 172.640625,
+                "right": 257.34375,
+                "top": 232.796875,
+                "bottom": 250.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 14,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 4,
+              "label": "Display settings",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 123,
+                "top": 206.796875,
+                "bottom": 244.796875
+              },
+              "text": {
+                "left": 99.03125,
+                "right": 108.96875,
+                "top": 215.546875,
+                "bottom": 234.546875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 80,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 16.5,
+              "tooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 86,
+                  "right": 196.40625,
+                  "top": 171,
+                  "bottom": 199.796875
+                },
+                "painted": [
+                  {
+                    "left": 95,
+                    "top": 177,
+                    "right": 187.40625,
+                    "bottom": 192
+                  }
+                ],
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 70.796875,
+                  "bottom": 260.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              },
+              "hoverTooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 86,
+                  "right": 196.40625,
+                  "top": 171,
+                  "bottom": 199.796875
+                },
+                "painted": [
+                  {
+                    "left": 95,
+                    "top": 177,
+                    "right": 187.40625,
+                    "bottom": 192
+                  }
+                ],
+                "clip": {
+                  "left": 69,
+                  "right": 361,
+                  "top": 70.796875,
+                  "bottom": 260.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              }
+            },
+            {
+              "phase": "backward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 156.796875,
+                "bottom": 194.796875
+              },
+              "text": {
+                "left": 172.640625,
+                "right": 257.34375,
+                "top": 166.796875,
+                "bottom": 184.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 80,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 106.796875,
+                "bottom": 144.796875
+              },
+              "text": {
+                "left": 163.109375,
+                "right": 266.875,
+                "top": 116.796875,
+                "bottom": 134.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 80,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 70.796875,
+                "bottom": 108.796875
+              },
+              "text": {
+                "left": 156.3125,
+                "right": 273.6875,
+                "top": 80.796875,
+                "bottom": 98.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 66,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 85,
+                "right": 345,
+                "top": 86.796875,
+                "bottom": 124.796875
+              },
+              "text": {
+                "left": 163.609375,
+                "right": 226.46875,
+                "top": 96.796875,
+                "bottom": 114.796875
+              },
+              "clip": {
+                "left": 69,
+                "right": 361,
+                "top": 70.796875,
+                "bottom": 260.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 69.796875,
+              "panelBottom": 261.796875,
+              "viewportHeight": 320,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 190,
+              "fontSize": 15,
+              "tooltip": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": [
+        768,
+        600
+      ],
+      "selected_token_scale": 2,
+      "routes": {
+        "activity": {
+          "document_width": 768,
+          "reading_height": 443.90625,
+          "label_box": {
+            "left": 64,
+            "right": 326.171875,
+            "top": 42.59375,
+            "bottom": 88.59375
+          },
+          "brand_box": {
+            "left": 28,
+            "right": 328.875,
+            "top": 24,
+            "bottom": 87.59375
+          },
+          "updated_label_length": 109,
+          "updated_original_header_text_focus_retained": true,
+          "more": {
+            "closed": true,
+            "originalConnected": true,
+            "openerFocus": true
+          },
+          "desktopPickerHidden": true,
+          "menuTraversal": [
+            {
+              "phase": "forward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 102.796875,
+                "bottom": 140.796875
+              },
+              "text": {
+                "left": 541.609375,
+                "right": 604.46875,
+                "top": 112.796875,
+                "bottom": 130.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 152.796875,
+                "bottom": 190.796875
+              },
+              "text": {
+                "left": 534.3125,
+                "right": 651.6875,
+                "top": 162.796875,
+                "bottom": 180.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 202.796875,
+                "bottom": 240.796875
+              },
+              "text": {
+                "left": 541.109375,
+                "right": 644.875,
+                "top": 212.796875,
+                "bottom": 230.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 252.796875,
+                "bottom": 290.796875
+              },
+              "text": {
+                "left": 550.640625,
+                "right": 635.34375,
+                "top": 262.796875,
+                "bottom": 280.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 4,
+              "label": "Display settings",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 501,
+                "top": 302.796875,
+                "bottom": 340.796875
+              },
+              "text": {
+                "left": 477.03125,
+                "right": 486.96875,
+                "top": 311.546875,
+                "bottom": 330.546875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 16.5,
+              "tooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 464,
+                  "right": 574.40625,
+                  "top": 267,
+                  "bottom": 295.796875
+                },
+                "painted": [
+                  {
+                    "left": 473,
+                    "top": 273,
+                    "right": 565.40625,
+                    "bottom": 288
+                  }
+                ],
+                "clip": {
+                  "left": 447,
+                  "right": 739,
+                  "top": 86.796875,
+                  "bottom": 356.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              },
+              "hoverTooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 464,
+                  "right": 574.40625,
+                  "top": 267,
+                  "bottom": 295.796875
+                },
+                "painted": [
+                  {
+                    "left": 473,
+                    "top": 273,
+                    "right": 565.40625,
+                    "bottom": 288
+                  }
+                ],
+                "clip": {
+                  "left": 447,
+                  "right": 739,
+                  "top": 86.796875,
+                  "bottom": 356.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              }
+            },
+            {
+              "phase": "backward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 252.796875,
+                "bottom": 290.796875
+              },
+              "text": {
+                "left": 550.640625,
+                "right": 635.34375,
+                "top": 262.796875,
+                "bottom": 280.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 202.796875,
+                "bottom": 240.796875
+              },
+              "text": {
+                "left": 541.109375,
+                "right": 644.875,
+                "top": 212.796875,
+                "bottom": 230.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 152.796875,
+                "bottom": 190.796875
+              },
+              "text": {
+                "left": 534.3125,
+                "right": 651.6875,
+                "top": 162.796875,
+                "bottom": 180.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 102.796875,
+                "bottom": 140.796875
+              },
+              "text": {
+                "left": 541.609375,
+                "right": 604.46875,
+                "top": 112.796875,
+                "bottom": 130.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            }
+          ]
+        },
+        "host": {
+          "document_width": 768,
+          "reading_height": 443.90625,
+          "label_box": {
+            "left": 64,
+            "right": 326.171875,
+            "top": 42.59375,
+            "bottom": 88.59375
+          },
+          "brand_box": {
+            "left": 28,
+            "right": 328.875,
+            "top": 24,
+            "bottom": 87.59375
+          },
+          "updated_label_length": 109,
+          "updated_original_header_text_focus_retained": true,
+          "more": {
+            "closed": true,
+            "originalConnected": true,
+            "openerFocus": true
+          },
+          "desktopPickerHidden": true,
+          "menuTraversal": [
+            {
+              "phase": "forward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 102.796875,
+                "bottom": 140.796875
+              },
+              "text": {
+                "left": 541.609375,
+                "right": 604.46875,
+                "top": 112.796875,
+                "bottom": 130.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 152.796875,
+                "bottom": 190.796875
+              },
+              "text": {
+                "left": 534.3125,
+                "right": 651.6875,
+                "top": 162.796875,
+                "bottom": 180.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 202.796875,
+                "bottom": 240.796875
+              },
+              "text": {
+                "left": 541.109375,
+                "right": 644.875,
+                "top": 212.796875,
+                "bottom": 230.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 252.796875,
+                "bottom": 290.796875
+              },
+              "text": {
+                "left": 550.640625,
+                "right": 635.34375,
+                "top": 262.796875,
+                "bottom": 280.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "forward",
+              "index": 4,
+              "label": "Display settings",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 501,
+                "top": 302.796875,
+                "bottom": 340.796875
+              },
+              "text": {
+                "left": 477.03125,
+                "right": 486.96875,
+                "top": 311.546875,
+                "bottom": 330.546875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 16.5,
+              "tooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 464,
+                  "right": 574.40625,
+                  "top": 267,
+                  "bottom": 295.796875
+                },
+                "painted": [
+                  {
+                    "left": 473,
+                    "top": 273,
+                    "right": 565.40625,
+                    "bottom": 288
+                  }
+                ],
+                "clip": {
+                  "left": 447,
+                  "right": 739,
+                  "top": 86.796875,
+                  "bottom": 356.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              },
+              "hoverTooltip": {
+                "expected": "Display settings",
+                "text": "Display settings",
+                "style": {
+                  "content": "\"Display settings\"",
+                  "left": "0px",
+                  "transform": "none",
+                  "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+                },
+                "border": {
+                  "left": 464,
+                  "right": 574.40625,
+                  "top": 267,
+                  "bottom": 295.796875
+                },
+                "painted": [
+                  {
+                    "left": 473,
+                    "top": 273,
+                    "right": 565.40625,
+                    "bottom": 288
+                  }
+                ],
+                "clip": {
+                  "left": 447,
+                  "right": 739,
+                  "top": 86.796875,
+                  "bottom": 356.796875
+                },
+                "fullBoxFits": true,
+                "fullTextFits": true
+              }
+            },
+            {
+              "phase": "backward",
+              "index": 3,
+              "label": "Live activity",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 252.796875,
+                "bottom": 290.796875
+              },
+              "text": {
+                "left": 550.640625,
+                "right": 635.34375,
+                "top": 262.796875,
+                "bottom": 280.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 2,
+              "label": "Copy login link",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 202.796875,
+                "bottom": 240.796875
+              },
+              "text": {
+                "left": 541.109375,
+                "right": 644.875,
+                "top": 212.796875,
+                "bottom": 230.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 1,
+              "label": "Resource names",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 152.796875,
+                "bottom": 190.796875
+              },
+              "text": {
+                "left": 534.3125,
+                "right": 651.6875,
+                "top": 162.796875,
+                "bottom": 180.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            },
+            {
+              "phase": "backward",
+              "index": 0,
+              "label": "Search\u2026",
+              "focus": true,
+              "originalConnected": true,
+              "box": {
+                "left": 463,
+                "right": 723,
+                "top": 102.796875,
+                "bottom": 140.796875
+              },
+              "text": {
+                "left": 541.609375,
+                "right": 604.46875,
+                "top": 112.796875,
+                "bottom": 130.796875
+              },
+              "clip": {
+                "left": 447,
+                "right": 739,
+                "top": 86.796875,
+                "bottom": 356.796875
+              },
+              "boxFits": true,
+              "textFits": true,
+              "panelTop": 85.796875,
+              "panelBottom": 357.796875,
+              "viewportHeight": 600,
+              "scrollTop": 0,
+              "scrollHeight": 270,
+              "clientHeight": 270,
+              "fontSize": 15,
+              "tooltip": null
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "lifecycle": [
+    {
+      "width": 1440,
+      "height": 900,
+      "textScale": 1,
+      "selected": "9007199254741172",
+      "changedSelectionRetired": true,
+      "context": {
+        "originalRetired": true,
+        "selection": "",
+        "readerCount": 0
+      },
+      "sameSequenceCurrentSourceExact": true,
+      "cancelledSelection": {
+        "readerCount": 0,
+        "previousRetired": true
+      },
+      "forbidden": []
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "textScale": 1,
+      "selected": "9007199254741172",
+      "changedSelectionRetired": true,
+      "context": {
+        "originalRetired": true,
+        "selection": "",
+        "readerCount": 0
+      },
+      "sameSequenceCurrentSourceExact": true,
+      "cancelledSelection": {
+        "readerCount": 0,
+        "previousRetired": true
+      },
+      "forbidden": []
+    }
+  ],
+  "truncation": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "routes": {
+        "activity": {
+          "length": 256020,
+          "sha256": "3bfd8969d27816e7ec01e22a9bb08b41e59203b246eddc2aced3d62dab21b961",
+          "endsWithTruncation": true,
+          "truncationRendered": true,
+          "nativeEndTail": {
+            "tail": "splay truncated]",
+            "left": 761.4375,
+            "right": 888.609375,
+            "top": 766.734375,
+            "bottom": 781.734375,
+            "clip": {
+              "left": 16,
+              "right": 1424,
+              "top": 108,
+              "bottom": 803.4375
+            },
+            "fullTextFits": true,
+            "documentY": 29637
+          }
+        },
+        "host": {
+          "length": 256020,
+          "sha256": "f41fec43d968987940e5696bd5670322fdf2943aa395e24728aa8a01d5ffb27f",
+          "endsWithTruncation": true,
+          "truncationRendered": true,
+          "nativeEndTail": {
+            "tail": "splay truncated]",
+            "left": 72.46875,
+            "right": 197.71875,
+            "top": 751.671875,
+            "bottom": 766.671875,
+            "clip": {
+              "left": 33,
+              "right": 1407,
+              "top": 712.875,
+              "bottom": 786.875
+            },
+            "fullTextFits": true,
+            "documentY": 524
+          },
+          "fullNativeText": {
+            "technical": {
+              "length": 1073,
+              "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+              "exact": true,
+              "boundariesPreserved": true
+            },
+            "infrastructure": {
+              "length": 256020,
+              "sha256": "f41fec43d968987940e5696bd5670322fdf2943aa395e24728aa8a01d5ffb27f",
+              "exact": true,
+              "boundariesPreserved": true
+            }
+          },
+          "keyboardHorizontal": {
+            "before": 0,
+            "after": 40,
+            "max": 2002283,
+            "focus": true
+          },
+          "largeKeyboardQualification": "Positive native keyboard movement checked; maximum-cap line end uses bounded native wheel input rather than tens of thousands of repeated keys",
+          "rightmostText": {
+            "tail": "ametadatametadat",
+            "left": 1265.75,
+            "right": 1391,
+            "top": 730.875,
+            "bottom": 745.875,
+            "clip": {
+              "left": 33,
+              "right": 1407,
+              "top": 712.875,
+              "bottom": 786.875
+            },
+            "fullTextFits": true,
+            "documentY": 524
+          }
+        }
+      }
+    },
+    {
+      "viewport": [
+        390,
+        320
+      ],
+      "routes": {
+        "activity": {
+          "length": 256020,
+          "sha256": "3bfd8969d27816e7ec01e22a9bb08b41e59203b246eddc2aced3d62dab21b961",
+          "endsWithTruncation": true,
+          "truncationRendered": true,
+          "nativeEndTail": {
+            "tail": "splay truncated]",
+            "left": 213.09375,
+            "right": 340.265625,
+            "top": 190.59375,
+            "bottom": 205.59375,
+            "clip": {
+              "left": 16,
+              "right": 374,
+              "top": 80.59375,
+              "bottom": 226.53125
+            },
+            "fullTextFits": true,
+            "documentY": 130680
+          }
+        },
+        "host": {
+          "length": 256020,
+          "sha256": "f41fec43d968987940e5696bd5670322fdf2943aa395e24728aa8a01d5ffb27f",
+          "endsWithTruncation": true,
+          "truncationRendered": true,
+          "nativeEndTail": {
+            "tail": "splay truncated]",
+            "left": 72.46875,
+            "right": 197.71875,
+            "top": 175.515625,
+            "bottom": 190.515625,
+            "clip": {
+              "left": 33,
+              "right": 357,
+              "top": 136.71875,
+              "bottom": 210.71875
+            },
+            "fullTextFits": true,
+            "documentY": 1804
+          },
+          "fullNativeText": {
+            "technical": {
+              "length": 1073,
+              "sha256": "58248572bfa3703c4b6d7c2f29a347963ad15c8757355fe5e5ece1a136360a83",
+              "exact": true,
+              "boundariesPreserved": true
+            },
+            "infrastructure": {
+              "length": 256020,
+              "sha256": "f41fec43d968987940e5696bd5670322fdf2943aa395e24728aa8a01d5ffb27f",
+              "exact": true,
+              "boundariesPreserved": true
+            }
+          },
+          "keyboardHorizontal": {
+            "before": 0,
+            "after": 40,
+            "max": 2003333,
+            "focus": true
+          },
+          "largeKeyboardQualification": "Positive native keyboard movement checked; maximum-cap line end uses bounded native wheel input rather than tens of thousands of repeated keys",
+          "rightmostText": {
+            "tail": "ametadatametadat",
+            "left": 215.75,
+            "right": 341,
+            "top": 154.71875,
+            "bottom": 169.71875,
+            "clip": {
+              "left": 33,
+              "right": 357,
+              "top": 136.71875,
+              "bottom": 210.71875
+            },
+            "fullTextFits": true,
+            "documentY": 1804
+          }
+        }
+      }
+    }
+  ],
+  "causal_negatives": {
+    "header-menu-absence": {
+      "failure": "Each original focused More action must fit its true panel and viewport",
+      "graph_variant": "without-menu",
+      "effective_app_sha256": "309a2910ed9e356148c87f4af3905d53e7b400f8f00c68c8fd045d39efd6a330",
+      "receipt_sha256": "c27d5b0cbf2638b3f2d1f5858e376b50bb976bca31ef2b85fe7160982df1e2d0",
+      "elapsed_ms": 7763,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failed_control": {
+        "label": "Display settings",
+        "index": 4,
+        "box": {
+          "left": 85,
+          "right": 123,
+          "top": 286.796875,
+          "bottom": 324.796875
+        },
+        "clip": {
+          "left": 69,
+          "right": 361,
+          "top": 70.796875,
+          "bottom": 320
+        },
+        "boxFits": false,
+        "textFits": true
+      },
+      "tooltip": {
+        "expected": "Display settings",
+        "text": "Display settings",
+        "style": {
+          "content": "\"Display settings\"",
+          "left": "18px",
+          "transform": "matrix(1, 0, 0, 1, -55.2031, 0)",
+          "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+        },
+        "border": {
+          "left": 48.796875,
+          "right": 159.203125,
+          "top": 251,
+          "bottom": 279.796875
+        },
+        "painted": [
+          {
+            "left": 57.796875,
+            "top": 257,
+            "right": 150.203125,
+            "bottom": 272
+          }
+        ],
+        "clip": {
+          "left": 0,
+          "right": 390,
+          "top": 0,
+          "bottom": 320
+        },
+        "fullBoxFits": true,
+        "fullTextFits": true
+      }
+    },
+    "header-tooltip-absence": {
+      "failure": "Full native More tooltip must fit its scroll clip",
+      "graph_variant": "without-tooltip",
+      "effective_app_sha256": "4c96703a02d78e59ec24ba84e9f9ab1ba01a0738460d69071e4abec0dd18e6fd",
+      "receipt_sha256": "222bad19c6be943ad6687c61dd8336bde8b1c00b5bc80f88f8175dd54ed9b31f",
+      "elapsed_ms": 5143,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "failed_control": {
+        "label": "Display settings",
+        "index": 4,
+        "box": {
+          "left": 85,
+          "right": 123,
+          "top": 302.796875,
+          "bottom": 340.796875
+        },
+        "clip": {
+          "left": 69,
+          "right": 361,
+          "top": 86.796875,
+          "bottom": 356.796875
+        },
+        "boxFits": true,
+        "textFits": true
+      },
+      "tooltip": {
+        "expected": "Display settings",
+        "text": "Display settings",
+        "style": {
+          "content": "\"Display settings\"",
+          "left": "18px",
+          "transform": "matrix(1, 0, 0, 1, -55.2031, 0)",
+          "font": "500 12px / 16.8px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+        },
+        "border": {
+          "left": 48.796875,
+          "right": 159.203125,
+          "top": 267,
+          "bottom": 295.796875
+        },
+        "painted": [
+          {
+            "left": 57.796875,
+            "top": 273,
+            "right": 150.203125,
+            "bottom": 288
+          }
+        ],
+        "clip": {
+          "left": 69,
+          "right": 361,
+          "top": 86.796875,
+          "bottom": 356.796875
+        },
+        "fullBoxFits": false,
+        "fullTextFits": false
+      }
+    }
+  },
+  "earlier_evidence_qualification": [
+    "Original read-only inventory preserves empty Host Code, selected-reader loss and 563px narrow header findings; all 142 original artifacts reverified.",
+    "Initial corrected binding renders exact payload but inline Code collapses newlines. Native block alone leaves intrinsic-width PRE clipped by the disclosure. Scoped body and direct PRE sizing restore true horizontal scrolling.",
+    "An early keyboard helper sent extra ArrowRight after the PRE maximum, scrolling the separate old header horizontally. Final helper sends exactly the necessary steps, settles native scrollers, and separately measures actual clip/tail.",
+    "Earlier header-only collection with no action-by-action bounds hid the offscreen Settings control; new causal absence asserts the true control box. Menu containment then revealed clipped native Settings tooltip text, preserved as failed evidence.",
+    "Harness missing namespace arguments and initial Code/Choice shape assumptions are fixture errors; retained diagnostics do not establish product regressions.",
+    "Earlier phases retain their own product/fixture source hashes. Only the five final frozen cohorts share the full current source map."
+  ],
+  "limitations": [
+    "Synthetic read-only actual source routes. No real Backend, WebSocket, API, clipboard, host discovery, configuration, enrollment or resource operation.",
+    "Native select painted glyph bounds are unavailable: native keyboard selection/cancellation, labels and control boxes are tested. Selected pixel tokens doubled is not universal browser zoom; fixed native fonts are recorded.",
+    "Ordinary Host PRE horizontal endpoints use native ArrowRight and retain focus. Maximum-cap Host line proves positive keyboard scrolling, then uses bounded native wheel to reach its far endpoint; no full keyboard traversal claim for that huge line. Native End reaches marker/tail.",
+    "Code payload equality is distinct from simultaneous full visibility. Tall records require scrolling. Native boundary whitespace, all source payload characters and existing display cap/marker are preserved.",
+    "Changed-source evidence establishes cached-reader retirement and current synthetic selected payload; it does not validate broader real-auth or shared journal isolation.",
+    "Independent final diff/current-composition review, composed validation and central asset rebuild remain open. No owner build/install/activation. Full route/state/real transport, live drawer, terminal and broader UX acceptance remain open."
+  ]
+}
