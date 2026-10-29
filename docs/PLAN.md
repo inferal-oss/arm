@@ -6,6 +6,35 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Dashboard visibility and detail presentation — in progress
+
+Owner: `codex/dashboard-active-defaults`, based on accepted main `8780b34`.
+Web and terminal lease/run lists will hide inactive history by default, retain
+separate explicit saved choices and expose reversible checkbox/keyboard controls.
+Unresolved execution and unfamiliar nonterminal states remain visible. Filtering
+must preserve selected transcripts, independent windows, cursors and follow state.
+
+Separate presentation work groups run command, execution context, timing and
+technical metadata; shows existing host identity names and a Local marker only
+for a verified matching local ID; and improves the associated lease summary,
+actions and check-in layout. Exact IDs/records remain inspectable. Existing lease
+confirmation, revision, uncertainty, check-in and read-only boundaries are retained.
+No backend/protocol, resource accounting or pinned-engine change is assigned.
+Focused tests, rebuilt assets, source review and current-main composition precede
+integration. Private reference images and operational identities stay outside Git.
+
+## Native session discovery and activation — in progress
+
+Owner: `codex/rollout-activation`, continuing the accepted rollout task from
+`8780b34`. Implement project-scoped metadata discovery, exact-session activation
+text and a post-onboarding handoff with generic adapter boundaries. Supported
+delivery requires an explicit review of the exact recipient and message; other
+adapters remain copy-only. Discovery and message delivery do not enroll agents,
+grant resources or prove activity. Preserve audit, original identity/start and
+uncertain-delivery recovery without automatic retry. Disposable validation,
+independent review and integration precede the requested push and executable
+installation; actual agent activation and policy changes are not validation scope.
+
 ## Rollout removal and stale-boundary continuation
 
 Owner: `codex/rollout-removal`, based on main `53d7062`. Scope is reviewed
