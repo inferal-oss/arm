@@ -6,23 +6,23 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
-## Uninterrupted upgrade design — in progress
+## Uninterrupted upgrade design — reviewed; approach selection open
 
-Owner: `codex/live-upgrade-design`, based on accepted main `dfd916c`.
-Investigate how a running backend can adopt new code while preserving active
-jobs, leases, admission/accounting and cleanup ownership. Distinguish replacing
-the installed executable from runtime code uptake, uninterrupted workloads,
-brief admission/control-plane pauses and persistent client connections.
+Owner: `codex/live-upgrade-design`, based on `dfd916c`; focused design commit
+`23e211f` remains preserved on the owner branch. Independent read-only review
+confirms current install/runtime identity, supervision, drain/recovery, proxy
+reporting and generation/authority boundaries. Sixty-two added source/document
+links and scoped privacy/diff checks pass; no runtime experiment was needed.
 
-Trace existing lifecycle/recovery and compare re-exec, fenced backend handoff
-and a stable supervisor against actual durable state, process/descriptor custody,
-endpoint generations, idempotent in-flight outcomes and version/rollback fences.
-Return source-backed options, a recommended bounded milestone and concrete
-failure/recovery acceptance scenarios. This assignment is design-only: no live
-restart, installed-state or resource mutation, backend takeover, schema change or
-product implementation before the user chooses an approach. Any design files
-belong in the task's isolated worktree and focused commits; primary integration
-and publication remain central.
+The proposal separates a work-preserving verified-idle activation with a possible
+indefinite admission pause/API gap from resident custody with replaceable API/UI
+workers while jobs stay active. Neither establishes arbitrary whole-backend or
+connection continuity today. Current binaries need a preparatory compatible
+release; proposals must preserve original owners, single-writer fencing, exact
+operation outcomes and conservative accounting/cleanup. User approach selection,
+product implementation and all future native/failure-injection gates remain open.
+No live backend/installed-state mutation or product work is authorized by this
+design discussion, and the focused design is not integrated pending that choice.
 
 ## Dashboard visibility and detail presentation — reviewed and integrated
 
