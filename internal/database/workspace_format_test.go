@@ -61,6 +61,7 @@ func TestWorkspaceFormatBaselineReadOnlyCompatibility(t *testing.T) {
 func TestWorkspaceFormatBaselineRefusesUnknownAndDamagedMarkers(t *testing.T) {
 	cases := map[string]string{
 		"next-format":     `INSERT INTO metadata VALUES('workspace_format','2')`,
+		"worker-format":   `INSERT INTO metadata VALUES('workspace_format','4')`,
 		"future-format":   `INSERT INTO metadata VALUES('workspace_format','999')`,
 		"noncanonical":    `INSERT INTO metadata VALUES('workspace_format','01')`,
 		"whitespace":      `INSERT INTO metadata VALUES('workspace_format','1 ')`,

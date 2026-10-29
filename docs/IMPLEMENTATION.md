@@ -1,5 +1,22 @@
 # Backend and CLI implementation
 
+## Reserved worker state — refusal-only source
+
+The [workspace guard](../internal/database/workspace_format.go) rejects physical
+metadata/schema names in the reserved `resident_worker` namespace, their owner
+table names, lease-level `resident_worker` attachments regardless of value and
+exact worker/preparation kinds. It scans each duplicate JSON field/request and
+recognizes case, escaped names and Go long-s/Kelvin field aliases. Existing
+noncanonical SQL/BLOB/invalid-JSON refusals precede interpretation; ordinary
+formats 1/3 and provider-preparation refusals retain their earlier semantics.
+The [ordinary admission path](../internal/manager/manager.go) rejects reserved
+kinds before expiry/queue reconciliation, without creating leases/events/jobs.
+
+Format 4 is reserved for future combined worker semantics and remains unsupported.
+No model field, DDL, migration, positive capability/role/controller/launcher or
+End/expiry/Close refactor is added. These guards do not turn stored descriptors
+into owners and do not implement the worker architecture or `arm start` gate.
+
 ## Worker transaction and lifetime — proposed attachment only
 
 The [transaction refinement](design/resident-worker-transaction.md) adds no source.

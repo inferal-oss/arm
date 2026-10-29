@@ -6,7 +6,7 @@ import (
 )
 
 func TestWorkspaceFormatSettledProofAcceptsOrdinaryAndRefusesFuture(t *testing.T) {
-	for _, format := range []string{"1", "2"} {
+	for _, format := range []string{"1", "2", "4"} {
 		t.Run(format, func(t *testing.T) {
 			home := proofFixture(t, false)
 			edit(t, home, `INSERT INTO metadata VALUES('workspace_format',?)`, format)

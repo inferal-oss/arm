@@ -1,5 +1,43 @@
 # Validation record
 
+## Worker refusal guards — focused source qualification
+
+The [evidence record](validation/resident-worker-refusal-2026-10-29.json) qualifies
+only the refusal guards and their tests against accepted
+`528791bc5259e71b1bc9aa8c61d763d95143d217`. Coverage includes absent/forged ordinary
+and named markers, reserved format 4, empty/partial/aliased physical namespaces,
+metadata key/value types, duplicate/escaped/Go-fold lease references, ordinary
+admission before reconciliation, byte-preserving Manager startup and actual
+startup-read/settled-proof/reset-review refusal. Read-only SQLite SHM/empty-WAL
+bookkeeping is distinguished from logical rows/main database/non-SQLite bytes.
+Existing ordinary/named-storage/provider-preparation/retired-state controls remain
+in the selected cohort. Runtime workers and `arm start` integration are untested
+and unimplemented by this cut; no positive admission or format activation follows.
+
+The original shared FIFO normal and race cohorts each pass 25 roots / 322 test
+nodes with no failures/skips, in 43.373 s and 55.189 s including command exit.
+Affected database/Manager vet passes in 2.555 s. All cohorts are sequential, below
+the 115 s active limit, with matching source hashes and retained private original
+command receipts; these are queued-command results, not ARM leased-run evidence.
+The initial SQL syntax/test-bookkeeping failures and their corrections are retained
+in the evidence record. The inventory binds 42 final source hashes, including 35
+unchanged protected baseline inputs; Go modules and runtime/prototype/CLI sources
+remain unchanged. No extra Linux/native executable build is needed for this
+SQL/ordinary admission cut.
+
+Independent current-main composition verifies all 42 final source hashes and 35
+unchanged protected baseline inputs. Normal and race each pass the same 25 roots /
+322 nodes, zero failures/skips, in 45.008 s / 55.446 s; affected vet passes in
+2.184 s. Every original FIFO command exits before the next. The initial reviewer
+attempt fails before compilation on sandbox build-cache access and remains a
+failed setup receipt; the qualified retry uses normal approval, unchanged source.
+An overlay restores only the two exact parent production files: the selected
+metadata-root/missing-marker and reserved-kind/lease regressions both fail as
+expected in 13.608 s. Their corrected full cohorts pass. No blocking source
+finding remains; the [composed record](validation/resident-worker-refusal-composed-2026-10-29.json)
+retains the scope, source hashes and qualifications. No worker, migration, native
+process/controller, full-Go or installed-runtime acceptance is inferred.
+
 ## Worker transaction refinement — source and documentation only
 
 The [transaction proposal](design/resident-worker-transaction.md) and

@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "status": "Independently validated refusal-only composition; worker activation absent",
+  "owner_commit": "30bb643622a3d9553edfabe979809df5c8524144",
+  "composed_on": "528791bc5259e71b1bc9aa8c61d763d95143d217",
+  "tested_review_commit": "1054898bb5e0d4cce0ba0a1b275c0c1aeff080aa",
+  "owner_record": "docs/validation/resident-worker-refusal-2026-10-29.json",
+  "owner_record_sha256": "a3e43fe8eb9b1e3d227056cbc7b8da82cfbbdef93e4ed7244322bb6e8d143e5f",
+  "source_sha256": {
+    "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+    "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+    "internal/childowner/observe_darwin.go": "e9149ff478819417178d9b9ca8997b039ed23f3e84df09aa9496cd05b35b3c85",
+    "internal/childowner/observe_linux.go": "9645effe47b3991c94580d874ee8f5aa251cdb4170caf893951d099bbc70a4a2",
+    "internal/childowner/owner.go": "b7065ffbc4ccd5b251322d96d6f9cb68413d073f73eb5309d001d4fbb741d1a2",
+    "internal/cli/cli.go": "885a1a8b15a13844ef065eca214e98553250c8352ab27f6e43cb1447622c5be0",
+    "internal/database/create.go": "25115f9d263facdc5b77a095e7d9301fcd0f61e4f10dc7db46e6a260e3263dde",
+    "internal/database/files.go": "1ab086be241938c3c02cfc67c2a8ecebee6d7883cbf26e4f35517dd5c525b7f9",
+    "internal/database/proof.go": "79bbb9a8d99662cb134a3e56c335f3266d97fb61cd6362348e6824921a468edf",
+    "internal/database/resident_worker_format_test.go": "f14a5c576e0bafad58774bf16eae2b1364641e061e8d57e6a56258ed2f8d090d",
+    "internal/database/resident_worker_proof_test.go": "15213eb202f5ca66513c73669c72a243124de80dedbea1b8b31a1dd7a55d7dec",
+    "internal/database/startup_read.go": "a3b5befbfc7d2a98199d3d76d6569938885bbd3551862ee8ae54f95a884d82be",
+    "internal/database/stop_scope.go": "3bbb660713660c407ffb54981a9a1899fd1d2cc8afc06213b6c9a135c15b1f01",
+    "internal/database/workspace_format.go": "be44b4e4f58fab5b9efbc4a5c465bb0e8716aa16a68b89ea3956dbcbdf8f3a3b",
+    "internal/database/workspace_format_proof_test.go": "4d0daabdf8fbbe767ba8d68f665b4e3528c0ae9961c5a398e21398f074d53cac",
+    "internal/database/workspace_format_test.go": "4cfd837f201967389528e9b35244eeacdc09c9d488bea9a15ac0090cb8fa59a4",
+    "internal/manager/cargo_launch.go": "c7b4ba8762e68d0ce54eef9d0eb30bce36457c86603c374e45f5d9d2b847e1c1",
+    "internal/manager/database.go": "267afe67a250335f0b8967ee1966c2d05166f6bb971a7945dfec5293af3c21f0",
+    "internal/manager/lease_clock.go": "3abddb8203b2c3805b2a6d94b3f3111ae1c764ede3abacfce62b62109f02bb46",
+    "internal/manager/manager.go": "d3218b4e248cf3c452677d8e40ee60e76297bfd6f146823484161f5beb3f7faf",
+    "internal/manager/node_stop.go": "84e7629733ee291e1be537d06594b2cd4cfeb4ec11f3c962aa033e58fed204fa",
+    "internal/manager/resident_worker_refusal_test.go": "06b893779e28599fe9eca64afa51747ada539a5a6a7fd5ece5c8ce98a7dc4a9f",
+    "internal/manager/retained_cancellation.go": "198a9a1e669e9e891bb4b911e71b14b1787e5971d66e0384573d51025c5c2490",
+    "internal/manager/shutdown.go": "d742340a0edad90580bd06d2402899ebfe22ed3df0f3c7676e26662a51902704",
+    "internal/manager/storage_pools.go": "93c8b3090d3e7c383dbe78068ef5cd71f1b90af6f869916ab0cfc29e4f1f05c5",
+    "internal/manager/sync_admission.go": "68f0c7e6fa84db395238f6162462d955a7f024ba299e177a839a29321b4ef4d8",
+    "internal/manager/sync_preparation.go": "28b124c9e654aface775acd6b8e8c270efc8d04f288610ba0e4eb002be221351",
+    "internal/mesh/artifact_stream.go": "4b1b75170c6408fd0c047bc8ddc9d48e4183fdfbd63f1efe3d0eaf82579d8a00",
+    "internal/mesh/artifacts.go": "c00647b8335e60f475fbf9016dc872d16de20d0d121dc6813023e2595d06dd2c",
+    "internal/mesh/install_ownership.go": "298e3cebdd5e4c867d8d9f43794807b2cf93627ad3f90baf6910d5e34292666b",
+    "internal/mesh/runtime_identity.go": "7f84fc2cc8e39384a2492561115886eccd6e98fc3127c82a7b6b9f9f277aed79",
+    "internal/nodestop/records.go": "a8f8680747d2979f2f9d69d25406b895026a396f8aae7349d64abc18bc30cd29",
+    "internal/resident/README.md": "d769edead7d1bfe73c50fa55d1ca1103ff0b4fa9ab6173b28bc7d90c2aab0b79",
+    "internal/resident/authority.go": "b8def86a31d355f52e8e63c6a9cd1e5f9cc84062a4ff5012c8f29a31a09f4681",
+    "internal/resident/journal.go": "50b0d787bd1fa045ce09cedd7df40a61c658b7b77ed297f923ade79c7f273d13",
+    "internal/resident/native_test.go": "9179c00c52c52203fe7c9d23cbad9d43521ebcc8a80a59785ab05682753b3dc6",
+    "internal/server/node_stop.go": "72317c05aac5470531a5a828080760008cda800b105cceaf40148ee990c3d3c2",
+    "internal/server/resident_auth.go": "e95728d19a9c3618ef9f5192face86732f5a2a4829cfc447050872c20cb58755",
+    "internal/server/resident_dispatch.go": "f0944a2972c4f73ab6abd853da8e440e7d8576b032cd9f89971d56a43ee6a6d6",
+    "internal/server/resident_response.go": "b17076e7bdd749df179cc8e0c634d5fbef8a6f772a2fb239c7d724f8b77eecdf",
+    "internal/server/server.go": "7e08bd79239d987a8bea54371aec6beca55313a0c7ce7538e84417e54ec035aa",
+    "internal/server/shutdown.go": "0d9914636f0cc23b8bda51cc754a7cf4a97fd2cc4c722bdaa7ad95c56e43e3cb"
+  },
+  "verified_final_hashes": 42,
+  "unchanged_protected_baseline_hashes": 35,
+  "source_review": "No blocking finding in physical namespace, duplicate/escaped/Go-fold JSON scanning, early typed refusal or existing ordinary/named/provider guards",
+  "normal_race_roots": 25,
+  "normal_race_nodes": 322,
+  "normal_race_roster": "Exact package/name match to owner record, no failures or skips",
+  "cohorts": [
+    {
+      "phase": "normal",
+      "exit": 0,
+      "seconds": 45.008
+    },
+    {
+      "phase": "race",
+      "exit": 0,
+      "seconds": 55.446
+    },
+    {
+      "phase": "vet",
+      "exit": 0,
+      "seconds": 2.184
+    }
+  ],
+  "causal_control": {
+    "kind": "Only two exact parent production files overlaid on current test composition",
+    "expected_command_exit": 1,
+    "seconds": 13.608,
+    "selected_failures": [
+      "TestResidentWorkerFormatRefusesPhysicalNamespaces/metadata-root/absent",
+      "TestResidentWorkerAdmissionRefusesBeforeReconciliationOrEffects/resident-worker/lease"
+    ],
+    "parent_source_sha256": {
+      "internal/database/workspace_format.go": "3e64485eb1aaf2b7a3250d10325d451b48d286ee6479b66dd9a1aa12a7db6f9a",
+      "internal/manager/manager.go": "5470903ce0081c7fecfe4718d5e9e8ef624207cde9c5c450cf9aa65b45515927"
+    },
+    "matched": true
+  },
+  "initial_reviewer_attempt": {
+    "kind": "Setup failure before compilation: sandbox build-cache access",
+    "seconds": 0.168,
+    "test_result": false,
+    "retained_privately": true,
+    "qualified_retry": "Normal approval with unchanged source"
+  },
+  "method": {
+    "queue": "Original shared FIFO defaults, sequential original command exits",
+    "active_limit_seconds": 115,
+    "cpu_allocation_ceiling": 2,
+    "memory_allocation_ceiling": "2GiB",
+    "go_runtime": "GOMAXPROCS1, -p1, GOMEMLIMIT1536MiB target",
+    "arm_grant_or_lease": false,
+    "hard_memory_limit_claim": false
+  },
+  "limits": [
+    "No positive worker role/factory/bootstrap/admission/controller/native Start/staging or migration.",
+    "No End/expiry/Close lifetime attachment or behavior for valid future worker records is supplied.",
+    "Checks protect existing guard entry points and typed ordinary reserved-kind admission; no broader raw RPC/model/serializer refactor.",
+    "No OS-specific source changed; native package compilation occurred within tests/vet, no separate Linux/native executable build or installation.",
+    "No full suite/browser/bundle/download/default backend/enrollment or shared ARM application-state mutation.",
+    "arm start integration and actual compatible A-to-B API/UI active-job preservation remain required before feature completion."
+  ],
+  "additional_gates": [
+    "Private native Lifetime origin then separately reviewed original Manager/Server binding and bootstrap",
+    "Dedicated transaction/lifetime/entitlement and compatible format-aware writers",
+    "Admitted artifact/runtime profiles, inactive native ownership, stop-bound activation",
+    "Actual API/UI data/asset replacement and arm start initial/repeated integration with distinct-version active jobs"
+  ]
+}
