@@ -76,7 +76,13 @@ protected policy/instruction/endpoint hashes remain unchanged and adoption stays
 disabled. Public website CI `40896915169` completes successfully.
 
 Resources consumer/accounting presentation is the next bounded slice on the
-accepted base, owned by `codex/ux-resource-layout`. Shell/Mesh/global helpers and backend/pins remain
+accepted base, owned by `codex/ux-resource-layout`. Candidate `37fa208` fixes
+reproduced consumer/accounting clipping and passes preliminary source/component
+checks, but is not accepted: desktop expanded details still use roughly 338px
+inside a 1440px view, producing an excessively long narrow column. A focused
+expanded-reading-width correction is pending. Main contains no Resources
+candidate runtime or bundle; original captures remain source-qualified.
+ Shell/Mesh/global helpers and backend/pins remain
 coordinated separately. Full route/state/terminal acceptance remains open.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
