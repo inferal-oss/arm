@@ -1,5 +1,13 @@
 # Backend and CLI implementation
 
+## Resource presentation composition
+
+Consumer wrapping, labeled metadata and expanded desktop/tablet reading width
+are independently composed and reviewed from `37fa208`/`a70561e`. Existing
+accounting math and protocol/lifecycle contracts are unchanged. Scoped evidence
+and remaining route/activation gates are recorded in the
+[composed acceptance](validation/ux-resources-composed-2026-10-29.json).
+
 ## Dashboard presentation integration
 
 Activity defaults, grouped run/lease metadata, private input layout and the

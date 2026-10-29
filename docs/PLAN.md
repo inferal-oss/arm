@@ -93,16 +93,19 @@ Published runtime `6035548` is installed; carrier/four payload streams verify,
 protected policy/instruction/endpoint hashes remain unchanged and adoption stays
 disabled. Public website CI `40896915169` completes successfully.
 
-Resources consumer/accounting presentation is the next bounded slice on the
-accepted base, owned by `codex/ux-resource-layout`. Candidate `37fa208` fixes
-reproduced consumer/accounting clipping and passes preliminary source/component
-checks, but is not accepted: desktop expanded details still use roughly 338px
-inside a 1440px view, producing an excessively long narrow column. A focused
-expanded-reading-width correction `a70561e` is returned and awaits independent
-source/composition review. Main contains no Resources
-candidate runtime or bundle; original captures remain source-qualified.
-Shell/Mesh/global helpers and backend/pins remain
-coordinated separately. Full route/state/terminal acceptance remains open.
+Resources presentation `37fa208` plus width correction `a70561e` pass independent
+current-main review: 445 JS, 29 native component/lifecycle tests, native build and
+deterministic composed asset rebuild. Resource math, accounting, main/graph,
+pins and callbacks remain unchanged. Expanded desktop cards use useful reading
+width; collapse, nested state, focus, filters and exact IDs survive refresh.
+Historical clipping-only evidence remains qualified. See the
+[composed record](validation/ux-resources-composed-2026-10-29.json).
+
+The Resources route loading/transport/disconnect, help and nearby-instance visual
+gates remain open; source/runtime installation is separate. Keep the validated
+build staged while the reviewed upgrade design addresses immutable runtime
+paths. Broader shell/Mesh/global helper and backend/pin changes remain centrally
+coordinated. No full route/state/terminal UX acceptance is claimed.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,

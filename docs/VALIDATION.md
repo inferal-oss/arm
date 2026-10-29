@@ -1,5 +1,20 @@
 # Validation record
 
+## Resources — independent composed acceptance
+
+Reviewed source `37fa208`/`a70561e` passes a normal-FIFO combined gate: 445 JS and
+29 native component/lifecycle cases, zero failures/skips, native CLI build and
+two byte-identical asset builds. Source/test hashes match the frozen owner cut;
+accepted style-prefix and protected main/graph/core/accounting/module/pin bytes
+are unchanged. Desktop/tablet/narrow/short source-qualified captures show wrapped
+complete values, prominent warnings and useful expanded reading width, with
+original nodes/focus/filter/disclosure state retained. Final images are visually
+reviewed and hashed. Text-token tests verify selected body15px/30px and metadata
+13px/26px, not universal browser zoom. No real backend/resource mutation, new
+Go-suite/Linux/terminal visual or complete route acceptance is inferred. Build
+staging and activation remain distinct.
+[Normalized record](validation/ux-resources-composed-2026-10-29.json).
+
 ## Pools layout — independent composed acceptance
 
 Focused owner source `f4cc89d`/`8c3f935` passes current-main review and a normal-FIFO

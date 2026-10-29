@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-29",
+  "scope": "Independent current-main composition of resource consumer readability and expanded reading width",
+  "owner_commits": [
+    "37fa208c33ab606a47eae910470d522cefc24c63",
+    "a70561ee2b55d64ee54cdd259f0fd42ac264575a"
+  ],
+  "validated_source": "9dc7e0ad380eb458d4a8ec78d74d007a6a1a08ac",
+  "feature_inputs": {
+    "internal/server/web/assets/arm.mjs": "ae47e95dff7e0da28efc6a7b1e42a54fe7cadbb14d7ea5e994cb89475503ea6c",
+    "internal/server/web/semblance/app.ttl": "01cf45bf593a5ec8b7b37c29e69e4bf9fb8b4267c33dda4050146f18a02b1d88",
+    "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+    "scripts/dashboard-screenshots/ux-resources.mjs": "69e93ab99619d74a74f5d7903471f141c66133fd47b1bf9510575842776a1bd6",
+    "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421"
+  },
+  "phases": [
+    {
+      "name": "web-build",
+      "exit": 0,
+      "seconds": 1.144
+    },
+    {
+      "name": "node",
+      "exit": 0,
+      "seconds": 6.8
+    },
+    {
+      "name": "native",
+      "exit": 0,
+      "seconds": 2.855
+    },
+    {
+      "name": "native-build",
+      "exit": 0,
+      "seconds": 9.658
+    },
+    {
+      "name": "web-rebuild",
+      "exit": 0,
+      "seconds": 1.094
+    }
+  ],
+  "javascript": {
+    "passed": 445,
+    "failed": 0,
+    "skipped": 0
+  },
+  "native_component_tests": {
+    "passed": 29,
+    "failed": 0
+  },
+  "deterministic_bundle": true,
+  "bundle_sha256": "ae47e95dff7e0da28efc6a7b1e42a54fe7cadbb14d7ea5e994cb89475503ea6c",
+  "native_cli_sha256": "03956edbb652960e2c708ee628f9847a36be6b8dfab87a3e747f1bc16cb7312b",
+  "visual_review": {
+    "source": "a70561ee2b55d64ee54cdd259f0fd42ac264575a",
+    "owner_native_cases": 10,
+    "desktop_card_width_px": 1408,
+    "desktop_consumer_width_px": 992,
+    "tablet_consumer_width_px": 654,
+    "body_text_px": [
+      15,
+      30
+    ],
+    "metadata_text_px": [
+      13,
+      26
+    ],
+    "artifacts": [
+      {
+        "file": "resources-consumer-1440-900-1.png",
+        "bytes": 116366,
+        "sha256": "e7fd70a2b2b0397eabcf512f9bbf73770f2a776feb875aa67d5c712b8bc4b811"
+      },
+      {
+        "file": "resources-details-390-900-1.png",
+        "bytes": 49478,
+        "sha256": "a99f19068fac68b32bbe239fa4e13a0112683927d0d9c8221cf2420a0e61cade"
+      },
+      {
+        "file": "resources-details-768-600-2.png",
+        "bytes": 61128,
+        "sha256": "f838ac4752226fa828cd91c63c3afe249e87017b4a680c8b3a1ea09aa6f7367e"
+      },
+      {
+        "file": "resources-warnings-390-320-1.png",
+        "bytes": 33135,
+        "sha256": "e2cfe027b90c640c1a76ca517b73cf156b87af6c4581f3c631016f96c910fdb0"
+      }
+    ]
+  },
+  "protected_behavior": [
+    "resourcePresentation function byte-identical",
+    "Preexisting app ontology prefix, main/graph/core/accounting sources and module/pin bytes unchanged",
+    "Exact quantities, identities, callback IDs, warnings, ordering and retained focus/disclosure behavior preserved"
+  ],
+  "limitations": [
+    "Source-qualified synthetic owner browser geometry and independent composed component/build checks; no real backend/resource mutation",
+    "Controlled text-token scaling verifies selected body/metadata sizes; not universal browser zoom or shell typography acceptance",
+    "No Go source changed; no new full-Go/Linux/terminal visual claim",
+    "Full resource-route loading/transport/disconnect and help/nearby-instance visuals remain open",
+    "Runtime installation/activation is separate; validated build remains staged while upgrade design is discussed"
+  ]
+}
