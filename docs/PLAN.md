@@ -6,6 +6,25 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Activity, Host and compact header — reviewed composition
+
+Inventory `3705be6` and focused cuts `188e3fa`, `de562c8`, `b6eb1be` are
+independently composed on current main `630e015`. All 34 unique owner/protected
+hashes match before the reviewed embedded rebuild. Product changes remain
+limited to the allocated Activity/Host helpers and appended app-owned styles.
+Host exact metadata/native scrolling, retained Activity readers and compact
+header/menu/tooltip containment pass fresh source-runtime checks.
+
+The broader cohort exposes three outdated Host lifecycle doubles; their native
+namespace/body/value contract is corrected with original assertions retained.
+The menu negative fixture is also narrowed to retain the tooltip rule, qualifying
+the owner's earlier broader rule-removal result. Final composition passes 445
+JS and 43 native UI tests, native build, deterministic embedded assets, sixteen
+browser cases and both isolated expected-failure controls with positive cleanup.
+See the [composed record](validation/ux-activity-host-composed-2026-10-29.json).
+Installation, real transport/authenticated journal, live drawer, broader route/
+state/terminal and complete UX acceptance remain separate gates.
+
 ## Stage-two read-grant contract — reviewed, production grants inactive
 
 Owner: `codex/resident-read-grant-contract`, from accepted Stage-one composition

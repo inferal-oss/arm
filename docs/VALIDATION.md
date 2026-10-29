@@ -1,5 +1,44 @@
 # Validation record
 
+## Activity, Host and compact header — independent composition
+
+Reviewed inventory `3705be6`, Host `188e3fa`, Activity `de562c8` and final header/
+evidence `b6eb1be` compose on main `630e015` in an isolated checkout. All 34 unique
+owner/protected input hashes initially match. Main source outside the allocated
+Activity/Host helpers and the original ontology prefix are byte-identical; graph,
+engine/theme/pins, shared formatting and accepted Monitor/Resource inputs remain
+unchanged. All 142 inventory and 505 owner correction artifacts rehash unchanged.
+
+Initial broader JS testing passes 442 and fails three old Host doubles with an
+undefined native namespace; their body/property surface and old `code`-field
+expectation also predate the real native interface. The corrected doubles assert
+native block/body declarations and Code `value`, retaining disclosure/open/focus/
+disposal coverage. Final affected JS is 445 passed, zero failures/skips. Seven
+native UI files pass 43 cases with two-worker concurrency. Native CLI build and
+two byte-identical web builds pass; only the composed embedded module changes.
+
+Fresh unchanged-FIFO browser cohorts pass header four, Host four, Activity four,
+lifecycle two and truncation two cases. They verify actual clip bounds, exact
+payloads/int64s, ordinary keyboard reading and retained nodes/focus, genuine
+selection/context retirement, all five More actions, native painted tooltips,
+resize/Escape, caps/markers and qualified maximum-record tails. No page error,
+external/API request, real page socket, clipboard or forbidden call occurs.
+Original CDP detach/context/browser/server close operations all complete.
+Short Host, doubled-token Activity and native hovered Settings images are
+visually inspected. Selected token scaling is not universal browser zoom.
+
+Source review finds the original `without-menu` override also removes the later
+tooltip rule. That original result remains a broader removal control, not an
+isolated menu proof. The reviewer fixture now retains the tooltip tail; default
+fixture behavior is unchanged. Menu-only and tooltip-only controls each fail
+their exact offscreen-action/full-painted-label assertion and positively clean
+up. They remain expected failed controls, not production passes. All receipts,
+including the first three JS failures and raw browser handles, stay private.
+The [normalized composed record](validation/ux-activity-host-composed-2026-10-29.json)
+binds final source, artifact hashes, counts and qualifications. No full Go, Linux,
+real transport/authenticated journal, live drawer, terminal, install or complete
+UX acceptance is inferred.
+
 ## Stage-two read-grant refinement — source inspection only
 
 The [contract](design/resident-read-grants.md) is inspected against accepted

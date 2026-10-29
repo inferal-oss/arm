@@ -1,5 +1,16 @@
 # Backend and CLI implementation
 
+## Activity, Host and compact header composition
+
+Host technical fields now show their exact current values in native bounded
+Code blocks; Activity keeps its selected reader and focus on unchanged refresh.
+Compact/medium host names wrap inside the original brand, and the native More
+menu and Settings tooltip stay reachable within their scroll/viewport bounds.
+Independent [composed validation](validation/ux-activity-host-composed-2026-10-29.json)
+accepts these scoped changes and regenerated embedded assets. Stock controls,
+data/format/caps, auth and resource behavior remain intact. The installed backend
+is unchanged; this is not a complete web/terminal UX acceptance.
+
 ## Stage-two read grants — proposed only
 
 The [read-grant refinement](design/resident-read-grants.md) adds no implementation.
@@ -3698,4 +3709,6 @@ focus is introduced. Desktop inline controls keep their existing behavior.
 The [source-bound owner evidence](validation/ux-activity-host-layout-2026-10-29.json)
 preserves negative candidates, causal style-absence controls and qualified
 native reading/lifecycle checks. Generated assets remain unchanged; independent
-current-composition review/validation and central rebuilding are required.
+current-composition review/validation and central rebuilding were required.
+The composed acceptance above now supplies those gates; historical owner source
+and original receipts retain their separate scope.
