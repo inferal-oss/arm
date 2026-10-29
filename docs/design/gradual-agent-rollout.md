@@ -241,8 +241,47 @@ session records, 8 capability labels per session, 512 bytes of needs/reason,
 preserves history without eviction. Protocol version 1 is required; unsupported
 versions fail closed. Capability labels do not attest execution support.
 
-Native logical-project attestation, web/dashboard policy editors, binding
-removal/project retirement, archival/compaction and automatic pilot expansion
+### Removing projects and bindings
+
+```sh
+arm rollout project remove --project demo --reason "Retire project" --dry-run
+arm rollout binding remove --project demo --path /work/old-checkout --reason "Remove obsolete scope" --dry-run
+arm rollout binding remove --project demo --adapter codex --client-project client-id --reason "Remove client mapping" --dry-run
+```
+
+Apply the identical request with its `--expect REVIEW_SHA256 --yes`. Removal
+selects the exact recorded absolute path without filesystem resolution, so a
+missing/moved root can still be removed. Ambiguous selectors, stale reviews and
+unknown/already removed targets refuse without changing policy.
+
+Project removal disables and retires the project, revokes its recorded
+participation and hides it from the default project roster. `rollout status
+--include-removed` exposes retained project records. IDs stay reserved; a new
+project requires a distinct identity and explicit scope/policy review. Binding
+removal revokes participants within that recorded path or client mapping while
+preserving other bindings. Removing the last filesystem binding is allowed.
+
+Filesystem removal retains an inactive boundary fence: a narrower removed scope
+cannot silently inherit a broader enabled project's policy. An explicitly
+reviewed active replacement at the same root takes precedence. Rebinding a root
+or client mapping does not restore revoked session enrollment; those identities
+still require an operator invitation and acknowledgment. Removed records continue
+to count toward the existing bounded ledger capacities; compaction is separate.
+Audit/session history, jobs, resource leases, ownership and cleanup promises are
+retained. Removal never contacts clients, edits instruction files or cancels work.
+Older binaries that do not recognize removal fields refuse the extended ledger.
+
+`rollout status` inspects recorded directory/Git identities independently of
+instruction readiness, even with no session records. JSON has per-boundary
+`ready`, `stale`, `unknown` or `removed` evidence. Terminals flag stale roots and
+block a project label from advertising open enrollment when no active boundary
+can be verified. Matching instructions alone do not make a stale scope usable.
+Inspection never rewrites a moved path or enrolls an agent. Git probes share a
+ten-second context budget with three-second per-command limits; interrupted or
+uncompleted checks remain unverified. Filesystem calls retain OS behavior.
+
+Native logical-project attestation, web/dashboard policy editors,
+archival/compaction and automatic pilot expansion
 are follow-ups. Disable an
 affected project to stop future adoption. This is cooperative instruction policy,
 not an API firewall or OS enforcement boundary. Explicit operator resource and

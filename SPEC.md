@@ -558,6 +558,14 @@ identity and policy, then review a default-no atomic change. Read-only machine
 discovery, manual directory entry and preservation of an unchanged policy are
 required. Discovering a directory never enrolls a session or grants resources.
 
+Support exact-reviewed project and binding removal, including missing recorded
+paths. Preserve audit/session history, resource obligations and inactive scope
+fences so narrower removal cannot silently broaden adoption. Show stale or
+unverified directory/Git identities in terminal and machine rollout status even
+when no sessions have identified; installed instructions alone do not establish
+scope readiness. Replacements require explicit review and cannot restore revoked
+participation without invitation and acknowledgment.
+
 Policy changes support exact previews and durable audit. Pause/rollback stops
 further rollout without canceling jobs, discarding ownership, reclaiming leases
 or erasing cleanup/accounting promises. Revoking adoption and resource admission

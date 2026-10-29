@@ -6,6 +6,17 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Rollout removal and stale-boundary continuation
+
+Owner: `codex/rollout-removal`, based on main `53d7062`. Scope is reviewed
+project/filesystem/client-binding removal, retained history and deny fences,
+stale-boundary status, onboarding compatibility and focused regressions. No
+actual rollout policy or agent adoption is changed. Review/validation and
+coordinator composition precede the user-requested push and executable install.
+Core race suites, selected CLI race regressions (266 passing nodes) and affected
+vet pass after owner source review. Remaining gates are source-bound CLI smoke,
+coordinator review/composition, push and executable installation.
+
 ## Project-scoped gradual agent adoption — scoped milestone accepted
 
 Installation/status UX continuation `379e41d` implements interactive diff review, a

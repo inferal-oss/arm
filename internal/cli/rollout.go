@@ -19,6 +19,7 @@ type rolloutStatus struct {
 	Sessions     []rollout.Participation      `json:"sessions"`
 	Suggestion   string                       `json:"suggestion"`
 	NextCommand  string                       `json:"next_command"`
+	Boundaries   []rollout.BoundaryStatus     `json:"boundaries"`
 }
 
 func (a *app) rollout(args []string) error {
@@ -29,20 +30,25 @@ func (a *app) rollout(args []string) error {
 	if action == "project" && len(args) > 0 && args[0] == "onboard" {
 		return a.rolloutOnboard(args[1:])
 	}
-	f := a.flags("rollout " + action)
+	command := "rollout " + action
+	if (action == "project" || action == "binding") && len(args) > 0 && args[0] == "remove" {
+		command += " remove"
+		action, args = "remove-"+action, args[1:]
+	}
+	f := a.flags(command)
 	var project, path, adapter, clientProject, session string
 	f.StringVar(&project, "project", "", "exact ARM project ID")
 	if action == "check" || action == "identify" || action == "ack" {
 		f.StringVar(&path, "cwd", "", "working directory (default: current directory)")
 		f.StringVar(&session, "session", "", "exact original session UUID")
 	}
-	if action == "check" || action == "identify" || action == "ack" || action == "bind" {
+	if action == "check" || action == "identify" || action == "ack" || action == "bind" || action == "remove-binding" {
 		f.StringVar(&adapter, "adapter", "", "codex, claude or generic")
 		f.StringVar(&clientProject, "client-project", "", "explicit client project ID; never discovered automatically")
 	}
 	var kind, root, mode, reason, selected, expect string
 	var dry, yes bool
-	mutation := action == "project" || action == "bind" || action == "policy" || action == "pause" || action == "resume" || action == "invite" || action == "revoke"
+	mutation := action == "project" || action == "bind" || action == "policy" || action == "pause" || action == "resume" || action == "invite" || action == "revoke" || action == "remove-project" || action == "remove-binding"
 	if mutation {
 		if action == "project" {
 			f.StringVar(&kind, "kind", "directory", "directory or git checkout binding")
@@ -50,6 +56,9 @@ func (a *app) rollout(args []string) error {
 		}
 		if action == "policy" {
 			f.StringVar(&mode, "mode", "", "disabled, observe, new-sessions (suggested), or all")
+		}
+		if action == "remove-binding" {
+			f.StringVar(&root, "path", "", "exact recorded absolute root, including missing paths; alternatively select --adapter and --client-project")
 		}
 		f.StringVar(&reason, "reason", "", "required reason for this policy decision")
 		if action == "invite" || action == "revoke" {
@@ -72,6 +81,10 @@ func (a *app) rollout(args []string) error {
 		f.IntVar(&revision, "policy-revision", 0, "exact current project policy revision")
 	}
 	f.Bool("json", false, "force JSON output (default: automatic)")
+	var includeRemoved bool
+	if action == "status" {
+		f.BoolVar(&includeRemoved, "include-removed", false, "include removed project history and retained boundary fences")
+	}
 	if e := a.parse(f, args, false); e != nil {
 		return e
 	}
@@ -87,6 +100,14 @@ func (a *app) rollout(args []string) error {
 		if action == "bind" {
 			c.Client = &rollout.ClientBinding{Adapter: adapter, ID: clientProject}
 		}
+		if action == "remove-binding" {
+			if root != "" {
+				c.Binding = &rollout.Binding{Root: root}
+			}
+			if adapter != "" || clientProject != "" {
+				c.Client = &rollout.ClientBinding{Adapter: adapter, ID: clientProject}
+			}
+		}
 		if selected != "" {
 			c.Sessions = strings.Split(selected, ",")
 		}
@@ -100,7 +121,13 @@ func (a *app) rollout(args []string) error {
 		if !yes || expect == "" {
 			return fmt.Errorf("preview with --dry-run; applying requires --expect REVIEW_SHA256 --yes after user authorization")
 		}
+		if e := a.ctx.Err(); e != nil {
+			return e
+		}
 		result, e := store.Apply(c, expect)
+		if a.ctx.Err() != nil {
+			return rolloutOutcomeUnknown(a.home, a.ctx.Err())
+		}
 		if e != nil {
 			return e
 		}
@@ -122,17 +149,24 @@ func (a *app) rollout(args []string) error {
 		}
 		projects := []rollout.Project{}
 		for _, p := range st.Projects {
-			if project == "" || p.ID == project {
+			if (includeRemoved || !p.Removed) && (project == "" || p.ID == project) {
 				projects = append(projects, p)
 			}
 		}
 		sessions := store.Roster(st, project)
 		status := rolloutStatus{Default: "disabled", Revision: st.Revision, Instructions: install.InspectInstructions(a.home), Projects: projects, Sessions: sessions, Suggestion: "Create a project boundary, then choose new-sessions (suggested), all, or observe for a manual pilot. Installation never enrolls sessions.", NextCommand: installNextCommand(a.home, "rollout project onboard")}
+		status.Boundaries = rollout.InspectBoundaries(a.ctx, projects)
 		if !status.Instructions.Ready {
 			status.Suggestion = "Review or install managed instructions before starting a rollout. Saved policy and existing resource obligations are unchanged."
 			status.NextCommand = installNextCommand(a.home, "install")
 		} else if len(projects) > 0 {
 			status.Suggestion = "Review project boundaries and cohorts before expanding. Installation never enrolls sessions."
+		}
+		for _, boundary := range status.Boundaries {
+			if boundary.State == "stale" || boundary.State == "unknown" {
+				status.Suggestion = "Some boundaries are stale or unverified. Review their recorded paths, explicitly rebind, or remove them; installation readiness does not make these scopes usable."
+				break
+			}
 		}
 		return a.printRollout(status)
 	}
@@ -229,6 +263,24 @@ func (a *app) rolloutStatusHuman(status rolloutStatus) error {
 		} else if project.Paused {
 			state = "enrollment paused"
 		}
+		ready, unavailable := 0, 0
+		for _, boundary := range status.Boundaries {
+			if boundary.Project != project.ID {
+				continue
+			}
+			if boundary.State == "ready" {
+				ready++
+			} else if boundary.State != "removed" {
+				unavailable++
+			}
+		}
+		if project.Removed {
+			state = "REMOVED · history retained"
+		} else if len(status.Boundaries) > 0 && ready == 0 {
+			state = "BLOCKED · no verified active boundary"
+		} else if unavailable > 0 {
+			state += " · boundary warnings"
+		}
 		fmt.Fprintf(&b, "  %s · %s · %s\n", terminalSafe(project.ID), modes[project.Mode], state)
 		fmt.Fprintf(&b, "    Policy revision: %d\n", project.Revision)
 		if project.Mode == "new-sessions" {
@@ -239,7 +291,16 @@ func (a *app) rolloutStatusHuman(status rolloutStatus) error {
 			if binding.Kind == "git" {
 				kind = "Git checkout"
 			}
-			fmt.Fprintln(&b, "    "+kind+": "+terminalSafe(binding.Root))
+			label := ""
+			if binding.Removed || project.Removed {
+				label = " [REMOVED]"
+			}
+			fmt.Fprintln(&b, "    "+kind+label+": "+terminalSafe(binding.Root))
+			for _, boundary := range status.Boundaries {
+				if boundary.Project == project.ID && boundary.Binding == binding && boundary.State != "ready" {
+					fmt.Fprintln(&b, "      "+strings.ToUpper(boundary.State)+": "+terminalSafe(boundary.Detail))
+				}
+			}
 		}
 		for _, client := range project.Clients {
 			fmt.Fprintln(&b, "    "+label(client.Adapter)+" project: "+terminalSafe(client.ID))

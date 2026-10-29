@@ -1,5 +1,28 @@
 # Validation record
 
+## Rollout removal and stale boundaries — owner continuation
+
+Based on accepted main `53d7062`. Complete rollout/installation/discovery race
+suites pass with one Go worker. The selected CLI race roster passes 266 test
+nodes without failures, covering removal, status, onboarding, confirmation,
+instruction lifecycle, shared help/completion and interruption reporting.
+Affected rollout/CLI vet passes. Private Go/module source hashes and CLI JSON
+receipts are retained outside version control.
+
+New cases cover project retirement with session/audit retention; missing-path
+binding removal; exact/stale review refusal; narrower removal refusing enabled
+ancestor fallback; explicit replacement with a fresh identity; persistent
+revocation after path/client rebinding; unrelated participant preservation;
+directory and Git-identity replacement; canceled diagnostic inspection; terminal
+and JSON stale warnings with ready instructions and no sessions; read-only
+ledger preservation; removed-project listing and onboarding name selection.
+No actual client metadata, rollout policy, contacts, jobs or leases are changed.
+
+Final source-bound binary/terminal checks, independent coordinator review,
+current-main integration, publication and the requested executable installation
+remain pending. Full Go suite, Linux runtime, native identity attestation and
+web policy editors are outside this evidence.
+
 ## Guided project onboarding — scoped owner validation
 
 An additional shared-interruption correction follows `b213640`; its evidence

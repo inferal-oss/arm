@@ -34,6 +34,7 @@ const (
 )
 
 type Binding struct {
+	Removed      bool   `json:"removed,omitempty"`
 	Kind         string `json:"kind"`
 	Root         string `json:"root"`
 	Identity     string `json:"directory_identity"`
@@ -45,6 +46,7 @@ type ClientBinding struct {
 	ID      string `json:"id"`
 }
 type Project struct {
+	Removed  bool            `json:"removed,omitempty"`
 	ID       string          `json:"id"`
 	Bindings []Binding       `json:"bindings"`
 	Clients  []ClientBinding `json:"clients"`
@@ -150,7 +152,10 @@ func directoryIdentity(path string) (string, error) {
 	return fmt.Sprintf("%d:%d", st.Dev, st.Ino), nil
 }
 func gitDirectory(path, selector string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	return gitDirectoryContext(context.Background(), path, selector)
+}
+func gitDirectoryContext(parent context.Context, path, selector string) (string, error) {
+	ctx, cancel := context.WithTimeout(parent, 3*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "git", "-C", path, "rev-parse", selector)
 	// Caller Git overrides must not redirect the selected repository.
@@ -259,6 +264,9 @@ func validate(st State) error {
 		projects[p.ID] = p
 		if p.Mode != "disabled" && p.Mode != "observe" && p.Mode != "new-sessions" && p.Mode != "all" || p.Mode == "new-sessions" && p.NewAfter.IsZero() {
 			return fail("invalid project policy")
+		}
+		if p.Removed && p.Mode != "disabled" {
+			return fail("removed project must remain disabled")
 		}
 		for _, b := range p.Bindings {
 			if (b.Kind != "directory" && b.Kind != "git") || !filepath.IsAbs(b.Root) || filepath.Clean(b.Root) != b.Root || b.Identity == "" || b.Kind == "git" && (!filepath.IsAbs(b.GitDirectory) || b.GitIdentity == "") {
@@ -383,9 +391,19 @@ func resolve(st State, q Query) (*Project, string, error) {
 	var selected *Project
 	blocked := ""
 	depth := -1
+	selectedRemoved := false
 	for _, p := range st.Projects {
 		for _, b := range p.Bindings {
 			if !within(b.Root, path) {
+				continue
+			}
+			removed := p.Removed || b.Removed
+			if removed {
+				if len(b.Root) > depth {
+					copy := p
+					selected, depth, selectedRemoved = &copy, len(b.Root), true
+					blocked = "project or boundary was removed; no adoption authorized"
+				}
 				continue
 			}
 			actual, e := canonical(b.Root)
@@ -413,11 +431,12 @@ func resolve(st State, q Query) (*Project, string, error) {
 					}
 				}
 			}
-			if len(b.Root) > depth {
+			if len(b.Root) > depth || len(b.Root) == depth && selectedRemoved {
 				copy := p
 				selected = &copy
 				depth = len(b.Root)
 				blocked = why
+				selectedRemoved = false
 			} else if len(b.Root) == depth && selected != nil && selected.ID != p.ID {
 				return nil, "", fail("ambiguous project boundary; no adoption authorized")
 			}
@@ -577,15 +596,25 @@ func normalize(c Change) (Change, error) {
 	if !projectID(c.Project) || !short(c.Reason, 512) {
 		return c, fail("project ID and a reason of 1..512 bytes are required")
 	}
-	if c.Binding != nil && c.Action != "project" && c.Action != "onboard" || c.Client != nil && c.Action != "bind" || c.Mode != "" && c.Action != "policy" && c.Action != "onboard" || len(c.Sessions) > 0 && c.Action != "invite" && c.Action != "revoke" {
+	if c.Binding != nil && c.Action != "project" && c.Action != "onboard" && c.Action != "remove-binding" || c.Client != nil && c.Action != "bind" && c.Action != "remove-binding" || c.Mode != "" && c.Action != "policy" && c.Action != "onboard" || len(c.Sessions) > 0 && c.Action != "invite" && c.Action != "revoke" {
 		return c, fail("change contains selectors unrelated to its action")
 	}
 	if c.Binding != nil {
-		b, e := NewBinding(c.Binding.Kind, c.Binding.Root)
-		if e != nil {
-			return c, e
+		if c.Action == "remove-binding" {
+			// Select recorded paths, including missing ones, without resolving
+			// symlinks or adopting a replacement directory's identity.
+			if !filepath.IsAbs(c.Binding.Root) || filepath.Clean(c.Binding.Root) != c.Binding.Root || c.Binding.Kind != "" || c.Binding.Identity != "" || c.Binding.GitDirectory != "" || c.Binding.GitIdentity != "" || c.Binding.Removed {
+				return c, fail("binding removal requires only the exact recorded absolute root")
+			}
+			b := *c.Binding
+			c.Binding = &b
+		} else {
+			b, e := NewBinding(c.Binding.Kind, c.Binding.Root)
+			if e != nil {
+				return c, e
+			}
+			c.Binding = &b
 		}
-		c.Binding = &b
 	}
 	if c.Client != nil && (!adapter(c.Client.Adapter) || !short(c.Client.ID, 128)) {
 		return c, fail("client binding requires an adapter and bounded project ID")
@@ -607,6 +636,9 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 	plan := Plan{Revision: st.Revision, Change: c, Affected: []Session{}, Effect: "Adoption only. No jobs, contacts, leases, resource admission or cleanup obligations are changed. Entering new-sessions establishes a cutoff at apply time; retaining that mode preserves its existing cutoff."}
 	p := find(st, c.Project)
 	if p != nil {
+		if p.Removed {
+			return plan, fail("project was removed; choose a new project ID for fresh adoption")
+		}
 		b, _ := json.Marshal(p)
 		_ = json.Unmarshal(b, &plan.Before)
 	}
@@ -623,7 +655,13 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 		}
 		replaced := false
 		for _, other := range st.Projects {
+			if other.Removed {
+				continue
+			}
 			for i, b := range other.Bindings {
+				if b.Removed && other.ID != p.ID {
+					continue
+				}
 				if b.Root == c.Binding.Root {
 					if other.ID != p.ID || b == *c.Binding && c.Action != "onboard" {
 						return plan, fail("root already bound to project %s", other.ID)
@@ -655,6 +693,33 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 			return plan, fail("project does not exist")
 		}
 		switch c.Action {
+		case "remove-project":
+			p.Removed, p.Mode = true, "disabled"
+			plan.Effect = "Remove this project from active rollout. Retain policy/session history and deny broader fallback at its boundaries. Existing jobs, contacts, leases, ownership and cleanup obligations are unchanged. Project IDs remain reserved; replacement adoption requires explicit review."
+		case "remove-binding":
+			if (c.Binding == nil) == (c.Client == nil) {
+				return plan, fail("select exactly one recorded path or client-project mapping")
+			}
+			found := false
+			if c.Binding != nil {
+				for i, b := range p.Bindings {
+					if b.Root == c.Binding.Root && !b.Removed {
+						p.Bindings[i].Removed, found = true, true
+					}
+				}
+			} else {
+				for i, b := range p.Clients {
+					if b == *c.Client {
+						p.Clients = slices.Delete(p.Clients, i, i+1)
+						found = true
+						break
+					}
+				}
+			}
+			if !found {
+				return plan, fail("selected binding does not exist or was already removed")
+			}
+			plan.Effect = "Remove the selected binding from active rollout. Removed filesystem boundaries deny broader fallback until explicitly rebound. Retain session/audit history; affected participation is revoked. Existing jobs, contacts, leases, ownership and cleanup obligations are unchanged."
 		case "bind":
 			if c.Client == nil {
 				return plan, fail("bind requires client identity")
@@ -713,9 +778,13 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 	}
 	if c.Action != "invite" && c.Action != "revoke" {
 		p.Revision++
-		for _, x := range st.Sessions {
+		for i := range st.Sessions {
+			x := &st.Sessions[i]
 			if x.Project == p.ID {
-				plan.Affected = append(plan.Affected, x)
+				if c.Action == "remove-project" || c.Action == "remove-binding" && (c.Binding != nil && within(c.Binding.Root, x.CWD) || c.Client != nil && x.Adapter == c.Client.Adapter && x.ClientProject == c.Client.ID) {
+					x.State = "revoked"
+				}
+				plan.Affected = append(plan.Affected, *x)
 			}
 		}
 	}
