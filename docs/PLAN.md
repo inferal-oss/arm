@@ -339,6 +339,21 @@ width and usable native navigation/More/focus at narrow/short/medium/scaled and
 desktop control sizes. Preserve the earlier overflowing header evidence and
 return any wider shell requirement before implementation.
 
+The two-rule byline probe contains the full valid name and preserves native
+picker/More identity, but its opened More panel extends beyond a short viewport.
+Allocate compact/medium app-owned sizing/vertical-overflow containment only for
+that native opened panel, preserving its anchor and stock open/Escape/focus
+behavior. Account for measured anchor position, border/padding and viewport
+changes; do not shrink controls, hide actions or mask whole-page overflow.
+Direct panel-child sizing may only preserve existing control minima if needed.
+Verify every original control becomes fully visible within the real panel and
+viewport through native forward/backward focus scrolling, without invoking its
+action; Escape returns to the original opener. Preserve desktop inline actions,
+full byline, header containment and usable short content. A fixed viewport-size
+pass is insufficient without resizing the open panel. Return before any script,
+anchor repositioning, wider ancestor or pinned-engine change. Earlier successful
+collection with an offscreen control remains failed reading acceptance.
+
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
 readable sizing, responsive containment, navigation/focus and action clarity.
