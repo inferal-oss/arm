@@ -8332,3 +8332,66 @@ No product tooltip, graph, shell or global style fix is included. Proposed
 allocation is additive app.ttl styles scoped to existing ResourceSurface native
 help IconButtons, aligning/bounding their tooltip at the inline end while
 preserving its content, keyboard focus and native types.
+
+## Resource tooltip viewport correction — CSS-only owner evidence
+
+The [source-bound record](validation/ux-resource-tooltips-2026-10-29.json)
+preserves `a75c1fe` main lifecycle and all shared source, pins and generated
+assets. Only additive ResourceSurface IconButton styles change product behavior.
+The four-case desktop/narrow/short/actual doubled-token matrix passes all twenty
+existing help/readability/context/disposal cases, 56 rendered tooltip focus/
+refocus/hover samples and eight top/bottom hover checks. Native pseudo border
+and painted text line bounds fit the viewport, full generated text matches its
+accessible label, and focus/blur/refocus/hover do not widen the document. Narrow
+width remains 390px. Body/technical tokens retain asserted 15px/13px and
+30px/26px values; native tooltip font behavior is unchanged.
+
+Original Close click/Escape focus and disposal, deliberate focus elsewhere,
+rapid reopening, changed context and removal of the original opener pass.
+The changed-context case receives only the existing native restoration; no
+extra focus callback exists. Two native Monitor controls retain their original
+panel dimensions, centered tooltip transform, content-box sizing and 320px
+limit. Their preexisting narrow tooltip overflow remains outside this scoped
+correction. Twenty-eight focused RDF/ownership/focus tests pass. The bounded
+full native run takes 70962ms with zero viewport findings, page errors,
+unexpected operations or live transports. Native probe detachment, context/
+browser close and Vite server join are positively awaited. Final narrow and
+short/doubled edge-hover captures are visually inspected.
+
+### Causal qualification of the vertical tooltip state
+
+The horizontal-only correction retained a failed full-viewport control: after
+reading, the original CPU tooltip could lie at y=-36.109375 to -7.3125.
+Clean untouched Escape, simple native End/Home, copied programmatic reading
+probes and keyboard navigation back from nearby reports did not reproduce it.
+Their passing controls are retained; no product defect was inferred from those
+results alone. The exact original sequence trace then showed prose/facts
+probes leave document scroll unchanged, with the first background movement
+occurring during native keys before the final tail/Close probes.
+
+A separate clean-start native Home/PageDown/End/Home/Escape sequence reproduces
+the failure without any reading measurement probes. At 1440px, native End moves
+the background to y=849 while the panel reaches its end; Home leaves background
+y=984 while returning the panel to zero. At 390px, the corresponding background
+positions are 2386/2387. Escape restores original focus at opener y=-0.3125,
+leaving the above-opener tooltip outside the viewport. Both native panel
+targets are positively reached. Simpler End/Home controls omit the decisive
+PageDown transition and therefore do not establish absence of this case.
+
+With only the Resource scroll margin added, all twelve causal paths fit; the
+original opener is at y=63.6875 and the tooltip at y=27.890625 to 56.6875.
+Before/after runs use identical main, fixture and shared sources; only app
+styles differ. Original failed receipts and all interim evidence remain
+private and preserved. This correction does not claim to stop background
+scrolling or change shared modal keyboard semantics. Independent current
+composition/rebuild and broader UX acceptance remain open.
+
+The original causal helper recorded diagnostic target/viewport booleans without
+failing on them; those historical exits are not counted as passing regressions.
+Review tightened the corrected helper to assert every reached target and full
+tooltip result after recording each case. The final bounded causal rerun passes
+twelve cases, including eight native End/Home target pairs, in 17512ms with
+positive original cleanup. The full-matrix receipt retains its earlier fixture
+hash; the final fixture differs only by added assertions in the inactive
+causality-only branch. Product/shared source hashes are identical between those
+runs. Both exact fixture hashes are retained in the normalized record.

@@ -468,3 +468,17 @@ arm:ResourceHelpFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug
               [ sty:property "white-space" ; sty:raw "pre-wrap" ] .
 [] a sty:StyleRule ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > [data-sem-c=\"arm-resource-help-body\"]) > .sem-panel" ;
  sty:declares [ sty:property "width" ; sty:raw "min(52rem, 100%)" ] .
+
+# Resource help actions sit at the card's inline end. Keep their full tooltip
+# inside the viewport when native hover/focus returns after a dialog closes.
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:part "[data-sem-c=\"icon-button\"][data-sem-tooltip]::after" ;
+ sty:declares [ sty:property "left" ; sty:raw "auto" ],
+              [ sty:property "right" ; sty:raw "0" ],
+              [ sty:property "transform" ; sty:raw "none" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "max-width" ; sty:raw "min(320px, calc(100vw - 3rem))" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# Existing native opener restoration leaves readable space for the tooltip.
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:part "[data-sem-c=\"icon-button\"][data-sem-tooltip]" ;
+ sty:declares [ sty:property "scroll-margin-block" ; sty:raw "4rem" ] .

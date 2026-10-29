@@ -1,0 +1,538 @@
+{
+  "scope": "Resource help tooltip viewport correction, CSS only; independent composition pending",
+  "base": "a75c1feb7df8b862f4798c526d8ae3ca3f6581f6",
+  "sources": {
+    "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+    "internal/server/web/semblance/app.ttl": "9d28b18de7363df65c241d4727ca8f02fa672f2beafc1f04fc0ef8313a107ed3",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+    "internal/server/web/peer-poll.mjs": "2b76967697500dbac3644c528e98d2bec9ff908e3d02c1f67b996a5152c99b10",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+    "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815"
+  },
+  "test_sources": {
+    "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+    "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+    "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+  },
+  "protected_behavior": {
+    "main_lifecycle_byte_identical_to_base": true,
+    "preexisting_ontology_prefix_unchanged": true,
+    "native_content_aria_hover_focus_and_types_preserved": true,
+    "shared_graph_tooltip_engine_theme_pins_accounting_transport_assets_unchanged": true
+  },
+  "product_change": "Only additive ResourceSurface native tooltip inline-end/border-box/viewport-wrap styling and a 4rem opener scroll margin. Existing native restoration handles focus; no new lifecycle callbacks.",
+  "regressions": {
+    "resource_rdf_ownership_focus": 28
+  },
+  "native": {
+    "resource_viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "technical_font_px": 13,
+        "resource_help_and_state_checks_preserved": true,
+        "original_after_reading_close_focus_border": [
+          168.296875,
+          27.890625,
+          338,
+          27.890625,
+          338,
+          56.6875,
+          168.296875,
+          56.6875
+        ],
+        "rendered_focus_refocus_hover_samples": 14,
+        "all_native_border_and_painted_text_quads_fit_viewport": true,
+        "focus_blur_refocus_hover_document_width": 1440,
+        "native_close_escape_original_opener_disposal": true,
+        "hover_edges": [
+          {
+            "edge": "top",
+            "viewport": {
+              "width": 1440,
+              "height": 600
+            },
+            "border": [
+              179.171875,
+              83.640625,
+              338,
+              83.640625,
+              338,
+              112.4375,
+              179.171875,
+              112.4375
+            ],
+            "full_text_fits": true,
+            "document_width": 1440
+          },
+          {
+            "edge": "bottom",
+            "viewport": {
+              "width": 1440,
+              "height": 600
+            },
+            "border": [
+              179.171875,
+              462.640625,
+              338,
+              462.640625,
+              338,
+              491.4375,
+              179.171875,
+              491.4375
+            ],
+            "full_text_fits": true,
+            "document_width": 1440
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "technical_font_px": 13,
+        "resource_help_and_state_checks_preserved": true,
+        "original_after_reading_close_focus_border": [
+          186.296875,
+          27.890625,
+          356,
+          27.890625,
+          356,
+          56.6875,
+          186.296875,
+          56.6875
+        ],
+        "rendered_focus_refocus_hover_samples": 14,
+        "all_native_border_and_painted_text_quads_fit_viewport": true,
+        "focus_blur_refocus_hover_document_width": 390,
+        "native_close_escape_original_opener_disposal": true,
+        "hover_edges": [
+          {
+            "edge": "top",
+            "viewport": {
+              "width": 390,
+              "height": 900
+            },
+            "border": [
+              197.171875,
+              28.890625,
+              356,
+              28.890625,
+              356,
+              57.6875,
+              197.171875,
+              57.6875
+            ],
+            "full_text_fits": true,
+            "document_width": 390
+          },
+          {
+            "edge": "bottom",
+            "viewport": {
+              "width": 390,
+              "height": 900
+            },
+            "border": [
+              197.171875,
+              761.890625,
+              356,
+              761.890625,
+              356,
+              790.6875,
+              197.171875,
+              790.6875
+            ],
+            "full_text_fits": true,
+            "document_width": 390
+          }
+        ],
+        "lifecycle": {
+          "untouched_escape_fits": true,
+          "native_reading_escape_fits": true,
+          "deliberate_focus_elsewhere_retained": true,
+          "rapid_reopen_preserves_new_dialog_focus": true,
+          "changed_context_uses_only_original_native_restoration": true,
+          "removed_original_opener_not_revived": true
+        }
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "text_token_scale": 2,
+        "body_font_px": 30,
+        "technical_font_px": 26,
+        "resource_help_and_state_checks_preserved": true,
+        "original_after_reading_close_focus_border": [
+          188.296875,
+          245.390625,
+          358,
+          245.390625,
+          358,
+          274.1875,
+          188.296875,
+          274.1875
+        ],
+        "rendered_focus_refocus_hover_samples": 14,
+        "all_native_border_and_painted_text_quads_fit_viewport": true,
+        "focus_blur_refocus_hover_document_width": 768,
+        "native_close_escape_original_opener_disposal": true,
+        "hover_edges": [
+          {
+            "edge": "top",
+            "viewport": {
+              "width": 768,
+              "height": 600
+            },
+            "border": [
+              199.171875,
+              92.390625,
+              358,
+              92.390625,
+              358,
+              121.1875,
+              199.171875,
+              121.1875
+            ],
+            "full_text_fits": true,
+            "document_width": 768
+          },
+          {
+            "edge": "bottom",
+            "viewport": {
+              "width": 768,
+              "height": 600
+            },
+            "border": [
+              199.171875,
+              398.390625,
+              358,
+              398.390625,
+              358,
+              427.1875,
+              199.171875,
+              427.1875
+            ],
+            "full_text_fits": true,
+            "document_width": 768
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "technical_font_px": 13,
+        "resource_help_and_state_checks_preserved": true,
+        "original_after_reading_close_focus_border": [
+          186.296875,
+          104.890625,
+          356,
+          104.890625,
+          356,
+          133.6875,
+          186.296875,
+          133.6875
+        ],
+        "rendered_focus_refocus_hover_samples": 14,
+        "all_native_border_and_painted_text_quads_fit_viewport": true,
+        "focus_blur_refocus_hover_document_width": 390,
+        "native_close_escape_original_opener_disposal": true,
+        "hover_edges": [
+          {
+            "edge": "top",
+            "viewport": {
+              "width": 390,
+              "height": 320
+            },
+            "border": [
+              197.171875,
+              28.890625,
+              356,
+              28.890625,
+              356,
+              57.6875,
+              197.171875,
+              57.6875
+            ],
+            "full_text_fits": true,
+            "document_width": 390
+          },
+          {
+            "edge": "bottom",
+            "viewport": {
+              "width": 390,
+              "height": 320
+            },
+            "border": [
+              197.171875,
+              181.890625,
+              356,
+              181.890625,
+              356,
+              210.6875,
+              197.171875,
+              210.6875
+            ],
+            "full_text_fits": true,
+            "document_width": 390
+          }
+        ]
+      }
+    ],
+    "resource_help_dialog_cases": 20,
+    "tooltip_state_groups": 20,
+    "rendered_resource_focus_refocus_hover_samples": 56,
+    "edge_hover_samples": 8,
+    "disconnected_cpu_help_cases": 4,
+    "monitor_controls": [
+      {
+        "width": 1440,
+        "panel_width": 480,
+        "stock_centered_tooltip_transform": "matrix(1, 0, 0, 1, -63.6094, 0)",
+        "stock_tooltip_box_sizing": "content-box",
+        "stock_tooltip_max_width": "320px",
+        "no_resource_hooks": true,
+        "original_focus_and_disposal": true,
+        "full_tooltip_fits_existing_control": true
+      },
+      {
+        "width": 390,
+        "panel_width": 342,
+        "stock_centered_tooltip_transform": "matrix(1, 0, 0, 1, -63.6094, 0)",
+        "stock_tooltip_box_sizing": "content-box",
+        "stock_tooltip_max_width": "320px",
+        "no_resource_hooks": true,
+        "original_focus_and_disposal": true,
+        "full_tooltip_fits_existing_control": false
+      }
+    ],
+    "initial_status_error_cases": 1,
+    "elapsed_ms": 70962,
+    "live_transports": 0,
+    "unexpected_operations": 0,
+    "page_errors": 0,
+    "full_tooltip_viewport_findings": 0,
+    "cleanup": {
+      "nativeProbeDetached": true,
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    },
+    "full_matrix_sources": {
+      "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+      "internal/server/web/semblance/app.ttl": "9d28b18de7363df65c241d4727ca8f02fa672f2beafc1f04fc0ef8313a107ed3",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+      "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+      "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+      "internal/server/web/peer-poll.mjs": "2b76967697500dbac3644c528e98d2bec9ff908e3d02c1f67b996a5152c99b10",
+      "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+      "scripts/dashboard-screenshots/ux-resources-route.mjs": "cb6e1af0059831fb03691ee83a5ad769504dbc8da2bff01e6518253c021baef9",
+      "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815"
+    },
+    "final_fixture_refinement_only_adds_assertions_in_inactive_causality_branch": true
+  },
+  "causality": {
+    "before_sources": {
+      "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+      "internal/server/web/semblance/app.ttl": "40540cd89b67a077f605e0080b5df992d545e304c6b6bf3c3ee576df95726c4c",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+      "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+      "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+      "internal/server/web/peer-poll.mjs": "2b76967697500dbac3644c528e98d2bec9ff908e3d02c1f67b996a5152c99b10",
+      "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+      "scripts/dashboard-screenshots/ux-resources-route.mjs": "cb6e1af0059831fb03691ee83a5ad769504dbc8da2bff01e6518253c021baef9",
+      "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815"
+    },
+    "before_elapsed_ms": 17855,
+    "after_elapsed_ms": 17862,
+    "paths_per_viewport": 6,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "clean_control_modes_fit": [
+          "untouched-escape",
+          "technical-control-native-end-home",
+          "panel-native-end-home",
+          "original-reading-probes",
+          "native-tab-from-nearby-escape"
+        ],
+        "native_failure_mode": "native-home-pagedown-end-home",
+        "before_native_stages": [
+          {
+            "stage": "opened",
+            "document_y": 0,
+            "panel_scroll": 0
+          },
+          {
+            "stage": "native-initial-home",
+            "document_y": 0,
+            "panel_scroll": 0
+          },
+          {
+            "stage": "native-pagedown",
+            "document_y": 0,
+            "panel_scroll": 45
+          },
+          {
+            "stage": "native-end",
+            "document_y": 849,
+            "panel_scroll": 118
+          },
+          {
+            "stage": "native-home",
+            "document_y": 984,
+            "panel_scroll": 0
+          }
+        ],
+        "before_opener_top": -0.3125,
+        "before_tooltip_border": [
+          168.296875,
+          -36.109375,
+          338,
+          -36.109375,
+          338,
+          -7.3125,
+          168.296875,
+          -7.3125
+        ],
+        "after_opener_top": 63.6875,
+        "after_tooltip_border": [
+          168.296875,
+          27.890625,
+          338,
+          27.890625,
+          338,
+          56.6875,
+          168.296875,
+          56.6875
+        ],
+        "all_six_after_paths_fit": true
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "clean_control_modes_fit": [
+          "untouched-escape",
+          "technical-control-native-end-home",
+          "panel-native-end-home",
+          "original-reading-probes",
+          "native-tab-from-nearby-escape"
+        ],
+        "native_failure_mode": "native-home-pagedown-end-home",
+        "before_native_stages": [
+          {
+            "stage": "opened",
+            "document_y": 0,
+            "panel_scroll": 0
+          },
+          {
+            "stage": "native-initial-home",
+            "document_y": 0,
+            "panel_scroll": 0
+          },
+          {
+            "stage": "native-pagedown",
+            "document_y": 0,
+            "panel_scroll": 206
+          },
+          {
+            "stage": "native-end",
+            "document_y": 2386,
+            "panel_scroll": 542
+          },
+          {
+            "stage": "native-home",
+            "document_y": 2387,
+            "panel_scroll": 0
+          }
+        ],
+        "before_opener_top": -0.3125,
+        "before_tooltip_border": [
+          186.296875,
+          -36.109375,
+          356,
+          -36.109375,
+          356,
+          -7.3125,
+          186.296875,
+          -7.3125
+        ],
+        "after_opener_top": 63.6875,
+        "after_tooltip_border": [
+          186.296875,
+          27.890625,
+          356,
+          27.890625,
+          356,
+          56.6875,
+          186.296875,
+          56.6875
+        ],
+        "all_six_after_paths_fit": true
+      }
+    ],
+    "only_source_difference_between_causal_runs_is_app_styles": true,
+    "controlled_diagnostic_after_sources": {
+      "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+      "internal/server/web/semblance/app.ttl": "9d28b18de7363df65c241d4727ca8f02fa672f2beafc1f04fc0ef8313a107ed3",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+      "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+      "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+      "internal/server/web/peer-poll.mjs": "2b76967697500dbac3644c528e98d2bec9ff908e3d02c1f67b996a5152c99b10",
+      "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+      "scripts/dashboard-screenshots/ux-resources-route.mjs": "cb6e1af0059831fb03691ee83a5ad769504dbc8da2bff01e6518253c021baef9",
+      "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815"
+    },
+    "asserting_regression": {
+      "sources": {
+        "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+        "internal/server/web/semblance/app.ttl": "9d28b18de7363df65c241d4727ca8f02fa672f2beafc1f04fc0ef8313a107ed3",
+        "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+        "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+        "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+        "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+        "internal/server/web/peer-poll.mjs": "2b76967697500dbac3644c528e98d2bec9ff908e3d02c1f67b996a5152c99b10",
+        "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+        "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+        "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815"
+      },
+      "viewports": 2,
+      "cases": 12,
+      "end_home_target_pairs": 8,
+      "full_native_tooltip_and_original_focus_assertions": 12,
+      "elapsed_ms": 17512,
+      "cleanup": {
+        "nativeProbeDetached": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "original_diagnostic_exits_not_counted_as_passing_regressions": true
+    }
+  },
+  "qualifications": [
+    "Earlier failed native pseudo geometry probes and the failed full-viewport control are preserved privately. Generated tooltip text is measured from the browser layout snapshot, not assumed to have ordinary DOM text children.",
+    "Clean Escape, simple End/Home, reading-probe and keyboard-navigation controls did not reproduce the vertical failure. The additional native Home/PageDown/End/Home/Escape path does, with no measurement probes.",
+    "Pointer Close may leave a focused tooltip inactive according to native focus-visible semantics. Keyboard refocus and hover must render the full tooltip.",
+    "The non-resource Monitor control retains its original centered tooltip styles; its preexisting narrow overflow is outside this Resource-only correction.",
+    "This correction makes tooltip/opener restoration readable; it does not claim to stop background scrolling or change shared modal keyboard semantics.",
+    "Synthetic Backend only; no real transport/authentication, mutation, build/install or runtime activation.",
+    "The final causal helper now asserts every recorded native target and tooltip viewport result. A bounded asserting rerun passes12cases. Full-matrix execution retains its original fixture hash; the only later code refinement is assertion statements in the inactive causality-only branch. Product/shared sources are identical between those runs."
+  ],
+  "remaining": [
+    "Independent exact-source/current-main composition and central rebuild",
+    "Non-resource tooltip and broader route/state/terminal UX coverage"
+  ]
+}

@@ -62,7 +62,7 @@ states; no principal view is declared complete from source inspection.
 | --- | --- | --- | --- |
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
 | Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Source inventory only | Dense cores/devices, stale/unknown/reset/disconnected, pause and help dialogs |
-| Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Layout composition accepted in 03f8a4; Resource-only help correction has scoped owner evidence; composition review, separately reproduced tooltip geometry and real transport/full route acceptance remain open |
+| Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Layout composition accepted in 03f8a4; Resource-only help correction has scoped owner evidence; help/tooltip composition review and real transport/full route acceptance remain open |
 | Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, actual doubled text-token coverage (15px/30px), short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild accepted; native subpool/drain/resume/delete and broader pagination/hierarchy density remain pending |
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |
 | Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Accepted focused default/detail/lifecycle cut in c830982 | Remaining route/geometry coverage; preserve reader and cleanup invariants |
@@ -171,3 +171,10 @@ labels, end access, native keyboard scrolling and two unchanged Monitor-help
 controls. Independent composition remains pending. Focused tooltip probes
 identify the separate post-help width growth; no tooltip/global fix is included
 without further allocation.
+
+The separate [CSS-only tooltip correction](validation/ux-resource-tooltips-2026-10-29.json)
+now has full native border/text viewport evidence, native-key before/after
+causality and unchanged main lifecycle. Resource tooltips remain readable under
+focus/hover and after Close/Escape without horizontal overflow. Non-resource
+tooltips and broader UX remain outside this correction; independent composition
+is still required.

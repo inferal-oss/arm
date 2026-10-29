@@ -1295,3 +1295,21 @@ refocus at a 390px viewport, matching its calculated right edge. Resource help
 layout leaves that observation unchanged. Proposed next allocation is app.ttl
 only, using existing ResourceSurface scope to align/bound those native tooltips;
 no tooltip/graph/shell/global product fix is included pending explicit allocation.
+
+## Resource tooltips — CSS-only correction ready for review
+
+Owner: `codex/ux-resource-route-state`, following `a75c1fe`. Native Resource
+help tooltips now align to the card's inline end, use border-box viewport limits
+and retain complete wrapping text. A scoped 4rem opener scroll margin lets the
+existing native focus restoration leave the tooltip readable after the full
+keyboard reading sequence. Main lifecycle remains byte-identical to `a75c1fe`.
+
+The [tooltip record](validation/ux-resource-tooltips-2026-10-29.json) binds
+28 focused RDF/ownership/focus tests, twenty help/tooltip groups, 56 rendered
+focus/refocus/hover samples, eight visible-edge hover checks, original
+Close/Escape, rapid reopen, deliberate focus elsewhere, changed context and
+removed-opener checks. Two unchanged Monitor controls retain stock styling.
+Before/after causal runs preserve the native Home/PageDown/End/Home/Escape
+failure and its CSS-only correction. No shared focus, tooltip engine, shell,
+backend, pins or generated assets change. Independent composition/rebuild and
+broader UX gates remain open.

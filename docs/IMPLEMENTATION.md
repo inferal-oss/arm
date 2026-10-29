@@ -3455,3 +3455,18 @@ width growth in the existing focused help-icon tooltip pseudo-element. Its
 centered max-content box extends beyond the viewport even while all visible
 DOM boxes fit. This correction does not change tooltip behavior; a scoped
 product allocation is proposed separately.
+
+## Resource help tooltip viewport bounds
+
+Only native help IconButtons inside ResourceSurface receive inline-end tooltip
+alignment, border-box viewport width and unbroken-value wrapping. The original
+tooltip content, ARIA label, native keyboard/hover activation and font remain
+unchanged. A 4rem scroll margin on those existing buttons gives the stock
+opener-restoration path readable space at the viewport edge. No main lifecycle
+callback, new interactive marker or shared tooltip/focus behavior is added.
+
+Native pseudo-element border geometry and painted text line bounds are read
+from the browser's layout data, including generated content absent from the
+ordinary DOM. The fixture distinguishes native pointer Close, which may leave
+a tooltip inactive, from keyboard refocus and hover, which must render it.
+Non-resource Monitor controls retain their centered stock tooltip styling.
