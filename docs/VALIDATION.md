@@ -1,5 +1,41 @@
 # Validation record
 
+## Shared dialogs — independent composition
+
+Inventory `be9af44` and four focused corrections through `8625002` compose on
+`b065f22`, preserving current backend and previously accepted dashboard inputs.
+All 23 owner inputs and 29 protected hashes match before central rebuilding;
+the original ontology prefix, naming mutation/validation/CAS/unknown storage and
+palette entries/activation remain exact. Source review finds no blocking issue.
+
+Fresh original-FIFO composition passes 454 affected JS and 43 native UI tests,
+native CLI build and two byte-identical embedded builds in 19.323 s. Separate
+four-case Names, Search and protected Display browser cohorts pass in 36.837 s,
+28.677 s and 10.235 s. Five isolated omissions fail the exact action, caption,
+help-width, physical-key and dirty-draft assertions. Each changes one effective
+source file, retains the final disk inputs and positively closes original APIs.
+The draft wrapper initially compares a complete assertion message too strictly;
+the preserved browser result has the intended failure and cleanup. After matching
+the exact heading separately from its diff, only that control is rerun (4.764 s).
+No product source changes between these commands.
+
+The reviewer fixture now sets read-release evidence from an actual successful
+capture, rather than an unconditional flag after a possibly absent capture.
+Fresh Names/Search each capture eight released synthetic sessions; Display four;
+all have zero pending reads, forbidden calls, real sockets, external/API requests,
+page errors and clipboard attempts. Context/browser/server close operations return.
+Frozen 256 correction artifacts plus 142/505/164 prior artifacts and four recovered
+audit files rehash unchanged. Original audit scope stays API-close completion
+only; lost diagnostics and stronger OS/group/reap facts are not recovered here.
+
+Desktop naming captions/actions and short native palette images are visually
+reviewed. Native selected glyphs remain unavailable; stored strings, captions,
+control allocation and keyboard behavior are separate checks. Selected tokens
+are not universal zoom; native fixed fonts and tall-form scrolling are qualified.
+See the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
+Private native build is not installed/executed. No maximum-density/every-theme/
+language, full-Go/Linux runtime, real auth/transport, TUI or complete UX claim.
+
 ## Worker refusal guards — focused source qualification
 
 The [evidence record](validation/resident-worker-refusal-2026-10-29.json) qualifies
@@ -37,6 +73,7 @@ expected in 13.608 s. Their corrected full cohorts pass. No blocking source
 finding remains; the [composed record](validation/resident-worker-refusal-composed-2026-10-29.json)
 retains the scope, source hashes and qualifications. No worker, migration, native
 process/controller, full-Go or installed-runtime acceptance is inferred.
+Integration `b065f22` passes its [public source workflow](https://github.com/inferal-oss/arm/actions/runs/40971018312).
 
 ## Worker transaction refinement — source and documentation only
 
@@ -9226,5 +9263,5 @@ select glyph bounds are unavailable; stored values/captions/control geometry
 and keyboard behavior are qualified separately. Selected-token scaling is not
 universal zoom, and fixed native fonts are recorded. Tall forms require scrolling;
 all controls are not claimed simultaneously visible. Maximum-entry performance,
-every theme/language/viewport, real auth/transport, broader UX/TUI and independent
-current-composition review plus central rebuilding remain open.
+every theme/language/viewport, real auth/transport and broader UX/TUI remain open.
+Independent current composition and central rebuilding are recorded above.

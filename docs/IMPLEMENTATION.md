@@ -3847,5 +3847,7 @@ The compact ellipsis label stays intact above complete wrapped contextual help;
 keys keep their existing separate slot. No native entries, wrappers, filtering,
 highlighting, keywords, category caps, activation or identity semantics change.
 The [owner record](validation/ux-shared-dialog-layout-2026-10-29.json) qualifies
-failed candidates and source-bound evidence; generated assets remain unchanged.
-Independent composition/review/rebuilding and broader UX acceptance remain open.
+failed candidates and source-bound evidence. Independent current-main review,
+central deterministic assets/native build and fresh browser controls are in the
+[composed record](validation/ux-shared-dialog-composed-2026-10-29.json). Broader UX
+and installed/live-runtime acceptance remain open.

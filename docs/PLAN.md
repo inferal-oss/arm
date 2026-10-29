@@ -1,5 +1,35 @@
 # ARM delivery plan
 
+## Shared dialogs — independently reviewed composition
+
+Inventory `be9af44` and focused corrections `0280f4f`, `c0045a3`, `9fb2e96`,
+`8625002` compose on current main `b065f22`. All 23 owner input and 29 protected
+hashes initially match. Source review preserves native types/panel/graph,
+name mutation/CAS/unknown-intent storage and palette inventory/activation.
+The reviewer fixture reports synthetic-read release only after an actual
+successful capture; frozen owner session evidence remains qualified separately.
+
+Independent composition passes 454 JS and 43 native UI tests, native build and
+two identical embedded rebuilds. Twelve browser cases and five isolated expected
+failures verify body/caption containment, immediate typing, useful help and exact
+unchanged-read draft retention, with original API cleanup. The corrected draft
+control wrapper matches the assertion heading separately from its rendered diff;
+its first failed qualification is retained. No blocking product finding remains;
+see the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
+No install, real transport, universal zoom, maximum density or full UX claim.
+
+Next bounded continuation reuses the full-UX owner for read-only Nodes roster /
+View node and Kubernetes context/node inventory only. Return source-bound dense,
+long-valid-record, empty/error/pending/disconnected/stale/unverified findings at
+desktop/narrow/short/selected-token sizes before remediation. Strict synthetic
+read allowlists and actual native keyboard/clip/focus checks are required; real
+transport and all mutation/workflow/remote-dashboard/Screen/forward/install/stop/
+uninstall/handoff/availability changes remain refused. Only new owned fixtures,
+normalized reports and focused docs are allocated; product source, pins, schema,
+backend and accepted surfaces remain protected. Preserve frozen branches/artifacts.
+Use sequential unchanged-FIFO cohorts within 120s/two CPU/two GiB, positive
+original cleanup and no builds/install/environment/new task/subagent.
+
 ## Reserved worker refusal guards — independently reviewed source
 
 Owner: `codex/resident-worker-refusal-guards`, from accepted
@@ -22,6 +52,7 @@ An exact-parent overlay of the two production files fails the selected namespace
 and early-admission regressions as expected; corrected source passes. No blocking
 source finding remains; the [composed record](validation/resident-worker-refusal-composed-2026-10-29.json)
 distinguishes the first sandbox setup failure from qualified command evidence.
+Integration `b065f22` passes its [public source workflow](https://github.com/inferal-oss/arm/actions/runs/40971018312).
 
 Next existing-owner allocation is the unbound native directory/lock lifetime
 primitive in an isolated `internal/authoritylifetime` package. Construction must
@@ -1972,7 +2003,7 @@ choices. Earlier fixture-shape/timing failures remain preserved. Independent
 review/composition, any product correction and broader/full UX acceptance remain
 separate gates; no real operation, build/install or runtime activation occurs.
 
-## Shared-dialog layout — owner corrections awaiting composition
+## Shared-dialog layout — scoped owner evidence
 
 Owner: `codex/ux-shared-dialog-layout`, from frozen inventory `be9af44`.
 Focused dependency order is naming body/captions `0280f4f`, palette opening focus
@@ -1992,5 +2023,5 @@ Dirty retention is read-local and only for a healthy unchanged exact source/
 owner/context/binding/revision/reservation baseline; no unknown/manual/closed
 case gains retention or new authority. Changed snapshots keep existing fresh
 selection behavior. Naming mutations/CAS/persistence/replay remain byte-exact.
-Independent current-source/composed review and central asset/native builds
-remain open. No owner build/install/push/activation or full UX acceptance.
+Independent current-source composition and central asset/native builds are
+recorded above. No owner build/install/push/activation or full UX acceptance.

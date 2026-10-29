@@ -321,7 +321,8 @@ while compact labels, queries/keywords/caps/identities and activation stay intac
 
 Three final four-case cohorts, 34 module and 36 native tests, five isolated
 omissions and positive original API cleanup are recorded. Earlier failed
-candidates and recovered audit remain preserved and qualified. No product
-install, owner asset build or runtime activation occurs. Independent current
-composition/review/rebuild, maximum cases, universal zoom and full UX/TUI/live
-transport acceptance remain open.
+candidates and recovered audit remain preserved and qualified. Independent
+current-main composition, central builds and fresh positive/isolated controls
+are accepted in the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
+No product install, owner asset build or runtime activation occurs. Maximum
+cases, universal zoom and full UX/TUI/live transport acceptance remain open.
