@@ -13,7 +13,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"regexp"
+	"strings"
+	"unicode"
 )
 
 const (
@@ -102,7 +105,7 @@ func secret() string {
 
 func decode(raw []byte, value any) error {
 	shape := json.NewDecoder(bytes.NewReader(raw))
-	if err := jsonShape(shape, 0); err != nil {
+	if err := jsonShape(shape, 0, reflect.TypeOf(value)); err != nil {
 		return err
 	}
 	if _, err := shape.Token(); err != io.EOF {
@@ -120,7 +123,7 @@ func decode(raw []byte, value any) error {
 }
 
 // Reject duplicate/ambiguous keys and bound nesting before typed decoding.
-func jsonShape(d *json.Decoder, depth int) error {
+func jsonShape(d *json.Decoder, depth int, target reflect.Type) error {
 	if depth > 32 {
 		return failure("json_depth")
 	}
@@ -132,8 +135,19 @@ func jsonShape(d *json.Decoder, depth int) error {
 	if !ok {
 		return nil
 	}
+	target = jsonTarget(target)
 	switch delim {
 	case '{':
+		var fields map[string]reflect.Type
+		var element reflect.Type
+		if target != nil {
+			switch target.Kind() {
+			case reflect.Struct:
+				fields = jsonFields(target)
+			case reflect.Map:
+				element = target.Elem()
+			}
+		}
 		seen := map[string]bool{}
 		for d.More() {
 			key, err := d.Token()
@@ -145,7 +159,17 @@ func jsonShape(d *json.Decoder, depth int) error {
 				return failure("json_duplicate_key")
 			}
 			seen[name] = true
-			if err = jsonShape(d, depth+1); err != nil {
+			child := element
+			if fields != nil {
+				var present bool
+				child, present = fields[name]
+				// encoding/json accepts case-folded aliases for typed fields.
+				// Require their actual wire name before its matching can occur.
+				if !present {
+					return failure("json_field_name")
+				}
+			}
+			if err = jsonShape(d, depth+1, child); err != nil {
 				return err
 			}
 		}
@@ -154,8 +178,12 @@ func jsonShape(d *json.Decoder, depth int) error {
 			return failure("json_invalid")
 		}
 	case '[':
+		var element reflect.Type
+		if target != nil && (target.Kind() == reflect.Slice || target.Kind() == reflect.Array) {
+			element = target.Elem()
+		}
 		for d.More() {
-			if err := jsonShape(d, depth+1); err != nil {
+			if err := jsonShape(d, depth+1, element); err != nil {
 				return err
 			}
 		}
@@ -167,6 +195,111 @@ func jsonShape(d *json.Decoder, depth int) error {
 		return failure("json_invalid")
 	}
 	return nil
+}
+
+var jsonUnmarshaller = reflect.TypeOf((*json.Unmarshaler)(nil)).Elem()
+
+// RawMessage, interfaces and custom JSON representations are opaque. Map keys
+// remain case-sensitive; only their typed values get a struct-field schema.
+func jsonTarget(t reflect.Type) reflect.Type {
+	for t != nil {
+		if t.Implements(jsonUnmarshaller) || (t.Kind() != reflect.Pointer && reflect.PointerTo(t).Implements(jsonUnmarshaller)) {
+			return nil
+		}
+		if t.Kind() == reflect.Interface {
+			return nil
+		}
+		if t.Kind() != reflect.Pointer {
+			return t
+		}
+		t = t.Elem()
+	}
+	return nil
+}
+
+// Resolve exported/promoted wire fields by depth and explicit-tag dominance,
+// following encoding/json's struct selection. Ambiguous fields are absent and
+// thus refused, as by DisallowUnknownFields. No payload keys are case-folded.
+func jsonFields(t reflect.Type) map[string]reflect.Type {
+	type candidate struct {
+		kind   reflect.Type
+		depth  int
+		tagged bool
+	}
+	choices := map[string][]candidate{}
+	path := map[reflect.Type]bool{}
+	var visit func(reflect.Type, int)
+	visit = func(current reflect.Type, depth int) {
+		if path[current] {
+			return
+		}
+		path[current] = true
+		defer delete(path, current)
+		for i := 0; i < current.NumField(); i++ {
+			f := current.Field(i)
+			base := f.Type
+			if base.Kind() == reflect.Pointer {
+				base = base.Elem()
+			}
+			if !f.IsExported() && (!f.Anonymous || base.Kind() != reflect.Struct) {
+				continue
+			}
+			tag := f.Tag.Get("json")
+			if tag == "-" {
+				continue
+			}
+			name, _, _ := strings.Cut(tag, ",")
+			if !jsonFieldName(name) {
+				name = ""
+			}
+			if name == "" && f.Anonymous && base.Kind() == reflect.Struct {
+				visit(base, depth+1)
+				continue
+			}
+			tagged := name != ""
+			if name == "" {
+				name = f.Name
+			}
+			c := candidate{kind: f.Type, depth: depth, tagged: tagged}
+			old := choices[name]
+			if len(old) == 0 || depth < old[0].depth {
+				choices[name] = []candidate{c}
+			} else if depth == old[0].depth {
+				choices[name] = append(old, c)
+			}
+		}
+	}
+	visit(t, 0)
+	fields := map[string]reflect.Type{}
+	for name, list := range choices {
+		if len(list) == 1 {
+			fields[name] = list[0].kind
+			continue
+		}
+		var tagged []candidate
+		for _, c := range list {
+			if c.tagged {
+				tagged = append(tagged, c)
+			}
+		}
+		if len(tagged) == 1 {
+			fields[name] = tagged[0].kind
+		}
+	}
+	return fields
+}
+
+func jsonFieldName(name string) bool {
+	if name == "" {
+		return false
+	}
+	for _, r := range name {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || strings.ContainsRune("!#$%&()*+-./:;<=>?@[]^_{|}~ ", r) {
+			continue
+		}
+		return false
+	}
+	return true
 }
 
 func readFrame(r io.Reader, maximum int, value any) error {

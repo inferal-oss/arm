@@ -303,3 +303,96 @@ func TestResidentOutcomeOwnsDispatchBuffer(t *testing.T) {
 		t.Fatal("acknowledged receipt borrowed a mutable dispatch buffer")
 	}
 }
+
+func TestResidentTypedFieldAliasesRejected(t *testing.T) {
+	for _, raw := range []string{
+		`{"operation":"status","Operation":"run","params":{}}`,
+		`{"Operation":"run","operation":"status","params":{}}`,
+		`{"operation":"status","key":"original","KEY":"replacement","params":{}}`,
+		`{"Operation":"status","params":{}}`,
+		`{"operation":"status","KEY":"replacement","params":{}}`,
+		`{"operation":"status","key":"original","\u212aey":"replacement","params":{}}`,
+	} {
+		var request ClientRequest
+		if err := decode([]byte(raw), &request); err == nil {
+			t.Errorf("typed field alias accepted: %s", raw)
+		}
+	}
+	var h hello
+	if decode([]byte(`{"protocol":1,"resident":{"host":"one","Host":"two","owner":"1","generation":"g"},"worker":{"generation":"w","sha256":"s","version":"v"},"capability":"c"}`), &h) == nil {
+		t.Error("nested typed identity alias accepted")
+	}
+	var saved receipt
+	if decode([]byte(`{"state":"pending","State":"complete"}`), &saved) == nil {
+		t.Error("saved outcome alias accepted")
+	}
+}
+
+func TestResidentCanonicalTypedAndOpaqueKeys(t *testing.T) {
+	params := `{"Key":1,"key":2,"KEY":3,"\u212aey":4,"nested":{"Operation":"opaque","operation":"data"}}`
+	var request ClientRequest
+	if err := decode([]byte(`{"operation":"status","key":"original","params":`+params+`}`), &request); err != nil {
+		t.Fatal("canonical envelope with opaque keys refused", err)
+	}
+	if request.Operation != "status" || request.Key != "original" || string(request.Params) != params {
+		t.Fatal("opaque request bytes changed")
+	}
+	var opaque map[string]any
+	if err := decode([]byte(params), &opaque); err != nil || len(opaque) != 5 {
+		t.Fatal("legitimate case-sensitive map keys refused", err)
+	}
+	type typed struct {
+		Key string `json:"key"`
+	}
+	var keyed map[string]typed
+	if err := decode([]byte(`{"Key":{"key":"upper"},"key":{"key":"lower"}}`), &keyed); err != nil || len(keyed) != 2 || keyed["Key"].Key != "upper" || keyed["key"].Key != "lower" {
+		t.Fatal("typed map lost distinct keys", err)
+	}
+	if decode([]byte(`{"Key":{"key":"upper","KEY":"alias"}}`), &keyed) == nil {
+		t.Error("typed map value alias accepted")
+	}
+	type embedded struct {
+		Key string `json:"key"`
+	}
+	var promoted struct {
+		embedded
+		Operation string     `json:"operation"`
+		IDs       []Identity `json:"ids"`
+	}
+	if err := decode([]byte(`{"key":"promoted","operation":"status","ids":[{"host":"h","owner":"1","generation":"g"}]}`), &promoted); err != nil || promoted.Key != "promoted" {
+		t.Fatal("canonical embedded fields refused", err)
+	}
+	if decode([]byte(`{"key":"promoted","operation":"status","ids":[{"host":"h","HOST":"alias"}]}`), &promoted) == nil {
+		t.Error("typed slice element alias accepted")
+	}
+	// A shallow map shadows a promoted typed field. Its data keys must not
+	// accidentally inherit the shadowed struct's schema.
+	type withTyped struct {
+		Payload typed `json:"payload"`
+	}
+	var shallow struct {
+		withTyped
+		Payload map[string]int `json:"payload"`
+	}
+	if err := decode([]byte(`{"payload":{"key":1,"KEY":2}}`), &shallow); err != nil || len(shallow.Payload) != 2 {
+		t.Fatal("shadowed typed field changed map semantics", err)
+	}
+	// At equal depth encoding/json selects the explicitly tagged field.
+	type plain struct{ Payload typed }
+	type tagged struct {
+		Data map[string]int `json:"Payload"`
+	}
+	var dominant struct {
+		plain
+		tagged
+	}
+	if err := decode([]byte(`{"Payload":{"key":1,"KEY":2}}`), &dominant); err != nil || len(dominant.Data) != 2 {
+		t.Fatal("tagged field dominance changed", err)
+	}
+	var dash struct {
+		Value string `json:"-,omitempty"`
+	}
+	if err := decode([]byte(`{"-":"canonical"}`), &dash); err != nil || dash.Value != "canonical" {
+		t.Fatal("valid dash wire name refused", err)
+	}
+}

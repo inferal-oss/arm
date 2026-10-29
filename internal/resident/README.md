@@ -25,6 +25,11 @@ unchanged.
 
 - Protocol 1, 64 KiB request frames, 256 KiB reply frames and a 128 KiB dispatch
   result ceiling; strict unknown/duplicate-field and nesting-depth checks.
+  Fields decoded by Go struct matching require their exact canonical wire
+  names; case-folded aliases are refused before typed decoding. RawMessage,
+  interfaces and custom JSON representations remain opaque. Map keys retain
+  case-sensitive identity while typed map/slice values use their own schema.
+  Exported/promoted field and explicit-tag dominance preserve canonical requests.
 - One admitted call per binding, at most two registrations for the entire
   authority lifetime, four accepted worker HTTP connections, bounded HTTP/private
   I/O deadlines, and 128 mutation receipts. Sealed registrations are retained;
