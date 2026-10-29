@@ -115,7 +115,12 @@ Focused A/B/A reproduction identifies the separate narrow-width cause as the
 Resource help button's centered tooltip pseudo-element: focus widens the page,
 blur restores it and refocus reproduces it. A separate correction is allocated
 only to ResourceSurface help-tooltip app styles with complete viewport-bounded
-text and preserved keyboard/hover semantics. Stock tooltip/pin/graph/shell and
+text and preserved keyboard/hover semantics. The horizontal candidate exposes
+an additional restored-focus case with the opener at the viewport top and the
+above-button tooltip outside it. Full-tooltip acceptance remains open. A bounded
+Resource-only help lifecycle/scroll-visibility follow-up is allocated, guarded
+by the original live focused opener and context; no forced focus or weakening of
+native End/Home/Close/Escape behavior. Stock tooltip/pin/graph/shell and
 non-resource Monitor styles remain protected. Full transport/auth/timing,
 route and broader UX acceptance remain open; installation is separate. Keep the validated
 build staged while the reviewed upgrade design addresses immutable runtime
