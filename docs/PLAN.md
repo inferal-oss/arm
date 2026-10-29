@@ -36,6 +36,10 @@ native-node completion, special-subscription and ordinary dispatch integration;
 and focused tests. Keep actual Host/Origin/subprotocol/node checks, public wire
 parsers/encoding/errors, default direct operation behavior, stop registration,
 domain/request/transport lifetimes and direct proxy reporting unchanged.
+The old private trusted domain body and its per-family unit tests may remain;
+only verified prepared dispatch may invoke it in local production. New caller/
+dispatch tests use owned accepted ingress and cannot claim authentication from
+ambient context flags. Legacy context is derived solely from the verified caller.
 Unclassified operations stay resident; worker eligibility grants nothing here.
 No worker IPC/controller/role/assets, CLI/startup activation, Manager/provider/
 mesh/local-helper/schema/module or frontend changes are allocated. Return any

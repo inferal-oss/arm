@@ -131,8 +131,14 @@ The current `dispatch(ctx, request)` relies on context values to apply browser
 restrictions and selected-node routing. Only `ws` calls that local production
 entry; mesh has a different `meshService.dispatch`. The proposed extraction must
 remove the possibility that absent context values on a new entry imply native
-authority. Tests that call the old private dispatcher need explicit resident
-authentication fixtures, not an exported constructor accepting role flags.
+authority. The old unexported dispatcher may remain the trusted resident domain
+body/stop wrapper, with existing per-family unit tests. Its sole local production
+caller must be the proof-checked prepared-dispatch path; WS and any new entry
+must not bypass that boundary. Those domain-body tests do not prove caller or
+ingress authentication. New caller/prepared-dispatch tests require explicit
+owned accepted-ingress fixtures, never an exported constructor accepting role
+flags. The adapter derives all legacy role/node context values, including their
+absence, from the verified caller rather than arbitrary inherited flags.
 
 Credential recognition alone does not activate a caller. Until the existing
 WebSocket Host/Origin/subprotocol acceptance and any required first-frame node
