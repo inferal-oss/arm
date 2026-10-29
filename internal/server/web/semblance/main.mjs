@@ -249,15 +249,17 @@ function renderHost(){if(!state.status)return;ui.batch(()=>{const status=state.s
  // disclosures or focused controls. Recreate only after this view was disposed.
  if(!hostView||hostView.authority.disposed){
   const summary=ui.descriptions([]),identity=ui.descriptions([]),technical=ui.code(''),infrastructure=ui.code(''),capabilities=ui.grid([],{columns:2});
-  const authority=ui.card('Local authority',[summary,ui.disclosure('Exact identity & cursor',[identity])]),technicalDisclosure=ui.disclosure('Technical identifiers',[technical]);
+  for(const code of [technical,infrastructure])ui.put(code.iri,C+'block',true);
+  const authority=ui.card('Local authority',[summary,ui.disclosure('Exact identity & cursor',[identity])]),technicalDisclosure=ui.disclosure('Technical identifiers',[technical]),infrastructureDisclosure=ui.disclosure('Infrastructure ports',[infrastructure]);
+  for(const disclosure of [technicalDisclosure,infrastructureDisclosure])ui.put(disclosure.body.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'HostMetadataBody',true);
   hostView={authority,summary,identity,technical,infrastructure,capabilities,technicalDisclosure};
-  owned(roots.host,[authority,ui.heading('Available capabilities',3),capabilities,technicalDisclosure,ui.disclosure('Infrastructure ports',[infrastructure])]);
+  owned(roots.host,[authority,ui.heading('Available capabilities',3),capabilities,technicalDisclosure,infrastructureDisclosure]);
  }
  hostView.summary.setPairs([['Host',namedLabel(status,status.host?.slice(0,12)+'…')],['Owner',owner(status)],['Mode',status.draining?'Draining':'Accepting reviewed requests']]);
  hostView.identity.setPairs([['Host ID',status.host],['Event cursor',count(status.cursor)]]);
  hostView.capabilities.replace(...groups.map(([title,features])=>ui.card(title,features.filter(([,cap])=>caps.includes(cap)).map(([label])=>ui.text(label)))));
- hostView.technicalDisclosure.set({label:`Technical identifiers · ${caps.length} capabilities`});hostView.technical.set({code:caps.join('\n')});
- const raw=stringifyJSON(status.infrastructure_ports??[]);hostView.infrastructure.set({code:raw.length>256000?raw.slice(0,256000)+'\n[display truncated]':raw});
+ hostView.technicalDisclosure.set({label:`Technical identifiers · ${caps.length} capabilities`});hostView.technical.set({value:caps.join('\n')});
+ const raw=stringifyJSON(status.infrastructure_ports??[]);hostView.infrastructure.set({value:raw.length>256000?raw.slice(0,256000)+'\n[display truncated]':raw});
 });}
 function updateFreshness(){remoteDashboard?.updateFreshness();if(remoteDashboard)return;const elapsed=performance.now()-state.statusReceived;if(view==='resources'&&state.status){if(capacityFreshness!==capacityFreshnessKey(capacityBudgetsForView(state.status,{connected:state.connected,elapsedMS:elapsed})))renderResourceCards();refreshPeers();}
  if(view==='monitor'&&state.monitor){const stale=monitorStale(state.monitor,state.connected,performance.now()-state.received);if(stale!==lastMonitorStale)renderMonitor();freshness.set({label:`${stale?'STALE · ':''}${paused?'display paused · ':''}sample ${Math.max(0,Math.floor((performance.now()-state.received)/1000))}s ago`});}else if(state.status)freshness.set({label:`${state.connected?'':'STALE · '}state updated ${Math.max(0,Math.floor(elapsed/1000))}s ago`});}

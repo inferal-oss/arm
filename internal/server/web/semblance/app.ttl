@@ -541,3 +541,17 @@ arm:MonitorShortWindow a sty:WidthClass ; sty:media "(max-height: 640px)" .
  sty:declares [ sty:property "min-width" ; sty:raw "0" ],
               [ sty:property "white-space" ; sty:raw "pre-wrap" ],
               [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+
+# Bound only Host metadata bodies so native Code overflow remains scrollable.
+arm:HostMetadataBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-host-metadata-body" .
+[] a sty:StyleRule ; sty:appliesTo arm:HostMetadataBody ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:HostMetadataBody ; sty:part "> pre[data-sem-c=\"code\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
