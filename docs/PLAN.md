@@ -6,23 +6,39 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
-## Uninterrupted upgrade design — reviewed; approach selection open
+## Resident supervision and replaceable workers — selected; first proof allocated
 
-Owner: `codex/live-upgrade-design`, based on `dfd916c`; focused design commit
-`23e211f` remains preserved on the owner branch. Independent read-only review
-confirms current install/runtime identity, supervision, drain/recovery, proxy
-reporting and generation/authority boundaries. Fifty-eight added local source/document
-links and scoped privacy/diff checks pass; no runtime experiment was needed.
+Owner: the existing live-upgrade task, preserving reviewed design `23e211f` on
+`codex/live-upgrade-design`. The user selects active jobs spanning API/UI worker
+replacement, with a brief API reconnect acceptable. Verified implementation base
+is `80ca1ed`; its backend source matches accepted `6035548`, with later accepted
+frontend source `03f8a40`. Existing owned drafts and design history stay preserved;
+a separate `codex/resident-api-workers` implementation branch is allocated.
 
-The proposal separates a work-preserving verified-idle activation with a possible
-indefinite admission pause/API gap from resident custody with replaceable API/UI
-workers while jobs stay active. Neither establishes arbitrary whole-backend or
-connection continuity today. Current binaries need a preparatory compatible
-release; proposals must preserve original owners, single-writer fencing, exact
-operation outcomes and conservative accounting/cleanup. User approach selection,
-product implementation and all future native/failure-injection gates remain open.
-No live backend/installed-state mutation or product work is authorized by this
-design discussion, and the focused design is not integrated pending that choice.
+Independent read-only review confirms install/runtime identity, supervision,
+drain/recovery, proxy reporting and generation/authority boundaries. Fifty-eight
+added local source/document links and scoped privacy/diff checks pass. The idle
+cutover remains an alternative, not the selected active-work mechanism.
+
+First review gate: refine resident/worker ownership and bounded private IPC,
+then implement an isolated generic-job/two-worker proof using the existing real
+Manager and child-owner boundary. One resident retains the ledger/lock, original
+waiters/output/clocks/provider/mesh custody; worker retirement cannot close it.
+Stale epochs, exact operation keys/unknown outcomes, renewal/expiry and positive
+original cleanup require controls. Legacy proxy reporting needs a stable resident
+path; a generic-job proof cannot establish proxy/provider/full-product continuity.
+Workers are trusted same-account code, not an OS security sandbox.
+
+The unchanged shared FIFO is allocated for bounded focused tests/builds and
+private native proof cohorts; one Go worker, at most two CPU/2GiB and 120 seconds
+active per cohort. No installed/default/shared backend, enrollment/policy, real
+jobs, live restart/install/deployment, SSH/environment changes or modules/schema/
+provider-policy edits are allocated. Production Serve/CLI rewiring follows a
+reviewed concrete interface; the first proof uses new private package/test/helper
+files only. Initial legacy bootstrap and resident-core replacement remain separate
+review gates; original process-local custody cannot be retroactively adopted.
+This milestone does not complete the selected product goal or establish connection
+continuity. Pending frontend help/tooltip files remain separately reserved.
 
 ## Dashboard visibility and detail presentation — reviewed and integrated
 
@@ -118,9 +134,11 @@ only to ResourceSurface help-tooltip app styles with complete viewport-bounded
 text and preserved keyboard/hover semantics. The horizontal candidate exposes
 an additional restored-focus case with the opener at the viewport top and the
 above-button tooltip outside it. Full-tooltip acceptance remains open. A bounded
-Resource-only help lifecycle/scroll-visibility follow-up is allocated, guarded
-by the original live focused opener and context; no forced focus or weakening of
-native End/Home/Close/Escape behavior. Stock tooltip/pin/graph/shell and
+Resource-only help lifecycle/scroll-visibility follow-up is conditional on native
+user-action reproduction. First compare untouched/native keyboard paths with
+programmatic fixture probes; a fixture-induced background scroll is not a product
+focus defect. Any actual correction must preserve the original live focused
+opener/context, with no forced focus or weakening of native End/Home/Close/Escape. Stock tooltip/pin/graph/shell and
 non-resource Monitor styles remain protected. Full transport/auth/timing,
 route and broader UX acceptance remain open; installation is separate. Keep the validated
 build staged while the reviewed upgrade design addresses immutable runtime
