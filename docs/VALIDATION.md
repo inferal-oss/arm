@@ -21,6 +21,14 @@ floors, finite storage/history/log policy and concrete capability factories rema
 unresolved gates before code; source/link/privacy checks cannot authorize Start.
 The user-selected replaceable API/UI objective remains broader than this proposal.
 
+Independent documentation composition on `3bda04f` verifies all 24 input hashes
+against both the accepted parent and current composition. All 24 newly added
+local links and 17 line anchors resolve; the focused scope and whitespace checks
+pass. Review inspects actual admission, original childowner/Wait, artifact and
+startup proof, daemon start and stop/shutdown boundaries. No blocking contract
+finding remains. The [review record](validation/resident-worker-owner-composed-2026-10-29.json)
+qualifies this as source-contract acceptance only, with no new runtime evidence.
+
 ## Original response settlement — independent composition
 
 Focused source `a202c1b` and docs `605d55c` compose on main `6ac9840` in an
