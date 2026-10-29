@@ -68,9 +68,11 @@ exact-session activation message view/copy, separately reviewed Codex queue
 delivery, durable original-key outcomes and a default-no post-onboarding
 discovery offer. Claude remains copy-only. No actual user-agent delivery,
 identification, adoption, policy change or ARM backend is part of validation.
-Owner source review, 93 core race nodes, 277 selected CLI race nodes and affected
-vet pass. Source-bound native/terminal evidence and coordinator review/composition
-precede the requested main push and executable install. Unknown native state is
+Owner feature source `e045e4b` and onboarding-choice correction `8c6f304` pass
+93 core normal/race nodes and 278 selected CLI race nodes, affected vet, clean
+native build and Linux compilation. The corrected source passes 18 checks across
+four joined controlled terminal sessions. Coordinator review/composition still
+precedes the requested main push and executable install. Unknown native state is
 not liveness, and live native delivery/identity attestation remain outside the
 controlled adapter-fixture evidence.
 

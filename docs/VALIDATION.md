@@ -18,15 +18,26 @@ delivery, enrollment, policy edits or backend startup is authorized in validatio
 Controlled native proxy/queue helpers, synthetic client markers and disposable
 rollout homes exercise the implementation. Earlier iteration receipts include a
 cancellation test that timed out before controlled dispatch; its correction
-waits for the helper's entry marker before cancellation. Final owner core race
-checks pass 93 test nodes across native sessions, activation, rollout, installation
-and project discovery. Selected CLI race checks pass 277 test nodes, including
+waits for the helper's entry marker before cancellation. Feature source
+`e045e4b` passes core normal and race checks, each with 93 test nodes across native
+sessions, activation, rollout, installation and project discovery. Correction
+`8c6f304` changes only onboarding and its CLI tests; selected CLI race checks pass
+278 test nodes, including
 default-no/accepted post-onboarding discovery, no automatic queueing/enrollment,
 exact recipient/content/key review, stale generation/policy refusal, clipboard
 request, guarded in-flight send, owned-worker cancellation/join and shared typed
-interruption reporting. Four-package vet passes. Private Go/module hashes and
-JSON receipts are retained outside version control. Normal core, clean-source
-build/terminal evidence and coordinator composition acceptance remain pending.
+interruption reporting. Post-onboarding discovery preserves adapter selection
+and displays needed native-home overrides. Four-package vet, a clean-VCS native
+build recording `8c6f304`, and Linux amd64 compilation pass. Final-source real
+terminal replay passes 18 checks across four original joined sessions, all exit
+zero: declined and accepted post-onboarding discovery, Claude prompt viewing,
+default-no and explicitly confirmed controlled Codex sending, original-key
+deduplication/lookup, and uninstall retaining byte-exact rollout policy. No real
+terminal clipboard request or native agent delivery occurs. Earlier harness
+setup/EOF-drain failures are preserved separately; all installed synthetic
+instructions are removed. Private Go/module hashes and JSON/terminal receipts
+are retained outside version control; hashes remain unchanged through the final
+checks. Coordinator source/composition acceptance remains pending.
 No fixture result establishes live native delivery, native identity attestation,
 full Go-suite or Linux runtime acceptance.
 

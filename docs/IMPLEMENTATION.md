@@ -15,7 +15,9 @@ selects an exact session and displays its activation message. Terminal clipboard
 copy is explicit (OSC52; terminals may block it). Codex delivery requires another
 recipient/content/executable review and default-no confirmation. Claude is
 copy-only. Successful enabled onboarding offers discovery with `[y/N]`; accepting
-the offer does not authorize sending.
+the offer does not authorize sending. That follow-up preserves the selected
+adapter and resolved native homes, and its displayed command includes necessary
+nondefault home overrides.
 
 `rollout activate` previews/copies by default. A supported Codex `--send` requires
 the identical `--dry-run` review, `--expect`, a stable `--key` and `--yes`.
