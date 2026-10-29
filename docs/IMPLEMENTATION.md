@@ -1,5 +1,26 @@
 # Backend and CLI implementation
 
+## Stage-two read grants — proposed only
+
+The [read-grant refinement](design/resident-read-grants.md) adds no implementation.
+It proposes a fixed metadata-only worker channel and opaque original native
+launch/activation, read admission and resident write-settlement capabilities.
+Seven local-browser read names are eligible in the design; every current path
+still uses accepted direct dispatch. No worker can assert role/ready/size flags
+to mint those capabilities or inherit another epoch's grants.
+
+The proposed 8 MiB + 100 KiB logical request/control allowance excludes no hidden
+result copy: result bytes stay with their original resident owner. Existing
+snapshot/writer/encoder allocation and actual native/runtime overhead need
+separate accounting; current source cannot certify a bounded total response path
+or browser handling. Public native bytes and browser UTF-16 limits stay unchanged.
+Missing factories, explicit policy choices and future lifecycle/parser/overflow
+tests are documented before any code or activation allocation.
+Independent contract review now selects bounded incremental overhead and current
+request-bound views; it adds no runtime implementation. Original resident
+response ownership/write settlement is the next isolated source primitive.
+Worker activation and actual API/UI replacement remain separate gates.
+
 ## Resident caller and dispatch extraction — reviewed composition
 
 The first [contract stage](design/resident-dispatch-contract.md) is implemented

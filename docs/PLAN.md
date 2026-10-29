@@ -6,6 +6,51 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Stage-two read-grant contract — reviewed, production grants inactive
+
+Owner: `codex/resident-read-grant-contract`, from accepted Stage-one composition
+`06fd4360f174eb31ae7d716301b44dc315b07b3b`. The
+[refinement](design/resident-read-grants.md) proposes exactly seven unscoped local-
+browser read grants, fixed metadata-only framing and original inherited-channel
+verification/activation ownership. It separates claim/seal/retirement, callback
+join, resident result handoff, socket-write completion and browser handling.
+
+Native-byte and browser UTF-16 limits cannot be replaced by a uniform 4 MiB reply
+cap. Proposed bridge/request logical allowances total 8 MiB + 100 KiB, with zero
+additional result copies; current typed snapshots/serialization, runtime/native
+overhead and per-response settlement need separate admitted owners. The contract
+returns explicit policy options and missing factories before positive production
+grants. All current operations stay direct; unsupported capacity/size can choose
+direct only before invocation. No repeat read or pressure eviction resolves an
+already-invoked oversized/uncertain result. No implementation, runtime tests,
+builds, native workers, startup/installation or shared-state changes are included.
+Independent review verifies all 22 unchanged inputs, client units, arithmetic,
+producer limits and claim/seal/retirement/settlement distinctions. It selects
+bounded additional bridge overhead over the legacy result path and original
+request-bound v1 views. This is an intermediate contract, not completed API/UI
+replacement or a total response-memory bound. Additional connection/ticket/native
+overhead remains separately accountable; no positive worker/grant route exists.
+
+Next source scope reuses the existing owner for original resident response-sink
+ownership and write settlement only: private Server helpers and minimal current
+WS writer/send/teardown glue plus focused tests. Keep the existing v1 typed
+encoder, 64-entry queue, eight-request-slot handoff point, five-second write
+timeout, original caller/context, native first-frame ACK, subscription behavior
+and direct reporting semantics. Distinguish refusal before enqueue, queue
+ownership, active write, completed/failed I/O and explicit abandonment after
+original teardown. A successful socket write never means browser handling or a
+domain no-effect/replay certificate. No worker may forge a settlement receipt.
+Prevent send-versus-close orphaned entries; join original writer/queued owners
+without holding a lock across I/O or adding per-response goroutines/wait queues.
+Quantify all incremental fixed/per-connection/per-tracked-response costs and
+result-reference ownership; no new result copy or disguised global heap claim.
+No worker IPC/role/grants/controller/activation, CLI/client/model/schema,
+Manager/provider/mesh/frontend/native-helper or installed/shared-state change.
+Return interface/budget gaps before widening. Validate owned actual ingress,
+queue/write/cancellation/retirement races, exact wire values and existing
+auth/node/subscription/stop/direct reporter lifetime through sequential normal
+FIFO cohorts within 120s including cleanup, two CPU/two GiB; Linux compile-only.
+
 ## Resident caller extraction — independently reviewed composition
 
 Owner: `codex/resident-dispatch-extraction`, from reviewed contract `e30b145`.
@@ -33,7 +78,9 @@ version pairs, immutable bootstrap and broader workload continuity remain open.
 Integration `06fd436` is pushed; its [public source CI](https://github.com/inferal-oss/arm/actions/runs/40948342917)
 passes. Installation and worker activation remain separate from that source gate.
 
-Next existing-owner scope is documentation only on accepted `06fd436`: refine
+### Completed source-only allocation
+
+The completed source-only allocation on accepted `06fd436` was to refine
 the stage-two seven-local-browser-read grant/transport contract before code.
 Specify the original verified worker/channel construction boundary without a
 role-flag constructor or production test bypass, inactive epoch registration,
