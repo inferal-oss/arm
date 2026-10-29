@@ -1,8 +1,11 @@
 package cli
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,6 +14,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"getarm.org/internal/agentprojects"
 	"getarm.org/internal/install"
+	"getarm.org/internal/model"
 	"getarm.org/internal/rollout"
 )
 
@@ -167,6 +171,74 @@ func TestRolloutOnboardResizeDuringApplyWaitsForActualResult(t *testing.T) {
 				st, err := (rollout.Store{Home: home}).Read()
 				if err != nil || (!failed && (len(st.Projects) != 1 || st.Projects[0].Mode != "new-sessions")) || (failed && len(st.Projects) != 0) {
 					t.Fatal("policy does not match reported result", st, err)
+				}
+			})
+		}
+	}
+}
+
+func TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler(t *testing.T) {
+	for _, phase := range []string{"before-confirmation", "pending", "committed-without-result"} {
+		for _, human := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/human=%t", phase, human), func(t *testing.T) {
+				m, home := onboardReviewFixture(t, true)
+				ctx, cancel := context.WithCancel(t.Context())
+				defer cancel()
+				m.ctx = ctx
+				if phase != "before-confirmation" {
+					apply := onboardKey(m, "y")
+					if phase == "committed-without-result" {
+						// Persist the confirmed change but lose the result before the
+						// terminal loop can acknowledge it, as with external cancellation.
+						if result := apply().(onboardAppliedMsg); result.err != nil {
+							t.Fatal(result.err)
+						}
+					}
+				}
+				cancel()
+				var stdout, stderr bytes.Buffer
+				a := app{ctx: ctx, home: home, out: &stdout, err: &stderr, outputTTY: human, errorTTY: human}
+				err := m.result(context.Canceled)
+				code := a.finishCommand(0, fmt.Errorf("terminal ended: %w", err))
+				if code != 130 || stdout.Len() != 0 {
+					t.Fatal(code, stdout.String(), stderr.String())
+				}
+				message := stderr.String()
+				expected := "interrupted"
+				if phase != "before-confirmation" {
+					var detail *model.Error
+					if !errors.As(err, &detail) || detail.Code != "rollout_outcome_unknown" {
+						t.Fatal("pending apply did not return a typed outcome", err)
+					}
+					expected = detail.Code
+				}
+				if !human {
+					var wire struct {
+						Error *model.Error `json:"error"`
+					}
+					if json.Unmarshal(stderr.Bytes(), &wire) != nil || wire.Error == nil || wire.Error.Code != expected {
+						t.Fatal("shared handler discarded interruption detail", message)
+					}
+					message = wire.Error.Message
+				}
+				if phase == "before-confirmation" {
+					if !strings.Contains(message, "operation interrupted") || strings.Contains(message, "may have been applied") {
+						t.Fatal("ordinary interruption acquired pending-write semantics", message)
+					}
+				} else {
+					for _, want := range []string{"may have been applied", installNextCommand(home, "rollout status"), installNextCommand(home, "rollout history")} {
+						if !strings.Contains(message, want) {
+							t.Fatal("recovery guidance was lost", want, message)
+						}
+					}
+				}
+				st, err := (rollout.Store{Home: home}).Read()
+				wantProjects := 0
+				if phase == "committed-without-result" {
+					wantProjects = 1
+				}
+				if err != nil || len(st.Projects) != wantProjects || len(st.Sessions) != 0 {
+					t.Fatal("interruption reporting changed policy or enrolled sessions", st, err)
 				}
 			})
 		}

@@ -29,6 +29,11 @@ enabling, stale reviews refuse, and uncertain writes require inspection.
 Pending writes continue awaiting their result across terminal resizing and
 cancellation keys. Readiness recovery commands retain an explicit custom ARM
 home and omit an effective default.
+Terminal-loop errors after apply starts return typed `rollout_outcome_unknown`;
+shared CLI interruption reporting preserves this outcome and selected-home
+status/history recovery commands with exit 130. Pre-confirmation interruption
+retains ordinary cancellation reporting. Interrupted reporting does not prove
+that a confirmed write did not commit.
 
 The CLI has a separate local rollout ledger, independent of the resource/backend
 schema. New projects are disabled. Explicit directory/Git bindings contain

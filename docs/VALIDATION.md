@@ -2,6 +2,19 @@
 
 ## Guided project onboarding — scoped owner validation
 
+An additional shared-interruption correction follows `b213640`; its evidence
+does not replace the earlier source scopes. The focused onboarding race suite
+passes with one Go worker. The shared command-completion handler used by Main
+is exercised in both terminal and JSON reporting: pre-confirmation cancellation
+reports ordinary interruption, while pending and committed-but-unconfirmed writes
+retain typed `rollout_outcome_unknown`, selected-home status/history recovery and
+exit 130. Synthetic policy snapshots verify reporting neither retries the change
+nor enrolls sessions. These are deterministic canceled-context/model tests, not
+a new external-signal terminal capture or current-main composition acceptance.
+The broader selected CLI race run also passes rollout, existing budget/message
+interruption and installation next-command cases; CLI vet and native compilation
+pass. Existing subprocess interruption cases retain their original scopes.
+
 Review-correction regressions pass under the race detector: after confirmation,
 shrinking the terminal and pressing Escape, q or Ctrl+C retains the pending
 write and reports its actual success or failure. Unready custom-home review and

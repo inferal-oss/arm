@@ -32,6 +32,13 @@ terminal resize and cancellation keys, and preserve the selected ARM home in
 readiness recovery commands. Focused CLI race regressions pass, including write
 success/failure after a resize. Coordinator integration remains separate.
 
+An additional source-review correction preserves typed `rollout_outcome_unknown`
+through shared CLI interruption reporting, with selected-home status/history
+recovery commands. It is separate from `b213640` and the earlier terminal evidence;
+shared-handler tests distinguish pre-confirmation interruption from pending or
+committed-but-unconfirmed application. Composed-source acceptance remains a
+coordinator gate.
+
 Owner: `codex/gradual-agent-rollout`. Focused source commit: `0916d4a`.
 Implementation adds a separate cooperative
 adoption ledger and CLI, disabled-by-default installed guidance, explicit

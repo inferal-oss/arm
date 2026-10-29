@@ -109,9 +109,14 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 		a.ctx, a.stopSignals = ctx, stop
 	}
 	code, e := a.publicCommand(args)
+	return a.finishCommand(code, e)
+}
+
+// finishCommand preserves operation-specific recovery guidance on interruption.
+func (a *app) finishCommand(code int, e error) int {
 	if !a.externalDispatch && a.ctx.Err() != nil {
 		var detail *model.Error
-		if errors.As(e, &detail) && (detail.Code == "workspace_outcome_unknown" || detail.Code == "routing_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "history_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
+		if errors.As(e, &detail) && (detail.Code == "rollout_outcome_unknown" || detail.Code == "workspace_outcome_unknown" || detail.Code == "routing_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "history_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
 			a.reportError(detail)
 		} else {
 			a.reportError(model.Err("interrupted", "operation interrupted"))

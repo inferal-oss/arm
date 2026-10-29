@@ -15,6 +15,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"getarm.org/internal/agentprojects"
 	"getarm.org/internal/install"
+	"getarm.org/internal/model"
 	"getarm.org/internal/rollout"
 	"github.com/charmbracelet/colorprofile"
 	"github.com/charmbracelet/x/ansi"
@@ -104,13 +105,21 @@ func (a *app) rolloutOnboard(args []string) error {
 		opts = append(opts, tea.WithColorProfile(colorprofile.ASCII))
 	}
 	_, e = tea.NewProgram(model, opts...).Run()
-	if e != nil && model.applyStarted {
-		return fmt.Errorf("onboarding result is uncertain; inspect rollout status and history before retrying: %w", e)
+	return model.result(e)
+}
+
+func (m *rolloutOnboardModel) outcomeUnknown(err error) error {
+	return model.Err("rollout_outcome_unknown", fmt.Sprintf("onboarding policy may have been applied; inspect `%s` and `%s` before retrying: %v", installNextCommand(m.home, "rollout status"), installNextCommand(m.home, "rollout history"), err))
+}
+
+func (m *rolloutOnboardModel) result(e error) error {
+	if e != nil && m.applyStarted {
+		return m.outcomeUnknown(e)
 	}
 	if e != nil {
 		return e
 	}
-	return model.err
+	return m.err
 }
 
 type onboardStage int
@@ -282,7 +291,7 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		m.notice = ""
 		m.plan = msg.plan
 		if msg.err != nil {
-			m.err = fmt.Errorf("policy application could not be confirmed; inspect rollout status and history before retrying: %w", msg.err)
+			m.err = m.outcomeUnknown(msg.err)
 		}
 		return m, tea.Quit
 	case tea.KeyPressMsg:
