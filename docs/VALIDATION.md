@@ -8055,12 +8055,15 @@ component/visual evidence; coordinator composition/acceptance remains pending.
 On the source hashes in [the normalized record](validation/ux-messages-2026-10-29.json),
 34 affected protocol/control tests and 29 real RDF rendering/ownership/focus
 tests pass. Eight synthetic native-browser cases cover 320/390/768/1440/1920
-pixel widths, 200% text at 768px, long/unbroken body and authority values, review
+pixel widths, doubled root-rem sizing at 768px, long/unbroken body and authority
+values, review
 keyboard focus, refresh-held controls, stale/disconnected blocking, restored
 unknown/offline recovery, empty history and validation error. Stock synthetic
 dialog containment and Escape return are checked without claiming acceptance of
 product-specific dialogs. No transport calls occur; browser/context close and
 server join are awaited. Desktop and narrow screenshots are visually inspected.
+The root-rem fixture did not double fixed-pixel text tokens, so it does not
+establish actual 200% text-size acceptance; that coverage remains open.
 
 Private baseline evidence distinguishes the rejected inline-layout suspicion
 from reproduced collapsed whitespace and dense prose metadata. Fixture selector

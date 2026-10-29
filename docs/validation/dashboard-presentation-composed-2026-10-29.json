@@ -114,7 +114,8 @@
     "Synthetic components and fake clients; no real ARM backend, lease/check-in changes, screen login or agent policy/enrollment",
     "Six optional preview/subprocess-helper tests skipped in the terminal package",
     "No full Go suite, Linux runtime, new TUI visual capture or unqualified full UX acceptance",
-    "Full layout review continues in focused slices, including Pools."
+    "Full layout review continues in focused slices, including Pools.",
+    "Historical Messages scaled capture doubles root rem only; actual 200% text-size acceptance remains open."
   ],
   "public_website_ci": {
     "source": "c830982d46c8eb1727084baf299f45ab253422d1",
