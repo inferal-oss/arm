@@ -302,3 +302,26 @@ read-error/pending/disconnected/empty states, cancellation and qualified scroll/
 focus behavior. Negative probes remain source-qualified; collection success is
 not visual acceptance. Independent review/composition and full UX gates remain
 open; no palette command, naming write or real operation is exercised.
+
+## Shared-dialog owner correction boundary
+
+The [source-bound owner record](validation/ux-shared-dialog-layout-2026-10-29.json)
+addresses the four inventory P2s within the allocated modules/app styles. Existing
+noninteractive naming body Stacks contain fields/actions; a scoped caption
+shrink rule also prevents painted labels leaving fixed-height native Choices.
+Actual caption/select allocation and prose/control nonoverlap supplement panel
+and action fit, after visual review exposed the earlier measurement gap.
+
+Palette-local opening focus uses its existing native Focus delivery after batch
+projection; immediate physical typing, token cancellation and deliberate focus
+under refresh pass. Exact unchanged-read dirty naming is read-local, reply-time
+and context/binding/revision/reservation bound; changed/unknown/manual/closed
+cases gain no rebase/storage/authority. Native palette help gets a readable row
+while compact labels, queries/keywords/caps/identities and activation stay intact.
+
+Three final four-case cohorts, 34 module and 36 native tests, five isolated
+omissions and positive original API cleanup are recorded. Earlier failed
+candidates and recovered audit remain preserved and qualified. No product
+install, owner asset build or runtime activation occurs. Independent current
+composition/review/rebuild, maximum cases, universal zoom and full UX/TUI/live
+transport acceptance remain open.

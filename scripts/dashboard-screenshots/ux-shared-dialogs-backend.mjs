@@ -13,7 +13,7 @@ f.data=()=>{
  const pools=empty?[]:Array.from({length:24},(_,i)=>({pool:{id:'pool_'+id(200+i),name:label('Pool',i),scope:'host',host,authority:host,owner:'1000',description:'Synthetic pool description '+ 'description'.repeat(20),unit:'permits',capacity:9007199254740993n,revision:revision-BigInt(i),state:'active',accounting:'cooperative',expiry_policy:'lease',created_at:stamp,updated_at:stamp},review:null,reserved:0,available:9007199254740993n,deficit:0,users:[],queued:[],display_name:label('Pool',i)}));
  const messages=empty?[]:Array.from({length:24},(_,i)=>({id:id(300+i),sender:'synthetic-sender',audience:'operator',body:'Synthetic message '+i+' '+ 'body'.repeat(60),created_at:stamp,deliveries:{}}));
  const entries=empty?[]:[ref('host',host,host,label('Host',0)),...leases.map((l,i)=>ref('lease',host,l.id,label('Lease',i))),...resources.map((r,i)=>ref('resource',host,r.id,label('Resource-'+r.kind,0))),...nodes.map((n,i)=>ref('host',n.host,n.host,label('Node',i))),...pools.map((p,i)=>ref('pool',host,p.pool.id,label('Pool',i))),...Array.from({length:12},(_,i)=>ref('lease',host,id(400+i),label('Retained',i),false))];
- const names={version:1,owner:'1000',host,revision,entries};
+ const names={version:1,owner:'1000',host,revision:f.nameRevision??revision,entries};
  if(!validNameSnapshot(names,host)||!entries.every(e=>validCustomName(e.name)))throw Error('Synthetic naming contract invalid');
  return{leases,resources,nodes,pools,messages,names};
 };

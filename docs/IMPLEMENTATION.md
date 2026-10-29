@@ -3813,3 +3813,39 @@ product correction or authority change. Native fonts/glyph limits, headless
 picker cancellation, settled scroll timing and failed fixture assumptions are
 qualified; original owners close/join. Independent review/allocation remains
 required before any remediation or full UX claim.
+
+## Scoped naming forms, palette opening and contextual help
+
+The existing inner naming form and app-created dialog.body Stacks receive a
+NamingBody subtype of native Stack. App-only min/available/max widths contain
+its existing fields/actions. Its native Choice captions do not shrink into
+vertical strips; their original font and fixed control height remain unchanged.
+Both normal/manual captions fit their own controls and true clips, retain useful
+select allocation and do not overlap prose/controls. Native Dialog/panel/ancestor
+styles, interactive types, full strings and ownership stay intact.
+
+Palette button opening preserves showModal and arms one request for a new
+opening. Its existing native Focus event delivers that request after the shared
+batch projection mounts the current query; consumption precedes query focus to
+avoid reentry. The current connected/enabled/visible query must belong to the
+current projected root and active native panel. Close, context/remote switch,
+disposal, repeated open and opening failure clear the request. Refresh never
+focuses it. Shared graph/engine focus, timers, polls and microtasks are unchanged.
+
+A naming read captures only the exact healthy saved baseline locally. At reply
+time it may preserve the current dirty string when the loaded canonical target,
+source/owner/context, exact revision and active/retained reservations are still
+unchanged. Native editable fields are disabled during the read; tests also
+simulate clean-to-dirty, later-draft and revert-to-saved interleavings. Manual,
+unknown/undecodable, closed, disposed or changed-context state cannot gain this
+retention. Changed binding/revision/reservation uses existing fresh selection
+behavior; there is no rebase, draft storage or cross-context cache. Existing
+mutation/validation/CAS/unknown-intent/persistence/replay code remains exact.
+
+App-owned rules lay out existing native palette option label/help/key parts.
+The compact ellipsis label stays intact above complete wrapped contextual help;
+keys keep their existing separate slot. No native entries, wrappers, filtering,
+highlighting, keywords, category caps, activation or identity semantics change.
+The [owner record](validation/ux-shared-dialog-layout-2026-10-29.json) qualifies
+failed candidates and source-bound evidence; generated assets remain unchanged.
+Independent composition/review/rebuilding and broader UX acceptance remain open.

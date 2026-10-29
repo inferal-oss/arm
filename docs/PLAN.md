@@ -1971,3 +1971,26 @@ native cancellation, current-opening identity, read refresh and private display
 choices. Earlier fixture-shape/timing failures remain preserved. Independent
 review/composition, any product correction and broader/full UX acceptance remain
 separate gates; no real operation, build/install or runtime activation occurs.
+
+## Shared-dialog layout — owner corrections awaiting composition
+
+Owner: `codex/ux-shared-dialog-layout`, from frozen inventory `be9af44`.
+Focused dependency order is naming body/captions `0280f4f`, palette opening focus
+`c0045a3`, exact unchanged-read dirty names `9fb2e96`, then native palette help
+allocation and final shared-source evidence. The two existing app-created naming
+Stacks receive noninteractive markers; native ancestors/panel remain untouched.
+No interactive type promotion, wrapper ownership or global graph/theme change.
+
+The [owner layout record](validation/ux-shared-dialog-layout-2026-10-29.json)
+binds final field/action/help clips, physical immediate keys, current-query and
+reply-time draft guards to three four-case cohorts and focused tests. Five
+isolated omissions reproduce the intended body/caption/help/focus/draft failures.
+Earlier action-only checks missed captions leaving their own fixed-height
+controls; that failed candidate stays preserved with the stronger final oracle.
+
+Dirty retention is read-local and only for a healthy unchanged exact source/
+owner/context/binding/revision/reservation baseline; no unknown/manual/closed
+case gains retention or new authority. Changed snapshots keep existing fresh
+selection behavior. Naming mutations/CAS/persistence/replay remain byte-exact.
+Independent current-source/composed review and central asset/native builds
+remain open. No owner build/install/push/activation or full UX acceptance.
