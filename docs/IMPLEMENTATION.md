@@ -27,6 +27,13 @@ fences against broader fallback. Explicit rebinding cannot restore revoked
 identities. No instruction, job, lease or cleanup obligation is removed. Existing
 capacity bounds include removed records; compaction remains separate.
 
+The removal continuation is independently reviewed on source `95f16ed`.
+Onboarding prefers an active same-root replacement over an older removed fence;
+keeping its policy is a byte-preserving no-op, including retained revoked history.
+Core normal/race and affected CLI race, vet, native compilation and disposable
+terminal replay pass. Publication and executable installation are separate gates;
+see the [scoped record](validation/rollout-removal-integration-2026-10-28.json).
+
 `arm rollout project onboard` uses Charm Bubble Tea/Bubbles/Lip Gloss for
 directory discovery/filtering, manual entry, scope, project naming, policy and
 default-no review. Generic Codex/Claude adapters suggest canonical existing
@@ -55,8 +62,8 @@ revoke and policy audit are implemented in source. Resource commands, existing
 leases, ownership and cleanup obligations are unchanged.
 
 Complete rollout/installation race suites and scoped CLI regressions pass after
-source self-review fixes. This does not establish full-suite, independent review
-or Linux runtime acceptance. Native project identity attestation, web/dashboard
+review fixes. Independent acceptance is source-qualified in the validation record;
+full-suite and Linux runtime acceptance remain separate. Native project identity attestation, web/dashboard
 policy editors and history compaction remain unsupported. See
 [the scoped design](design/gradual-agent-rollout.md) and the validation record.
 
