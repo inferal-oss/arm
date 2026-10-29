@@ -30,7 +30,11 @@ func projectDir(t *testing.T, base, name string) string {
 	if e := os.MkdirAll(p, 0700); e != nil {
 		t.Fatal(e)
 	}
-	return p
+	canonical, err := filepath.EvalSymlinks(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return canonical
 }
 
 func TestNativeProjectDiscoveryMergesDirectoriesWithoutPrivateContent(t *testing.T) {
