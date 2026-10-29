@@ -38,6 +38,9 @@ The [normalized composed record](validation/ux-activity-host-composed-2026-10-29
 binds final source, artifact hashes, counts and qualifications. No full Go, Linux,
 real transport/authenticated journal, live drawer, terminal, install or complete
 UX acceptance is inferred.
+Integration `e580148` passes its
+[public source workflow](https://github.com/inferal-oss/arm/actions/runs/40958937441).
+This source gate does not install or activate the artifact.
 
 ## Stage-two read-grant refinement — source inspection only
 

@@ -326,5 +326,13 @@
     "Raw exact metadata formatting and existing display caps are retained",
     "No full Go suite, Linux runtime, browser cross-engine, terminal/live-drawer/broader full-UX acceptance",
     "No installation, default/shared-state change, new feature/protocol or worker activation"
-  ]
+  ],
+  "public_ci": {
+    "commit": "e5801481beba55013d9eec06e652872f271ebb11",
+    "run_id": 40958937441,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40958937441",
+    "scope": "Public source workflow; no installation or complete UX acceptance"
+  }
 }

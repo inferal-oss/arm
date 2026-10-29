@@ -24,6 +24,24 @@ browser cases and both isolated expected-failure controls with positive cleanup.
 See the [composed record](validation/ux-activity-host-composed-2026-10-29.json).
 Installation, real transport/authenticated journal, live drawer, broader route/
 state/terminal and complete UX acceptance remain separate gates.
+Integration `e580148` passes its [public source workflow](https://github.com/inferal-oss/arm/actions/runs/40958937441).
+
+Next bounded continuation reuses the full-UX owner for read-only shared-dialog
+inventory on accepted `e580148`: Search palette, Display settings and Resource
+names only. Use published synthetic status/naming records with exact large
+revisions, long valid labels, empty/error/disconnected/pending reads, actual
+dialog/scroll clips, readable selected text scaling and keyboard open/search/
+navigation/cancel/Escape/focus at desktop/narrow/short/medium sizes. Do not
+activate palette commands, confirm naming writes, invoke clipboard/login actions
+or change real settings. Display choices may change only the fresh fixture's
+presentation graph/storage. Block all real transport and mutations; bounded
+read-only mock calls supply data, not authorization or activity evidence.
+Only new owned fixture/report/docs files are allocated; product modules, styles,
+callbacks, naming/CAS rules, graph/pins, backend/schema and accepted routes stay
+protected. Return exact source-bound findings/proposals before remediation.
+Use sequential unchanged-FIFO cohorts within 120s including cleanup and two CPU/
+two GiB, positive original cleanup, no broad builds/suites/install/environment,
+new chats or subagents. Preserve all prior frozen branches and evidence.
 
 ## Stage-two read-grant contract — reviewed, production grants inactive
 
