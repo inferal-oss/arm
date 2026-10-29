@@ -43,7 +43,7 @@ export function paletteEntries(data={},limit=256) {
 // nested synthetic Clicks (stock PaletteRun raises the selected Button's Click).
 export function createCommandPalette({ui,navigate=()=>{},onLease=()=>{},onNode=()=>{},onMessage=()=>{},onKubernetesNode=()=>{},onBrowseKubernetes=()=>{},onResource,onPool,limit=256}) {
   const palette=ui.component('CommandPalette',{label:'Commands and resources',placeholder:'Search commands, resources, leases, nodes, pools and messages',open:false});
-  const handles=new Map();let current=new Map(),disposed=false,remote=false,signature='',omitted={};
+  const handles=new Map();let current=new Map(),disposed=false,remote=false,signature='',omitted={},queryFocusPending=false;
   const sectionIRIs=new Map(sections.map((name,i)=>[name,palette.iri+'/section/'+i]));
   const command=palette.iri+'/keyboard',source=palette.iri+'/explicit';
   ui.batch(()=>{
@@ -52,6 +52,15 @@ export function createCommandPalette({ui,navigate=()=>{},onLease=()=>{},onNode=(
     ui.put(command,RDF+'type',KEY+'Command',true);ui.put(command,C+'opens',palette.iri,true);ui.put(command,KEY+'shortcut','mod+k');
     ui.desktopHosts.add(palette.iri);ui.syncDesktop();
   });
+  palette.on('focus',()=>{
+    if(!queryFocusPending)return;queryFocusPending=false;
+    if(disposed||remote||palette.disposed||!palette.open)return;
+    // Button effects render at the shared batch boundary. Consume this one
+    // request on the palette's native Focus, after its query exists.
+    const app=ui.app,root=app?.renderer.nodeOf(app.projection.index.rootOf(palette.iri)??palette.iri),query=root?.querySelector('input[role="combobox"]');
+    if(query?.isConnected&&!query.disabled&&query.getAttribute('aria-disabled')!=='true'&&!query.closest('[hidden],[inert]')&&query.getClientRects().length&&query.ownerDocument.activeElement===query.closest('[role="dialog"]'))query.focus({preventScroll:true});
+  });
+  palette.on('close',()=>{queryFocusPending=false;});
   function activate(id){
     const entry=current.get(id);if(disposed||remote||!entry)return;
     if(entry.action==='navigate')return navigate(entry.route);
@@ -65,6 +74,7 @@ export function createCommandPalette({ui,navigate=()=>{},onLease=()=>{},onNode=(
   }
   function update(data={}) {
     if(disposed)return;
+    if(Object.hasOwn(data,'remote')||Object.hasOwn(data,'context'))queryFocusPending=false;
     // Context is sticky across partial inventory updates. Only explicit local
     // context can re-enable a palette disabled by a remote dashboard switch.
     if(Object.hasOwn(data,'remote'))remote=Boolean(data.remote);
@@ -74,13 +84,21 @@ export function createCommandPalette({ui,navigate=()=>{},onLease=()=>{},onNode=(
     const nextSignature=JSON.stringify([remote,inventory.entries.map(({key,section,label,help,keywords})=>[key,section,label,help,keywords])]);
     if(signature===nextSignature)return;signature=nextSignature;
     ui.batch(()=>{
-      if(remote){palette.close();palette.value='';}
+      if(remote){queryFocusPending=false;palette.close();palette.value='';}
       ui.put(command,KEY+'shortcut',remote?null:'mod+k');
       for(const entry of inventory.entries){let handle=handles.get(entry.key);if(!handle){const iri=palette.iri+'/entry/'+encodeURIComponent(entry.key);handle=ui.bind(iri.slice(ARM.length),'Button');ui.put(iri,RDF+'type',C+'Button',true);const entryKey=entry.key;handle.on('activate',()=>activate(entryKey));handles.set(entry.key,handle);}handle.set({label:entry.label,help:entry.help});ui.put(handle.iri,C+'keywords',entry.keywords||null);ui.put(handle.iri,C+'paletteSection',sectionIRIs.get(entry.section),true);}
       ui.list(palette.iri,C+'entries',inventory.entries.map(e=>handles.get(e.key).iri));
       for(const [id,handle]of handles)if(!next.has(id)){handles.delete(id);handle.dispose();}
     });
   }
+  function open(){
+    if(disposed||remote)return false;
+    queryFocusPending=!palette.open;
+    try{palette.showModal();}catch(error){queryFocusPending=false;throw error;}
+    const opened=!disposed&&!remote&&!palette.disposed&&palette.open;
+    if(!opened)queryFocusPending=false;
+    return opened;
+  }
   update();
-  return {element:palette,update,get omitted(){return {...omitted};},open(){if(disposed||remote)return false;palette.showModal();return true;},dispose(){if(disposed)return;disposed=true;current.clear();ui.batch(()=>{palette.close();for(const h of handles.values())h.dispose();handles.clear();palette.dispose();});}};
+  return {element:palette,update,get omitted(){return {...omitted};},open,dispose(){if(disposed)return;disposed=true;queryFocusPending=false;current.clear();ui.batch(()=>{palette.close();for(const h of handles.values())h.dispose();handles.clear();palette.dispose();});}};
 }

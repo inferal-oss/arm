@@ -6,7 +6,7 @@ const C='https://semblance.dev/ns/component#',KEY='https://semblance.dev/ns/keyb
 // A host-effect fixture only. Stock graph filtering, ARIA, keyboard and nested
 // reaction delivery require the composed RDF/browser integration gate.
 function fixture(){let next=0;const props=new Map(),lists=new Map(),handles=new Map();
-  class Handle{constructor(iri,kind,values={}){this.iri=iri;this.kind=kind;this.props={};this.callbacks={};this.set(values);handles.set(iri,this);}set(v){Object.assign(this.props,v);return this;}on(e,fn){this.callbacks[e]=fn;return this;}showModal(){this.props.open=true;}close(){this.props.open=false;}set value(v){this.props.value=v;}dispose(){this.disposed=true;handles.delete(this.iri);ui.desktopHosts.delete(this.iri);for(const key of props.keys())if(key.startsWith(this.iri+'|')||key.startsWith(this.iri+'/'))props.delete(key);}}
+  class Handle{constructor(iri,kind,values={}){this.iri=iri;this.kind=kind;this.props={};this.callbacks={};this.set(values);handles.set(iri,this);}set(v){Object.assign(this.props,v);return this;}on(e,fn){this.callbacks[e]=fn;return this;}get open(){return Boolean(this.props.open);}showModal(){this.props.open=true;this.callbacks.focus?.();}close(){this.props.open=false;}set value(v){this.props.value=v;}dispose(){this.disposed=true;handles.delete(this.iri);ui.desktopHosts.delete(this.iri);for(const key of props.keys())if(key.startsWith(this.iri+'|')||key.startsWith(this.iri+'/'))props.delete(key);}}
   const ui={batch:fn=>fn(),component:(kind,p)=>new Handle(ARM+'c'+(++next),kind,p),bind:(name,kind)=>handles.get(ARM+name)||new Handle(ARM+name,kind),put:(s,p,v)=>{const key=s+'|'+p;if(v===null)props.delete(key);else props.set(key,v);},list:(s,p,v)=>lists.set(s+'|'+p,v),desktopHosts:new Set(),syncDesktop(){}};
   return {ui,props,handles,entries:palette=>(lists.get(palette.element.iri+'|'+C+'entries')||[]).map(id=>handles.get(id))};
 }
@@ -99,4 +99,43 @@ test('server names are primary, missing optional names use supplied fallbacks an
 test('Runs is available through the shared public view navigation in the palette',()=>{
  const f=fixture(),calls=[],palette=createCommandPalette({ui:f.ui,navigate:route=>calls.push(route)});palette.update({context:'local'});
  const entry=f.entries(palette).find(h=>h.props.label==='Go to runs');assert.ok(entry);entry.callbacks.activate();assert.deepEqual(calls,[{view:'runs',lease:null}]);
+});
+
+
+test('button opening focuses only the current native query once; refresh never steals focus',()=>{
+ const f=fixture(),focused=[];let query;
+ const panel={},native=label=>({isConnected:true,disabled:false,ownerDocument:{activeElement:panel},getAttribute:()=>null,closest:selector=>selector==='[role="dialog"]'?panel:null,getClientRects:()=>[{}],focus:options=>focused.push([label,options])});
+ f.ui.app={projection:{index:{rootOf:iri=>iri+'/root'}},renderer:{nodeOf:()=>({querySelector:()=>query})}};
+ const palette=createCommandPalette({ui:f.ui});query=native('first');assert.equal(palette.open(),true);assert.deepEqual(focused,[['first',{preventScroll:true}]]);
+ palette.update({leases:[{id:'new'}]});assert.equal(focused.length,1);palette.element.close();query=native('replacement');assert.equal(palette.open(),true);assert.equal(focused[1][0],'replacement');
+ for(const patch of [{isConnected:false},{disabled:true},{closest:()=>({})},{getAttribute:()=> 'true'},{getClientRects:()=>[]}]){palette.element.close();query={...native('ineligible'),...patch};palette.open();assert.equal(focused.length,2);}
+});
+
+test('synchronous close, remote switch and disposal after opening cannot focus a stale query',()=>{
+ for(const after of ['close','remote','dispose']){
+  const f=fixture();let focused=0;f.ui.app={projection:{index:{rootOf:x=>x}},renderer:{nodeOf:()=>({querySelector:()=>({isConnected:true,disabled:false,getAttribute:()=>null,closest:()=>null,getClientRects:()=>[{}],focus:()=>focused++})})}};
+  const palette=createCommandPalette({ui:f.ui});palette.element.showModal=()=>{palette.element.props.open=true;if(after==='close')palette.element.close();else if(after==='remote')palette.update({context:'remote'});else palette.dispose();palette.element.callbacks.focus?.();};
+  assert.equal(palette.open(),false);assert.equal(focused,0);palette.update({leases:[{id:'later'}]});assert.equal(focused,0);
+ }
+});
+
+
+test('button focus waits for native batch projection delivery and cannot remain armed after cancellation',()=>{
+ const f=fixture(),panel={};let projected=false,focused=0,active=panel;
+ const query={isConnected:true,disabled:false,get ownerDocument(){return{activeElement:active};},getAttribute:()=>null,closest:s=>s==='[role="dialog"]'?panel:null,getClientRects:()=>[{}],focus:()=>focused++};
+ f.ui.app={projection:{index:{rootOf:x=>x}},renderer:{nodeOf:()=>projected?{querySelector:()=>query}:null}};
+ const palette=createCommandPalette({ui:f.ui});palette.element.showModal=()=>{palette.element.props.open=true;};
+ assert.equal(palette.open(),true);assert.equal(focused,0);projected=true;palette.element.callbacks.focus();assert.equal(focused,1);palette.element.callbacks.focus();assert.equal(focused,1);
+ palette.update({leases:[{id:'refresh'}]});palette.element.callbacks.focus();assert.equal(focused,1);
+ for(const cancel of ['close','remote','local-context','repeat','throw','unrelated-focus']){
+  palette.element.close();palette.element.callbacks.close();projected=false;palette.update({context:'local'});palette.element.showModal=()=>{palette.element.props.open=true;};palette.open();
+  if(cancel==='close'){palette.element.close();palette.element.callbacks.close();}
+  if(cancel==='remote')palette.update({context:'remote'});
+  if(cancel==='local-context')palette.update({context:'local'});
+  if(cancel==='repeat')palette.open();
+  if(cancel==='throw'){palette.element.close();palette.element.callbacks.close();palette.element.showModal=()=>{throw Error('open failed');};assert.throws(()=>palette.open(),/open failed/);palette.element.props.open=true;}
+  if(cancel==='unrelated-focus')active={};
+  projected=true;palette.element.callbacks.focus();assert.equal(focused,1,cancel);active=panel;palette.element.callbacks.focus();assert.equal(focused,1,'consumed '+cancel);
+ }
+ palette.element.close();palette.element.callbacks.close();palette.update({context:'local'});palette.element.showModal=()=>{palette.element.props.open=true;};palette.open();projected=true;palette.element.callbacks.focus();assert.equal(focused,2,'fresh close/reopen');
 });
