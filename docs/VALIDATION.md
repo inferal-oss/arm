@@ -25,6 +25,19 @@ unchanged protected baseline inputs; Go modules and runtime/prototype/CLI source
 remain unchanged. No extra Linux/native executable build is needed for this
 SQL/ordinary admission cut.
 
+Independent current-main composition verifies all 42 final source hashes and 35
+unchanged protected baseline inputs. Normal and race each pass the same 25 roots /
+322 nodes, zero failures/skips, in 45.008 s / 55.446 s; affected vet passes in
+2.184 s. Every original FIFO command exits before the next. The initial reviewer
+attempt fails before compilation on sandbox build-cache access and remains a
+failed setup receipt; the qualified retry uses normal approval, unchanged source.
+An overlay restores only the two exact parent production files: the selected
+metadata-root/missing-marker and reserved-kind/lease regressions both fail as
+expected in 13.608 s. Their corrected full cohorts pass. No blocking source
+finding remains; the [composed record](validation/resident-worker-refusal-composed-2026-10-29.json)
+retains the scope, source hashes and qualifications. No worker, migration, native
+process/controller, full-Go or installed-runtime acceptance is inferred.
+
 ## Worker transaction refinement — source and documentation only
 
 The [transaction proposal](design/resident-worker-transaction.md) and

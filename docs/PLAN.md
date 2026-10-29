@@ -1,6 +1,6 @@
 # ARM delivery plan
 
-## Reserved worker refusal guards — source pending independent review
+## Reserved worker refusal guards — independently reviewed source
 
 Owner: `codex/resident-worker-refusal-guards`, from accepted
 `528791bc5259e71b1bc9aa8c61d763d95143d217`. The ordinary workspace guard now refuses
@@ -15,6 +15,26 @@ Focused queued-command normal/race and vet evidence belongs to the
 not add positive bootstrap/admission/lifetime custody, `arm start` integration,
 controller replacement or actual API/UI routing. Those remain required before
 feature completion; `arm start` and real A-to-B active-job proof are mandatory.
+
+Independent composition on `528791b` matches all 42 final hashes and 35 unchanged
+protected inputs. Normal/race each pass 25 roots / 322 nodes, with affected vet.
+An exact-parent overlay of the two production files fails the selected namespace
+and early-admission regressions as expected; corrected source passes. No blocking
+source finding remains; the [composed record](validation/resident-worker-refusal-composed-2026-10-29.json)
+distinguishes the first sandbox setup failure from qualified command evidence.
+
+Next existing-owner allocation is the unbound native directory/lock lifetime
+primitive in an isolated `internal/authoritylifetime` package. Construction must
+perform actual bounded native opens/identity checks and exclusive lock acquisition
+on an explicit existing private fixture; no wrapping supplied FDs/PIDs, copied
+handle authority or readiness callback. Keep constructor/retirement private and
+unreachable from production callsites. Cover original identity, replacement,
+lock contention, partial-open cleanup, copied/foreign/retired handles and sticky
+uncertainty, without unlinking or adopting namespaces. No Manager/Server borrowing,
+join witness, schema/bootstrap role, worker/process launch, live-home/default-state
+or installer integration is allocated. Return any need to broaden before source.
+Use sequential bounded original-FIFO normal/race/vet and Linux compilation only;
+no OS-native Linux execution or complete bootstrap/`arm start` acceptance follows.
 
 ## Worker transaction/lifetime contract — reviewed prerequisite
 
