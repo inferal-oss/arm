@@ -1,5 +1,22 @@
 # Validation record
 
+## Worker transaction refinement — source and documentation only
+
+The [transaction proposal](design/resident-worker-transaction.md) and
+[source inventory](validation/resident-worker-transaction-contract-2026-10-29.json)
+inspect accepted `b30a8b92d92f7722dec8fc44a04e36222ff5b122`. Scope includes original
+admission/End/recovery/elapsed clock/settlement, workspace guards and writers,
+startup/stop and native custody. No runtime, source/schema/module edits,
+build/test/browser/native launch/admission or download/install/default/shared
+state evidence is added. Concrete source hashes and document checks qualify only
+this proposal. Actual resource profile measurements, format/constructor tests,
+`arm start` integration and distinct-version job-preserving replacement remain
+future gates.
+The six-document scope, 37 protected source hashes against that exact baseline,
+22 local links including 14 source-line anchors, added-line privacy scan and
+whitespace checks pass. Source inspection supplies the behavioral interpretation;
+resolving an anchor alone does not verify it.
+
 ## Worker-owner prerequisite — documentation/source checks only
 
 The [native owner contract](design/resident-worker-owner.md) is inspected against

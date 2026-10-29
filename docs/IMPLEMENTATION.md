@@ -1,5 +1,18 @@
 # Backend and CLI implementation
 
+## Worker transaction and lifetime — proposed attachment only
+
+The [transaction refinement](design/resident-worker-transaction.md) adds no source.
+It specifies preparation/artifact/operation/lifetime records and an ordinary lease
+attachment committed by the original Manager, before any inactive Start. End,
+expiry, pressure, Close and recovery must retain dedicated uncertain obligations
+before generic lease handling. Shared native directory/lock/bootstrap authority,
+local stop revision and a combined workspace format remain missing primitives.
+Proposed history/log/artifact limits require review and admitted native profile
+measurements; they do not grant resources. `arm start` startup and repeated-start
+reuse remain mandatory, unimplemented completion gates alongside real API/UI
+worker behavior and distinct-version active-job proof.
+
 ## Native worker owner/controller — proposed prerequisite only
 
 The [worker-owner proposal](design/resident-worker-owner.md) adds no implementation.

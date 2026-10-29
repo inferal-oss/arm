@@ -1,5 +1,23 @@
 # ARM delivery plan
 
+## Worker transaction/lifetime contract — proposal pending review
+
+Owner: `codex/resident-worker-transaction-contract`, from accepted
+`b30a8b92d92f7722dec8fc44a04e36222ff5b122`. The
+[transaction contract](design/resident-worker-transaction.md) refines dedicated
+records, one original Manager transaction per transition, pre-Start durability,
+original process-local claim, retained unknown outcomes and non-generic settlement.
+A new combined workspace format/older-writer fence and actual native bootstrap
+are prerequisites. Trusted local packages, two unresolved native generations and
+deferred staging at pinned capacity are selected; other finite policy proposals
+and measured profile requirements remain review gates before code.
+
+`arm start` integration is an explicit product completion gate: start the resident
+and its supervised worker, reuse an existing resident on repeated starts, and
+handle legacy adoption only through a complete idle-only fence. Actual compatible
+A-to-B API/UI behavior and active-job preservation still require implementation
+and proof. This cut adds source-inspection/docs only; no native or runtime window.
+
 ## Native worker-owner prerequisite — reviewed source contract
 
 Owner: `codex/resident-worker-owner-contract`, from accepted response composition
