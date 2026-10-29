@@ -7993,3 +7993,24 @@ from reproduced collapsed whitespace and dense prose metadata. Fixture selector
 and module-transform failures were corrected separately; they are not product
 findings. Full route/state/terminal coverage, independent current composition
 and asset rebuilding remain open in the [coverage matrix](UX-REVIEW.md).
+
+### Screen Sharing/private-input layout evidence
+
+The separate correction passes 21 affected screen/mode/clipboard/security Node
+cases, web asset rebuild and native CLI build through the normal shared FIFO.
+Five real native browser checks and four desktop/narrow PNGs verify full-width
+stacked labels/fields, initial username focus, native dialog action alignment,
+required validation before submission, readonly/multiline containment and clearing
+retained native input nodes on cancel. Synthetic typed values do not occur in any
+RDF graph. Authentication submissions and actual screen connections are both zero.
+The fixture uses a fake client event, never a live Mac/account/clipboard session.
+
+Eight feature input hashes and four artifact hashes match the retained capture in
+`validation/screen-private-input-layout-2026-10-29.json`. An initial dev-fixture
+failure resolving unused optional noVNC imports is excluded; fixture-only aliases
+isolate those unused modules without changing production imports. The app, native
+viewer/widgets, browser/context and original dev server close successfully.
+The earlier run/lease capture remains specifically qualified to `344402a`; the
+Screen Sharing cut rebuilds the combined asset with its separate evidence.
+Coordinator combined-source review/acceptance remains pending. No source install,
+actual adoption/policy/lease changes, full Go suite or Linux validation is claimed.

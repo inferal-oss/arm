@@ -3287,3 +3287,15 @@ confirmation, retry and focus-held history behavior are unchanged.
 This is a focused slice of the [ongoing UX review](UX-REVIEW.md). It does not
 change terminal layout, global shell/theme, pinned components, other dialogs or
 embedded assets; composed-source review and central rebuild precede acceptance.
+
+### Native private input layout
+
+The owned native input island renders one full-width labeled control per row,
+using inherited typography and existing surface/border tokens. Labels and fields
+remain stacked at narrow widths; readonly inputs keep selection behavior and
+multiline fields resize vertically with a useful minimum height. Screen Sharing
+sign-in places Cancel/Sign in in the stock dialog action area, with Sign in
+visually primary. Required validation, focus and take/clear/destroy remain intact.
+Credentials and private clipboard/login-link text stay exclusively in native DOM,
+with no RDF/LDES outputs. No authentication, VNC protocol or backend behavior is
+changed.

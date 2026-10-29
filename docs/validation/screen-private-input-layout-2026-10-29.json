@@ -1,0 +1,69 @@
+{
+  "feature_inputs": {
+    "internal/server/web/semblance/ephemeral-inputs.mjs": "974ea80f617ed2281b52c85e69e7b8d1435192919d04ff658f562fd3388241ea",
+    "internal/server/web/semblance/screen.mjs": "7160767e1d822292f58150ca3455afba18fb90c34eca497857a728f96a003b28",
+    "internal/server/web/semblance/screen.test.mjs": "d9ea0a072aac7cc78c6b73ca15d710f9a9427a9850a4cb35037be8daff7d21d5",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/app.ttl": "a8f123891fe03c961be5ccec0b242ed31f09bb44d71213f38f07613c97c97ac3",
+    "internal/server/web/assets/arm.mjs": "d832f663537d78e9f78668bf611228e511cf83cfbbbddba980aac2290056b3a4",
+    "web/package-lock.json": "b48637aa9fdd1ffab0eb8cba19b5b01ceee3a8c6c894716f286416f4cfaeba8a",
+    "web/semblance-provenance.json": "62d2688b2c2c45603835666733d29aad23bdad67773fbed447191a8941a0dab9"
+  },
+  "checks": [
+    "native sign-in has stacked full-width username/password fields, labels, initial focus and aligned actions",
+    "390px sign-in contains both fields and native dialog actions",
+    "empty required fields validate before any synthetic credential submission",
+    "synthetic input stays outside RDF and cancel clears retained native input nodes",
+    "shared readonly and multiline fields remain stacked, bounded and vertically resizable"
+  ],
+  "artifacts": [
+    {
+      "file": "screen-signin-desktop.png",
+      "bytes": 86816,
+      "sha256": "36aa7076eb686f9545f126992e5a6229d00d539e5554d97042b1ea1535d5b224"
+    },
+    {
+      "file": "screen-signin-narrow.png",
+      "bytes": 50108,
+      "sha256": "8fb6bc1cdbf9a759b5d11e0ac10e2f765eba93c46de2cace21497582b90ee9b3"
+    },
+    {
+      "file": "private-fields-narrow.png",
+      "bytes": 52864,
+      "sha256": "6298cc2ef5cd573e491d5abd0ad713cffcad2120f56846ef26a8a2b9e19687cb"
+    },
+    {
+      "file": "private-fields-desktop.png",
+      "bytes": 90856,
+      "sha256": "c3bec363111f3b17ba8402c43af29128a99feb0b73799e27df64e9066d9e0a15"
+    }
+  ],
+  "page_errors": [],
+  "cleanup": {
+    "browser_context_closed": true,
+    "fixture_server_joined": true,
+    "authentication_submissions": 0,
+    "actual_screen_connections": 0
+  },
+  "date": "2026-10-29",
+  "base": "344402a",
+  "scope": "Stacked native private fields and Screen Sharing sign-in dialog actions",
+  "validation": {
+    "javascript_cases_passed": 21,
+    "javascript_cases_failed": 0,
+    "web_rebuild": "passed",
+    "native_cli_build": "passed",
+    "native_browser_checks": 5,
+    "viewport_widths": [
+      1440,
+      390
+    ]
+  },
+  "limitations": [
+    "Synthetic noVNC client event only; no actual screen connection, account login, credential storage or clipboard transfer",
+    "Unused optional noVNC modules were isolated only in the private dev fixture",
+    "Earlier fixture import failure is excluded and retained privately",
+    "No full Go suite, Linux runtime or hosted CI claim",
+    "Coordinator final composed review and integration remain pending"
+  ]
+}

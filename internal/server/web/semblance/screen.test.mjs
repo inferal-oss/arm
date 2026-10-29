@@ -92,3 +92,12 @@ test('private screen errors never become graph labels or escape into general eff
     assert.doesNotMatch(graphText(f.ui),new RegExp(secret));
   });
 });
+
+test('private multi-field and multiline layout preserves labels, sizing and private cleanup',()=>{
+ const document=nativeDocument(),slot=document.createElement('div'),inputs=createEphemeralInputs([{name:'username',label:'Mac username',required:true},{name:'password',label:'Mac password',type:'password',required:true},{name:'link',label:'Connection link',readOnly:true,initial:'https://example.test/sample'},{name:'clipboard',label:'Clipboard text',multiline:true,initial:'Synthetic text\nSecond line'}]);
+ const handle=inputs.widget.mount(slot),container=slot.children[0];assert.equal(container.style.display,'grid');assert.equal(container.style.gridTemplateColumns,'minmax(0, 1fr)');assert.equal(container.children.length,4);
+ for(const label of container.children){const input=label.children[0];assert.equal(label.style.display,'grid');assert.equal(label.htmlFor,input.id);assert.equal(input.style.width,'100%');assert.equal(input.style.minWidth,'0');assert.equal(input.style.boxSizing,'border-box');}
+ const username=document.elements.find(e=>e.attributes['aria-label']==='Mac username'),password=document.elements.find(e=>e.type==='password'),link=document.elements.find(e=>e.attributes['aria-label']==='Connection link'),text=document.elements.find(e=>e.tag==='textarea');
+ assert.equal(link.readOnly,true);assert.equal(text.style.resize,'vertical');assert.equal(text.style.minHeight,'8rem');inputs.focus();assert.equal(document.activeElement,username);inputs.select('link');assert.equal(document.activeElement,link);assert.equal(link.selected,true);
+ username.value='synthetic-user';password.value='synthetic-password';assert.deepEqual(inputs.take(),{username:'synthetic-user',password:'synthetic-password',link:'https://example.test/sample',clipboard:'Synthetic text\nSecond line'});assert.equal(password.value,'');assert.equal(username.value,'');inputs.write('clipboard','Synthetic retry');inputs.clear();assert.equal(text.value,'');inputs.write('password','synthetic-cleanup');handle.destroy();assert.equal(password.value,'');assert.equal(slot.children.length,0);assert.equal(inputs.mounted,false);
+});

@@ -105,5 +105,6 @@
     "Narrow tiled logs have limited reading space; fullscreen remains available",
     "No full Go suite, Linux runtime or hosted CI claim",
     "Coordinator current-composition source acceptance and integration remain separate"
-  ]
+  ],
+  "runtime_source": "344402a"
 }

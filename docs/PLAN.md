@@ -1079,3 +1079,11 @@ delivery metadata, and retains reviewed request/recovery behavior. Owner
 regressions and synthetic native rendering pass; independent composed-source
 review and central asset rebuild remain. Other surfaces remain inventory-only
 or reserved for their accepted presentation cut; this is not full UX acceptance.
+
+The separate Screen Sharing correction is complete pending coordinator review:
+native private fields stack at full width and use stock dialog actions. Twenty-one
+focused security/screen cases, web/native builds and five synthetic browser checks
+pass with four desktop/narrow images. No actual connection/authentication/private
+clipboard transfer occurred. The original owner branch and exact uncommitted PLAN
+remain preserved; this isolated continuation contains four focused feature cuts.
+Final current-main review/composition/publication belongs to the coordinator.
