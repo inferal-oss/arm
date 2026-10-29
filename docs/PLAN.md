@@ -45,6 +45,19 @@ preserve attribution and validate the static site. Coordinator review and
 publication follow the focused handoff; no hosting/domain/settings migration is
 assigned.
 
+## Full dashboard layout and UX remediation — in progress
+
+Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
+route/dialog/state/viewport matrix: information hierarchy, text density,
+readable sizing, responsive containment, navigation/focus and action clarity.
+Return prioritized reproduced findings and focused fixes with source-bound
+tests and visual evidence, preserving resource, authentication and lifecycle
+semantics. The focused lease/run/detail/private-input surfaces above remain
+reserved until their reviewed base is supplied; global style/shell changes are
+coordinated centrally. A partial capture roster does not establish a complete
+UX pass. No new product capabilities, pinned-engine promotion or production
+mutations are assigned.
+
 ## Rollout removal and stale-boundary continuation
 
 Owner: `codex/rollout-removal`, based on main `53d7062`. Scope is reviewed
