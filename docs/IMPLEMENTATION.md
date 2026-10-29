@@ -1,5 +1,21 @@
 # Backend and CLI implementation
 
+## Unbound native directory/lock owner — private primitive
+
+The new [private package](../internal/authoritylifetime/README.md) has no exported
+construction/validation/retirement surface or production callers. It opens only
+an explicit existing canonical path and existing daemon.lock with native
+no-follow component checks, private owner/mode/type/link validation and original
+exclusive flock. Validation compares original held handles and path identities;
+it cannot reacquire a lost lock or adopt replacement paths. A small original
+pointer registry rejects copied/foreign receivers; failures remain sticky.
+
+Native retirement withdraws the original, counts actual successful closes and
+retains uncertain close objects without retry. It is not a Manager/Server/task
+join or resource release proof. Four simultaneous FD slots and finite path bounds
+do not supply native-call deadlines or CPU/RSS admission. There are no borrowers,
+stop revision, bootstrap constructor, worker role/launch or `arm start` integration.
+
 ## Reserved worker state — refusal-only source
 
 The [workspace guard](../internal/database/workspace_format.go) rejects physical

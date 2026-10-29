@@ -36,6 +36,25 @@ See the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
 Private native build is not installed/executed. No maximum-density/every-theme/
 language, full-Go/Linux runtime, real auth/transport, TUI or complete UX claim.
 
+## Private native lifetime — focused synthetic native qualification
+
+The [record](validation/resident-native-lifetime-2026-10-29.json) binds two new Go
+source hashes and all 42 protected baseline source hashes against accepted
+`b065f222a387b2b1f43cc94fd5be398eccc72319`. Final normal/race each pass six roots /
+38 nodes with no skips or failures; original native cleanup-count logs report
+all opened FDs closed, zero unknowns, actual independent-open contention and
+release. Partial acquisition uses the implementation's real native path, without
+FD/positive ownership wrappers or forged future joins. Original native receipts
+are retained privately. Vet and Linux package test compilation pass separately;
+the Linux binary is not executed or installed.
+
+These sequential original-FIFO commands use the bounded existing allocation and
+are not ARM leased-run evidence. Actual Manager/Server/CLI/module/schema/runtime
+sources remain unchanged. Privilege-dependent wrong-owner fixtures and platform
+Close-error faults are unexercised, with sticky refusal/unknown retention only
+source-reviewed. There is no live/default home, backend/worker launch, enrollment,
+borrower/bootstrap/stop attachment or `arm start`/A-to-B acceptance implied.
+
 ## Worker refusal guards — focused source qualification
 
 The [evidence record](validation/resident-worker-refusal-2026-10-29.json) qualifies

@@ -30,6 +30,22 @@ backend and accepted surfaces remain protected. Preserve frozen branches/artifac
 Use sequential unchanged-FIFO cohorts within 120s/two CPU/two GiB, positive
 original cleanup and no builds/install/environment/new task/subagent.
 
+## Private unbound native lifetime — source pending independent review
+
+Owner: `codex/resident-native-lifetime`, from accepted
+`b065f222a387b2b1f43cc94fd5be398eccc72319`. The private
+[native primitive](../internal/authoritylifetime/README.md) opens an existing
+private directory/lock itself, retains original identity/FDs and exclusive flock,
+rejects copied/foreign/retired receivers and sticky identity/native failures,
+and reports only original native closure. Construction/validation/retirement
+remain unexported, with no production callsites or borrowers. No current
+Manager/Server/CLI/database/model/module/schema or startup caller changes.
+
+The [focused evidence](validation/resident-native-lifetime-2026-10-29.json)
+qualifies synthetic real-native fixtures only. Actual Manager/Server binding,
+local stop revision/bootstrap, borrowed-lifetime closure/admission, `arm start`
+and real A-to-B API/UI job preservation remain unimplemented completion gates.
+
 ## Reserved worker refusal guards — independently reviewed source
 
 Owner: `codex/resident-worker-refusal-guards`, from accepted
