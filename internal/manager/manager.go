@@ -994,6 +994,11 @@ func (m *Manager) acquireWithAdmission(r model.Request, run *RunRequest, relay b
 
 func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, relay bool, sync *syncAdmission, source *kubernetesSourcePermit, scope *syncScopeReservation) (model.Lease, error) {
 	var empty model.Lease
+	// Reserved future worker lifetimes must never enter ordinary admission,
+	// including expiry/queue reconciliation and its provider/native effects.
+	if r.Kind == "resident-worker" || r.Kind == "resident-worker-prepare" {
+		return empty, model.Err("invalid_request", "resident worker admission is unsupported")
+	}
 	if m.syncSchemaVersion == "3" && scope == nil {
 		return empty, model.Err("sync_evidence_unavailable", "dedicated scope rejects unrelated lease admission")
 	}

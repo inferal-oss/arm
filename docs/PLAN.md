@@ -1,5 +1,21 @@
 # ARM delivery plan
 
+## Reserved worker refusal guards — source pending independent review
+
+Owner: `codex/resident-worker-refusal-guards`, from accepted
+`528791bc5259e71b1bc9aa8c61d763d95143d217`. The ordinary workspace guard now refuses
+reserved `resident_worker` physical namespaces and lease attachments, plus exact
+`resident-worker` / `resident-worker-prepare` kinds, including erased-by-projection
+JSON duplicates and Go field aliases. Ordinary Acquire rejects those kinds before
+expiry/queue reconciliation or other admission effects. Format 4 is centrally
+reserved and remains unsupported; there is no schema activation or worker factory.
+
+Focused queued-command normal/race and vet evidence belongs to the
+[refusal record](validation/resident-worker-refusal-2026-10-29.json). This step does
+not add positive bootstrap/admission/lifetime custody, `arm start` integration,
+controller replacement or actual API/UI routing. Those remain required before
+feature completion; `arm start` and real A-to-B active-job proof are mandatory.
+
 ## Worker transaction/lifetime contract — reviewed prerequisite
 
 Owner: `codex/resident-worker-transaction-contract`, from accepted

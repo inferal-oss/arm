@@ -29,8 +29,8 @@ func unsupportedWorkspaceFormat() error {
 
 // CheckWorkspaceFormat is a read-only baseline gate. Callers with a transaction
 // pass that same snapshot before interpreting obligations or making any write.
-// Absence remains legacy format 1 only when no paired-preparation evidence is
-// present. Unknown values and even empty/partial provider namespaces refuse.
+// Absence remains legacy format 1 only when no reserved worker/preparation
+// evidence is present. Unknown values and even empty/partial namespaces refuse.
 // Bounded projections avoid returning corrupt oversized marker values to Go.
 func CheckWorkspaceFormat(ctx context.Context, q workspaceFormatReader) error {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -62,6 +62,8 @@ func CheckWorkspaceFormat(ctx context.Context, q workspaceFormatReader) error {
 	for _, query := range []string{
 		`SELECT EXISTS(SELECT 1 FROM sqlite_schema WHERE lower(name) GLOB 'provider_preparation*' OR lower(tbl_name) GLOB 'provider_preparation*')`,
 		`SELECT EXISTS(SELECT 1 FROM metadata WHERE lower(CAST(key AS TEXT))='provider_preparation_schema')`,
+		`SELECT EXISTS(SELECT 1 FROM sqlite_schema WHERE replace(replace(lower(name),'ſ','s'),'K','k') GLOB 'resident_worker*' OR replace(replace(lower(tbl_name),'ſ','s'),'K','k') GLOB 'resident_worker*')`,
+		`SELECT EXISTS(SELECT 1 FROM metadata WHERE replace(replace(lower(CAST(key AS TEXT)),'ſ','s'),'K','k') GLOB 'resident_worker*')`,
 	} {
 		var present bool
 		if err = q.QueryRowContext(ctx, query).Scan(&present); err != nil {
@@ -119,12 +121,16 @@ func CheckWorkspaceFormat(ctx context.Context, q workspaceFormatReader) error {
 	}
 	var held bool
 	// Go's JSON field matching also folds long-s in "request" and Kelvin-sign
-	// in "kind". SQLite lower() alone does not cover those accepted aliases.
+	// in "kind" and "resident_worker". Scan every duplicate field/request,
+	// rather than a JSON projection which could hide an earlier reserved value.
+	// SQLite lower() alone does not cover Go's accepted field aliases.
 	if err = q.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM leases AS l
 		JOIN json_each(CASE WHEN typeof(l.data)='text' AND json_valid(l.data) THEN l.data ELSE '{}' END) AS field
 		LEFT JOIN json_each(CASE WHEN replace(lower(field.key),'ſ','s')='request' AND field.type='object' THEN field.value ELSE '{}' END) AS request
 		WHERE lower(field.key)='provider_preparation'
-		OR (replace(lower(field.key),'ſ','s')='request' AND replace(lower(request.key),'K','k')='kind' AND request.type='text' AND request.atom='provider-prepare-worker'))`).Scan(&held); err != nil {
+		OR replace(replace(lower(field.key),'ſ','s'),'K','k')='resident_worker'
+		OR (replace(lower(field.key),'ſ','s')='request' AND replace(lower(request.key),'K','k')='kind' AND request.type='text' AND request.atom IN ('provider-prepare-worker','resident-worker','resident-worker-prepare'))
+	)`).Scan(&held); err != nil {
 		return fmt.Errorf("workspace format lease references could not be checked: %w", err)
 	}
 	if held {

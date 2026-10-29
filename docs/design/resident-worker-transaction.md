@@ -264,6 +264,12 @@ completion-space accounting; these proposals alone cannot authorize Start.
 Reserve `ResidentWorkerWorkspaceFormat` value `4`, distinct from current 1/3.
 This is a contract reservation, not an implemented or accepted writer format;
 ordinary guards must continue to refuse it until worker-aware bootstrap review.
+The [refusal-only source cut](../validation/resident-worker-refusal-2026-10-29.json)
+also refuses reserved physical namespaces, lease attachments and exact worker/
+preparation kinds under missing/forged ordinary markers. Ordinary admission
+refuses those kinds before reconciliation/effects. It adds no format-4 schema,
+constructor or migration; the positive transaction/lifetime proposal remains gated.
+
 Under stopped-exclusive native authority and explicit bootstrap approval,
 atomically publish marker + exact optional schema + bootstrap/policy records.
 Preserve named-storage semantics in the combined format. No ordinary startup,
@@ -280,9 +286,10 @@ without the guard are unsupported, not proven safe by it. Never hide worker
 obligations under format 1/3 or auto-downgrade after a worker exits.
 
 Before code: approve the shared Lifetime origin/local stop revision and typed
-attachment; assign combined format and fence all writers/proof paths; approve
-finite package/history/log/event/FD/task policies and version-qualified measured
-resource profile plan; specify conservative unknown/operator recovery. Controller
+attachment; implement the reserved combined format and fence all writers/proof
+paths; approve finite package/history/log/event/FD/task policies and a version-
+qualified measured resource profile plan; specify conservative unknown/operator
+recovery. Controller
 stop/activation implementation and actual API data/asset routing remain separate
 allocations referenced by the accepted owner contract.
 
