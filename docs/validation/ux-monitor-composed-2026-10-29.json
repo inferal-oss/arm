@@ -279,5 +279,10 @@
     "Earlier source-qualified diagnostics/failed geometries and successful controls remain preserved.",
     "No full route/state/terminal UX, full Go suite or Linux runtime acceptance.",
     "No installed executable replacement, backend restart, enrollment/policy mutation or activation."
-  ]
+  ],
+  "publication": {
+    "source": "2e58e7e3f28764793f720962122756577e6d1dbe",
+    "workflow_id": 40936230649,
+    "conclusion": "success"
+  }
 }

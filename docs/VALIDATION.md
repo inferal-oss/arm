@@ -23,7 +23,9 @@ desktop, short and doubled-token images are visually reviewed. Selected text
 token doubling is not universal zoom. Protected math/graph/module/pin and
 Resource sources remain unchanged. No installed activation, real backend/auth,
 compiled-bundle browser, full-Go/Linux/terminal or complete UX acceptance is
-inferred. [Normalized record](validation/ux-monitor-composed-2026-10-29.json).
+inferred. Published source `2e58e7e` passes
+[Public website workflow 40936230649](https://github.com/inferal-oss/arm/actions/runs/40936230649).
+[Normalized record](validation/ux-monitor-composed-2026-10-29.json).
 
 ## Resident prototype — independent composed acceptance
 

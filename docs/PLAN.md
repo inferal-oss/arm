@@ -184,6 +184,19 @@ Source publication is separate from installation/activation. Historical owner
 review-pending statements retain their scope; broader transport, state/size,
 terminal and complete UX coverage remain open.
 
+Next bounded inventory reuses the UX owner on accepted `2e58e7e` for Activity
+and Host only. Render the actual routes with contract-shaped synthetic events,
+status/capabilities and infrastructure metadata. Check dense/empty/long values,
+history page/event selection, exact-record disclosures, retained focus/state on
+refresh, draining/unknown/disconnected notices and desktop/narrow/short/selected
+doubled-token geometry. No real clipboard/transport/backend/host discovery,
+resource mutation or environment setup is allocated. Only owned read-only
+fixture/report/docs additions may change; product main/styles, control callbacks,
+event/identity semantics and accepted Monitor/Resource behavior stay protected
+until concrete findings and scoped corrections return for review. Use sequential
+unchanged-FIFO cohorts within the existing 120s/2CPU/2GiB bounds and positive
+original cleanup; no broad suites/build/install or new chats/subagents.
+
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
 readable sizing, responsive containment, navigation/focus and action clarity.
