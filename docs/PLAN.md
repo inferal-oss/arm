@@ -13,9 +13,11 @@ project/filesystem/client-binding removal, retained history and deny fences,
 stale-boundary status, onboarding compatibility and focused regressions. No
 actual rollout policy or agent adoption is changed. Review/validation and
 coordinator composition precede the user-requested push and executable install.
-Core race suites, selected CLI race regressions (266 passing nodes) and affected
-vet pass after owner source review. Remaining gates are source-bound CLI smoke,
-coordinator review/composition, push and executable installation.
+Feature source: `928fd3b`. Core normal/race suites, selected CLI race regressions
+(266 passing nodes), affected vet and native/Linux CLI compilation pass after
+owner source review. A clean-source disposable terminal replay passes 35 checks
+across seven joined sessions. Coordinator review/composition, push and executable
+installation remain pending.
 
 ## Project-scoped gradual agent adoption — scoped milestone accepted
 

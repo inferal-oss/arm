@@ -2,11 +2,13 @@
 
 ## Rollout removal and stale boundaries — owner continuation
 
-Based on accepted main `53d7062`. Complete rollout/installation/discovery race
+Feature source `928fd3b`, based on accepted main `53d7062`. Complete
+rollout/installation/discovery normal and race
 suites pass with one Go worker. The selected CLI race roster passes 266 test
 nodes without failures, covering removal, status, onboarding, confirmation,
 instruction lifecycle, shared help/completion and interruption reporting.
-Affected rollout/CLI vet passes. Private Go/module source hashes and CLI JSON
+Core normal output records 81 passing test nodes. Affected rollout/CLI vet,
+native clean-VCS CLI build and Linux amd64 compile-only pass. Private Go/module source hashes and CLI JSON
 receipts are retained outside version control.
 
 New cases cover project retirement with session/audit retention; missing-path
@@ -18,9 +20,16 @@ and JSON stale warnings with ready instructions and no sessions; read-only
 ledger preservation; removed-project listing and onboarding name selection.
 No actual client metadata, rollout policy, contacts, jobs or leases are changed.
 
-Final source-bound binary/terminal checks, independent coordinator review,
-current-main integration, publication and the requested executable installation
-remain pending. Full Go suite, Linux runtime, native identity attestation and
+The clean-source native binary passes 35 disposable smoke checks across seven
+original joined terminal sessions (all exit zero): ready instructions versus
+stale Git scope, refused wrong digest, nonmutating previews/status, missing-path
+binding removal, project retirement, explicit retained-project listing, complete
+audit history, zero identified sessions and uninstall preserving the exact policy
+bytes. Synthetic instruction files are uninstalled; private ledgers, transcripts,
+source hashes and binary are retained. No fixture backend starts.
+
+Independent coordinator review, current-main integration, publication and the
+requested executable installation remain pending. Full Go suite, Linux runtime, native identity attestation and
 web policy editors are outside this evidence.
 
 ## Guided project onboarding — scoped owner validation
