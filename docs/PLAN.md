@@ -45,6 +45,14 @@ uninterrupted connections remain separate. This milestone integrates only the
 private package and scoped design/evidence. No installed/live backend change or
 production activation is included.
 
+Next allocation is source-backed interface design only on accepted `f150f6b`:
+classify production request/transport ownership, propose exact resident dispatch
+and authentication boundaries, preserve a stable legacy proxy reporter route,
+and map bootstrap/staging/stop responsibilities before shared code extraction.
+Return concrete signatures, affected call sites and denial/recovery scenarios;
+do not edit public Serve/CLI/schema/accounting or activate the prototype. Existing
+design, implementation branches and private proof artifacts remain preserved.
+
 ## Dashboard visibility and detail presentation — reviewed and integrated
 
 Focused cuts `8caf3df`, `f176aa1`, `344402a` and `dbba2c4` are reviewed and
