@@ -11,7 +11,7 @@ A completed milestone does not establish full specification coverage.
 Owner: `codex/live-upgrade-design`, based on `dfd916c`; focused design commit
 `23e211f` remains preserved on the owner branch. Independent read-only review
 confirms current install/runtime identity, supervision, drain/recovery, proxy
-reporting and generation/authority boundaries. Sixty-two added source/document
+reporting and generation/authority boundaries. Fifty-eight added local source/document
 links and scoped privacy/diff checks pass; no runtime experiment was needed.
 
 The proposal separates a work-preserving verified-idle activation with a possible
