@@ -196,13 +196,24 @@ native field/type/value/math, Resource or global style change is allocated.
 Verify all seven memory/storage values and inline rates, full clipping ancestors
 and useful value widths; preserve the negative geometry rather than counting
 its successful diagnostic exit as visual acceptance.
-Monitor's native Home target fails in both baseline and corrected desktop help,
-even though the corrected tooltip fits. A bounded read-only timing, focus,
-default-prevention and panel/background scroll diagnostic is allocated first.
-If a settled native-user path still reproduces scroll chaining, a Monitor-help-
-panel-only CSS containment trial may follow, retaining separate before/after
-source and failures. No forced focus/scroll, global handler or engine/lifecycle
-changes are allocated; fixture timing alone does not justify product changes.
+Earlier Monitor Home controls fail with insufficiently settled native scrolling.
+The timing diagnostic preserves those failures and verifies that settling both
+panel/document for 200ms lets single Home and the full native sequence reach the
+panel top. Focus remains native and keys remain unprevented. No product overscroll,
+focus or lifecycle change is needed; background chaining and arbitrary rapid-key
+timing are not claimed fixed.
+
+Owner correction `889923e` passes independent current-composition checks:
+445 JS, 34 native component/ownership cases, native build, deterministic assets
+and all five guarded help/state/detail/keyboard browser cohorts with positive
+original cleanup. Final source/test hashes and exact hook/prefix guards pass.
+Independent visual review nevertheless finds the intended 18rem device-grid
+minimum overridden by the native Grid `[data-columns]` state rule: narrow labels
+still occupy 120.5px. Landing is held for an app-only Monitor selector-state
+specificity correction and computed-track/usable-width regression, with existing
+ID/selection/focus/math and wider-layout controls preserved. Earlier successful
+containment evidence remains source-qualified; it does not establish useful grid
+reading width. No global/pinned-engine, main property or runtime scope expands.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
