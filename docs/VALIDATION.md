@@ -8282,3 +8282,53 @@ Initial loading shows the existing Authenticating badge and waiting-sample text;
 there is no resource-specific loading label. This inventory does not classify
 that alone as a defect. Real transport/authentication, timing/cancellation,
 independent review and broader route/terminal acceptance remain open.
+
+## Resource help technical-width remediation — owner evidence
+
+The [source-bound correction](validation/ux-resource-help-2026-10-29.json)
+retains accepted `03f8a4` outside help() and additive Resource-help styles.
+All twenty Resource help cases pass complete paragraph/label/value/control
+clipping and long-value-end checks across desktop, 390px narrow, 390×320 short,
+and 768px actual doubled-text cases. Body/technical fonts remain 15px/13px and
+30px/26px. CPU values now have 742px at 1440px, 252px at 390px and 630px at doubled
+768px, compared with the inventory's 162.36px, 24.36px and effectively zero.
+The doubled CPU technical body falls from 28911px to 2143px.
+
+Actual native panels remain within the viewport. The short case has 222px of
+reading space; doubled 768px has 502px. Oracles require at least 120px/four computed
+text lines. Native PageDown scrolls, End reaches the final exact value and Home
+returns to the beginning. Labels, original collector notes/accounting and
+paragraphs remain complete; exact CPU fields are compared with the synthetic
+source values. Disconnected help displays the material unknown-capacity warning
+and restores the opener. Known reconnect context removes that warning. Native
+Close click and Escape both dispose the original dialog and restore focus.
+
+Two actual Monitor CPU help controls at 1440/390 retain the original 480/342px
+panel widths, native Dialog/DescriptionList structure and no Resource hooks.
+Seven focused help/accounting/freshness tests and 28 Resource/RDF/ownership/focus
+tests pass through the unchanged queue. The bounded native run takes 40465ms,
+with zero page errors, unexpected operations or live network/socket transports.
+Original browser/context close and server join are positively awaited. Final
+short/doubled technical and Monitor-control captures are visually inspected.
+
+The initial keyboard oracle sampled before native key scrolling settled; the
+retained failed receipt is not a product defect. Final oracles use bounded
+waits for measured Home/PageDown/End targets. Product source is unchanged by
+that fixture repair. Main outside help(), the ontology prefix, metricHelp,
+resource accounting, nearby renderer, shared graph/transport, pins and assets
+are verified identical to the accepted base. Independent composition/rebuild,
+real transport lifecycle and full UX acceptance remain open.
+
+## Focused help-tooltip geometry reproduction — fix not allocated
+
+At 390px, focusing the CPU help icon produces document width 423px; moving focus
+to the filter restores 390px; refocusing reproduces 423px. The existing tooltip
+pseudo-element is 151.703px wide plus padding, centered on the 38px icon button;
+its calculated right edge is 422.8514px, matching the document width. Both
+390×900 and 390×320 reproduce the result. All visible DOM rectangles fit,
+explaining why the earlier element-only probe found no offender. Existing
+Resource-only help layout leaves the 416–427px post-help observation intact.
+No product tooltip, graph, shell or global style fix is included. Proposed
+allocation is additive app.ttl styles scoped to existing ResourceSurface native
+help IconButtons, aligning/bounding their tooltip at the inline end while
+preserving its content, keyboard focus and native types.

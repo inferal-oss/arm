@@ -451,3 +451,20 @@ arm:ResourceDesktopReading a sty:WidthClass ; sty:media "(min-width: 1100px)" .
               [ sty:property "align-self" ; sty:raw "start" ] .
 [] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:atWidth arm:ResourceDesktopReading ; sty:part "> [data-sem-c=\"card\"]:has(> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]) [data-sem-c=\"arm-resource-consumer\"] > [data-sem-c=\"accordion-item\"]" ;
  sty:declares [ sty:property "grid-column" ; sty:raw "1 / -1" ] .
+
+# Resource help keeps complete technical labels and values in a useful measure.
+# Body/facts hooks are noninteractive; native dialogs and controls stay stock.
+arm:ResourceHelpBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-resource-help-body" .
+arm:ResourceHelpFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-resource-help-facts" .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceHelpBody ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceHelpFacts ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceHelpFacts ; sty:part "dt, dd" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ],
+              [ sty:property "white-space" ; sty:raw "pre-wrap" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > [data-sem-c=\"arm-resource-help-body\"]) > .sem-panel" ;
+ sty:declares [ sty:property "width" ; sty:raw "min(52rem, 100%)" ] .

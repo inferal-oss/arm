@@ -1274,3 +1274,24 @@ is withdrawn. Post-help narrow document-width drift remains unattributed and
 requires its own reproduction before any shared-file allocation. Full UX remains
 open; no live backend, transport, resource mutation, broad suite or bundle work
 is included.
+
+## Resource help reading width — owner correction ready for review
+
+Following the `1233ba1` inventory, the Resource-only help branch now marks its
+noninteractive body and technical facts. Additive scoped styles give the native
+dialog a bounded 52rem reading width and put complete labels above complete
+values. Monitor help retains its stock width/types and no Resource hooks.
+
+The [remediation record](validation/ux-resource-help-2026-10-29.json) binds
+7 help/accounting tests, 28 RDF/ownership/focus tests, twenty Resource dialogs,
+four disconnected help states and two native Monitor controls. It verifies
+actual panel/value/control clipping, useful reading width/space, full exact
+values, native PageDown/Home/End, long-value end access and original opener/
+disposal. Independent current composition/rebuild remain required.
+
+The separate document-width reproduction now identifies a focused native help
+icon's centered tooltip pseudo-element: width 423 on focus, 390 on blur, 423 on
+refocus at a 390px viewport, matching its calculated right edge. Resource help
+layout leaves that observation unchanged. Proposed next allocation is app.ttl
+only, using existing ResourceSurface scope to align/bound those native tooltips;
+no tooltip/graph/shell/global product fix is included pending explicit allocation.

@@ -3437,3 +3437,21 @@ rather than its nested technical disclosure. Native Enter/Escape, close disposal
 and original filter node/focus checks remain real renderer behavior. This is
 inventory evidence with a reproduced technical-field width defect; no product
 remediation has been implemented in this continuation.
+
+## Resource-only help technical layout
+
+Only help kinds beginning with `resource-` mark their existing native dialog
+body and technical DescriptionList with ResourceHelpBody/ResourceHelpFacts.
+The dialog uses at most 52rem of available viewport width. Complete technical
+labels and values stack, wrap unbroken data and preserve paragraph whitespace.
+The stock native panel continues scrolling; no font reduction, ellipsis, hidden
+warning or new interaction is introduced. Current-context lookup, metricHelp
+copy/accounting, native Dialog/IconButton types, opener and close/disposal
+callbacks remain unchanged. Non-resource Monitor help keeps its original
+layout and receives no hooks.
+
+A read-only focus/blur/refocus probe separately reproduces narrow document
+width growth in the existing focused help-icon tooltip pseudo-element. Its
+centered max-content box extends beyond the viewport even while all visible
+DOM boxes fit. This correction does not change tooltip behavior; a scoped
+product allocation is proposed separately.

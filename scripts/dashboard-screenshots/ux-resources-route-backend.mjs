@@ -58,6 +58,14 @@ f.releasePeers = (error) => {
 };
 f.disconnect = () => f.connections.at(-1).socket.close();
 f.refresh = () => f.connections.at(-1).options.onEvent({sequence:++f.status.cursor,kind:'synthetic',at:'2026-10-29T12:00:00Z'});
+const measured=value=>({value,scope:'synthetic-monitor',method:'synthetic-monitor',quality:'reported',at:'2026-10-29T12:00:00Z'});
+const monitor={epoch:'synthetic',cursor:0,history:[],age_ns:0,stale_after_ns:3600000000000,latest:{
+  at:'2026-10-29T12:00:00Z',cpu_busy_percent:measured(25),cores:[],
+  memory:{total:measured(17179869184),used:measured(8589934592),available:measured(8589934592)},
+  swap:{total:measured(0),used:measured(0),available:measured(0)},
+  filesystem:{total:measured(17179869184),used:measured(8589934592),available:measured(8589934592)},
+  disk_io:[],network:[],
+}};
 export class Backend {
   constructor(token,options) {
     this.options=options;
@@ -85,7 +93,7 @@ export class Backend {
       return structuredClone(f.picture);
     }
     if(['subscribe','mesh_operator_watch'].includes(operation))return {subscription:'synthetic'};
-    if(operation==='monitor_subscribe')return {epoch:'synthetic',cursor:0,history:[]};
+    if(operation==='monitor_subscribe')return structuredClone(monitor);
     if(operation==='node_list')return {nodes:[]};
     if(['events','messages','agents','pool_list'].includes(operation))return [];
     f.forbidden.push(operation);throw Error('Unexpected synthetic operation: '+operation);
