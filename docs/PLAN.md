@@ -901,17 +901,20 @@ and [C3 primitive evidence](validation/provider-pair-c3-primitives-2026-10-28.js
 
 ### Remaining integration ownership after native source acceptance
 
-The local primary contains the reviewed native composition through `ae70c86`.
-Its exact source binding and qualified execution boundary are recorded above;
-publication awaits the separately advanced storage integration.
+Published main contains the reviewed native/storage composition and Kubernetes
+components through `17f39cd2`. The remaining candidates below are isolated;
+source review alone does not establish runtime acceptance or production enablement.
 
 | Ownership branch | Current reviewed boundary | Next gate |
 | --- | --- | --- |
 | `codex/storage-native-integration-review` | Published storage source is composed with native custody; `cca2e738` closes the scoped namespace, benchmark-original and retained-placement findings. Normal/race each pass 46 roots / 246 names, with targeted vet. | Broader suite/platform/runtime acceptance and the paired named-root accounting bridge remain separate. No new activation follows. |
-| `codex/kubernetes-unified-continuation` | Managed source `85e47781` and scoped record `ca7af509` are accepted locally: normal/race each 16 roots / 37 names, vet zero. Original helper boundaries use a controlled expiry seam. | Primary composition, actual Manager-to-factory admission and the unified dashboard installer remain open. Closed stage history and typed worker continue separately on `codex/kubernetes-stage-history`; no live installation is accepted. |
-| `codex/forward-unix-adapter` | Private binder is integrated as `25d60cc`. The full worker's original race gate remains failed. A single diagnostic identifies relay admission refusing unknown CPU capacity while its context still has time. | Review native sampler and test readiness without relaxing capacity or authorization; then a reviewed affected successor, later vet and Linux compile gates. |
-| `codex/provider-pair-c3-hooks` | Unused primitives are integrated as `53938db`; full hooks remain isolated work in progress. | Review exact original cancellation before fallible reads, callbacks after unlock, retaining-marker knowledge, unknown ACK debt and compatibility with strict storage accounting. C4/C5 and public activation remain separate. |
-| `codex/numeric-182-d879` and `codex/sparkline-155-d879` | Focused local commits `22ba77db` / `8ced16a4` match the tested composed source. Normal production prebuild and two-worker SSR are independently accepted; generated assets are not browser-tested. | Two focused draft submissions, then separately reviewed ARM dependency promotion. No upstream merge or release is authorized by this record. |
+| `codex/kubernetes-constructor-outcome-current` | Core, managed, historical and private helper components are integrated as `17f39cd2`: normal/race each 85 roots / 195 names, targeted vet and three Linux ARM64 compile-only artifacts. The separate constructor-outcome candidate failed its normal gate: 14 of 18 roots passed; race/vet did not start. | Correct the exact provisioned-storage capability comparison and proven pre-admission port-refusal handling, retaining uncertain commit/cleanup debt. Durable intent, competing-source fencing, protected V2 compatibility and typed public workers remain open. |
+| `codex/unified-onboarding-ui-integration` | Current-main source projection is reviewed. Earlier component evidence passes 51 Node cases, three RDF cases and eight Go race roots / 15 names on its recorded source. | Validate final composed assets, current Go behavior and actual connect/install dialogs with controlled node discovery. Installation and live-cluster acceptance remain open. Dependency changes require affected component tests again. |
+| `codex/forward-worker-current406` | Private binder is integrated as `25d60cc`. Older worker source has scoped six-package vet and four Linux ARM64 compile-only evidence; earlier route/cleanup failures remain failed. Current-main extraction needs source fixes. | Refuse changed storage bindings at default-root native and application-byte gates; make failure-path test joins unconditional; then validate the finite current composition. Intermittent cleanup uncertainty and production enablement remain unresolved. |
+| `codex/provider-pair-c3-current` | Unused primitives are integrated as `53938db`; current full-hook source is reviewed, with 198 finite roots proposed and unrun. | Correct atomic cancellation-marker publication and the final complete phase-budget check before running the reviewed controls and separate test windows. C4/C5, named-root accounting and public activation remain separate. |
+| `codex/pressure-control-journal-current406` | The twelve-file current-main source projection matches the reviewed schema/journal/permit corrections. Native pausing remains disabled. | Restore the cleared regression roster and complete bounded source/tool checks in the runner; then run cancellation controls, normal/race and targeted vet. No authenticated public permit or native-effect acceptance follows yet. |
+| `codex/sync-native-enrollment-backing` | Read-only enrollment and backing prerequisites remain unintegrated. The final root recheck correction is untested. | Add the causal later-probe root-replacement control, review the current-main projection and run scoped checks. Persistent enrollment, independent backing, all-writer exclusion and reviewed bidirectional effects remain required for public sync. |
+| `codex/numeric-182-d879`, `codex/sparkline-155-d879` and `codex/semblance-8ced16a-406-ui` | Focused upstream commits `22ba77db` / `8ced16a4` are submitted as draft PRs #226 / #227. ARM's current-main dependency projection is under review; retained assets are not evidence of a new rebuild. | Close final abort/deadline checks in the unlaunched runner, validate the final composed dependency and assets, and capture actual browser evidence. No upstream merge or release is authorized by this record. |
 
 ### Survey reconciliation: integrated work and remaining feature delivery
 
@@ -922,10 +925,10 @@ The routed SSH pin follow-up is present through its focused integration and
 later native acceptance; reimporting its divergent predecessor is unnecessary.
 QUIC remains parked research.
 
-The survey also identifies unintegrated pressure-controller prerequisite
-`a07ed552`. Its current-base extraction must retain current cancellation and
-fixture corrections; authenticated permit handling, observed native effects,
-crash recovery and model/native gates still precede activation. Public sync
+The pressure-controller prerequisite now has a reviewed current-base extraction
+retaining cancellation and fixture corrections; its execution gate remains
+unrun. Authenticated permit handling, observed native effects, crash recovery
+and model/native gates still precede activation. Public sync
 continues beyond its private bridge: persistent enrollment, independent backing
 headroom, complete writer exclusion and reviewed bidirectional effects are
 required. Web mobile-policy parity remains a separate verification/integration
