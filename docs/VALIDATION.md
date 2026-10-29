@@ -2,6 +2,10 @@
 
 ## Dashboard presentation — independent composed acceptance
 
+Published runtime `c830982` passes the public website build/deploy workflow
+[40893893323](https://github.com/inferal-oss/arm/actions/runs/40893893323).
+This is not a full Go-suite or Linux runtime result.
+
 Final combined source passes 444 JS tests, 27 native WAT/rendering/lifecycle
 cases and the terminal package race suite: 446 passing nodes (216 roots),
 zero failures and six optional preview/helper skips. Affected vet, native CLI
@@ -23,8 +27,11 @@ Owner 18-check/four-PTY terminal evidence matches these inputs except the exact
 formatting change; all original PTYs exited zero. No independent terminal replay
 or real native delivery is claimed. Source review checks project boundaries,
 policy/executable/message revalidation, default-no confirmation, durable pending
-keys, no uncertain resend and cancellation/worker joins. Publication/installation
-remain separate steps. [Normalized record](validation/rollout-discovery-activation-composed-2026-10-29.json).
+keys, no uncertain resend and cancellation/worker joins. Published runtime `c830982` also passes 11 activation CLI race cases and native
+compilation. Its requested executable installation completes in 38.154s; all four
+carrier streams verify, protected policy/instruction/endpoint hashes remain
+unchanged, and the offline adoption gate stays disabled. No backend restart or
+agent activation occurs. [Normalized record](validation/rollout-discovery-activation-composed-2026-10-29.json).
 
 ## Organization directory listing — published
 

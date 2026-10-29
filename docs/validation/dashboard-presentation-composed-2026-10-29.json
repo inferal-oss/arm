@@ -115,5 +115,11 @@
     "Six optional preview/subprocess-helper tests skipped in the terminal package",
     "No full Go suite, Linux runtime, new TUI visual capture or unqualified full UX acceptance",
     "Full layout review continues in focused slices, including Pools."
-  ]
+  ],
+  "public_website_ci": {
+    "source": "c830982d46c8eb1727084baf299f45ab253422d1",
+    "run": 40893893323,
+    "conclusion": "success",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40893893323"
+  }
 }

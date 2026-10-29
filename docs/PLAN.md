@@ -26,7 +26,7 @@ No real backend, lease/authentication/policy/enrollment changes were used. See
 [scoped evidence](validation/dashboard-presentation-composed-2026-10-29.json).
 The broader UX audit continues; this is not full-route or Linux acceptance.
 
-## Native session discovery and activation — reviewed; publication/install pending
+## Native session discovery and activation — accepted, published and installed
 
 Owner: `codex/rollout-activation`, focused source `e045e4b`, `8c6f304` and
 validation `550cf16` from runtime `8780b34`. Independent review composes these
@@ -39,9 +39,12 @@ Independent current-source checks pass 93 core and 205 selected CLI race nodes,
 affected vet, native build and Linux amd64 compilation. All Go/module hashes
 remain stable through checks. Eighteen owner terminal checks and four joined PTYs
 are source-equivalent except the reviewed formatting. No real agent metadata,
-delivery, policy, enrollment or backend was touched. Main publication and the
-explicitly requested executable install follow; live native attestation, Linux
-runtime and full Go-suite acceptance remain outside this scope. See the
+delivery, policy, enrollment or backend was touched. Published composition
+`c830982` additionally passes 11 activation CLI race cases
+and a native build. The requested `make install` completes; carrier/four payloads
+verify, policy/instruction/endpoint hashes remain unchanged and this session stays
+disabled. Live native attestation, Linux runtime and full Go-suite acceptance
+remain outside this scope. See the
 [composed record](validation/rollout-discovery-activation-composed-2026-10-29.json).
 
 ## OSS project directory entry — accepted and published
@@ -57,6 +60,14 @@ hosting/domain/settings migration occurred. See the
 [scoped publication record](validation/oss-directory-listing-2026-10-29.json).
 
 ## Full dashboard layout and UX remediation — in progress
+
+The first Messages slice is accepted in `c830982`, alongside the separately
+reviewed lease/run/sign-in changes. Pools candidate `f4cc89d` remains isolated:
+independent review reproduced an 8px stale-review body in a short viewport, so
+its geometric containment checks do not establish usable reading. A focused
+short-height correction and actual stale-state capture are in progress. Resources
+implementation is held until that finding is resolved; broader inventory remains
+read-only. No full UX acceptance is claimed.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,

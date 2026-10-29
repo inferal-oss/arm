@@ -2,8 +2,9 @@
 
 Owner: `codex/ux-layout-review`, starting from accepted source `476f6fc`.
 This is an ongoing remediation pass. Inventory is not acceptance: only the
-Messages slice below has current synthetic native-browser evidence. All other
-rows require current composed-source rendering and keyboard checks. Existing
+Messages slice and separate lease/run/private-input cut have accepted scoped
+composition evidence in `c830982`. All other rows require current composed-source
+rendering and keyboard checks. Existing
 feature tests and earlier screenshots do not close those gates.
 
 ## Prioritized findings and next reproductions
@@ -16,11 +17,12 @@ feature tests and earlier screenshots do not close those gates.
    fields and stack labels at the compact breakpoint. All authority values remain
    visible before confirmation. Initial suspicion of inline concatenation was
    rejected by native baseline rendering: card children already stack.
-2. **Modal width: source candidate, reproduction pending.** Stock Dialog panels
-   cap width at 480px. Pool history/edit/review, Mesh connection/install/recovery,
-   forwarding and naming all share this default. Establish which dense forms
-   actually become hard to scan before allocating component-specific widths.
-   Do not change the pinned theme or all dialogs on that basis alone.
+2. **Pools: narrow clipping reproduced; short-window correction pending.**
+   Candidate `f4cc89d` improves exact-count review containment, but independent
+   review finds its stale 390×320 state leaves only an 8px body. Keep it unmerged
+   until the review remains readable and warnings/actions reachable. Modal width
+   elsewhere remains a reproduction candidate: a shared 480px cap alone is not
+   a defect and does not authorize global theme changes.
 3. **Resource and host metadata: source candidate, reproduction pending.**
    Resource consumers combine owner/agent/quantity/project/state/expiry in one
    text string; host capabilities are individual Text children. Dense, long and
@@ -41,17 +43,17 @@ states; no principal view is declared complete from source inspection.
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
 | Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Source inventory only | Dense cores/devices, stale/unknown/reset/disconnected, pause and help dialogs |
 | Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Source inventory only | Long names/IDs, int64 quantities, deficits, stale budgets, filter and held focus |
-| Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Source inventory only | Dense hierarchy/history, modal width, empty/error/loading, stale review and exact values |
-| Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Reserved focused presentation cut; no edits | Review accepted cut before remaining layout/state coverage |
-| Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Reserved focused presentation cut; no edits | Preserve original readers, cursors, follow/pause, focus and independent cleanup |
-| Messages | `messages.mjs`; composer, recipient/reply review, conversation, deliveries, saved-send recovery | Corrected slice: 320/390/768/1440/1920 widths, 768 at 200% text; long/unbroken values, stale/disconnected review, held focus, restored unknown/offline, empty and validation error | Independent composed-source review/rebuild; broader broadcast density and recorded-result visual states |
+| Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Narrow clipping reproduced; candidate f4cc89d has a short stale-body finding | Correct readable short-height scrolling, then independent composition/rebuild and remaining flows |
+| Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |
+| Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Accepted focused default/detail/lifecycle cut in c830982 | Remaining route/geometry coverage; preserve reader and cleanup invariants |
+| Messages | `messages.mjs`; composer, recipient/reply review, conversation, deliveries, saved-send recovery | Corrected slice: 320/390/768/1440/1920 widths, 768 at 200% text; long/unbroken values, stale/disconnected review, held focus, restored unknown/offline, empty and validation error | Composed review/rebuild accepted in c830982; broader broadcast density and recorded-result visuals remain |
 | Activity | `main.mjs`; history pages, timeline, event picker/detail, live drawer | Source inventory only | Dense/empty/long events, exact record, pause, disconnected retention and keyboard scrolling |
 | Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Source inventory only | Many/empty capabilities, long IDs, disclosure retention and read-only context |
 | Mesh | `mesh.mjs`; roster, node detail, connect/reconnect, installation, stop, uninstall, handoff, operations | Source inventory only | Dense nodes, every draft/review/unknown/cancel/error state, exact pins/revisions and control visibility |
 | Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Source inventory only | Dense inventory, unverified/stale/unavailable states; no cluster operations |
 | Forwarding | `forward.mjs`; preparation/review, tunnel list and retained operations | Source inventory only | Long endpoints, narrow dialogs, uncertainty and cleanup warnings; no real forwarding |
 | Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | Source inventory only | Scope/staleness/unknown values, long records and unsupported mutation visibility |
-| Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Credential-input cut reserved; no edits | Synthetic native DOM only; cancel/Escape/full view/clipboard and disposal; no VNC sign-in |
+| Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Stacked private fields/native footer accepted in c830982 with synthetic desktop/narrow evidence | Remaining mode/view/clipboard states; no real VNC sign-in |
 | Resource naming | `resource-names.mjs`; exact reference, name editor, preserved reservations | Source inventory only | Long references, dense options, modal width, stale selection and focus |
 
 ## Terminal inventory
@@ -65,7 +67,7 @@ read-only where the implementation requires it. Inventory source locations:
 | Shell, modals, keyboard/mouse and scrolling | `layout.go`, `presentation.go`, `polish.go`, `mouse.go`, `record.go` | Source inventory; actual narrow/short PTY replay and zoom-equivalent geometry pending |
 | Monitor and I/O | `monitor.go`, `io_picker.go`, `capacity_budget.go` | Source inventory; dense/unknown/stale values and selection pending |
 | Resources, consumers and pools | `layout.go`, `pool_view.go`, `pool_hierarchy.go`, `peers.go`, `storage_pools.go` | Source inventory; exact large counts, long names and table/compact layouts pending |
-| Leases and check-ins | `lease_table.go`, `actions.go`, `lease_checkins.go` | Reserved presentation cut; current composed-source review pending |
+| Leases and check-ins | `lease_table.go`, `actions.go`, `lease_checkins.go` | Default/detail source and full package race accepted in c830982; current narrow/short PTY visual scope remains pending |
 | Messages | `messages.go`, `layout.go` `messagesText` | Source inventory only; this slice changes web rendering only |
 | Activity/host/exact records | `layout.go`, `record.go` | Source inventory; long records and action hints pending |
 | Mesh, installation and recovery | `mesh_view.go`, `mesh_editor.go`, `mesh_review.go`, `mesh_provision.go`, `mesh_recovery_review.go`, `mesh_stop.go`, `mesh_uninstall.go`, `mesh_kubernetes.go` | Source inventory; all review/cancel/uncertain states and narrow scrolling pending |
