@@ -3514,3 +3514,19 @@ from the browser's layout data, including generated content absent from the
 ordinary DOM. The fixture distinguishes native pointer Close, which may leave
 a tooltip inactive, from keyboard refocus and hover, which must render it.
 Non-resource Monitor controls retain their centered stock tooltip styling.
+
+## Read-only Monitor inventory fixtures
+
+The Monitor inventory imports the actual unchanged main route and substitutes
+only a fresh read-only Backend module. Published Monitor/Measurement shapes
+provide synthetic physical observations, 32 logical cores, twelve devices per
+I/O scope, stable exact IDs, bounded history and deliberate unavailable/reset
+gaps. Device removal/return and a new ID exercise custom versus All membership.
+No OS collectors, real socket/backend calls, setup or mutation is used.
+
+The help cohort inventories six actual Monitor dialog kinds and native CSS
+tooltip border/painted-text geometry under keyboard focus and centered hover.
+The state cohort records pause, All/None/subset, original input identity/focus,
+removal/reconnect, zero versus unavailable, stale/disconnected headlines and
+native history-gap geometry. These fixtures collect findings; they do not
+implement Monitor remediation or establish full UX acceptance.

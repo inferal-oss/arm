@@ -8474,3 +8474,58 @@ positive original cleanup. The full-matrix receipt retains its earlier fixture
 hash; the final fixture differs only by added assertions in the inactive
 causality-only branch. Product/shared source hashes are identical between those
 runs. Both exact fixture hashes are retained in the normalized record.
+
+## Monitor actual-route inventory — read-only evidence
+
+The [Monitor source-hash record](validation/ux-monitor-inventory-2026-10-29.json)
+uses accepted `ab4f06b` product source unchanged and a fresh synthetic Backend.
+Two cohorts run sequentially through the unchanged FIFO: help/layout takes
+55302ms, state/selection takes 32839ms, including original native-probe/context/
+browser/server cleanup. No page errors, forbidden operations or live transports
+occur. No broad suites, builds, installation or product edits are included.
+A successful inventory exit means collection and safety/lifecycle checks
+completed; negative geometry results are findings, not passing visual checks.
+
+The matrix is 1440×900, 390×900, 390×320 and 768×600 with selected pixel text
+tokens doubled. Actual help body 15/30px and technical 13/26px values are asserted.
+Native checkbox labels remain 14px and tooltip font behavior remains unchanged;
+whole-browser zoom coverage is not claimed. The actual modal panel is measured,
+with complete control/text clipping ancestors and fixed shell bounds. Generated
+HTML tooltip borders and painted text use native browser layout measurements;
+SVG chart marks use platform title tooltips and are outside those CSS bounds.
+
+Twenty-four native help dialogs cover CPU, memory/swap, filesystem, disk I/O,
+network and unavailable GPU. All plain help paragraphs, actual modal panels,
+Close controls, original opener restoration and disposal are observed intact.
+Forty-eight keyboard/hover tooltip samples reproduce viewport crossing, including
+all six narrow help icons and right-edge desktop/doubled columns. At 390px,
+Network reaches x=421.21875. Memory technical values measure 38.734375px and
+filesystem 33.859375px; at doubled 768px they shrink to 16.78125px and 8.234375px.
+This is reading-width evidence, not a modal containment defect. Long device
+labels overlap neighboring checkbox cells and clip at narrow/doubled sizes;
+All/None controls remain readable. Dense 32-core bounds and fresh headline
+values fit in these cases. Representative labels, technical fields and native
+tooltip captures are visually inspected.
+
+State controls retain the displayed CPU reading and pause focus until unpause,
+then apply a valid zero reading. Initial native chart dots/lines preserve the
+expected CPU/disk/network unavailable/membership gaps. All/None/subset/removed/
+returned/explicit-All checked counts are 12/0/1/1/1/13. Custom membership does
+not silently select the new ID. The original checkbox node, checked identity
+and focus survive missing/returned labels and reconnect. Selected-ID rates
+return to 1/2 MiB/s; missing/reset/None are unavailable, while actual zero is
+0 B/s. Empty disk inventory shows zero selectable devices. Unknown, stale and
+disconnected headline boxes/text are individually measured and visually
+captured. Global stale notice remains readable; CPU retains a numeric last
+observation while remaining RAM/storage become unavailable. This is an
+observation, not a separately established semantic defect.
+
+Some initial state captures remained scrolled near device controls and do not
+establish headline visual evidence. Those receipts remain preserved. The final
+state cohort adds explicit headline bounds/captures only within stateInventory;
+substituting its earlier function reproduces the help-cohort fixture hash.
+Both exact fixture hashes are retained, with identical product/shared/Backend
+source hashes. Some vertical tooltip flags follow measurement/navigation scroll
+state; no focus compensation is proposed without a native-user causal test.
+Independent source review, explicit product allocation and broader UX/real
+transport acceptance remain open.

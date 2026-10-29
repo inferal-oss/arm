@@ -1400,3 +1400,24 @@ Before/after causal runs preserve the native Home/PageDown/End/Home/Escape
 failure and its CSS-only correction. No shared focus, tooltip engine, shell,
 backend, pins or generated assets change. Independent composition/rebuild and
 broader UX gates remain open.
+
+## Monitor inventory — read-only findings ready for allocation
+
+Owner: `codex/ux-monitor-inventory`, from accepted `ab4f06b`. The completed
+Resource branch and artifacts remain preserved. This continuation adds only a
+fresh synthetic Monitor Backend, native inventory runner and evidence/docs.
+Main/app styles, metric help, monitor/I/O math, graph/engine/protocol, dependency
+pins, Resource fixtures/tests and generated assets remain byte-identical.
+
+The [Monitor inventory](validation/ux-monitor-inventory-2026-10-29.json)
+reproduces three P2 findings: overlapping/clipped device labels, cramped
+technical-help values and centered help tooltips crossing viewport edges.
+Proposed allocation is limited to distinct noninteractive Monitor selector/
+surface/help hooks in main initialization/help and additive Monitor-scoped app
+styles. No product correction is implemented or authorized by this report.
+
+Two sequential bounded cohorts cover desktop/narrow/short/selected doubled
+tokens, six help kinds, dense valid cores/devices and read-only pause/selection/
+unknown/reset/stale/disconnect/reconnect behavior. Native identity/selection/
+focus and gap controls are observed intact. All product edits, independent
+review/composition and broader UX acceptance remain separate gates.

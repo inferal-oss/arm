@@ -61,7 +61,7 @@ states; no principal view is declared complete from source inspection.
 | Principal surface | Components and source | State/viewport evidence in this slice | Remaining gate |
 | --- | --- | --- | --- |
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
-| Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Source inventory only | Dense cores/devices, stale/unknown/reset/disconnected, pause and help dialogs |
+| Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Read-only native inventory: 32 cores, 12 devices/scope, four viewport/token cases, six help kinds, pause/selection/gaps/reconnect | Three reproduced P2 visual findings await explicit Monitor-only allocation; real transport and full acceptance remain open |
 | Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Layout composition accepted in 03f8a4; Resource-only help/tooltips pass independent composed source-runtime checks; real transport/auth and complete route/state acceptance remain open |
 | Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, actual doubled text-token coverage (15px/30px), short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild accepted; native subpool/drain/resume/delete and broader pagination/hierarchy density remain pending |
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |
@@ -178,3 +178,32 @@ causality and unchanged main lifecycle. Resource tooltips remain readable under
 focus/hover and after Close/Escape without horizontal overflow. Non-resource
 tooltips and broader UX remain outside this correction; independent composition
 is still required.
+
+## Monitor read-only inventory and proposed allocation
+
+Owner `codex/ux-monitor-inventory` starts from accepted `ab4f06b`; no product
+source changes are included. The
+[scoped record](validation/ux-monitor-inventory-2026-10-29.json) binds six help
+kinds, dense valid cores/devices, exact-ID selection/focus, unknown/reset/stale/
+disconnected/reconnected state and pause observations to actual route rendering.
+
+Prioritized P2 findings and proposed product allocation:
+
+1. Disk/network checkbox labels overlap neighboring cells and clip at narrow
+   and doubled-token sizes. Mark only the noninteractive selector grids in
+   initMonitor and add distinct Monitor label/row/compact-grid styles. Preserve
+   native Checkbox identity, exact IDs, selection, callbacks and focus.
+2. Memory/filesystem technical help values collapse into tiny columns, reaching
+   16.78px/8.23px at doubled 768px. Add distinct noninteractive Monitor help
+   body/facts hooks for the explicit six Monitor kinds and scoped useful-width
+   styles. Preserve copy, current context, native controls and disposal.
+3. Centered native help tooltips cross the viewport at inline-end card actions.
+   Mark only the existing noninteractive Monitor surface and scope tooltip
+   alignment/viewport styles there. Do not promote Resource classes or change
+   global tooltip/graph/shell/engine behavior.
+
+These are proposals for review, not product allocations. Modal containment,
+plain help prose, Close/Escape, dense-core bounds and native identity/state/gap
+controls provide positive scoped evidence. Stale CPU retention is recorded
+without classifying it as a new defect. Broader Monitor UX, native-user causal
+qualification of vertical tooltip states and real transport remain open.
