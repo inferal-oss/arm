@@ -99,6 +99,12 @@ func (m *dashboardModel) baseControls() []mouseControl {
 			label = "Show inactive"
 		}
 		return []mouseControl{{"enter", "Inspect"}, {"h", label}, {"/", "Filter"}, {"f", "Feed"}}
+	case m.view == 7 && !m.feedFocus:
+		label := "Hide inactive"
+		if m.hideInactiveRuns {
+			label = "Show inactive"
+		}
+		return []mouseControl{{"enter", "Inspect"}, {"h", label}, {"/", "Filter"}, {"f", "Feed"}}
 	case m.view == 3:
 		return []mouseControl{{"n", "Message"}, {"b", "Broadcast"}, {"y", "Reply"}, {"enter", "Inspect"}, {"f", "Feed"}}
 	default:
@@ -139,7 +145,7 @@ func (m *dashboardModel) mouseFrame() string {
 // telemetry refresh must not discard the next delta; navigation/modal/geometry
 // changes still prevent an old gesture from scrolling a different surface.
 func (m *dashboardModel) mouseScrollFrame() string {
-	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + m.poolScrollFrame() + fmt.Sprintf("/%p/%p/%p", m.recovery, m.meshUI, m.nodeUI) + fmt.Sprintf("/names:%p/run-full:%t", m.nameUI, m.runFullscreen())
+	return fmt.Sprintf("%dx%d/%d/%d/%p/%p/%p/%s/%s/%s/%t/%t/%p", m.width, m.height, m.view, m.detailGeneration, m.review, m.composer, m.record, m.inputMode, m.resourceID, m.filter, m.feedFocus, m.hideInactive, m.ioPicker) + fmt.Sprintf("/run-history:%t", m.hideInactiveRuns) + m.poolScrollFrame() + fmt.Sprintf("/%p/%p/%p", m.recovery, m.meshUI, m.nodeUI) + fmt.Sprintf("/names:%p/run-full:%t", m.nameUI, m.runFullscreen())
 }
 
 func mouseKey(key string) tea.KeyPressMsg {

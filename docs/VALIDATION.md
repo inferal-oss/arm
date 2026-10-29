@@ -7921,3 +7921,20 @@ build, public worker, protected V2 activation, enrollment, native installation
 or live-cluster result. Controlled SQL fixtures do not prove arbitrary physical
 commit-failure behavior or exhaustive descendant containment.
 [Normalized component evidence](validation/kubernetes-constructor-outcome-2026-10-28.json).
+
+
+### Dashboard current-activity defaults
+
+The focused continuation from `8780b34` passes 51 affected JavaScript cases,
+the complete `internal/tui` package, three native Semblance run-window/checkbox
+lifecycle cases, the web asset rebuild and native command build through the
+unchanged normal shared FIFO. The existing large-chunk warning remains.
+
+Coverage includes missing/blocked/malformed defaults, explicit saved opt-out,
+legacy lease-only terminal settings, independently round-tripped preferences,
+keyboard and mouse toggles, unknown/nonterminal/reporter-loss visibility, selected
+historical logs and all eight retained readers through filtering. The native
+checkbox routes through the real renderer/event bus and retains original output
+nodes without replaying completed logs. No backend/protocol/adoption changes,
+real leases, installs, full Go suite or Linux validation are claimed. Presentation
+polish and coordinator source/composition review remain separate gates.

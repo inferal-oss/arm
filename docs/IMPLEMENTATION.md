@@ -3213,3 +3213,23 @@ is unchanged; source construction cannot adopt an interposed existing row.
 This component supplies outcome evidence, not worker authority. Public workflow
 dispatch, protected V2 writing, enrollment and installation remain gated.
 [Scoped validation](validation/kubernetes-constructor-outcome-2026-10-28.json).
+
+
+### Current activity as the dashboard default
+
+Web and terminal lease/run rosters initially check **Hide inactive leases** and
+**Hide inactive runs**. An explicit saved false value shows history. The web
+stores the two choices independently; missing, malformed or inaccessible client
+storage falls back to hiding history without writing a preference automatically.
+Terminal settings retain version 1 with an independent `hide_inactive_runs` field:
+valid lease-only records preserve their lease choice and default runs to hidden.
+Both keyboard/mouse toggles save both choices, retaining the other view's setting.
+Unsafe settings reads retain both conservative defaults and report the error.
+
+Only terminal lease history is hidden. Run history excludes terminal records
+except reporter loss, which remains uncertain; every nonterminal state, including
+unfamiliar values, stays visible and in the Current group. Status labels retain
+uncertainty. In the terminal lists `h` and the visible mouse action toggle the
+filter. Filter changes target roster rows only: selected historical transcripts,
+detached windows, independent cursors/pause/fullscreen and cleanup remain owned by
+their run IDs. No backend, protocol or execution/adoption state changes are made.

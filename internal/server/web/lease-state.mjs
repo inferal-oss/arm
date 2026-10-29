@@ -1,3 +1,4 @@
+import {readVisibilityPreference,saveVisibilityPreference} from './dashboard-preferences.mjs';
 // Lifecycle controls visibility. An outcome describes how a terminal lease
 // ended; it never makes an unresolved or unfamiliar lifecycle safe to hide.
 const states = {active: 'Active', queued: 'Queued', provisioning: 'Provisioning', ending: 'Ending', reclaiming: 'Reclaiming', needs_attention: 'Needs attention'};
@@ -13,9 +14,5 @@ export function leaseStateLabel(lease) {
 export function leaseVisible(lease, hideInactive = false) { return !hideInactive || !isInactiveLease(lease); }
 
 export const HIDE_INACTIVE_KEY = 'arm.dashboard.hide-inactive-leases.v1';
-export function readHideInactive(storage) {
-  try { return storage?.getItem(HIDE_INACTIVE_KEY) === 'true'; } catch { return false; }
-}
-export function saveHideInactive(storage, value) {
-  try { if (!storage) return false; storage.setItem(HIDE_INACTIVE_KEY, value ? 'true' : 'false'); return true; } catch { return false; }
-}
+export const readHideInactive=storage=>readVisibilityPreference(storage,HIDE_INACTIVE_KEY);
+export const saveHideInactive=(storage,value)=>saveVisibilityPreference(storage,HIDE_INACTIVE_KEY,value);

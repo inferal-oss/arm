@@ -173,6 +173,9 @@ func (m *dashboardModel) filteredRuns() []model.Run {
 	}
 	var runs []model.Run
 	for _, run := range m.runsUI.records {
+		if m.hideInactiveRuns && !currentRunRecord(run) {
+			continue
+		}
 		if strings.Contains(strings.ToLower(run.ID+" "+run.Name+" "+run.Agent+" "+run.Reason+" "+run.State+" "+run.Outcome+" "+runStatusLabel(run)+" "+strings.Join(run.Command, " ")), strings.ToLower(m.filter)) {
 			runs = append(runs, run)
 		}

@@ -12,6 +12,8 @@ import (
 
 func runFixture(t *testing.T, data []byte) (*dashboardModel, *testTransport, model.Run) {
 	m, s := fixtureDashboard(t)
+	// These log-reader fixtures explicitly include completed history.
+	m.hideInactiveRuns = false
 	run := model.Run{ID: "a", Name: "readable-run", Command: []string{"test", "--all"}, Agent: "worker", Reason: "Verification", State: "terminal", LogBytes: int64(len(data))}
 	s.reply = func(op string, p, result any) error {
 		switch op {

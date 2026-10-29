@@ -18,7 +18,7 @@ func activeRunRecord(run model.Run) bool {
 	return false
 }
 func currentRunRecord(run model.Run) bool {
-	return activeRunRecord(run) || run.Outcome == "reporter_lost" || run.State == "interrupted" && run.ExitCode == nil
+	return run.State != "terminal" || run.Outcome == "reporter_lost"
 }
 func runStatusLabel(run model.Run) string {
 	switch run.State {
@@ -161,7 +161,11 @@ func (m *dashboardModel) runListRender() textRows {
 		lines = append(lines, short("Runs unavailable: "+m.runsUI.err, width), "")
 	}
 	records := m.filteredRuns()
-	lines = append(lines, short(fmt.Sprintf("%d runs · Enter opens output", len(records)), width), "")
+	mark := " "
+	if m.hideInactiveRuns {
+		mark = "x"
+	}
+	lines = append(lines, short(fmt.Sprintf("[%s] Hide inactive runs · [h] toggle", mark), width), short(fmt.Sprintf("%d runs · Enter opens output", len(records)), width), "")
 	active := 0
 	for _, run := range records {
 		if currentRunRecord(run) {

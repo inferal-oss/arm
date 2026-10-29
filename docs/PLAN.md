@@ -1036,3 +1036,20 @@ commit or cleanup. Normal/race each pass 20 roots / 60 names, with Manager vet;
 the exact storage capability and proven pre-admission port-refusal corrections
 are included. See the [scoped record](validation/kubernetes-constructor-outcome-2026-10-28.json).
 Public workers, native installation and live-cluster acceptance remain open.
+
+
+### Dashboard activity defaults and detail presentation
+
+On `codex/dashboard-active-defaults` from reviewed main `8780b34`, update web and
+terminal leases/runs to hide inactive history by default. Explicit saved opt-out
+remains effective. Independent lease/run preferences must survive legacy files
+and either toggle, with conservative nonterminal/reporter-loss visibility and
+retained log lifecycles. Focused implementation passes 51 JS, full terminal-package and three native
+checkbox/lifecycle cases plus web/native builds through the normal shared queue.
+Coordinator source/composition review remains pending.
+
+Follow with a separate detail-presentation cut for run metadata and associated
+lease summaries/check-ins: verified host display names and exact local identity,
+readable timing, grouped metadata and accessible raw records. Preserve exact
+revision action review, off-by-default check-ins and unchanged backend/protocol.
+Owner branches and pre-existing uncommitted plan content remain preserved.

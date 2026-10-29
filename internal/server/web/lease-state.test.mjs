@@ -27,16 +27,16 @@ test('only terminal records are hidden; outcomes cannot hide unsettled or unknow
 
 test('hide-inactive preference survives a fresh reader and fails safely when storage is unavailable', () => {
   const values=new Map(),storage={getItem:key=>values.get(key),setItem:(key,value)=>values.set(key,value)};
-  assert.equal(readHideInactive(storage),false);
+  assert.equal(readHideInactive(storage),true);
   assert.equal(saveHideInactive(storage,true),true);
   assert.equal(values.get(HIDE_INACTIVE_KEY),'true');
   assert.equal(readHideInactive(storage),true);
   assert.equal(saveHideInactive(storage,false),true);
   assert.equal(readHideInactive(storage),false);
-  for (const value of ['TRUE','1','yes','broken',null]) { values.set(HIDE_INACTIVE_KEY,value); assert.equal(readHideInactive(storage),false); }
+  for (const value of ['TRUE','1','yes','broken',null]) { values.set(HIDE_INACTIVE_KEY,value); assert.equal(readHideInactive(storage),true); }
   const blocked={getItem(){throw Error('blocked')},setItem(){throw Error('quota')}};
-  assert.equal(readHideInactive(blocked),false);
+  assert.equal(readHideInactive(blocked),true);
   assert.equal(saveHideInactive(blocked,true),false);
-  assert.equal(readHideInactive(),false);
+  assert.equal(readHideInactive(),true);
   assert.equal(saveHideInactive(undefined,true),false);
 });

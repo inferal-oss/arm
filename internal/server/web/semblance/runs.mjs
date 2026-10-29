@@ -1,12 +1,14 @@
+import {readHideInactiveRuns,saveHideInactiveRuns} from '../dashboard-preferences.mjs';
 import {currentRun,runStatus,compactRunText,runCommand,runPurpose,orderRuns,runWhen} from './run-list.mjs';
 import {createRunLogView} from './run-log.mjs';
 export {cleanRunText} from './run-log.mjs';
 const RDF_TYPE='http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM='https://arm.local/ui#',MAX_OPEN_LOGS=8;
-export function createRunsConsole({ui,root,call,connected,context=()=>null,onLease=()=>{}}){
-  let visible=false,disposed=false,epoch=0,timer=null,inventoryBusy=false,selected=null,runs=[],listError='',openError='',tiled=false,inFlight=0;
+export function createRunsConsole({ui,root,call,connected,context=()=>null,onLease=()=>{},preferences}){
+  let visible=false,disposed=false,epoch=0,timer=null,inventoryBusy=false,selected=null,runs=[],listError='',openError='',tiled=false,inFlight=0,hideInactive=readHideInactiveRuns(preferences);
   const views=new Map(),waiting=[],listRows=new Map();
   const filter=ui.field('Search runs',{type:'search',placeholder:'Purpose, command or agent…'},renderList),status=ui.text(''),historyError=ui.text('',{role:'status',tone:'warning',hidden:true}),list=ui.stack(),detail=ui.stack();
-  const watchCount=ui.text(''),layout=ui.button('Tile log windows',toggleLayout),controls=ui.toolbar('Open run logs',[watchCount,layout]),history=ui.stack([controls,filter,status,historyError,list]);
+  const inactiveToggle=ui.check('Hide inactive runs',{checked:hideInactive},()=>{hideInactive=inactiveToggle.checked;saveHideInactiveRuns(preferences,hideInactive);renderList();});
+  const watchCount=ui.text(''),layout=ui.button('Tile log windows',toggleLayout),controls=ui.toolbar('Open run logs',[watchCount,layout]),history=ui.stack([controls,filter,inactiveToggle,status,historyError,list]);
   ui.put?.(root.iri,RDF_TYPE,ARM+'RunSurface',true);root.replace(history,detail);list.set({role:'list'});
   const activeHeading=ui.heading('Current',3),pastHeading=ui.heading('History',3);activeHeading.hidden=pastHeading.hidden=true;list.replace(activeHeading,pastHeading);
   const typed=(component,name)=>{ui.put?.(component.iri,RDF_TYPE,ARM+name,true);return component;};
@@ -23,7 +25,7 @@ export function createRunsConsole({ui,root,call,connected,context=()=>null,onLea
   function renderList(){
     const focused=ui.activeComponent,focusRow=focused?[...listRows].find(([,row])=>row.button===focused||row.element.contains?.(focused))?.[0]:null;
     ui.batch(()=>{
-    const query=filter.value.toLowerCase(),matches=orderRuns(runs.filter(r=>[r.id,r.name,r.agent,r.reason,r.state,r.outcome,runStatus(r).label,...(r.command??[])].join(' ').toLowerCase().includes(query))),visible=matches.slice(0,200),keep=new Set(visible.map(r=>r.id));
+    const query=filter.value.toLowerCase(),matches=orderRuns(runs.filter(r=>(!hideInactive||currentRun(r))&&[r.id,r.name,r.agent,r.reason,r.state,r.outcome,runStatus(r).label,...(r.command??[])].join(' ').toLowerCase().includes(query))),visible=matches.slice(0,200),keep=new Set(visible.map(r=>r.id));
     for(const [id,row]of listRows)if(!keep.has(id)){row.element.dispose();listRows.delete(id);}
     const rows=visible.map(run=>{
       let row=listRows.get(run.id);

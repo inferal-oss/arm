@@ -48,11 +48,11 @@ func TestPrivateClientPreferenceRoundTripAndUnsafeFiles(t *testing.T) {
 	m := newDashboard(t.Context(), home)
 	m.view = 2
 	press(m, "h")
-	if !m.hideInactive {
+	if m.hideInactive {
 		t.Fatal("toggle failed")
 	}
 	second := newDashboard(t.Context(), home)
-	if !second.hideInactive {
+	if second.hideInactive {
 		t.Fatal("toggle not remembered", m.notice, second.notice)
 	}
 	info, err := os.Stat(filepath.Join(home, preferenceFile))

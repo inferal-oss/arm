@@ -88,7 +88,7 @@ peerCards.replace(ui.card('Nearby ARM instances',[peerStatus,peerSummary,peerNot
 const resourceOverview=createResourceOverview({ui,root:resourceCards,owner:record=>owner(record),onLease:id=>showLease(id),help:(...args)=>help(...args)});
 const leaseFilter=ui.field('Filter leases, owners or reasons',{type:'search'},()=>renderLeases()),leaseCount=ui.text(''),leaseCards=ui.grid();
 const inactiveToggle=ui.check('Hide inactive leases',{checked:hideInactive},()=>{hideInactive=inactiveToggle.checked;saveHideInactive(preferences,hideInactive);renderLeases();});roots.leases.replace(leaseFilter,inactiveToggle,leaseCount,leaseCards);
-runsConsole=createRunsConsole({ui,root:roots.runs,call:(...args)=>connection.call(...args),connected:()=>state.connected&&!remoteDashboard,context:()=>connection,onLease:id=>showLease(id)});
+runsConsole=createRunsConsole({ui,root:roots.runs,preferences,call:(...args)=>connection.call(...args),connected:()=>state.connected&&!remoteDashboard,context:()=>connection,onLease:id=>showLease(id)});
 const messages=createOperatorMessaging({ui,root:roots.messages,call:(...args)=>connection.call(...args),connected:()=>state.connected&&!remoteDashboard,onLease:id=>showLease(id),storage});
 const detailBody=ui.stack(),detailClose=ui.button('Close lease detail',()=>detail.close()),detail=ui.dialog('Lease detail',[detailBody],[detailClose]);
 detail.on('close',()=>{if(detail.open||resettingSession)return;if(navigation.current.lease){navigation.navigate({...navigation.current,lease:null});return;}disposeDetail();});
