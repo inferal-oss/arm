@@ -261,8 +261,9 @@ completion-space accounting; these proposals alone cannot authorize Start.
 
 ## Format fence and remaining completion gates
 
-Assign a new `ResidentWorkerWorkspaceFormat` distinct from current 1/3 and any
-other reserved semantics; numeric assignment remains central schema review.
+Reserve `ResidentWorkerWorkspaceFormat` value `4`, distinct from current 1/3.
+This is a contract reservation, not an implemented or accepted writer format;
+ordinary guards must continue to refuse it until worker-aware bootstrap review.
 Under stopped-exclusive native authority and explicit bootstrap approval,
 atomically publish marker + exact optional schema + bootstrap/policy records.
 Preserve named-storage semantics in the combined format. No ordinary startup,

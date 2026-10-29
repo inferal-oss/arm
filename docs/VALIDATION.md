@@ -17,6 +17,15 @@ The six-document scope, 37 protected source hashes against that exact baseline,
 whitespace checks pass. Source inspection supplies the behavioral interpretation;
 resolving an anchor alone does not verify it.
 
+Independent current-main documentation composition verifies all 37 protected
+hashes against parent, owner and composition. The 22 added local links and 14
+source anchors resolve; six-document scope, privacy and whitespace pass. Review
+inspects the existing transaction, no-job End/recovery, elapsed entitlement,
+workspace/storage writers, stopped proof and original startup/stop boundaries.
+No blocking source-contract finding remains; see the
+[review record](validation/resident-worker-transaction-composed-2026-10-29.json).
+This adds no tests, native launch, format activation or `arm start` implementation.
+
 ## Worker-owner prerequisite — documentation/source checks only
 
 The [native owner contract](design/resident-worker-owner.md) is inspected against
