@@ -1,5 +1,28 @@
 # Validation record
 
+## Stage-two read-grant refinement — source inspection only
+
+The [contract](design/resident-read-grants.md) is inspected against accepted
+`06fd4360f174eb31ae7d716301b44dc315b07b3b`: original caller/prepared dispatch,
+native-byte limits, both browser transports/parser, seven read handlers,
+resident writer queue and fixture-only launch/channel owners. Arithmetic and
+document/source-link/privacy/scope checks are documentation evidence only.
+The [source inventory and arithmetic record](validation/resident-read-grant-contract-2026-10-29.json)
+binds 22 unchanged inspected inputs and the proposed logical allowances. Ninety
+contract/tracking local links, added-scope privacy, whitespace and arithmetic
+checks pass; all tracked non-document inputs match the accepted base.
+No product/prototype/Go/module/frontend source changes, runtime/build/native
+fixtures, controller, installation or shared/default state changes occur.
+
+The proposal distinguishes exact additional logical bridge/request allowances
+from unproven total resident/native memory and separates post-read overflow from
+pre-invocation route choice. A current bool queue handoff does not prove socket
+completion or browser handling. Original worker provenance/activation, counted
+read/result admission and resident per-response settlement remain missing
+primitives; policy/interface decisions precede implementation. The future test
+matrix is not executed evidence. Stage-one acceptance below remains separately
+scoped and is not production worker-replacement acceptance.
+
 ## Resident caller extraction — independent composition
 
 Focused source `01c43ba` and documentation `4a5790f` compose on current main

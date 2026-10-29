@@ -6,6 +6,26 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
+## Stage-two read-grant contract — source-only refinement pending review
+
+Owner: `codex/resident-read-grant-contract`, from accepted Stage-one composition
+`06fd4360f174eb31ae7d716301b44dc315b07b3b`. The
+[refinement](design/resident-read-grants.md) proposes exactly seven unscoped local-
+browser read grants, fixed metadata-only framing and original inherited-channel
+verification/activation ownership. It separates claim/seal/retirement, callback
+join, resident result handoff, socket-write completion and browser handling.
+
+Native-byte and browser UTF-16 limits cannot be replaced by a uniform 4 MiB reply
+cap. Proposed bridge/request logical allowances total 8 MiB + 100 KiB, with zero
+additional result copies; current typed snapshots/serialization, runtime/native
+overhead and per-response settlement need separate admitted owners. The contract
+returns explicit policy options and missing factories before positive production
+grants. All current operations stay direct; unsupported capacity/size can choose
+direct only before invocation. No repeat read or pressure eviction resolves an
+already-invoked oversized/uncertain result. No implementation, runtime tests,
+builds, native workers, startup/installation or shared-state changes are included.
+Central policy/interface review precedes any Stage-two source allocation.
+
 ## Resident caller extraction — independently reviewed composition
 
 Owner: `codex/resident-dispatch-extraction`, from reviewed contract `e30b145`.

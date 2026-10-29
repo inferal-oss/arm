@@ -214,26 +214,23 @@ Expiry/sealing can refuse prepared grants, but cannot reclassify dispatched work
 as unexecuted. Retire result records only after delivery/handling is positively
 settled or the domain's reviewed recovery contract retains the obligation.
 
-Proposed initial bridge bounds are 4 KiB for private control frames, 32 live grant
-records total (including undelivered completed results), four per ingress and
-eight executing reads total. Pending/unknown records remain counted. Retained response
-bytes are bounded globally, with a 4 MiB per-response ceiling consistent with
-current native client read limits; eight full responses already require 32 MiB
-before copies/metadata. Charge actual configured buffers/overlap before enabling
-the bridge. Do not copy the fixture's 256 KiB reply ceiling into production and
-silently truncate existing data. Raw authoritative bytes must not acquire an
-unaccounted base64 expansion. Deadline is no later than the original credential/
-ingress request limit, with a proposed fifteen-second ceiling for optional
-browser-read grants. Overflow/expiry refuses a not-yet-dispatched grant rather
-than evicting pending or uncertain outcomes. Native reporting/control capacity
-is independent of these worker-read slots.
+The [Stage-two refinement](resident-read-grants.md) supersedes the initial
+4 MiB worker-result ceiling with a metadata-only channel: no result JSON is
+copied into a worker. It specifies 4096-byte total private control frames,
+32 live grant records (including completed-undelivered/unknown), four per ingress,
+eight executing reads and an explicit logical bridge/request budget. Existing
+resident result materialization/serialization still needs its own accounting;
+no bounded total response-memory claim follows from that overhead budget.
+Unknown-size/capacity-ineligible calls may use the original direct path only
+before invocation. Pending/unknown owners are not evicted. Native reporting and
+control use no worker grant or slot.
 
 Those future bridge bounds do not change stage-one public response behavior.
 The [native client](../../internal/client/client.go#L31) limits incoming bytes,
 while the [browser parser](../../internal/server/web/core.mjs#L4) checks JavaScript
 string length; these limits are not equivalent for non-ASCII data. Stage two
-must specify an exact global retained-byte/copy budget and compatible encoding
-and overflow behavior before implementation. Oversize discovered after a read
+keeps original public encoding and states the missing producer/result-sink and
+native-controller primitives before implementation. Oversize discovered after a read
 was invoked is an after-dispatch result, never a positive pre-dispatch refusal.
 Keep its original call/outcome binding; do not silently truncate or retry it.
 
