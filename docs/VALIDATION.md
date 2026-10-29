@@ -11,6 +11,25 @@ reads of the homepage, assistant index, mark and notice all return 200 and match
 the reviewed bytes. The browser suite was not independently repeated; source and
 publication hashes are in the [scoped record](validation/oss-directory-listing-2026-10-29.json).
 
+## Native session discovery and activation — owner continuation
+
+Scope is bounded metadata discovery and explicit activation; no real user-agent
+delivery, enrollment, policy edits or backend startup is authorized in validation.
+Controlled native proxy/queue helpers, synthetic client markers and disposable
+rollout homes exercise the implementation. Earlier iteration receipts include a
+cancellation test that timed out before controlled dispatch; its correction
+waits for the helper's entry marker before cancellation. Final owner core race
+checks pass 93 test nodes across native sessions, activation, rollout, installation
+and project discovery. Selected CLI race checks pass 277 test nodes, including
+default-no/accepted post-onboarding discovery, no automatic queueing/enrollment,
+exact recipient/content/key review, stale generation/policy refusal, clipboard
+request, guarded in-flight send, owned-worker cancellation/join and shared typed
+interruption reporting. Four-package vet passes. Private Go/module hashes and
+JSON receipts are retained outside version control. Normal core, clean-source
+build/terminal evidence and coordinator composition acceptance remain pending.
+No fixture result establishes live native delivery, native identity attestation,
+full Go-suite or Linux runtime acceptance.
+
 ## Rollout removal — independent composed acceptance
 
 Focused owner commits `928fd3b`, `cdbc082` and review correction `95f16ed`

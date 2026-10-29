@@ -16,6 +16,9 @@ type commandHelp struct {
 }
 
 var commandHelps = map[string]commandHelp{
+	"rollout discover":                  {summary: "Read native Codex/Claude session metadata inside an exact project, independently of ARM self-identification. In a terminal, select a session to view/copy an activation message or explicitly review supported delivery. --json is read-only. No transcript reading, process scans, automatic delivery or enrollment.", max: 0},
+	"rollout activate":                  {summary: "Generate an exact-session, project-policy-pinned activation message. Default is copy-only. Codex queue delivery requires --send, an identical --dry-run review hash, --key and --yes. Claude is copy-only. Queued is separate from identified/enrolled; uncertain keys never resend automatically.", max: 0},
+	"rollout activation":                {summary: "Read the durable outcome for an original activation key without native discovery or delivery. Pending/unknown does not mean rejected; never substitute a new key blindly.", max: 0},
 	"rollout project remove":            {summary: "Preview removal of an exact project from active rollout. Retain audit/session history and boundary fences; existing jobs, leases and cleanup obligations remain intact. Apply requires the identical --expect digest and --yes.", max: 0},
 	"rollout binding remove":            {summary: "Preview removal of an exact recorded filesystem path or client-project mapping. Missing paths can be removed. Filesystem fences prevent broader fallback; affected sessions are revoked. Apply requires the identical --expect digest and --yes.", max: 0},
 	"rollout project onboard":           {summary: "Discover Codex/Claude project-directory metadata and interactively select a boundary, name and adoption policy with a default-no review. --json, pipes and --dry-run discover only. No transcripts, native delivery, agent registration or automatic enrollment.", max: 0},

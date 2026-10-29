@@ -60,6 +60,20 @@ coordinated centrally. A partial capture roster does not establish a complete
 UX pass. No new product capabilities, pinned-engine promotion or production
 mutations are assigned.
 
+## Native rollout discovery and explicit activation continuation
+
+Owner: `codex/rollout-activation`, based on accepted runtime main `8780b34`.
+Scope: generic bounded native session metadata adapters, project-scoped discovery,
+exact-session activation message view/copy, separately reviewed Codex queue
+delivery, durable original-key outcomes and a default-no post-onboarding
+discovery offer. Claude remains copy-only. No actual user-agent delivery,
+identification, adoption, policy change or ARM backend is part of validation.
+Owner source review, 93 core race nodes, 277 selected CLI race nodes and affected
+vet pass. Source-bound native/terminal evidence and coordinator review/composition
+precede the requested main push and executable install. Unknown native state is
+not liveness, and live native delivery/identity attestation remain outside the
+controlled adapter-fixture evidence.
+
 ## Rollout removal and stale-boundary continuation
 
 Owner: `codex/rollout-removal`, based on main `53d7062`. Scope is reviewed

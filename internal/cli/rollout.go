@@ -27,6 +27,14 @@ func (a *app) rollout(args []string) error {
 		return fmt.Errorf("rollout requires status, check, history, project, bind, policy, pause, resume, invite, revoke, identify or ack")
 	}
 	action, args := args[0], args[1:]
+	switch action {
+	case "discover":
+		return a.rolloutDiscover(args)
+	case "activate":
+		return a.rolloutActivate(args)
+	case "activation":
+		return a.rolloutActivation(args)
+	}
 	if action == "project" && len(args) > 0 && args[0] == "onboard" {
 		return a.rolloutOnboard(args[1:])
 	}
@@ -161,6 +169,10 @@ func (a *app) rollout(args []string) error {
 			status.NextCommand = installNextCommand(a.home, "install")
 		} else if len(projects) > 0 {
 			status.Suggestion = "Review project boundaries and cohorts before expanding. Installation never enrolls sessions."
+			if len(projects)==1&&!projects[0].Removed&&projects[0].Mode!="disabled" {
+				status.Suggestion="Project enabled. Discover existing sessions and explicitly copy or send an activation message; installation does not identify or enroll agents."
+				status.NextCommand=installNextCommand(a.home,"rollout discover --project "+projects[0].ID)
+			}
 		}
 		for _, boundary := range status.Boundaries {
 			if boundary.State == "stale" || boundary.State == "unknown" {

@@ -241,6 +241,87 @@ session records, 8 capability labels per session, 512 bytes of needs/reason,
 preserves history without eviction. Protocol version 1 is required; unsupported
 versions fail closed. Capability labels do not attest execution support.
 
+### Discovering and activating existing sessions
+
+After an enabled policy is saved, onboarding offers `Discover agents now? [y/N]`
+and prints the exact `arm rollout discover --project ID` command. Accepting opens
+the next flow without authorizing a send. Empty input, EOF or decline does not
+discover or contact agents. Disabled onboarding does not offer activation.
+
+```sh
+arm rollout discover --project demo
+arm rollout discover --project demo --adapter claude --json
+arm rollout discover --project demo --codex-cwd /work/project/subdirectory
+arm rollout activate --project demo --adapter claude --session SESSION_UUID
+arm rollout activate --project demo --adapter codex --session SESSION_UUID --send --dry-run
+```
+
+Native metadata and the ARM roster remain separate: a found session can still be
+not identified, observed, invited, enrolled or revoked. Displayed native status
+and metadata timestamps are observations, never attested liveness. Discovery is
+project-scoped and does not self-identify, register contacts or enroll anyone.
+Terminals offer searchable selection, a scrollable activation message, explicit
+clipboard copy and a separate default-no Codex send review. OSC52 clipboard
+support depends on the terminal; the message remains available for manual copy.
+`--json`/pipes discover only. Sessions are activated one at a time; no broadcast
+or automatic cohort expansion is implemented.
+
+The generated message pins the exact adapter/UUID, canonical directory, ARM
+executable/home and reviewed project/revision. It instructs the recipient to read
+its installed guide, check policy, identify with truthful needs/original start,
+and acknowledge only when eligible. A supplied native client-project ID must be
+carried consistently; it is never inferred from the ARM project name. New task,
+restart, metadata update and process start are not substitutes for original
+session start. Revocation/pause and existing resource promises remain intact.
+Receiving, copying or queueing the text does not establish agent compliance.
+
+Generic native sources initially include:
+
+- Codex: an existing CLI proxy/control socket and `thread/list` with
+  `useStateDbOnly`, archived exclusion and exact bound-root `cwd` filters. It
+  never starts/resumes a thread/server or requests turns. A nested working
+  directory needs explicit `--codex-cwd` within the same verified boundary.
+  Unused native preview/title fields are discarded and never returned/persisted.
+- Claude: small regular `sessions/*.json` markers with recognized UUID/cwd fields;
+  transcript, prompt-history and credential files are excluded. Native process
+  start is tracked separately for generation changes; original conversation start
+  remains unknown. Conflicting markers for one session are omitted. Claude
+  activation is copy-only; the existing idle-resume adapter is not reused to
+  simulate live messaging.
+
+Codex discovery is limited to six pages/512 sessions, 8 MiB of stream input,
+2 MiB per response line, 128 response messages and an eight-second proxy context.
+Claude discovery is limited to 512 entries, 64 KiB per regular no-follow marker
+and 4 MiB total reads. Combined scope evaluation uses a 15-second context and
+retains OS filesystem semantics. Unavailable/unknown formats warn, never fall
+back to transcript/process scans. Exact discovery coverage is not historical
+completeness or remote/folderless session support. Reference: [native Codex
+thread metadata API](https://learn.chatgpt.com/docs/app-server).
+
+Queue delivery additionally probes the installed Codex interface, pins its
+executable/hash, and binds the exact content, identity generation and policy to a
+review hash. Repeat the identical request with `--expect HASH --key KEY --yes`.
+No discovery, preview, copy or post-onboarding offer queues a message. Delivery
+can initiate an ordinary follow-up turn in the existing session; it does not
+acquire ARM resources. The native command is bounded by 15 seconds.
+
+Before native start, a private activation ledger durably saves the original key,
+recipient, exact message and pending state. A rollout lock fences local policy
+changes across final revalidation/start. Queued, failed, pending and unknown keys
+never execute again. After interruption or lost output, use:
+
+```sh
+arm rollout activation --key ORIGINAL_KEY
+```
+
+Lookup has no native discovery or delivery. Typed activation uncertainty survives
+shared CLI interruption reporting with exit 130 and selected-home recovery.
+Never blindly substitute a key after unknown delivery. The receipt records native
+queue acceptance, not agent identification/enrollment. History is bounded at 256
+records and 1 MiB; capacity/corruption refuses without eviction. UI exit cancels
+and joins owned metadata/queue work; cancelling reporting cannot retract a message
+already accepted by the native client.
+
 ### Removing projects and bindings
 
 ```sh

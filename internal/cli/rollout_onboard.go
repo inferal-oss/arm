@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -105,7 +106,38 @@ func (a *app) rolloutOnboard(args []string) error {
 		opts = append(opts, tea.WithColorProfile(colorprofile.ASCII))
 	}
 	_, e = tea.NewProgram(model, opts...).Run()
-	return model.result(e)
+	if e = model.result(e); e != nil {
+		return e
+	}
+	if model.cancelled || model.plan.After.Mode == "disabled" || model.plan.After.ID == "" {
+		return nil
+	}
+	return a.offerRolloutDiscovery(model.plan.After.ID, *codexHome, *claudeHome)
+}
+
+func (a *app) offerRolloutDiscovery(project, codexHome, claudeHome string) error {
+	command := installNextCommand(a.home, "rollout discover --project "+project)
+	fmt.Fprintf(a.out, "\nProject policy is saved. Activate your existing agents next.\nRun: `%s`\nDiscover agents now? [y/N] ", terminalSafe(command))
+	type reply struct {
+		line string
+		err  error
+	}
+	answers := make(chan reply, 1)
+	go func() { line, e := bufio.NewReaderSize(a.in, 257).ReadSlice('\n'); answers <- reply{string(line), e} }()
+	select {
+	case <-a.ctx.Done():
+		return a.ctx.Err()
+	case r := <-answers:
+		fmt.Fprintln(a.out)
+		if r.err != nil || len(r.line) > 256 {
+			return nil
+		}
+		answer := strings.ToLower(strings.TrimSpace(r.line))
+		if answer != "y" && answer != "yes" {
+			return nil
+		}
+	}
+	return a.rolloutDiscover([]string{"--project", project, "--codex-home", codexHome, "--claude-home", claudeHome})
 }
 
 func rolloutOutcomeUnknown(home string, err error) error {
@@ -699,7 +731,12 @@ func (m *rolloutOnboardModel) View() tea.View {
 			}
 			fmt.Fprintln(&b, "Sessions still identify and acknowledge participation. Existing jobs and leases are unchanged.")
 		}
-		fmt.Fprintln(&b, "Next: `"+terminalSafe(installNextCommand(m.home, "rollout status"))+"`")
+		next := "rollout status"
+		if !m.cancelled && m.err == nil && m.plan.After.ID != "" && m.plan.After.Mode != "disabled" {
+			next = "rollout discover --project " + m.plan.After.ID
+			fmt.Fprintln(&b, "Project enabled. Activate your existing agents next.")
+		}
+		fmt.Fprintln(&b, "Next: `"+terminalSafe(installNextCommand(m.home, next))+"`")
 	}
 	if m.notice != "" {
 		fmt.Fprintln(&b, "\n"+terminalSafe(m.notice))

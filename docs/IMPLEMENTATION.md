@@ -7,6 +7,36 @@ with its canonical website/source links, assistant index entry and public mark
 with retained license attribution. Directory commit `42f445c` passes review and
 Pages publication; this does not move ARM hosting or change application behavior.
 
+## Native rollout discovery and explicit activation
+
+`rollout discover --project ID` reads native session metadata without ARM
+self-identification. JSON/pipes remain discovery-only; the Charm terminal flow
+selects an exact session and displays its activation message. Terminal clipboard
+copy is explicit (OSC52; terminals may block it). Codex delivery requires another
+recipient/content/executable review and default-no confirmation. Claude is
+copy-only. Successful enabled onboarding offers discovery with `[y/N]`; accepting
+the offer does not authorize sending.
+
+`rollout activate` previews/copies by default. A supported Codex `--send` requires
+the identical `--dry-run` review, `--expect`, a stable `--key` and `--yes`.
+`rollout activation --key KEY` reads the original durable outcome without native
+discovery or delivery. A pending key is persisted and directory-synced before
+native start. Pending/unknown/queued keys never dispatch again; corrupt/full
+history refuses without eviction. Native execution is bounded and owned terminal
+tasks are cancelled/joined on exit. Shared interruption reporting preserves typed
+activation uncertainty with selected-home lookup commands.
+
+Codex metadata comes only from an already-running native proxy and project-root
+filtered `thread/list` with `useStateDbOnly`; no server/thread is started by
+discovery. `--codex-cwd` selects a nested working directory within the same
+reviewed scope. Claude uses bounded regular session-marker files; its process
+start is separate from unknown original conversation start. These adapters do
+not read transcripts, prompt-history or credential files, scan processes, or
+attest liveness. Activation messages check exact project/revision, preserve
+start/eligibility and existing obligations, and require the agent's own report
+and eligible acknowledgment. Broader native attestation and live Claude delivery
+remain unsupported. See the scoped rollout design and validation record.
+
 ## Project-scoped gradual agent adoption — CLI milestone
 
 Interactive install/uninstall confirmation offers `[y/N/diff]`. `d`/`diff`

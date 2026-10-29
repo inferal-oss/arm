@@ -384,6 +384,9 @@ type Decision struct {
 // resolve requires a filesystem boundary even for client-project bindings.
 // Most-specific roots contain broad grants. Equal roots across projects refuse.
 func resolve(st State, q Query) (*Project, string, error) {
+	return resolveContext(context.Background(), st, q)
+}
+func resolveContext(ctx context.Context, st State, q Query) (*Project, string, error) {
 	path, e := canonical(q.CWD)
 	if e != nil {
 		return nil, "", e
@@ -394,6 +397,9 @@ func resolve(st State, q Query) (*Project, string, error) {
 	selectedRemoved := false
 	for _, p := range st.Projects {
 		for _, b := range p.Bindings {
+			if e := ctx.Err(); e != nil {
+				return nil, "", e
+			}
 			if !within(b.Root, path) {
 				continue
 			}
@@ -420,11 +426,11 @@ func resolve(st State, q Query) (*Project, string, error) {
 				why = "client project is not explicitly bound; no adoption authorized"
 			}
 			if b.Kind == "git" {
-				root, e := gitRoot(path)
+				root, e := gitDirectoryContext(ctx, path, "--show-toplevel")
 				if e != nil || root != b.Root {
 					why = "working directory is outside the bound Git checkout; no adoption authorized"
 				} else {
-					dir, e := gitDirectory(path, "--absolute-git-dir")
+					dir, e := gitDirectoryContext(ctx, path, "--absolute-git-dir")
 					id, identityErr := directoryIdentity(dir)
 					if e != nil || identityErr != nil || dir != b.GitDirectory || id != b.GitIdentity {
 						why = "Git repository identity changed; review its project binding"
@@ -522,6 +528,12 @@ func (s Store) Check(q Query) (Decision, error) {
 		return Decision{}, e
 	}
 	return decision(st, q, s.now())
+}
+
+// ResolveScopeContext evaluates a retained snapshot for read-only native discovery.
+// Its result grants no participation and never records an observation.
+func ResolveScopeContext(ctx context.Context, st State, q Query) (*Project, string, error) {
+	return resolveContext(ctx, st, q)
 }
 
 type Participation struct {

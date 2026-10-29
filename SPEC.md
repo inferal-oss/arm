@@ -558,6 +558,17 @@ identity and policy, then review a default-no atomic change. Read-only machine
 discovery, manual directory entry and preservation of an unchanged policy are
 required. Discovering a directory never enrolls a session or grants resources.
 
+Offer project-scoped native session discovery independently of ARM registration.
+After successful project onboarding, display an exact discovery command and offer
+to run it with default-no consent. Discovery and post-save prompts never send
+activation messages automatically. Let users select an exact existing session,
+view/copy a generated policy-bound activation message, and separately review and
+confirm supported native delivery. Preserve original session-start semantics;
+process start and metadata freshness are not original conversation birth or
+liveness proof. Record stable delivery keys before dispatch, preserve pending or
+unknown outcomes through interruption, and never blindly retry uncertain sends.
+Delivery/clipboard outcomes do not establish agent identification or enrollment.
+
 Support exact-reviewed project and binding removal, including missing recorded
 paths. Preserve audit/session history, resource obligations and inactive scope
 fences so narrower removal cannot silently broaden adoption. Show stale or
