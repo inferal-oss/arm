@@ -1,6 +1,6 @@
 # ARM delivery plan
 
-## Original response settlement — owner cut awaiting independent review
+## Original response settlement — independently reviewed composition
 
 Owner: `codex/resident-response-settlement`, from accepted policy `5765652`.
 Focused source: `a202c1b2ce1a19f58c27c73d17cda9cff1b818c2`;
@@ -20,7 +20,14 @@ fixed and retained privately. Source-bound normal/race, direct CLI lifetime,
 vet/build and compile-only evidence are tracked in VALIDATION.md. Nominal fixed,
 per-connection, queue-entry and tracked-handle costs are explicit; unlimited
 connections, allocator/runtime overhead and consumer-retained stale handles are
-not a global heap bound. Independent current-main review is next. Worker/grant/
+not a global heap bound. Independent current-main composition on `6ac9840`
+verifies all 24 implementation/protected hashes, original dispatch tail and
+accepted frontend bundle. Normal/race each pass 46 Server roots / 69 nodes;
+direct CLI reporting passes both modes, with affected vet, native build and
+Linux amd64 compilation. The four exact pre-fix overlay sources reproduce the
+retention failure after the owned-ingress subcase settles; corrected code passes.
+No blocking source finding remains; see the
+[composed record](validation/resident-response-composed-2026-10-29.json). Worker/grant/
 IPC/controller/activation, UI/assets, startup/install and shared state stay outside
 this cut; the user-selected replaceable API/UI objective remains open.
 

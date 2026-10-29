@@ -1,10 +1,13 @@
 # Original resident response settlement
 
-Owner implementation awaiting independent review, from accepted policy
+Independently reviewed in-process primitive, from accepted policy
 `57656529fcfa09828233069e48b10d70775fffd5`. This implements the response-owner
 primitive identified by the [read-grant contract](resident-read-grants.md).
 All current routes remain direct. There is no worker, grant/IPC/controller,
 new public ACK, response cap, snapshot store, startup or installation change.
+The [current-main composed record](../validation/resident-response-composed-2026-10-29.json)
+supplies independent normal/race, ownership/retention, direct reporting and
+build-only gates; later worker/activation acceptance is separate.
 
 ## Ownership and receipts
 

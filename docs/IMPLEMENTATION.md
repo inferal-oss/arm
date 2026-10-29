@@ -1,6 +1,6 @@
 # Backend and CLI implementation
 
-## Original response owner and write settlement — owner cut
+## Original response owner and write settlement — reviewed composition
 
 The private [sink implementation](../internal/server/resident_response.go) is
 constructed only by original accepted WS ownership after caller activation. The
@@ -24,6 +24,9 @@ All current APIs remain direct. This supplies the transport settlement primitive
 for later reviewed work; no worker/grant/controller/bootstrap or API/UI reload
 activation is implemented. Legacy data/encoder/allocator memory and unlimited
 connection population remain separately accountable.
+Independent [current-main composition](validation/resident-response-composed-2026-10-29.json)
+accepts this primitive, including original I/O ownership and retention tests.
+The installed backend remains unchanged; no worker route is activated.
 
 ## Activity, Host and compact header composition
 
