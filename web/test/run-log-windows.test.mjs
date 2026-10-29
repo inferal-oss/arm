@@ -58,7 +58,7 @@ it('multiple native windows retain independent nodes, tile, reveal existing logs
  try{
   const click=node=>{expect(node).toBeTruthy();node.dispatchEvent(new x.window.Event('click',{bubbles:true}));},nodeOf=h=>x.renderer.nodeOf(x.projection.index.rootOf(h.iri));
   panel.setActive(true);await tick();const outputs=[];
-  for(const record of records){await panel.open(record);const output=[...x.ui.handles.values()].find(h=>h.kind==='Code'&&h.value.includes(record.agent));outputs.push({handle:output,node:nodeOf(output)});click(x.document.querySelector('.sem-detach'));await tick();}
+  for(const record of records){await panel.open(record);const output=[...x.ui.handles.values()].find(h=>h.kind==='Code'&&h.value.startsWith(record.agent+'\n'));outputs.push({handle:output,node:nodeOf(output)});click(x.document.querySelector('.sem-detach'));await tick();}
   expect(x.document.querySelectorAll('[data-sem-c="window"]:not([hidden])')).toHaveLength(2);expect(x.ui.windowFrames.size).toBe(2);const f=x.store.factory;expect(x.store.match(f.namedNode(x.ui.windowDesktop.iri),f.namedNode(C+'topmost'),null,f.defaultGraph())[0].object.value).toBe([...x.ui.windowFrames][1].frameIRI);
   const windows=()=>outputs.map(o=>o.node.closest('[data-sem-c="window"]'));
   const control=(frame,label)=>[...frame.querySelectorAll('button')].find(n=>n.getAttribute('aria-label')===label||n.textContent.trim()===label);
@@ -73,5 +73,21 @@ it('multiple native windows retain independent nodes, tile, reveal existing logs
   let restoredTail=0;outputs[1].handle.scrollEnd=()=>restoredTail++;const reads=calls.filter(([op,args])=>op==='run_output'&&args.id===records[1].id).length;
   click(x.document.querySelector('[data-sem-c="taskbar"] button'));await tick();expect(restoredTail).toBeGreaterThan(0);expect(calls.filter(([op,args])=>op==='run_output'&&args.id===records[1].id)).toHaveLength(reads);expect(nodeOf(outputs[1].handle)).toBe(outputs[1].node);
   panel.reset();await tick();expect(x.ui.windowFrames.size).toBe(0);expect(x.document.querySelector('[data-sem-c="window"]')).toBeNull();
+ }finally{panel.dispose();x.close();}
+});
+
+it('native history checkbox filters the roster without replacing watched completed log nodes',async()=>{
+ const x=fixture(),records=[{...run,id:'3'.repeat(32),reason:'Completed alpha',state:'terminal',outcome:'completed',log_bytes:5},{...run,id:'4'.repeat(32),reason:'Completed beta',state:'terminal',outcome:'completed',log_bytes:4}];
+ const values=new Map([['arm.dashboard.hide-inactive-runs.v1','false']]),preferences={getItem:key=>values.get(key),setItem:(key,value)=>values.set(key,value)},calls=[];
+ const panel=createRunsConsole({ui:x.ui,root:x.root,preferences,connected:()=>true,call:async(op,args)=>{calls.push([op,args]);if(op==='runs')return records;const record=records.find(r=>r.id===args.id),text=record.id[0]==='3'?'alpha':'beta',data=Buffer.from(text).subarray(args.offset);return {run:record,offset:args.offset,next_offset:args.offset+data.length,data:data.toString('base64'),done:true};}});
+ try{
+  const click=node=>node.dispatchEvent(new x.window.Event('click',{bubbles:true})),nodeOf=h=>x.renderer.nodeOf(x.projection.index.rootOf(h.iri));panel.setActive(true);await tick();const outputs=[];
+  for(const record of records){await panel.open(record);const handle=[...x.ui.handles.values()].find(h=>h.kind==='Code'&&h.value===(record.id[0]==='3'?'alpha':'beta'));outputs.push({handle,node:nodeOf(handle)});click(x.document.querySelector('.sem-detach'));await tick();}
+  const checkbox=x.document.querySelector('input[type="checkbox"]');expect(checkbox).toBeTruthy();checkbox.checked=true;checkbox.dispatchEvent(new x.window.Event('change',{bubbles:true}));await tick();
+  expect(values.get('arm.dashboard.hide-inactive-runs.v1')).toBe('true');expect(panel.openRuns).toHaveLength(2);expect(x.document.querySelectorAll('[data-sem-c="window"]:not([hidden])')).toHaveLength(2);
+  for(const o of outputs){expect(nodeOf(o.handle)).toBe(o.node);expect(o.node.isConnected).toBe(true);expect(Boolean(o.handle.disposed)).toBe(false);}
+  const count=calls.filter(([op])=>op==='run_output').length;await panel.refresh();expect(calls.filter(([op])=>op==='run_output')).toHaveLength(count);
+  const roster=[...x.ui.handles.values()].filter(h=>h.kind==='Button'&&records.some(r=>r.reason===h.label));expect(roster).toHaveLength(0);
+  checkbox.checked=false;checkbox.dispatchEvent(new x.window.Event('change',{bubbles:true}));await tick();expect(values.get('arm.dashboard.hide-inactive-runs.v1')).toBe('false');expect([...x.ui.handles.values()].filter(h=>h.kind==='Button'&&records.some(r=>r.reason===h.label))).toHaveLength(2);
  }finally{panel.dispose();x.close();}
 });

@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-29",
+  "scope": "Independent composition review of current-activity defaults, run and associated-lease presentation, private native input layout and focused Messages readability",
+  "reviewed_source": "a265a61f98c43ec5b92f501837c8aa5100caeaf4",
+  "rebuilt_asset_commit": "9d924e9",
+  "feature_inputs": {
+    "internal/server/web/assets/arm.mjs": "86b44c64c43f7ce50f49be296cc2330f776c087d5ea26d5f3f89099813bde03d",
+    "internal/server/web/dashboard-preferences.mjs": "5c00ca7c98942bae675ce111c76b51a6f6e4ad0b66791d218f0bc8ed0ac9a7a0",
+    "internal/server/web/lease-state.mjs": "66459a9d20e2a26d628556dea74de120708bf97ed2760f7df66ab436abf09bad",
+    "internal/server/web/lease-state.test.mjs": "984ac13cd405b3d90cc0ffbd62374f38e66cd728290d7013fa2fba0ce5bd265e",
+    "internal/server/web/semblance/app.ttl": "56202b03f3ed5a0acb48ba61113f04cc333cec6da4c944bb9ac938ce89ec3974",
+    "internal/server/web/semblance/control-test-ui.mjs": "ac9cef0c4a54810b40594051c88ccb7be94c240019a5f5b3649a7a809dd757ac",
+    "internal/server/web/semblance/controls.test.mjs": "a26b46cc58210683528a056b46f532cd80366c20654d1ec9c354d1b83737f065",
+    "internal/server/web/semblance/detail-presentation.mjs": "7c9d0923f81dd84ba8d42e8f47a918bfff9ad48b6c4fac784fe6d79061d7206b",
+    "internal/server/web/semblance/detail-presentation.test.mjs": "5bdbe754307305512dfc7dea97e8d5f1748dda82ca9f0d98035c089183b13098",
+    "internal/server/web/semblance/ephemeral-inputs.mjs": "974ea80f617ed2281b52c85e69e7b8d1435192919d04ff658f562fd3388241ea",
+    "internal/server/web/semblance/lease-controls.mjs": "f5dd804d8e2e4f6b12897f121b8cb8bb4b32fb1987e4238c9748f75497387466",
+    "internal/server/web/semblance/main-lifecycle.test.mjs": "e76f4584bd3dd858ca4de94eb935e30051d874c149f33beffd98f3f59d42c02a",
+    "internal/server/web/semblance/main.mjs": "068288c634866abb0f719b8ba2595a1c3ca67e76c791cc1cca68535b33affef5",
+    "internal/server/web/semblance/messages.mjs": "84df62f02f8c8c680e169004f6e25b29c7594b322b83293ebecd967917202022",
+    "internal/server/web/semblance/run-list.mjs": "f0e67415958f015254814cdf974bf21b052ad721fb80bf72cfc94479475e3aee",
+    "internal/server/web/semblance/run-list.test.mjs": "76eca2eb6c4b6350bc8d7bcc8c8f1cf2938d34627b948a3252fccbcafbd04d88",
+    "internal/server/web/semblance/run-log.mjs": "1fa9d868f1788a9371f5f39900dbc078ac7bc43261818d41796c71e9aeccce25",
+    "internal/server/web/semblance/runs-ownership.test.mjs": "e98dfbf7bcbf555bccef9d1a8a4f02791c78da406b44ca12200f717ead1936f7",
+    "internal/server/web/semblance/runs.mjs": "c531279f87b6b37222249e57574a72514ca633ab4ceb2db00bc524ced2d5980e",
+    "internal/server/web/semblance/runs.test.mjs": "c2b30add5cc117a9a9f6d3d394118bd8a1000397e8cd0c0ba6ab4a2e19eb2009",
+    "internal/server/web/semblance/screen.mjs": "7160767e1d822292f58150ca3455afba18fb90c34eca497857a728f96a003b28",
+    "internal/server/web/semblance/screen.test.mjs": "d9ea0a072aac7cc78c6b73ca15d710f9a9427a9850a4cb35037be8daff7d21d5",
+    "internal/tui/active_defaults_test.go": "8546ae076f7a43b087cc35db43add9f15de7fca38aeea2a5b5c7bdad20ccdb28",
+    "internal/tui/layout.go": "6b30cd2faf0ab7d80b18d1ec4f384d3d378eabf2871ef7582f11da4474bc96a4",
+    "internal/tui/lease_table_test.go": "8cfb5bb69d6fb960c8bbab5b16fd44746d1610d42a786c4e26a46a0599e49bab",
+    "internal/tui/mouse.go": "d8ee6291bde31ff023f1bd4f51c1877156ff788660b5995e5a7939c1e9ec11c5",
+    "internal/tui/preferences.go": "fa7706ef1c57cadd0e341eea5239cde099acb4622e5695a6d5b507584d13702c",
+    "internal/tui/preferences_test.go": "f7be7759eec8f320e048a362536e8e94634c09498b378e5c6fc8045c978dfa00",
+    "internal/tui/run_detail_presentation_test.go": "dacafc2103d62a1701b9072e491953dfefbe29eba448edff5ea8027c99db18a2",
+    "internal/tui/run_list.go": "254348fb34414151d95d85ba4a94f419e2726875ee4384026491475cb9f6b426",
+    "internal/tui/runs.go": "74ea280a55d48b5a1d0f638e017d648d738822ea9364b5976b7515892c61303c",
+    "internal/tui/runs_test.go": "1271daf032c890f399a653bb68529f803c09a2dc7971ec0f490347e8fc357137",
+    "internal/tui/tui.go": "3c743dbcc4e0d391da3be321063ba3050fe1ad95437e4715b801470993ab70f1",
+    "scripts/dashboard-screenshots/ux-messages.mjs": "37565d6e1c2574d5a3c733f6dbaa7861b373f1d84cdec5cd8acc4610f9754c9b",
+    "web/test/messages-layout.test.mjs": "886508ca0e5b4c3e7d7b951be612a76fdf2f1493a3eaa17b25099732ac128d32",
+    "web/test/run-log-windows.test.mjs": "8be80002b3eb0d3cb2aebc5554aa1d5030c82b2205c636caa258cd3cae8dc31c"
+  },
+  "phases": [
+    {
+      "name": "web-build",
+      "exit": 0,
+      "seconds": 0.666
+    },
+    {
+      "name": "node",
+      "exit": 0,
+      "seconds": 6.491
+    },
+    {
+      "name": "native",
+      "exit": 0,
+      "seconds": 2.21
+    },
+    {
+      "name": "tui-race",
+      "exit": 0,
+      "seconds": 28.211,
+      "roots": 216,
+      "names": 446,
+      "failed": 0,
+      "skipped": 6
+    },
+    {
+      "name": "vet",
+      "exit": 0,
+      "seconds": 2.532
+    },
+    {
+      "name": "native-build",
+      "exit": 0,
+      "seconds": 4.153
+    },
+    {
+      "name": "web-rebuild",
+      "exit": 0,
+      "seconds": 0.664
+    }
+  ],
+  "javascript": {
+    "passed": 444,
+    "failed": 0,
+    "skipped": 0
+  },
+  "native_component_tests": {
+    "passed": 27,
+    "failed": 0
+  },
+  "tui_optional_skips": [
+    "TestWriteMeshPreviews",
+    "TestPendingProcessWorker",
+    "TestWritePolishedColorProfilePreviews",
+    "TestWritePoolDashboardPreviews",
+    "TestWriteRecoveryPreviews",
+    "TestWriteWindowedDashboardPreviews"
+  ],
+  "bundle_sha256": "86b44c64c43f7ce50f49be296cc2330f776c087d5ea26d5f3f89099813bde03d",
+  "deterministic_bundle": true,
+  "native_cli_sha256": "05e1abf17f9b4652d01881d03a279fd9672618bf3dc17df3b2ea26df7ee18dbc",
+  "visual_review": {
+    "run_lease_inputs_verified": 13,
+    "run_lease_artifacts_verified": 11,
+    "private_input_inputs_verified": 8,
+    "private_input_artifacts_verified": 4,
+    "messages_synthetic_native_cases": 8,
+    "source_scope": "Owner captures remain pinned to their recorded sources; independent combined component tests and asset rebuild pass."
+  },
+  "limitations": [
+    "Synthetic components and fake clients; no real ARM backend, lease/check-in changes, screen login or agent policy/enrollment",
+    "Six optional preview/subprocess-helper tests skipped in the terminal package",
+    "No full Go suite, Linux runtime, new TUI visual capture or unqualified full UX acceptance",
+    "Full layout review continues in focused slices, including Pools."
+  ]
+}

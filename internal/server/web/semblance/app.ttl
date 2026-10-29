@@ -208,15 +208,117 @@ arm:RunTranscriptWindow a owl:Class ; rdfs:subClassOf arm:RunTranscript ; sem:sl
  sty:declares [ sty:property "flex-shrink" ; sty:raw "0" ] .
 [] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]" ;
  sty:declares [ sty:property "display" ; sty:raw "flex" ] , [ sty:property "flex-direction" ; sty:raw "column" ] , [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] , [ sty:property "overflow" ; sty:raw "hidden" ] .
-[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "[data-expanded=\"true\"] > .sem-panel" ;
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"][data-expanded=\"true\"] > .sem-panel" ;
  sty:declares [ sty:property "display" ; sty:raw "flex" ] , [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] .
-[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part ".sem-panel-clip" ;
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"] .sem-panel-clip" ;
  sty:declares [ sty:property "display" ; sty:raw "flex" ] , [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] .
-[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part ".sem-panel-body" ;
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"] .sem-panel-body" ;
  sty:declares [ sty:property "display" ; sty:raw "flex" ] , [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] .
-[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part ".sem-panel-body > [data-sem-c=\"stack\"]" ;
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"] .sem-panel-body > [data-sem-c=\"stack\"]" ;
  sty:declares [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] , [ sty:property "overflow" ; sty:raw "hidden" ] .
-[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part ".sem-panel-body > [data-sem-c=\"stack\"] > :not(pre)" ;
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"] .sem-panel-body > [data-sem-c=\"stack\"] > :not(pre)" ;
  sty:declares [ sty:property "flex-shrink" ; sty:raw "0" ] .
-[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "pre" ;
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"] pre" ;
  sty:declares [ sty:property "flex" ; sty:raw "1" ] , [ sty:property "min-height" ; sty:raw "0" ] , [ sty:property "max-height" ; sty:raw "none" ] .
+
+
+arm:RunContext a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-context" .
+[] a sty:StyleRule ; sty:appliesTo arm:RunContext ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "font-size" ; sty:raw "0.875rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunContext ; sty:part "dd,pre" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "white-space" ; sty:raw "pre-wrap" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunContext ; sty:part "h3,h4" ;
+ sty:declares [ sty:property "font-size" ; sty:raw "0.875rem" ] ,
+              [ sty:property "margin-block" ; sty:raw "0.25rem" ] .
+
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "[data-sem-c=\"arm-run-context\"]" ;
+ sty:declares [ sty:property "max-height" ; sty:raw "min(28vh, 12rem)" ] ,
+              [ sty:property "overflow" ; sty:raw "auto" ] .
+
+
+arm:LeaseSummary a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-lease-summary" .
+arm:LeaseSection a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-lease-section" .
+[] a sty:StyleRule ; sty:appliesTo arm:LeaseSummary ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "gap" ; sty:raw "0.75rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:LeaseSummary ; sty:part "h3" ;
+ sty:declares [ sty:property "font-size" ; sty:raw "1.125rem" ] ,
+              [ sty:property "line-height" ; sty:raw "1.4" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:LeaseSection ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "gap" ; sty:raw "0.5rem" ] ,
+              [ sty:property "padding-top" ; sty:raw "0.75rem" ] ,
+              [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:LeaseSection ; sty:part "h3,h4" ;
+ sty:declares [ sty:property "font-size" ; sty:raw "1rem" ] ,
+              [ sty:property "margin-block" ; sty:raw "0.25rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:LeaseSection ; sty:part "[role=toolbar]" ;
+ sty:declares [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+              [ sty:property "gap" ; sty:raw "0.5rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:LeaseSummary ; sty:part "dd" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ;
+ sty:declares [ sty:property "gap" ; sty:raw "0.25rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"arm-run-context\"]:not([hidden])" ;
+ sty:declares [ sty:property "flex" ; sty:raw "0 1 auto" ] ,
+              [ sty:property "min-height" ; sty:raw "2.5rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"][data-expanded=\"true\"]:not([hidden])" ;
+ sty:declares [ sty:property "min-height" ; sty:raw "10rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"] .sem-panel-body" ;
+ sty:declares [ sty:property "padding" ; sty:raw "0.5rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"] .sem-panel-body > [data-sem-c=\"stack\"]" ;
+ sty:declares [ sty:property "gap" ; sty:raw "0.25rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:state ":is([data-sem-fullscreen],[data-sem-c=\"arm-run-transcript-window\"])" ; sty:part "> [data-sem-c=\"accordion-item\"] pre" ;
+ sty:declares [ sty:property "padding" ; sty:raw "0.5rem" ] .
+
+arm:RunSummary a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-summary" .
+[] a sty:StyleRule ; sty:appliesTo arm:RunSummary ;
+ sty:declares [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+              [ sty:property "align-items" ; sty:raw "center" ] ,
+              [ sty:property "gap" ; sty:raw "0.5rem 0.75rem" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunSummary ; sty:part "h3" ;
+ sty:declares [ sty:property "font-size" ; sty:raw "1.25rem" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:part "[role=toolbar]" ;
+ sty:declares [ sty:property "flex-wrap" ; sty:raw "wrap" ] ,
+              [ sty:property "gap" ; sty:raw "0.375rem" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:RunTranscript ; sty:part "> h3" ;
+ sty:declares [ sty:property "font-size" ; sty:raw "1.125rem" ] ,
+              [ sty:property "line-height" ; sty:raw "1.4" ] ,
+              [ sty:property "margin-block" ; sty:raw "0.25rem" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Window ; sty:state ":not([data-sem-tiled]):has([data-sem-c=\"arm-run-transcript-window\"]):not([hidden])" ;
+ sty:declares [ sty:property "min-height" ; sty:raw "min(32rem, calc(100dvh - 3rem))" ] .
+
+# Message prose preserves paragraphs through review, recovery and conversation.
+# These application classes leave the stock dialog, shell and other views alone.
+arm:MessageSurface a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-message-surface" .
+arm:MessageBody a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-message-body" .
+arm:MessageFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-message-facts" .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageSurface ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageBody ;
+ sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+              [ sty:property "white-space" ; sty:raw "pre-wrap" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageFacts ; sty:atWidth sty:CompactWidth ;
+ sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageFacts ; sty:atWidth sty:CompactWidth ; sty:part "> .sem-pair" ;
+ sty:declares [ sty:property "row-gap" ; sty:token tok:space-1 ] .
+
+arm:MessageLabel a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-message-label" .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageLabel ;
+ sty:declares [ sty:property "font-weight" ; sty:raw "650" ] ,
+              [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+              [ sty:property "color" ; sty:token tok:muted ] .

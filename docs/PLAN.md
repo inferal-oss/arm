@@ -6,22 +6,25 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
-## Dashboard visibility and detail presentation — in progress
+## Dashboard visibility and detail presentation — reviewed and integrated
 
-Owner: `codex/dashboard-active-defaults`, based on accepted main `8780b34`.
-Web and terminal lease/run lists will hide inactive history by default, retain
-separate explicit saved choices and expose reversible checkbox/keyboard controls.
-Unresolved execution and unfamiliar nonterminal states remain visible. Filtering
-must preserve selected transcripts, independent windows, cursors and follow state.
+Focused cuts `8caf3df`, `f176aa1`, `344402a` and `dbba2c4` are reviewed and
+composed with the Messages readability slice `5c01b72`. Web/terminal leases and
+runs hide inactive history by default while independent explicit saved opt-outs
+remain effective. Nonterminal and reporter-loss uncertainty stays visible;
+selected/detached readers keep their identities, cursors, pause and follow state.
+Run/lease context is grouped with verified host names and exact-ID Local markers,
+readable times and inspectable exact records. Lease review/recovery and check-in
+semantics remain unchanged. Native Screen Sharing inputs are stacked and its
+actions use the stock dialog footer, preserving DOM-only secret handling.
 
-Separate presentation work groups run command, execution context, timing and
-technical metadata; shows existing host identity names and a Local marker only
-for a verified matching local ID; and improves the associated lease summary,
-actions and check-in layout. Exact IDs/records remain inspectable. Existing lease
-confirmation, revision, uncertainty, check-in and read-only boundaries are retained.
-No backend/protocol, resource accounting or pinned-engine change is assigned.
-Focused tests, rebuilt assets, source review and current-main composition precede
-integration. Private reference images and operational identities stay outside Git.
+Independent combined checks pass 444 JS, 27 native component/lifecycle tests and
+446 terminal race nodes (216 roots); six optional preview/helper tests skip.
+Affected vet, native build and deterministic composed asset rebuild pass.
+Source-bound owner desktop/narrow evidence is verified and visually reviewed.
+No real backend, lease/authentication/policy/enrollment changes were used. See
+[scoped evidence](validation/dashboard-presentation-composed-2026-10-29.json).
+The broader UX audit continues; this is not full-route or Linux acceptance.
 
 ## Native session discovery and activation — reviewed; publication/install pending
 
@@ -60,8 +63,8 @@ route/dialog/state/viewport matrix: information hierarchy, text density,
 readable sizing, responsive containment, navigation/focus and action clarity.
 Return prioritized reproduced findings and focused fixes with source-bound
 tests and visual evidence, preserving resource, authentication and lifecycle
-semantics. The focused lease/run/detail/private-input surfaces above remain
-reserved until their reviewed base is supplied; global style/shell changes are
+semantics. The focused lease/run/detail/private-input cut above is integrated; its accepted
+base is supplied before further changes. Global style/shell changes are
 coordinated centrally. A partial capture roster does not establish a complete
 UX pass. No new product capabilities, pinned-engine promotion or production
 mutations are assigned.
@@ -1097,3 +1100,54 @@ commit or cleanup. Normal/race each pass 20 roots / 60 names, with Manager vet;
 the exact storage capability and proven pre-admission port-refusal corrections
 are included. See the [scoped record](validation/kubernetes-constructor-outcome-2026-10-28.json).
 Public workers, native installation and live-cluster acceptance remain open.
+
+
+### Dashboard activity defaults and detail presentation
+
+On `codex/dashboard-active-defaults` from reviewed main `8780b34`, update web and
+terminal leases/runs to hide inactive history by default. Explicit saved opt-out
+remains effective. Independent lease/run preferences must survive legacy files
+and either toggle, with conservative nonterminal/reporter-loss visibility and
+retained log lifecycles. Focused implementation passes 51 JS, full terminal-package and three native
+checkbox/lifecycle cases plus web/native builds through the normal shared queue.
+Coordinator source/composition review remains pending.
+
+Follow with a separate detail-presentation cut for run metadata and associated
+lease summaries/check-ins: verified host display names and exact local identity,
+readable timing, grouped metadata and accessible raw records. Preserve exact
+revision action review, off-by-default check-ins and unchanged backend/protocol.
+Owner branches and pre-existing uncommitted plan content remain preserved.
+
+
+The separate run-details cut now groups metadata, preserves full purpose/raw
+record, resolves loaded host names by exact ID, labels only verified local ARM
+identity and excludes year-one times. It passes 67 focused JS, full terminal
+package, native three-case lifecycle and web/native builds. Associated lease
+polish and final synthetic desktop/narrow visual checks remain in progress.
+
+
+Run/associated-lease presentation is complete pending coordinator review: null
+commands/full reason/unknown outcomes, exact host locality, compact summaries,
+truthful off/pending check-ins, preserved reviewed actions and narrow log tail.
+The final owner capture binds thirteen inputs and eleven synthetic images with
+five successful checks and no page errors. Logic passes 116 JS/full terminal race;
+final CSS rebuild/native three cases/CLI build and visual checks pass. The separate
+Screen Sharing/private-input stacked-layout correction follows this frozen cut.
+
+## Full layout and usability review — ongoing
+
+Owner: `codex/ux-layout-review`. The [coverage matrix](UX-REVIEW.md) inventories
+principal web and terminal routes, dialogs and state gates. The first focused
+Messages slice preserves paragraph whitespace, structures exact-recipient and
+delivery metadata, and retains reviewed request/recovery behavior. Owner
+regressions and synthetic native rendering pass; independent composed-source
+review and central asset rebuild remain. Other surfaces remain inventory-only
+or reserved for their accepted presentation cut; this is not full UX acceptance.
+
+The separate Screen Sharing correction is complete pending coordinator review:
+native private fields stack at full width and use stock dialog actions. Twenty-one
+focused security/screen cases, web/native builds and five synthetic browser checks
+pass with four desktop/narrow images. No actual connection/authentication/private
+clipboard transfer occurred. The original owner branch and exact uncommitted PLAN
+remain preserved; this isolated continuation contains four focused feature cuts.
+Final current-main review/composition/publication belongs to the coordinator.

@@ -43,6 +43,7 @@ type dashboardModel struct {
 	meshUI                            *meshDashboard
 	nodeUI                            *nodeDashboard
 	hideInactive                      bool
+	hideInactiveRuns                  bool
 	ctx                               context.Context
 	home                              string
 	session                           transport
@@ -158,6 +159,7 @@ func newDashboard(ctx context.Context, home string) *dashboardModel {
 	m.viewport.SoftWrap = true
 	p, err := readPreferences(home)
 	m.hideInactive = p.HideInactive
+	m.hideInactiveRuns = p.HideInactiveRuns
 	if err != nil {
 		m.notice = "Client settings not loaded: " + safe(err.Error())
 	}
@@ -624,15 +626,21 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			return m.openPools()
 		}
 	case "h":
-		if m.view == 2 && !m.feedFocus {
+		if !m.feedFocus && (m.view == 2 || m.runRosterVisible()) {
 			id, previous := m.selectionID(), m.selected
-			m.hideInactive = !m.hideInactive
+			surface := "Lease"
+			if m.view == 2 {
+				m.hideInactive = !m.hideInactive
+			} else {
+				m.hideInactiveRuns = !m.hideInactiveRuns
+				surface = "Run"
+			}
 			m.restoreSelection(id, previous)
 			m.viewport.GotoTop()
-			if err := writePreferences(m.home, preferences{Version: 1, HideInactive: m.hideInactive}); err != nil {
+			if err := writePreferences(m.home, preferences{Version: 1, HideInactive: m.hideInactive, HideInactiveRuns: m.hideInactiveRuns}); err != nil {
 				m.notice = "Filter changed for this session; saving failed: " + safe(err.Error())
 			} else {
-				m.notice = "Lease visibility preference saved"
+				m.notice = surface + " visibility preference saved"
 			}
 		}
 	case "q":
@@ -651,7 +659,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			m.viewport.GotoTop()
 		}
 	case "?":
-		m.record, _ = newRecord(map[string]any{"Keys": "1–8 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "CPU": "New CPU claims follow recently idle processor time, up to an optional operator ceiling. Other work can shrink headroom. Full CPU promises remain charged: running ARM jobs reduce the idle reading and are subtracted again for now, so new work may wait. Missing/stale readings pause new grants. Reservations are cooperative, not OS limits; logical cores do not compare speed across architectures.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": map[string]string{"Live pool": "Reported space available to your user on ARM’s state filesystem.", "Promises": "Full outstanding promises stay charged, even after actual writes.", "Ceiling": "An optional operator ceiling bounds the live pool.", "Unknown": "New disk grants wait for fresh availability.", "Shared space": "APFS volumes can share one container; do not add their totals.", "Cleanup": "Snapshots and clones do not prove exclusive reclamation.", "Other mounts": "Other mounted filesystems may have separate limits."}, "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. Mesh [7] selects exact read-only peer contexts; remote monitor/messages/actions remain unavailable."}, "Dashboard help")
+		m.record, _ = newRecord(map[string]any{"Keys": "1–8 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · h toggle inactive leases/runs in their lists · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "CPU": "New CPU claims follow recently idle processor time, up to an optional operator ceiling. Other work can shrink headroom. Full CPU promises remain charged: running ARM jobs reduce the idle reading and are subtracted again for now, so new work may wait. Missing/stale readings pause new grants. Reservations are cooperative, not OS limits; logical cores do not compare speed across architectures.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": map[string]string{"Live pool": "Reported space available to your user on ARM’s state filesystem.", "Promises": "Full outstanding promises stay charged, even after actual writes.", "Ceiling": "An optional operator ceiling bounds the live pool.", "Unknown": "New disk grants wait for fresh availability.", "Shared space": "APFS volumes can share one container; do not add their totals.", "Cleanup": "Snapshots and clones do not prove exclusive reclamation.", "Other mounts": "Other mounted filesystems may have separate limits."}, "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. Mesh [7] selects exact read-only peer contexts; remote monitor/messages/actions remain unavailable."}, "Dashboard help")
 		m.viewport.GotoTop()
 	case "/":
 		m.inputMode = "filter"

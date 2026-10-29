@@ -63,15 +63,16 @@ export function createScreenViewer({ui,root,token,context,loadRFB=loadPatchedRFB
     const types=event.detail?.types??[];
     const schema=['username','password','target'].filter(type=>types.includes(type)).map(type=>({name:type,label:type==='username'?'Mac username':type==='password'?'Mac password':'Login target',type:type==='password'?'password':'text',required:true,maxLength:256,initial:type==='username'&&mode.value==='separate'?accountInputs.read('username').trim():''}));
     const inputs=createEphemeralInputs(schema),island=ui.island('screen-credentials-'+generation,inputs.widget,{label:'Private Mac credentials'}),note=ui.text('');
-    const dialog=ui.dialog('Screen Sharing sign in',[island,...(mode.value==='separate'?[ui.text('Enter a different macOS account from the one currently at the Mac. A separate desktop depends on the Mac’s sharing settings.')]:[]),note],[]);
+    let dialog;
     const cancel=ui.button('Cancel',()=>{dialog.close();disconnect();}),submit=ui.button('Sign in',()=>{
       if(disposed||rfb!==active)return;let values;
       try{values=inputs.take();}catch(error){note.set({label:error.message});inputs.focus();return;}
       closePrompt();if(rfb===active)try{active.sendCredentials(values);}catch{setStatus('Screen sign-in outcome is unknown. Disconnect and reconnect before trying again.');}
       // noVNC owns the active authentication object. Its asynchronous ARD
       // handshake must finish reading it; the form and RDF never retain it.
-    });
-    dialog.append(ui.stack([cancel,submit],{row:true}));prompt={dialog,inputs};
+    },{emphasis:'Strong'});
+    dialog=ui.dialog('Screen Sharing sign in',[island,...(mode.value==='separate'?[ui.text('Enter a different macOS account from the one currently at the Mac. A separate desktop depends on the Mac’s sharing settings.')]:[]),note],[cancel,submit]);
+    prompt={dialog,inputs};
     dialog.on('close',()=>{if(prompt?.dialog===dialog){inputs.clear();prompt=null;dialog.dispose();}});dialog.showModal();inputs.focus();
   }
   function showClipboard() {

@@ -11,6 +11,7 @@ import (
 func TestLeaseTableResponsiveColumnsAndFullDetails(t *testing.T) {
 	m, _ := fixtureDashboard(t)
 	m.view = 2
+	m.hideInactive = false
 	first, second := activeLease("first-exact-lease-id"), activeLease("second-exact-lease-id")
 	first.Request.Reason = strings.Repeat("A complete purpose with spaces. ", 8)
 	first.Request.Resources = model.Resources{CPU: 4, Memory: 4 << 30, Disk: 8 << 30}
@@ -42,6 +43,7 @@ func TestLeaseTableResponsiveColumnsAndFullDetails(t *testing.T) {
 func TestLeaseTableRefreshAndHistoryToggleKeepSelectedIdentity(t *testing.T) {
 	m, _ := fixtureDashboard(t)
 	m.view = 2
+	m.hideInactive = false
 	first, selected, ended := activeLease("first"), activeLease("selected"), activeLease("ended")
 	ended.State, ended.Outcome = "terminal", "completed"
 	m.data.status.Leases = []model.Lease{first, selected, ended}

@@ -12,8 +12,9 @@ import (
 )
 
 type preferences struct {
-	Version      int  `json:"version"`
-	HideInactive bool `json:"hide_inactive_leases"`
+	Version          int  `json:"version"`
+	HideInactive     bool `json:"hide_inactive_leases"`
+	HideInactiveRuns bool `json:"hide_inactive_runs"`
 }
 
 const preferenceFile = "dashboard-client.json"
@@ -44,8 +45,11 @@ func privatePreference(info os.FileInfo) bool {
 	stat, ok := info.Sys().(*syscall.Stat_t)
 	return ok && stat.Uid == uint32(os.Geteuid()) && info.Mode().IsRegular() && info.Mode().Perm()&0077 == 0 && info.Size() <= 4096
 }
+func defaultPreferences() preferences {
+	return preferences{Version: 1, HideInactive: true, HideInactiveRuns: true}
+}
 func readPreferences(home string) (preferences, error) {
-	p := preferences{Version: 1}
+	p := defaultPreferences()
 	root, err := trustedClientRoot(home)
 	if err != nil {
 		return p, err
@@ -69,14 +73,14 @@ func readPreferences(home string) (preferences, error) {
 	decoder := json.NewDecoder(io.LimitReader(f, 4097))
 	decoder.DisallowUnknownFields()
 	if err = decoder.Decode(&p); err != nil {
-		return preferences{Version: 1}, err
+		return defaultPreferences(), err
 	}
 	if p.Version != 1 {
-		return preferences{Version: 1}, fmt.Errorf("unknown client settings version")
+		return defaultPreferences(), fmt.Errorf("unknown client settings version")
 	}
 	var extra any
 	if decoder.Decode(&extra) != io.EOF {
-		return preferences{Version: 1}, fmt.Errorf("trailing client settings data")
+		return defaultPreferences(), fmt.Errorf("trailing client settings data")
 	}
 	return p, nil
 }

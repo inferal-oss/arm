@@ -1,8 +1,9 @@
+import {detailTime} from './detail-presentation.mjs';
 import {leaseActions, leaseActionReview, leaseActionResult} from '../lease-actions.mjs';
 import {reviewConfiguration, reviewDuration, reviewDurationInput, REVIEW_CAPABILITY} from '../lease-reviews.mjs';
 import {bytes, count} from '../core.mjs';
 export {REVIEW_CAPABILITY};
-const when = value => value ? new Date(value).toLocaleString() : '—';
+const when = value => detailTime(value);
 
 // Only stock component instances are created here. State transitions and exact
 // request policies remain the same shared functions used by the previous UI.
@@ -11,7 +12,7 @@ export function createLeaseActions({ui, root, lease, leases = [], call, connecte
   let disposed = false, sending = false, finished = false, chosen = '', confirm, declineControl, timer, ttl, preview, validation = '';
   const actionButtons = [], actionSources = new Map();
   const review = ui.stack([], {hidden:true}), feedback = ui.text('');
-  const refresh = ui.button('Refresh lease', () => onRefresh());
+  const refresh = ui.button('Refresh lease', () => onRefresh(),{emphasis:'Quiet'});
   const unavailable = {terminal:'This lease has ended.', ending:'Stopping or cleanup is in progress.', reclaiming:'Reclamation is in progress.', needs_attention:'Reclamation needs attention. Inspect the record and use ARM’s reconciliation or storage commands.'};
   const idleFeedback = !leaseActions(lease, now()).length ? unavailable[lease.state] || 'No controls are available for this lease state.' : '';
   feedback.set({label:idleFeedback});
@@ -67,10 +68,11 @@ export function createLeaseActions({ui, root, lease, leases = [], call, connecte
     } finally{sending=false;onPending(false);if(!disposed){updateConnection();refresh.focus();}}
   }
   for(const action of leaseActions(lease,now())) {
-    const button=ui.button({renew:'Extend',release:'Release',cancel:'Cancel'}[action],()=>choose(action));
+    const button=ui.button({renew:'Extend',release:'Release',cancel:'Cancel'}[action],()=>choose(action),{emphasis:action==='renew'?'Strong':'Quiet',...(action==='release'||action==='cancel'?{tone:'danger'}:{})});
     actionButtons.push(button);actionSources.set(action,button);
   }
-  root.append(ui.heading('Lease controls',3),ui.stack(actionButtons,{row:true}),review,feedback,refresh);updateConnection();
+  ui.put?.(root.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type','https://arm.local/ui#LeaseSection',true);
+  root.append(ui.heading('Lease controls',4),ui.toolbar('Lease actions',[...actionButtons,refresh]),review,feedback);updateConnection();
   return {element:root,updateConnection,dispose(){disposed=true;clearInterval(timer);}};
 }
 
@@ -79,8 +81,12 @@ export function createLeaseReviews({ui, root, lease, call, connected, supported,
   let disposed=false,loading=false,sending=false,finished=false,policy,cursor=0,request=0,selectedPlan,confirm,decline;
   const fields={};
   const status=ui.badge(supported?'Loading':'Unavailable'),feedback=ui.text(''),pendingBox=ui.stack(),summary=ui.stack(),timeline=ui.stack(),editor=ui.stack([],{hidden:true});
-  const configure=ui.button('Configure check-ins',choose),refresh=ui.button('Refresh check-ins',()=>onRefresh()),more=ui.button('Next history page',()=>load(true),{hidden:true});
-  root.append(ui.stack([ui.heading('Agent check-ins',3),status],{row:true}),ui.text('Ask the owning agent whether these resources are still needed. Replies and silence never renew, release or resize a lease.'),summary,ui.stack([configure,refresh],{row:true}),editor,feedback,pendingBox,timeline,more);
+  const configure=ui.button('Configure check-ins',choose,{emphasis:'Quiet'}),refresh=ui.button('Refresh check-ins',()=>onRefresh(),{emphasis:'Quiet'}),more=ui.button('Next history page',()=>load(true),{hidden:true});
+  const schedule=ui.text(''),policySource=ui.stack();
+  const history=ui.disclosure('Conversation history',[timeline,more],{open:false});
+  const advanced=ui.disclosure('Check-in policy & safety',[ui.text('Ask the owning agent whether these resources are still needed. Replies and silence never renew, release or resize a lease.'),ui.text('Optional and off by default. Delivery uses the agent’s durable ARM inbox.'),schedule,policySource,history],{open:false});
+  ui.put?.(root.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type','https://arm.local/ui#LeaseSection',true);
+  root.append(ui.stack([ui.heading('Agent check-ins',4),status],{row:true}),summary,ui.toolbar('Check-in controls',[configure,refresh]),editor,feedback,pendingBox,advanced);
   function updateConnection() {
     if(disposed)return;
     configure.disabled=!supported||!connected()||loading||sending||finished||busy()||!policy;
@@ -110,14 +116,15 @@ export function createLeaseReviews({ui, root, lease, call, connected, supported,
       const page=await call('lease_review_list',{lease:lease.id,after:append?cursor:0});if(disposed||generation!==request)return;
       if(!Number.isSafeInteger(page.cursor)||page.cursor<0||(append&&(page.more||page.items?.length)&&page.cursor<=cursor))throw Error('Invalid check-in cursor; refresh before continuing.');
       policy=nextPolicy;cursor=page.cursor;finished=false;editor.hidden=true;status.set({label:policy.enabled?'Enabled':'Off'});
-      summary.replace(ui.text(policy.enabled?`Every ${reviewDuration(policy.interval_ns)} · reply window ${reviewDuration(policy.reply_timeout_ns)}${policy.contention_interval_ns?` · ${reviewDuration(policy.contention_interval_ns)} while work is waiting`:''}`:'Optional and off by default. Delivery uses the agent’s durable ARM inbox.'),ui.text(`Policy generation ${policy.policy_generation}${policy.enabled?` · next scheduled ${when(policy.next_at)}`:''}`));
-      if(pendingPage)pendingBox.replace(ui.heading('Awaiting the owning agent',4),...(pendingPage.items?.length?pendingPage.items.map(recordComponent):[ui.text('No reply is currently requested.')]));
+      summary.replace(ui.text(policy.enabled?`Every ${reviewDuration(policy.interval_ns)} · reply window ${reviewDuration(policy.reply_timeout_ns)}${policy.contention_interval_ns?` · ${reviewDuration(policy.contention_interval_ns)} while work is waiting`:''}`:'No automatic questions.'));
+      schedule.set({label:`Policy generation ${policy.policy_generation}${policy.enabled?` · next scheduled ${when(policy.next_at)}`:''}`});policySource.replace(ui.json(policy,'Exact check-in policy'));
+      if(pendingPage)pendingBox.replace(...(pendingPage.items?.length?[ui.heading('Awaiting the owning agent',4),...pendingPage.items.map(recordComponent)]:[ui.text('No reply is currently requested.')]));
       const records=(page.items??[]).filter(record=>record.state!=='pending').map(recordComponent);
       // "Next" deliberately replaces the bounded history page; prior records
       // remain durable and inspectable through the backend, not an unbounded UI.
-      timeline.replace(ui.heading('Conversation history',4),...records,...(!append&&!page.items?.length?[ui.text('No check-ins recorded for this lease.')]:[]));
+      timeline.replace(...records,...(!append&&!page.items?.length?[ui.text('No check-ins recorded for this lease.')]:[]));
       more.hidden=!page.more;feedback.set({label:page.scheduler_error?`Check-in scheduling needs attention: ${page.scheduler_error}. Lease deadlines still apply.`:''});
-    } catch(error){if(!disposed){finished=true;feedback.set({label:error.message});}}
+    } catch(error){if(!disposed){finished=true;status.set({label:'Unavailable',tone:'warning'});feedback.set({label:error.message});}}
     finally{loading=false;if(!disposed)updateConnection();}
   }
   function choose() {

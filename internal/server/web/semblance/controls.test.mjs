@@ -74,3 +74,13 @@ test('returning to conversation drains held updates even without a focusout noti
   // A removed or hidden view need not deliver a native focusout to the log.
   f.ui.get('Message').focus();f.panel.update(snapshot);assert.equal(log.messages[0].body.children[0].label,'Latest');assert.equal(f.calls.length,0);f.panel.dispose();
 });
+
+for(const enabled of [false,true])test(`check-in presentation with policy ${enabled?'on':'off'} never claims an absent pending request`,async()=>{
+ const ui=controlUI(),calls=[],policy={lease:lease.id,policy_generation:1,enabled,interval_ns:600e9,reply_timeout_ns:60e9,contention_interval_ns:0};
+ const panel=createLeaseReviews({ui,root:ui.stack(),lease,supported:true,connected:()=>true,call:async(op,args)=>{calls.push([op,args]);return op==='lease_review_policy'?policy:{cursor:0,items:[],more:false};}});await panel.ready;
+ assert.equal(ui.get('Awaiting the owning agent'),undefined);assert.ok(ui.get('No reply is currently requested.'));assert.equal(ui.get('Check-in policy & safety').open,false);assert.equal(ui.get('Conversation history').open,false);assert.equal(ui.get('Configure check-ins').disabled,false);assert.ok(calls.every(([op])=>op==='lease_review_policy'||op==='lease_review_list'));panel.dispose();
+});
+test('check-in presentation reserves awaiting heading for pending requests and shows read failure honestly',async()=>{
+ const ui=controlUI(),policy={lease:lease.id,policy_generation:1,enabled:false};const panel=createLeaseReviews({ui,root:ui.stack(),lease,supported:true,connected:()=>true,call:async(op,args)=>op==='lease_review_policy'?policy:{cursor:0,items:args.pending?[{state:'pending',agent:'worker',leases:[]}]:[],more:false}});await panel.ready;assert.ok(ui.get('Awaiting the owning agent'));assert.equal(ui.get('No reply is currently requested.'),undefined);assert.ok(ui.get('Off'));panel.dispose();
+ const errorUI=controlUI(),failed=createLeaseReviews({ui:errorUI,root:errorUI.stack(),lease,supported:true,connected:()=>true,call:async()=>{throw Error('Synthetic read unavailable')}});await failed.ready;assert.ok(errorUI.get('Unavailable'));assert.equal(errorUI.get('Configure check-ins').disabled,true);assert.match(errorUI.labels(),/Synthetic read unavailable/);failed.dispose();
+});

@@ -1,5 +1,6 @@
 import {createMessageOperations, operatorReplyTarget, prepareMessage, sameTargets, deliveryDescription} from '../operator-messaging.mjs';
 const copy=value=>JSON.parse(JSON.stringify(value));
+const RDF_TYPE='http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM='https://arm.local/ui#';
 const has=(root,component)=>root===component||Boolean(root?.children?.some(child=>has(child,component)));
 
 // Transport/recovery is shared with the existing protocol implementation. The
@@ -7,7 +8,10 @@ const has=(root,component)=>root===component||Boolean(root?.children?.some(child
 export function createOperatorMessaging({ui,root,call,connected,onLease=()=>{},storage,key}) {
   let contacts=[],messages=[],leases=[],review=null,reply=null,reviewStale=false,reviewWarning=null,reviewConfirm=null;
   let lastContacts='',lastLeases='',lastMessages='',historyHeld=false,disposed=false,ops;
-  root.set({measure:'ReadingMeasure'});
+  const typed=(component,name)=>{ui.put?.(component.iri,RDF_TYPE,ARM+name,true);return component;};
+  const messageText=value=>typed(ui.text(value),'MessageBody');
+  const facts=pairs=>typed(ui.descriptions(pairs),'MessageFacts');
+  typed(root,'MessageSurface').set({measure:'ReadingMeasure'});
   const form=ui.stack(),reviewBox=ui.stack([],{hidden:true}),opsBox=ui.stack(),list=ui.messageList('Operator conversation'),emptyHistory=ui.text('No messages yet. Agents can write with arm message operator.'),replyBox=ui.stack(),error=ui.text('');
   const recipient=ui.select('Recipient',[{value:'',label:'Choose an agent'}]),body=ui.area('Message',{value:'',placeholder:'What should the agent know?'}),lease=ui.select('Related lease (optional)',[{value:'',label:'No related lease'}]);
   const reviewButton=ui.button('Review message',()=>{
@@ -32,9 +36,9 @@ export function createOperatorMessaging({ui,root,call,connected,onLease=()=>{},s
     if(ops.warning)children.push(ui.text(ops.warning,{tone:'warning'}));
     if(ops.operations.length)children.push(ui.heading('Send operations',3));
     for(const op of [...ops.operations].reverse()) {
-      const r=op.request,detail=[ui.text(`Request key: ${r.idempotency_key}`),ui.text(r.body),ui.json(r,'Saved exact request')];
+      const r=op.request,detail=[facts([['Request key',r.idempotency_key]]),typed(ui.text('Message'),'MessageLabel'),messageText(r.body),ui.json(r,'Saved exact request')];
       if(op.error)detail.push(ui.text(op.error,{tone:'warning'}));
-      if(op.message)for(const [id,d]of Object.entries(op.message.deliveries||{}))detail.push(ui.text(`${id}: ${deliveryDescription(d)}`));
+      if(op.message)for(const [id,d]of Object.entries(op.message.deliveries||{}))detail.push(facts([['Recipient',id],['Delivery',deliveryDescription(d)]]));
       if(op.state==='unknown') {
         detail.push(ui.text('Checking is read-only. An exact retry uses the saved recipients and key; it cannot create a second recorded operation. Native delivery is never repeated for a recorded key.'));
         const check=ui.button('Check stored result',()=>{if(connected()&&!op.busy)return ops.lookup(op);}),retry=ui.button('Retry exact request',()=>{if(connected()&&!op.busy)return ops.retry(op);});
@@ -54,10 +58,10 @@ export function createOperatorMessaging({ui,root,call,connected,onLease=()=>{},s
   function returnToDraft(){review=null;reviewWarning=null;reviewConfirm=null;reviewBox.hidden=true;form.hidden=false;reviewButton.focus();}
   function renderReview() {
     if(!review)return;reviewStale=!sameTargets(review,contacts);reviewBox.hidden=false;form.hidden=true;
-    const children=[ui.heading(review.audience==='broadcast'?`Review broadcast · ${review.targets.length} recipients`:'Review exact recipient',3),ui.text(review.body)];
-    if(review.lease)children.push(ui.text(`Related lease: ${review.lease}`));
-    if(reply)children.push(ui.text(`Reply to ${reply.id} from ${reply.sender}: ${reply.body}`));
-    for(const c of review.targets)children.push(ui.card(c.id,[['Agent',c.adapter],['Session',c.session],['Registration',c.registration||'unavailable'],['Delivery',c.delivery||'native'],['Working directory',c.cwd],['Config directory',c.config_dir||'default'],['Remote',c.remote||'local'],['Declared idle',c.idle?'yes':'no']].map(([label,value])=>ui.text(`${label}: ${value||'—'}`))));
+    const children=[ui.heading(review.audience==='broadcast'?`Review broadcast · ${review.targets.length} recipients`:'Review exact recipient',3),typed(ui.text('Message'),'MessageLabel'),messageText(review.body)];
+    if(review.lease)children.push(facts([['Related lease',review.lease]]));
+    if(reply)children.push(ui.card('Reply context',[facts([['Message ID',reply.id],['From',reply.sender]]),messageText(reply.body)]));
+    for(const c of review.targets)children.push(ui.card(c.id,[facts([['Agent',c.adapter],['Session',c.session],['Registration',c.registration||'unavailable'],['Delivery',c.delivery||'native'],['Working directory',c.cwd],['Config directory',c.config_dir||'default'],['Remote',c.remote||'local'],['Declared idle',c.idle?'yes':'no']].map(([label,value])=>[label,value||'—']))]));
     children.push(ui.text('Only these exact registered sessions and settings are authorized. Changed recipients or broadcast membership require a new review. Poll delivery makes the message available for the agent to fetch. Native delivery is one attempt; receipt is separate.'));
     reviewWarning=ui.text('Recipient settings or broadcast membership changed. Return to editing and review again.',{hidden:!reviewStale,tone:'warning'});children.push(reviewWarning);
     const back=ui.button('Back to editing',returnToDraft);
@@ -71,7 +75,7 @@ export function createOperatorMessaging({ui,root,call,connected,onLease=()=>{},s
   function startReply(message) {
     if(disposed)return;const target=operatorReplyTarget(message,contacts);if(!target)return;
     review=null;reviewBox.hidden=true;form.hidden=false;reply=message;recipient.value=target.id;lease.value=message.lease||'';
-    replyBox.replace(ui.text(`Reply to ${message.sender} · ${message.id}`),ui.text(message.body),ui.button('Remove reply context',()=>{reply=null;replyBox.replace();}));body.focus();
+    replyBox.replace(ui.text(`Reply to ${message.sender} · ${message.id}`),messageText(message.body),ui.button('Remove reply context',()=>{reply=null;replyBox.replace();}));body.focus();
   }
   recipient.on('change',()=>{if(reply&&recipient.value!==(reply.sender_contact?.id||reply.sender)){reply=null;replyBox.replace();}});
   const cards=new Map();
@@ -82,10 +86,10 @@ export function createOperatorMessaging({ui,root,call,connected,onLease=()=>{},s
       if(!entry){entry={element:ui.stack(),signature:''};cards.set(message.id,entry);}
       if(entry.signature===signature||has(entry.element,ui.activeComponent))continue;
       entry.signature=signature;
-      const children=[ui.text(message.body)];
+      const children=[messageText(message.body)];
       if(message.reply_to)children.push(ui.button('View original message '+message.reply_to,()=>focusMessage(message.reply_to)));
       if(message.lease)children.push(ui.button('Lease '+message.lease,()=>onLease(message.lease)));
-      for(const [id,d]of Object.entries(message.deliveries||{})){children.push(ui.text(`${id}: ${deliveryDescription(d)}`));if(d.receipt?.text)children.push(ui.text(d.receipt.text));if(d.reply)children.push(ui.text(d.reply));}
+      for(const [id,d]of Object.entries(message.deliveries||{})){children.push(facts([['Recipient',id],['Delivery',deliveryDescription(d)]]));if(d.receipt?.text)children.push(messageText(d.receipt.text));if(d.reply)children.push(messageText(d.reply));}
       if(message.audience==='operator')children.push(operatorReplyTarget(message,contacts)?ui.button('Reply',()=>startReply(message)):ui.text('Reply unavailable: the original sender is no longer registered with these settings.'));
       entry.element.replace(...children);
     }

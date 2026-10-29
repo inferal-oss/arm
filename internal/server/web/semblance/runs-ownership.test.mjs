@@ -27,7 +27,7 @@ test('stock opener retains the direct Button type and Effect while owned heading
  assert.equal(store.match(f.namedNode(opener.iri),f.namedNode(RDF),f.namedNode('https://arm.local/ui#Effect')).length,1);
  rows=[];await panel.refresh();assert.equal(current.disposed,undefined);assert.equal(history.disposed,undefined);assert.equal(current.hidden,true);assert.equal(history.hidden,true);
  rows=[run];await panel.refresh();assert.equal(current.hidden,false);const filter=handles().find(h=>h.kind==='TextField');filter.value='no match';filter.emit('input');assert.equal(current.hidden,true);assert.ok(!current.disposed);filter.value='';filter.emit('input');assert.equal(current.hidden,false);
- rows=[{...run,state:'terminal',outcome:'completed'}];await panel.refresh();assert.equal(current.hidden,true);assert.equal(history.hidden,false);assert.ok(current.parents.size>0&&history.parents.size>0);
+ const toggle=handles().find(h=>h.kind==='Checkbox'&&h.label==='Hide inactive runs');toggle.checked=false;toggle.emit('change');rows=[{...run,state:'terminal',outcome:'completed'}];await panel.refresh();assert.equal(current.hidden,true);assert.equal(history.hidden,false);assert.ok(current.parents.size>0&&history.parents.size>0);
  panel.dispose();root.dispose();assert.equal(current.disposed,true);assert.equal(history.disposed,true);
 });
 

@@ -1,10 +1,12 @@
+import {HIDE_INACTIVE_RUNS_KEY} from '../dashboard-preferences.mjs';
+import {readHideInactive,saveHideInactive,HIDE_INACTIVE_KEY} from '../lease-state.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {controlUI} from './control-test-ui.mjs';
 import {createRunsConsole,cleanRunText} from './runs.mjs';
 const id='a'.repeat(32),other='b'.repeat(32),run={id,name:'readable-run',command:['test','--all'],agent:'agent',reason:'Verification',state:'active',log_bytes:0};
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
-function fixture(t,handler,fullscreen=false){const ui=controlUI();const stack=ui.stack;ui.stack=(...args)=>{const h=stack(...args),dispose=h.dispose.bind(h);h.dispose=()=>{if(h.disposed)return;for(const child of h.children)child.dispose();dispose();};return h;};ui.iconButton=(label,icon,fn,props)=>ui.button(label,fn,props);ui.tileWindows=value=>{ui.tiled=value;};ui.component=(kind,props)=>ui.text('',{kind,...props});ui.toolbar=(label,children)=>ui.stack(children,{kind:'Toolbar',label});ui.disclosure=(label,children=[],props={})=>ui.stack(children,{kind:'AccordionItem',label,...props});ui.detachable=(label,content)=>{const h=ui.stack([content],{kind:'Tabs',label,detached:false});h.popOut=async()=>{h.detached=true;await h.emit('detach');};h.dock=async()=>{h.detached=false;await h.emit('detach');};return h;};ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};if(fullscreen)installFullscreen(ui);let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();},reconnect(){online=true;source={};panel.updateConnection();}};}
+function fixture(t,handler,fullscreen=false,preferences,hostContext){const ui=controlUI();const stack=ui.stack;ui.stack=(...args)=>{const h=stack(...args),dispose=h.dispose.bind(h);h.dispose=()=>{if(h.disposed)return;for(const child of h.children)child.dispose();dispose();};return h;};ui.iconButton=(label,icon,fn,props)=>ui.button(label,fn,props);ui.tileWindows=value=>{ui.tiled=value;};ui.component=(kind,props)=>ui.text('',{kind,...props});ui.toolbar=(label,children)=>ui.stack(children,{kind:'Toolbar',label});ui.disclosure=(label,children=[],props={})=>ui.stack(children,{kind:'AccordionItem',label,...props});ui.detachable=(label,content)=>{const h=ui.stack([content],{kind:'Tabs',label,detached:false});h.popOut=async()=>{h.detached=true;await h.emit('detach');};h.dock=async()=>{h.detached=false;await h.emit('detach');};return h;};ui.code=value=>{const code=ui.text('',{kind:'Code',value,scrolls:0});code.scrollEnd=()=>code.scrolls++;return code;};if(fullscreen)installFullscreen(ui);let online=true,source={};const calls=[],panel=createRunsConsole({ui,root:ui.stack(),preferences,hostContext,connected:()=>online,context:()=>source,call:async(op,args)=>{calls.push([op,args]);return handler?handler(op,args):op==='runs'?[run]:{run,offset:args.offset,next_offset:args.offset,data:'',done:false};}});t.after(()=>panel.dispose());return {ui,panel,calls,offline(){online=false;source={};panel.updateConnection();},reconnect(){online=true;source={};panel.updateConnection();}};}
 const encoded=text=>Buffer.from(text).toString('base64');
 test('Runs loads only while visible and opens output following by default',async t=>{const f=fixture(t);await f.panel.refresh();assert.equal(f.calls.length,0);f.panel.setActive(true);await tick();assert.equal(f.calls[0][0],'runs');await f.ui.get('Verification').emit('activate');assert.equal(f.calls.at(-1)[0],'run_output');assert.ok(f.ui.get('Pause following'));assert.equal(f.ui.get('Next output page').disabled,true);});
 test('terminal output drains pages and byte cursor preserves split UTF-8',async t=>{
@@ -85,7 +87,7 @@ for(const mode of ['hide','reset','dispose'])test(`fullscreen retracts its graph
 });
 test('compact purpose rows stay stable through active-first reordering and search full identities',async t=>{
  let records=[{...run,state:'terminal',name:'four-word-generated-display-name',created_at:'2026-10-28T12:00:00.123456789Z'},{...run,id:other,reason:'Compile preview',command:['/a/very/long/private/tool','--mode','preview'],agent:'preview-agent',state:'active',created_at:'2026-10-27T12:00:00Z'}];
- const f=fixture(t,op=>op==='runs'?records:null);f.panel.setActive(true);await tick();
+ const f=fixture(t,op=>op==='runs'?records:null);f.panel.setActive(true);await tick();const historyToggle=f.ui.get('Hide inactive runs');historyToggle.checked=false;await historyToggle.emit('change');
  const opener=f.ui.get('Verification');opener.focus();const roots=f.ui.all.filter(x=>x.kind==='Stack'&&x.children.some(child=>child.label==='Current · 1'));assert.ok(roots.length);const list=roots.at(-1);assert.equal(list.children[1].children[0].children[0].label,'Compile preview');
  assert.equal(f.ui.all.filter(x=>x.kind==='Card').length,0);assert.ok(!list.children.some(x=>String(x.label).includes('four-word')));
  records=[{...records[0],state:'active'},{...records[1],state:'terminal'}];await f.panel.refresh();assert.equal(f.ui.get('Verification'),opener);assert.equal(f.ui.activeComponent,opener);assert.equal(list.children[1].children[0].children[0],opener);
@@ -98,13 +100,13 @@ test('selected run gets its own compact view with full metadata in closed Detail
  await f.ui.get('Back to runs').emit('activate');assert.equal(history.hidden,false);assert.equal(f.ui.activeComponent,f.ui.get('Verification'));
 });
 test('full Details retains raw capture failure state and the child exit code',async t=>{
- const failed={...run,state:'terminal',outcome:'log_failed',exit_code:0};const f=fixture(t,op=>op==='runs'?[failed]:{run:failed,offset:0,next_offset:0,data:'',done:true});f.panel.setActive(true);await tick();await f.panel.open(failed);const details=f.ui.get('Details');assert.equal(details.open,false);assert.ok(details.children.some(x=>String(x.label).includes('Outcome: log_failed')&&String(x.label).includes('Exit code: 0')));assert.ok(f.ui.get('Log failed'));
+ const failed={...run,state:'terminal',outcome:'log_failed',exit_code:0};const f=fixture(t,op=>op==='runs'?[failed]:{run:failed,offset:0,next_offset:0,data:'',done:true});f.panel.setActive(true);await tick();await f.panel.open(failed);const details=f.ui.get('Details');assert.equal(details.open,false);assert.ok(f.ui.all.some(x=>x.kind==='DescriptionList'&&x.pairs.some(([label,value])=>label==='Outcome'&&value==='log_failed')&&x.pairs.some(([label,value])=>label==='Exit code'&&value==='0')));assert.ok(f.ui.get('Log failed'));
 });
 test('search matches the displayed failure status and outcome',async t=>{
- const failed={...run,state:'terminal',outcome:'log_failed',exit_code:0};const f=fixture(t,op=>op==='runs'?[failed]:null);f.panel.setActive(true);await tick();const filter=f.ui.get('Search runs');filter.value='Log failed';await filter.emit('input');assert.ok(f.ui.get('Verification'));filter.value='log_failed';await filter.emit('input');assert.ok(f.ui.get('Verification'));
+ const failed={...run,state:'terminal',outcome:'log_failed',exit_code:0};const f=fixture(t,op=>op==='runs'?[failed]:null);f.panel.setActive(true);await tick();const historyToggle=f.ui.get('Hide inactive runs');historyToggle.checked=false;await historyToggle.emit('change');const filter=f.ui.get('Search runs');filter.value='Log failed';await filter.emit('input');assert.ok(f.ui.get('Verification'));filter.value='log_failed';await filter.emit('input');assert.ok(f.ui.get('Verification'));
 });
 test('row moves restore a blurred opener and leave unrelated focus alone',async t=>{
- let records=[{...run,created_at:'2026-10-28T12:00:00Z'},{...run,id:other,reason:'Other task',state:'terminal',created_at:'2026-10-28T11:00:00Z'}];const f=fixture(t,op=>op==='runs'?records:null);f.panel.setActive(true);await tick();const opener=f.ui.get('Verification'),list=f.ui.all.find(x=>x.role==='list');const replace=list.replace.bind(list);list.replace=(...children)=>{replace(...children);if(f.ui.activeComponent===opener)f.ui.activeComponent=null;return list;};opener.focus();records=records.map(r=>({...r,state:r.id===id?'terminal':'active'}));await f.panel.refresh();assert.equal(f.ui.activeComponent,opener);
+ let records=[{...run,created_at:'2026-10-28T12:00:00Z'},{...run,id:other,reason:'Other task',state:'terminal',created_at:'2026-10-28T11:00:00Z'}];const f=fixture(t,op=>op==='runs'?records:null);f.panel.setActive(true);await tick();const historyToggle=f.ui.get('Hide inactive runs');historyToggle.checked=false;await historyToggle.emit('change');const opener=f.ui.get('Verification'),list=f.ui.all.find(x=>x.role==='list');const replace=list.replace.bind(list);list.replace=(...children)=>{replace(...children);if(f.ui.activeComponent===opener)f.ui.activeComponent=null;return list;};opener.focus();records=records.map(r=>({...r,state:r.id===id?'terminal':'active'}));await f.panel.refresh();assert.equal(f.ui.activeComponent,opener);
  const filter=f.ui.get('Search runs');filter.focus();await f.panel.refresh();assert.equal(f.ui.activeComponent,filter);
 });
 
@@ -139,7 +141,7 @@ for(const mode of ['reset','dispose'])test(`detached log retires and rejects lat
 function logUI(f,purpose){
  const window=f.ui.all.find(h=>h.kind==='Tabs'&&!h.disposed&&h.label.includes(purpose));assert.ok(window,purpose);
  const walk=h=>[h,...h.children.flatMap(walk)],nodes=walk(window);
- return {window,output:nodes.find(h=>h.kind==='Code'),button:label=>{const button=nodes.find(h=>h.label===label&&!h.disposed);assert.ok(button,label);return button;}};
+ return {window,output:nodes.findLast(h=>h.kind==='Code'),button:label=>{const button=nodes.find(h=>h.label===label&&!h.disposed);assert.ok(button,label);return button;}};
 }
 const multipleRuns=n=>Array.from({length:n},(_,i)=>({...run,id:String(i+1).padStart(32,'0'),reason:'Watch agent '+i,agent:'agent-'+i}));
 test('multiple windows keep independent cursors, pause, restart, completion and close state',async t=>{
@@ -225,4 +227,45 @@ test('inventory removal, filtering and reconnect retain run identity and indepen
  inventory=[records[1]];const filter=f.ui.get('Search runs');filter.value='nothing matches';await filter.emit('input');await f.panel.refresh();assert.equal(a.output.value,paused);assert.ok(/^B+$/.test(b.output.value));assert.deepEqual(f.panel.openRuns.map(r=>r.id),records.map(r=>r.id));
  f.offline();const before=f.calls.length,peer=b.output.value;await f.panel.refresh();assert.equal(f.calls.length,before);assert.match(f.ui.labels(),/Disconnected/);
  f.reconnect();await tick();await f.panel.refresh();assert.equal(a.output.value,paused);assert.ok(b.output.value.length>peer.length);assert.ok(/^B+$/.test(b.output.value));assert.equal(logUI(f,records[0].reason).output,a.output);assert.equal(logUI(f,records[1].reason).output,b.output);
+});
+
+
+test('run history defaults hidden, preserves uncertain states and persists independently of leases',async t=>{
+ const states=['active','queued','provisioning','ending','reclaiming','needs_attention','future_state','constructor','__proto__','interrupted',''];
+ const records=states.map((state,i)=>({...run,id:'live-'+i,reason:'Visible '+i,state,outcome:'expired'}));
+ records.push({...run,id:'lost',reason:'Uncertain reporter',state:'terminal',outcome:'reporter_lost'});
+ for(const outcome of ['completed','cancelled','rejected'])records.push({...run,id:outcome,reason:'History '+outcome,state:'terminal',outcome});
+ const values=new Map(),storage={getItem:key=>values.get(key),setItem:(key,value)=>values.set(key,value)},f=fixture(t,op=>op==='runs'?records:null,false,storage);
+ f.panel.setActive(true);await tick();const toggle=f.ui.get('Hide inactive runs');assert.equal(toggle.checked,true);
+ for(let i=0;i<states.length;i++)assert.ok(f.ui.get('Visible '+i));assert.ok(f.ui.get('Uncertain reporter'));assert.equal(f.ui.get('History completed'),undefined);
+ toggle.checked=false;await toggle.emit('change');assert.ok(f.ui.get('History completed'));assert.equal(values.get(HIDE_INACTIVE_RUNS_KEY),'false');assert.equal(readHideInactive(storage),true);
+ saveHideInactive(storage,false);const second=fixture(t,op=>op==='runs'?records:null,false,storage);second.panel.setActive(true);await tick();assert.equal(second.ui.get('Hide inactive runs').checked,false);assert.ok(second.ui.get('History rejected'));
+ second.ui.get('Hide inactive runs').checked=true;await second.ui.get('Hide inactive runs').emit('change');assert.equal(values.get(HIDE_INACTIVE_KEY),'false');assert.equal(readHideInactive(storage),false);
+ for(const saved of [undefined,'broken','TRUE',null]){values.set(HIDE_INACTIVE_RUNS_KEY,saved);const next=fixture(t,undefined,false,storage);assert.equal(next.ui.get('Hide inactive runs').checked,true);}
+ const blocked=fixture(t,undefined,false,{getItem(){throw Error('unavailable')},setItem(){throw Error('quota')}});assert.equal(blocked.ui.get('Hide inactive runs').checked,true);blocked.ui.get('Hide inactive runs').checked=false;await blocked.ui.get('Hide inactive runs').emit('change');assert.equal(blocked.ui.get('Hide inactive runs').checked,false);
+});
+test('hiding run history preserves all eight independent watched transcripts and their readers',async t=>{
+ const records=multipleRuns(8);let terminal=false;
+ const f=fixture(t,(op,args)=>op==='runs'?records.map(r=>({...r,state:terminal?'terminal':'active',outcome:terminal?'completed':''})):{run:{...records.find(r=>r.id===args.id),state:terminal?'terminal':'active',log_bytes:args.offset+1},offset:args.offset,next_offset:args.offset+1,data:encoded(args.id.slice(-1)),done:false},true);
+ f.panel.setActive(true);await tick();for(const record of records){await f.panel.open(record);await logUI(f,record.reason).window.popOut();}
+ const views=records.map(r=>logUI(f,r.reason));await views[0].button('Pause following').emit('activate');await views[1].button('Fullscreen log').emit('activate');const paused=views[0].output.value;
+ terminal=true;await f.panel.refresh();const calls=f.calls.length,toggle=f.ui.get('Hide inactive runs');toggle.checked=false;await toggle.emit('change');toggle.checked=true;await toggle.emit('change');assert.equal(f.calls.length,calls);assert.equal(f.panel.openRuns.length,8);
+ for(const [i,record]of records.entries()){assert.equal(logUI(f,record.reason).output,views[i].output);assert.equal(views[i].window.detached,true);assert.equal(views[i].output.disposed,undefined);}
+ assert.equal(views[0].output.value,paused);assert.equal(views[1].window.children[0].fullViewport,true);const cursor=f.calls.filter(([op,args])=>op==='run_output'&&args.id===records[2].id).at(-1)[1].offset;await f.panel.refresh();assert.ok(f.calls.filter(([op,args])=>op==='run_output'&&args.id===records[2].id).at(-1)[1].offset>cursor);assert.equal(views[0].output.value,paused);
+ await views[1].window.dock();assert.equal(f.panel.selected.id,records[1].id);assert.equal(logUI(f,records[1].reason).output,views[1].output);f.panel.reset();assert.equal(f.panel.openRuns.length,0);assert.ok(views.every(v=>v.output.disposed));
+});
+
+test('run Details retain full purpose and exact record while names refresh without replacing a paused transcript',async t=>{
+ const host='c'.repeat(32),reason='Complete purpose with context. '.repeat(12),record={...run,host,reason,created_at:'2026-10-29T10:00:00.123456789Z',last_reported_at:'0001-01-01T00:00:00Z'};let name='Build station';
+ const f=fixture(t,(op,args)=>op==='runs'?[record]:{run:record,offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false},false,undefined,()=>({localHost:host,hosts:[{host,display_name:name}]}));
+ f.panel.setActive(true);await tick();await f.panel.open(record);await f.ui.get('Pause following').emit('activate');const output=f.ui.all.filter(h=>h.kind==='Code').at(-1),text=output.value,details=f.ui.get('Details');details.open=true;
+ const metadata=f.ui.all.find(h=>h.kind==='DescriptionList'&&h.pairs.some(([label,value])=>label==='Purpose'&&value===reason));assert.ok(metadata);assert.ok(metadata.pairs.some(([label,value])=>label==='Host'&&value==='Build station · Local'));
+ assert.ok(f.ui.all.some(h=>h.kind==='DescriptionList'&&h.pairs.some(([label,value])=>label==='Last report'&&value==='Not reported')));assert.ok(f.ui.all.some(h=>h.kind==='Code'&&h.value.includes('123456789Z')&&h.value.includes('0001-01-01')));
+ name='Renamed station';const reads=f.calls.filter(([op])=>op==='run_output').length;await f.panel.refresh();assert.equal(details.open,true);assert.ok(metadata.pairs.some(([label,value])=>label==='Host'&&value==='Renamed station · Local'));assert.equal(output.value,text);assert.equal(f.ui.all.filter(h=>h.kind==='Code').at(-1),output);assert.equal(f.calls.filter(([op])=>op==='run_output').length,reads);
+});
+
+test('a null-command historical record still opens, follows and disposes its original transcript',async t=>{
+ const record={...run,command:null};const f=fixture(t,(op,args)=>op==='runs'?[record]:{run:record,offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false});
+ f.panel.setActive(true);await tick();await f.panel.open(record);const view=logUI(f,record.reason),original=view.output;assert.ok(f.ui.all.some(h=>h.kind==='Code'&&h.value==='Command unavailable'));assert.ok(f.ui.all.some(h=>h.kind==='Code'&&h.value.includes('"command":null')));
+ await f.panel.refresh();assert.equal(view.output,original);assert.equal(original.value,'xx');await view.button('Pause following').emit('activate');const reads=f.calls.filter(([op])=>op==='run_output').length;await f.panel.refresh();assert.equal(f.calls.filter(([op])=>op==='run_output').length,reads);f.panel.closeLog(record.id);assert.equal(original.disposed,true);
 });

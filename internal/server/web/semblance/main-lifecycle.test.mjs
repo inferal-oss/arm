@@ -1,3 +1,5 @@
+import {createLeaseSummary} from './detail-presentation.mjs';
+import {controlUI} from './control-test-ui.mjs';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -41,8 +43,9 @@ function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus
     nodeContextClosed:()=>false,addEvent(){},acceptMonitor(){},updateFreshness(){},updateActivityFeed(){},updateMessages(){},scheduleRefresh(){},refreshPalette(){},
     renderCurrent(){log.push('render:view');},owner:()=> 'operator',when:value=>value,leaseStateLabel:value=>value.state,leaseActionResult:()=>'',
     owned(root,children){root.children=children;},
-    ui:{batch:fn=>fn(),put(){},heading:(label,level)=>({kind:'Heading',label,level}),text:label=>({label}),badge:label=>({label}),json:()=>({}),stack:()=>({}),
+    ui:{...controlUI(),batch:fn=>fn(),put(){},heading:(label,level)=>({kind:'Heading',label,level}),text:label=>({label}),badge:label=>({label}),json:()=>({}),stack:(children=[])=>({children}),
       bind:()=>({set(){},focus(){log.push('focus:heading');}})},
+    detailHostContext:()=>({localHost:'c'.repeat(32),hosts:[{host:'c'.repeat(32),display_name:'Build station'}]}),createLeaseSummary,
     hostLabel:{set(props){Object.assign(this,props);}},namedLabel,
     localOperator:()=>true,namingNotice:{set(){}},namingConsole:{updateConnection(){}},
     detail:{open,set(props){Object.assign(this,props);},showModal(){this.open=true;log.push('open:dialog');this.focus();},focus(){log.push('focus:dialog');},close(){this.open=false;api.onDetailClose();}},
@@ -71,9 +74,9 @@ test('a new connection reloads an open lease and replaces callbacks bound to the
   assert.equal(f.oldPanel.disposed,true);assert.equal(f.oldReviews.disposed,true);assert.equal(f.scope.detail.open,true);
   assert.deepEqual(f.calls.filter(c=>c.operation==='inspect').map(c=>c.args.id),[id]);
   assert.equal(f.actions.length,1);assert.equal(f.actions[0].connected(),true);assert.equal(f.reviews[0].connected(),true);
-  const heading=f.scope.detailBody.children.find(child=>child.kind==='Heading');
-  assert.equal(heading.label,'Build cache');assert.notEqual(heading.label,id);
-  assert.ok(f.scope.detailBody.children.some(child=>child.label==='ID '+id));
+  const heading=f.scope.detailBody.children[0].children[0].children.find(child=>child.kind==='Heading');
+  assert.equal(heading.label,'Build');assert.notEqual(heading.label,id);
+  const walk=node=>[node,...(node.children??[]).flatMap(walk)];assert.ok(f.scope.detailBody.children.flatMap(walk).some(child=>child.pairs?.some(([key,value])=>key==='Lease ID'&&value===id)));
   assert.equal(f.actions[0].lease,f.lease);assert.equal(f.reviews[0].lease,f.lease);
   assert.equal(f.actions[0].lease.id,id);assert.equal(f.actions[0].lease.host,'c'.repeat(32));
   assert.equal(f.actions[0].lease.revision,9007199254740993n);assert.equal(f.scope.detailLeaseID,id);

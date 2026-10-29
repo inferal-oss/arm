@@ -1,5 +1,14 @@
 # Backend and CLI implementation
 
+## Dashboard presentation integration
+
+Activity defaults, grouped run/lease metadata, private input layout and the
+focused Messages whitespace/authority presentation are composed and reviewed.
+Independent tests, deterministic assets and source-bound synthetic images support
+[scoped acceptance](validation/dashboard-presentation-composed-2026-10-29.json).
+The full layout audit continues; backend, authentication, policy and resource
+semantics are unchanged by this UI cut.
+
 ## Organization project directory
 
 ARM is listed on the existing [Inferal OSS directory](https://oss.inferal.org/),
@@ -3256,3 +3265,89 @@ is unchanged; source construction cannot adopt an interposed existing row.
 This component supplies outcome evidence, not worker authority. Public workflow
 dispatch, protected V2 writing, enrollment and installation remain gated.
 [Scoped validation](validation/kubernetes-constructor-outcome-2026-10-28.json).
+
+
+### Current activity as the dashboard default
+
+Web and terminal lease/run rosters initially check **Hide inactive leases** and
+**Hide inactive runs**. An explicit saved false value shows history. The web
+stores the two choices independently; missing, malformed or inaccessible client
+storage falls back to hiding history without writing a preference automatically.
+Terminal settings retain version 1 with an independent `hide_inactive_runs` field:
+valid lease-only records preserve their lease choice and default runs to hidden.
+Both keyboard/mouse toggles save both choices, retaining the other view's setting.
+Unsafe settings reads retain both conservative defaults and report the error.
+
+Only terminal lease history is hidden. Run history excludes terminal records
+except reporter loss, which remains uncertain; every nonterminal state, including
+unfamiliar values, stays visible and in the Current group. Status labels retain
+uncertainty. In the terminal lists `h` and the visible mouse action toggle the
+filter. Filter changes target roster rows only: selected historical transcripts,
+detached windows, independent cursors/pause/fullscreen and cleanup remain owned by
+their run IDs. No backend, protocol or execution/adoption state changes are made.
+
+
+### Run details presentation
+
+Run details group full purpose, agent/host/directory, state/outcome/exit and human
+created/started/ended/report times. Compact headers remain bounded; the full
+purpose wraps in Details. Readable command text and a separate exact record keep
+raw arguments, IDs and original timestamp precision inspectable. Absent/invalid
+and year-one times render as not recorded/reported. The metadata disclosure
+belongs to the transcript, so it follows native floating/fullscreen transitions;
+constrained windows bound its independent scrolling to preserve output space.
+
+Host display names come only from already loaded records with the same exact
+host ID. Only an exact valid local ARM ID from the verified local operator
+status produces the Local marker. A hostname, remote selection or node-local flag
+does not establish locality. Unresolved names remain Unknown/Unnamed host with
+exact IDs available. Terminal run details use existing name metadata and the same
+exact local-ID rule, meaningful times and the existing complete-record key.
+Metadata refresh updates the existing components without restarting a transcript,
+byte cursor or paused/following state.
+
+
+### Associated lease presentation
+
+The associated lease dialog leads with purpose/status, current resource claims,
+verified host identity and expiry. Owner/agent/project and exact IDs/revision live
+in a compact disclosure; the complete lease record remains accessible. Extend
+is visually primary while release/cancel and refresh remain separate reviewed
+controls. Check-ins show Off/no current reply request when there is no pending
+question; the awaiting heading appears only with actual pending records. Policy,
+safety explanations and bounded conversation history remain in disclosures, and
+read errors show Unavailable. Exact-revision actions, confirmation, unknown-outcome
+handling and off-by-default check-in behavior are unchanged.
+
+Follow-up run presentation handles null/absent command arrays, preserves exact raw
+null data and labels unfamiliar nonterminal lifecycles Unknown even with a recorded
+terminal-style outcome. Saved-output Start/Next use native icon controls with their
+unchanged accessible labels. Floating logs reserve a complete readable tail and
+scroll expanded metadata independently; a viewport-bounded minimum floating frame
+height keeps narrow controls readable without changing tiled layout or readers.
+
+## Messages layout remediation
+
+The web Messages view preserves paragraph breaks in conversation, replies,
+recipient review and saved-send recovery using message-specific Text styles.
+Exact recipient authority, related IDs, saved request keys and delivery states
+use stock DescriptionList rows; compact widths stack labels over wrapping
+values. Full request records and material unknown/stale/disconnected warnings
+remain discoverable. Transport, exact sender/recipient checks, request keys,
+confirmation, retry and focus-held history behavior are unchanged.
+
+This is a focused slice of the [ongoing UX review](UX-REVIEW.md). It does not
+change terminal layout, global shell/theme, pinned components, other dialogs or
+embedded assets; composed-source review and central rebuild precede acceptance.
+
+### Native private input layout
+
+The owned native input island renders one full-width labeled control per row,
+using inherited typography and existing surface/border tokens. Labels and fields
+remain stacked at narrow widths; readonly inputs keep selection behavior and
+multiline fields resize vertically with a useful minimum height. Screen Sharing
+sign-in places Cancel/Sign in in the stock dialog action area, with Sign in
+visually primary. Required validation, focus and take/clear/destroy remain intact.
+Credentials and private clipboard/login-link text stay exclusively in native DOM,
+with no RDF/LDES outputs. No authentication, VNC protocol or backend behavior is
+changed.

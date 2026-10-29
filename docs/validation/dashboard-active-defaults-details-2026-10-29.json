@@ -1,0 +1,110 @@
+{
+  "feature_inputs": {
+    "internal/server/web/dashboard-preferences.mjs": "5c00ca7c98942bae675ce111c76b51a6f6e4ad0b66791d218f0bc8ed0ac9a7a0",
+    "internal/server/web/lease-state.mjs": "66459a9d20e2a26d628556dea74de120708bf97ed2760f7df66ab436abf09bad",
+    "internal/server/web/semblance/run-list.mjs": "f0e67415958f015254814cdf974bf21b052ad721fb80bf72cfc94479475e3aee",
+    "internal/server/web/semblance/runs.mjs": "c531279f87b6b37222249e57574a72514ca633ab4ceb2db00bc524ced2d5980e",
+    "internal/server/web/semblance/run-log.mjs": "1fa9d868f1788a9371f5f39900dbc078ac7bc43261818d41796c71e9aeccce25",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/detail-presentation.mjs": "7c9d0923f81dd84ba8d42e8f47a918bfff9ad48b6c4fac784fe6d79061d7206b",
+    "internal/server/web/semblance/lease-controls.mjs": "f5dd804d8e2e4f6b12897f121b8cb8bb4b32fb1987e4238c9748f75497387466",
+    "internal/server/web/semblance/main.mjs": "068288c634866abb0f719b8ba2595a1c3ca67e76c791cc1cca68535b33affef5",
+    "internal/server/web/semblance/app.ttl": "a8f123891fe03c961be5ccec0b242ed31f09bb44d71213f38f07613c97c97ac3",
+    "internal/server/web/assets/arm.mjs": "c4905a241069a1098ef9e818b1cf6655891105ec7961e15648b118602578c1eb",
+    "web/package-lock.json": "b48637aa9fdd1ffab0eb8cba19b5b01ceee3a8c6c894716f286416f4cfaeba8a",
+    "web/semblance-provenance.json": "62d2688b2c2c45603835666733d29aad23bdad67773fbed447191a8941a0dab9"
+  },
+  "checks": [
+    "metadata name refresh and detach preserve original transcript/cursor",
+    "off check-ins show no request and keep advanced history/configuration accessible",
+    "actual pending fixture shows awaiting state",
+    "error/readonly check-ins remain truthful and mutation controls disabled",
+    "narrow inline/floating/fullscreen metadata stays bounded and original log tail remains visible"
+  ],
+  "artifacts": [
+    {
+      "file": "run-inline-desktop.png",
+      "bytes": 163196,
+      "sha256": "0a79c51fcc7c27f0e84d89524eeae8303e6917ac9820c0eee6d721b58009a0f4"
+    },
+    {
+      "file": "run-floating-desktop.png",
+      "bytes": 149380,
+      "sha256": "bd4cc3d5fa965d5ba00c6094a5e84b0d10a13b480157e1c9dcf9296bd269f10c"
+    },
+    {
+      "file": "lease-off-desktop.png",
+      "bytes": 145885,
+      "sha256": "793319a9201a4713cd3cfd7728697d40c2aabb326c73084c0972b20ad2515ae1"
+    },
+    {
+      "file": "lease-pending-desktop.png",
+      "bytes": 157505,
+      "sha256": "02e2ef3b1c11044628217a50bb790a0a249baa41a4aa650e75fbe9b72efaa42a"
+    },
+    {
+      "file": "lease-pending-narrow.png",
+      "bytes": 58704,
+      "sha256": "33712bc08173e3ea377677ac55618df59b6379a8f716ae57e08f3f1d1ccb5a85"
+    },
+    {
+      "file": "lease-off-narrow.png",
+      "bytes": 58971,
+      "sha256": "40da8fcc3ca5c2a5a6b403762b32a6127ecd3e4e3e387d66d8a2de2cf3b81d46"
+    },
+    {
+      "file": "lease-error-narrow.png",
+      "bytes": 59541,
+      "sha256": "709f78ed0d195c22728d3912d0d27a8a9782fc6a62d15ed6944883048522ea4c"
+    },
+    {
+      "file": "lease-readonly-narrow.png",
+      "bytes": 60933,
+      "sha256": "6303980ce050a68fa28e72c888500f383f25bf9fce8ba9437bc3e7838194e5f5"
+    },
+    {
+      "file": "run-floating-narrow.png",
+      "bytes": 79169,
+      "sha256": "e3bd315c29bb292a26724f2e1d110b20fbef35504dff7b3822dde34a2d0b4833"
+    },
+    {
+      "file": "run-fullscreen-narrow.png",
+      "bytes": 56633,
+      "sha256": "37ca4e2b83fac60892cdde8bd38fe0ec3191b32d806294b0f4b98156ce386393"
+    },
+    {
+      "file": "run-tail-narrow.png",
+      "bytes": 49568,
+      "sha256": "0e39fb2a004edbd0b8d6b2a3450f77d6a3540134920e9d2bdd223bc4ac0d51d4"
+    }
+  ],
+  "page_errors": [],
+  "cleanup": {
+    "browser_context_closed": true,
+    "fixture_server_joined": true
+  },
+  "date": "2026-10-29",
+  "base": "8780b34",
+  "scope": "Current-activity defaults, grouped run metadata and associated lease presentation",
+  "validation": {
+    "affected_javascript_passed": 116,
+    "affected_javascript_failed": 0,
+    "terminal_package_race": "passed on unchanged Go source",
+    "native_semblance_cases_passed": 3,
+    "web_rebuild": "passed",
+    "native_cli_build": "passed",
+    "synthetic_browser_checks": 5,
+    "viewport_widths": [
+      1440,
+      390
+    ]
+  },
+  "limitations": [
+    "Synthetic component fixture, no actual leases, backend, screen connection or credential submission",
+    "Prior failed controls and capture wrappers are excluded and retained privately",
+    "Narrow tiled logs have limited reading space; fullscreen remains available",
+    "No full Go suite, Linux runtime or hosted CI claim",
+    "Coordinator current-composition source acceptance and integration remain separate"
+  ],
+  "runtime_source": "344402a"
+}

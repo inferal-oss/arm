@@ -1,5 +1,17 @@
 # Validation record
 
+## Dashboard presentation — independent composed acceptance
+
+Final combined source passes 444 JS tests, 27 native WAT/rendering/lifecycle
+cases and the terminal package race suite: 446 passing nodes (216 roots),
+zero failures and six optional preview/helper skips. Affected vet, native CLI
+build and two byte-identical asset builds pass through the unchanged normal
+FIFO. Run/lease and Screen Sharing source/media hashes are independently checked;
+desktop/narrow images and Messages review images are visually inspected.
+Owner captures remain source-qualified; no current-composition real-backend,
+lease mutation, VNC login, new terminal visual or full UX acceptance is inferred.
+[Normalized record](validation/dashboard-presentation-composed-2026-10-29.json).
+
 ## Native discovery and activation — independent composed review
 
 Reviewed owner source `e045e4b`/`8c6f304`/`550cf16` is composed on current main;
@@ -7976,3 +7988,96 @@ build, public worker, protected V2 activation, enrollment, native installation
 or live-cluster result. Controlled SQL fixtures do not prove arbitrary physical
 commit-failure behavior or exhaustive descendant containment.
 [Normalized component evidence](validation/kubernetes-constructor-outcome-2026-10-28.json).
+
+
+### Dashboard current-activity defaults
+
+The focused continuation from `8780b34` passes 51 affected JavaScript cases,
+the complete `internal/tui` package, three native Semblance run-window/checkbox
+lifecycle cases, the web asset rebuild and native command build through the
+unchanged normal shared FIFO. The existing large-chunk warning remains.
+
+Coverage includes missing/blocked/malformed defaults, explicit saved opt-out,
+legacy lease-only terminal settings, independently round-tripped preferences,
+keyboard and mouse toggles, unknown/nonterminal/reporter-loss visibility, selected
+historical logs and all eight retained readers through filtering. The native
+checkbox routes through the real renderer/event bus and retains original output
+nodes without replaying completed logs. No backend/protocol/adoption changes,
+real leases, installs, full Go suite or Linux validation are claimed. Presentation
+polish and coordinator source/composition review remain separate gates.
+
+
+### Run metadata grouping checks
+
+The separate run-details source cut passes 67 focused JavaScript cases, complete
+`internal/tui` package, three native Semblance window/checkbox lifecycle cases,
+web asset rebuild and native CLI build through the normal shared FIFO. Tests
+cover exact-ID locality versus remote/hostname/unknown contexts, year-one/absent
+times, full untruncated purpose, exact numeric/timestamp record preservation and
+name refresh retaining the same paused transcript and expanded disclosure.
+Prototype-named lifecycle states explicitly assert Unknown/warning. Existing
+reader/window/cursor and action/reconnect tests remain passing. Combined
+synthetic desktop/narrow screenshots and associated-lease polish are pending;
+these checks alone are not a visual/composed-main acceptance claim.
+
+
+### Run/lease presentation final owner evidence
+
+The unchanged JavaScript/Go logic passes 116 affected Node cases and the complete
+terminal package with the race detector. After the final CSS-only layout fixes,
+three native Semblance lifecycle cases, deterministic web rebuild, native command
+build and the source-bound synthetic browser capture pass through the normal
+shared FIFO. Five browser checks and eleven desktop/narrow PNGs verify grouped
+metadata/name refresh, original transcript identity, off versus pending check-ins,
+error/read-only controls and actual readable following tails at 390px. All thirteen
+feature input hashes and eleven artifact hashes match the retained final capture;
+normalized evidence is `validation/dashboard-active-defaults-details-2026-10-29.json`.
+
+Review fixes include null-command compatibility, full wrapping purpose, conservative
+unknown lifecycle labels, native output sizing and scrollable metadata. An earlier
+native style floor/duplicate declaration and cramped secondary controls caused
+visual failures; computed-layout inspection resolved them. Failed test expectations,
+source-overlapped captures and recorder cleanup/height-threshold mistakes remain
+excluded from acceptance and retained privately. The final fixture unmounts the
+app/runtime/store, closes browser/context and joins its development server. No
+actual ARM backend, adoption or lease/check-in mutation was used. This is owner
+component/visual evidence; coordinator composition/acceptance remains pending.
+
+## Messages layout remediation — scoped owner evidence
+
+On the source hashes in [the normalized record](validation/ux-messages-2026-10-29.json),
+34 affected protocol/control tests and 29 real RDF rendering/ownership/focus
+tests pass. Eight synthetic native-browser cases cover 320/390/768/1440/1920
+pixel widths, 200% text at 768px, long/unbroken body and authority values, review
+keyboard focus, refresh-held controls, stale/disconnected blocking, restored
+unknown/offline recovery, empty history and validation error. Stock synthetic
+dialog containment and Escape return are checked without claiming acceptance of
+product-specific dialogs. No transport calls occur; browser/context close and
+server join are awaited. Desktop and narrow screenshots are visually inspected.
+
+Private baseline evidence distinguishes the rejected inline-layout suspicion
+from reproduced collapsed whitespace and dense prose metadata. Fixture selector
+and module-transform failures were corrected separately; they are not product
+findings. Full route/state/terminal coverage, independent current composition
+and asset rebuilding remain open in the [coverage matrix](UX-REVIEW.md).
+
+### Screen Sharing/private-input layout evidence
+
+The separate correction passes 21 affected screen/mode/clipboard/security Node
+cases, web asset rebuild and native CLI build through the normal shared FIFO.
+Five real native browser checks and four desktop/narrow PNGs verify full-width
+stacked labels/fields, initial username focus, native dialog action alignment,
+required validation before submission, readonly/multiline containment and clearing
+retained native input nodes on cancel. Synthetic typed values do not occur in any
+RDF graph. Authentication submissions and actual screen connections are both zero.
+The fixture uses a fake client event, never a live Mac/account/clipboard session.
+
+Eight feature input hashes and four artifact hashes match the retained capture in
+`validation/screen-private-input-layout-2026-10-29.json`. An initial dev-fixture
+failure resolving unused optional noVNC imports is excluded; fixture-only aliases
+isolate those unused modules without changing production imports. The app, native
+viewer/widgets, browser/context and original dev server close successfully.
+The earlier run/lease capture remains specifically qualified to `344402a`; the
+Screen Sharing cut rebuilds the combined asset with its separate evidence.
+Coordinator combined-source review/acceptance remains pending. No source install,
+actual adoption/policy/lease changes, full Go suite or Linux validation is claimed.
