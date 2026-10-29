@@ -267,6 +267,19 @@ Return any remaining presentation finding before adding styles. The shared
 header remains a read-only diagnosis/proposal, and Activity retention continues
 under its separate existing allocation.
 
+The native block probe preserves 26 capability lines and selected token scaling,
+but both Host blocks inherit an oversized automatic grid minimum inside their
+disclosures. Their own horizontal scroll range is zero while the disclosure
+clips long text. Allocate noninteractive Host-metadata body Stack hooks only on
+these two disclosures, plus appended app-owned minimum-size/track containment
+and bounded native PRE sizing. Keep stock disclosure/Code types, formatting,
+payloads, native scrolling and ownership. No global Accordion/theme/adapter or
+header fix is allocated. Validate against the actual clipping ancestor, with
+positive native keyboard horizontal movement, reachable right-hand text and
+vertical tails at narrow/short/scaled sizes; a contained document alone is
+insufficient. Preserve both earlier failed reading candidates and return any
+additional required selector or presentation scope before broadening.
+
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
 readable sizing, responsive containment, navigation/focus and action clarity.
