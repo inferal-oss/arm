@@ -242,5 +242,13 @@
     "Linux amd64 Server test compilation only; not executed",
     "No full Go suite, browser acceptance, rollout enrollment or default/shared-state change",
     "Installed runtime and existing resident executable pathname remain unchanged"
-  ]
+  ],
+  "public_ci": {
+    "commit": "06fd4360f174eb31ae7d716301b44dc315b07b3b",
+    "run_id": 40948342917,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40948342917",
+    "scope": "Public source workflow; no installed activation or live worker-replacement acceptance"
+  }
 }

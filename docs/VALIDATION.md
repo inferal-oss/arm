@@ -30,6 +30,9 @@ binds source, rosters, artifacts and limits without private runtime receipts.
 No worker replacement, activation, version-pair, outage heartbeat, browser,
 full-Go, provider/transport or resident-core acceptance is inferred. The installed
 runtime, default/shared state and rollout policy remain unchanged.
+Integration `06fd436` also passes its
+[public source workflow](https://github.com/inferal-oss/arm/actions/runs/40948342917).
+This workflow result does not activate the separately gated worker design.
 
 ## Resident caller extraction — scoped owner evidence
 

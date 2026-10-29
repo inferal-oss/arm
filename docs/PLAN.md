@@ -30,6 +30,8 @@ and Linux compilation. Source/scope/privacy and production-caller review finds
 no blocking issue. See the [composed record](validation/resident-dispatch-composed-2026-10-29.json).
 Stage two, real worker replacement/controller recovery,
 version pairs, immutable bootstrap and broader workload continuity remain open.
+Integration `06fd436` is pushed; its [public source CI](https://github.com/inferal-oss/arm/actions/runs/40948342917)
+passes. Installation and worker activation remain separate from that source gate.
 
 Next existing-owner scope is documentation only on accepted `06fd436`: refine
 the stage-two seven-local-browser-read grant/transport contract before code.
