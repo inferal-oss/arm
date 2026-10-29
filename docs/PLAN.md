@@ -253,6 +253,20 @@ hide or weaken the overflow control. Final same-source browser/ownership checks
 and independent composition remain gates; successful inventory collection is
 not visual acceptance.
 
+The populated Host probe confirms exact current payloads and retained native
+disclosure/focus state, but inline Code collapses the explicit capability line
+breaks. The pinned renderer already supports `c:block true` with native
+focusable, horizontally scrollable `pre` formatting. Allocate that property only
+on the two existing Host Code handles at creation, with no global adapter,
+theme, formatter or shell change. Verify identifier line preservation, exact
+payloads/empty states, readable selected token scaling, actual panel/document
+containment, keyboard access to both axes/tails and original ownership across
+refresh/disposal. Native block formatting trims boundary whitespace; retain the
+current newline-free-boundary capability/JSON values and truncation marker.
+Return any remaining presentation finding before adding styles. The shared
+header remains a read-only diagnosis/proposal, and Activity retention continues
+under its separate existing allocation.
+
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
 readable sizing, responsive containment, navigation/focus and action clarity.
