@@ -1445,3 +1445,15 @@ Review gates: independent final-diff review, composed validation and central
 asset rebuild remain open. No build, install, runtime activation or live
 transport was performed in this allocation. Broader Monitor routes/states,
 universal zoom, terminal parity and the full UX pass remain open.
+
+
+## Monitor selector-grid review correction
+
+Independent composition of `889923e` found that complete label fit alone did
+not prove useful selector columns. The native Grid `[data-columns]` state rule
+overrode the less-specific Monitor grid rule: narrow labels remained 120.5px
+wide. The focused follow-up matches that state only on MonitorDeviceSelectors;
+no main/native/global style or interactive hook changes. The
+[selector-grid record](validation/ux-monitor-selector-grid-2026-10-29.json)
+preserves the failing computed-track control and affected final revalidation.
+Independent review/composition remains the landing gate.

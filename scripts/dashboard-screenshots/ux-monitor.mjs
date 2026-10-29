@@ -9,7 +9,7 @@ import {createServer} from '../../web/node_modules/vite/dist/node/index.js';
 import {chromium} from 'playwright';
 
 const repo=fileURLToPath(new URL('../../',import.meta.url)),output=resolve(process.argv[2]||''),cohort=process.argv[3]||'help';
-assert(['help','states','causal','details','timing'].includes(cohort));
+assert(['help','states','causal','details','timing','selectors'].includes(cohort));
 assert(process.argv[2]&&output!==resolve(repo)&&!output.startsWith(resolve(repo)+sep),'Use a private output directory outside the checkout');
 await mkdir(output,{recursive:true});
 const files=['internal/server/web/semblance/main.mjs','internal/server/web/semblance/app.ttl','internal/server/web/semblance/graph-ui.mjs','internal/server/web/metric-help.mjs','internal/server/web/monitor-capacity.mjs','internal/server/web/io-devices.mjs','internal/model/monitor.go','internal/model/measurement.go','web/third_party/semblance/ontology/layers/tooltip.ttl','scripts/dashboard-screenshots/ux-monitor.mjs','scripts/dashboard-screenshots/ux-monitor-backend.mjs'];
@@ -154,18 +154,7 @@ async function helpInventory(width,height,scale){
   item.coreBounds=await probe(card('CPU activity').getByRole('progressbar').last());
   await capture('monitor-cores-'+width+'-'+height+'-'+scale);
   await coreToggle.click();await settle();
-  for(const title of ['Disk I/O','Network']){
-    const root=card(title),toggle=root.getByRole('button',{name:'Choose devices',exact:true});
-    await toggle.focus();await page.keyboard.press('Enter');await settle();
-    item[title]={count:await root.getByRole('checkbox').count(),firstLabel:await probe(root.locator('label').first()),lastLabel:await probe(root.locator('label').last()),allControl:await probe(root.getByRole('button',{name:'All',exact:true})),noneControl:await probe(root.getByRole('button',{name:'None',exact:true}))};
-    assert.equal(item[title].count,12);
-    item[title].labels=[];item[title].inputs=[];
-    for(const label of await root.locator('label').all()){const bounds=await probe(label);assert(fits(bounds),'Complete Monitor device label must fit actual clipping ancestors');item[title].labels.push(bounds);}
-    for(const input of await root.getByRole('checkbox').all()){assert.equal(await input.evaluate(n=>n.closest('[data-sem-c]').getAttribute('data-sem-c')),'checkbox');const bounds=await probe(input);assert(fits(bounds));item[title].inputs.push(bounds);}
-    item[title].overlaps=await root.locator('[data-sem-c="checkbox"]').evaluateAll(nodes=>{const r=nodes.map(n=>{const a=n.querySelector('input').getBoundingClientRect(),b=n.querySelector('label').getBoundingClientRect();return{left:Math.min(a.left,b.left),right:Math.max(a.right,b.right),top:Math.min(a.top,b.top),bottom:Math.max(a.bottom,b.bottom)};}),pairs=[];for(let i=0;i<r.length;i++)for(let j=i+1;j<r.length;j++)if(Math.min(r[i].right,r[j].right)-Math.max(r[i].left,r[j].left)>1&&Math.min(r[i].bottom,r[j].bottom)-Math.max(r[i].top,r[j].top)>1)pairs.push([i,j]);return pairs;});assert.deepEqual(item[title].overlaps,[],'Native checkbox labels/controls must not overlap');
-    await capture('monitor-devices-'+slug(title)+'-'+width+'-'+height+'-'+scale);
-    await toggle.click();await settle();
-  }
+  const selectors=await selectorInventory(width,height,scale);for(const [title,value]of Object.entries(selectors.pickers)){assertSelectorLayout(value.layout);item[title]=value;}
   for(const title of ['CPU activity','Memory & swap','Storage space','Disk activity','Network activity','GPU monitoring']){
     const opener=page.getByRole('button',{name:'About '+title,exact:true});
     await page.mouse.move(1,1);await page.keyboard.press('Tab');await opener.focus();await settle();
@@ -195,6 +184,37 @@ async function helpInventory(width,height,scale){
     assert(record.originalOpenerRestored&&record.disposed);
     if(title==='GPU monitoring')record.edgeTooltips=await helpEdges(opener);
     item.help.push(record);
+  }
+  item.document=await geometry();assert.equal(item.document.scrollWidth,width);return item;
+}
+function assertSelectorLayout(layout){
+  assert(layout.matched.length>=2,'Actual native and Monitor selector cascade must be observed');
+  assert.equal(layout.tracks.length,layout.expectedCount,'Monitor selector must apply its intended compact track count');
+  assert(layout.tracks.every(x=>Number.isFinite(x)&&x>=layout.minimumTrack-1),'Monitor selector tracks must retain the useful18rem/available width');
+  assert(layout.labelWidths.every(x=>x>=Math.min(...layout.tracks)-40),'Native labels must use the available track reading width');
+}
+async function selectorInventory(width,height,scale){
+  const item={width,height,textScale:scale,pickers:{}};
+  for(const title of ['Disk I/O','Network']){
+    const root=card(title),toggle=root.getByRole('button',{name:'Choose devices',exact:true});
+    await toggle.focus();await page.keyboard.press('Enter');await settle();
+    item.pickers[title]={count:await root.getByRole('checkbox').count(),firstLabel:await probe(root.locator('label').first()),lastLabel:await probe(root.locator('label').last()),allControl:await probe(root.getByRole('button',{name:'All',exact:true})),noneControl:await probe(root.getByRole('button',{name:'None',exact:true}))};
+    assert.equal(item.pickers[title].count,12);
+    item.pickers[title].layout=await root.locator('[data-sem-c="arm-monitor-device-selectors"]').evaluate(n=>{
+      const s=getComputedStyle(n),r=n.getBoundingClientRect(),tracks=s.gridTemplateColumns.split(' ').map(parseFloat),gap=parseFloat(s.columnGap),rootFont=parseFloat(getComputedStyle(document.documentElement).fontSize),matched=[];
+      function rules(list){for(const rule of list){if(rule.media&&!matchMedia(rule.media.mediaText).matches)continue;if(rule.selectorText&&rule.style?.gridTemplateColumns&&n.matches(rule.selectorText))matched.push({selector:rule.selectorText,columns:rule.style.gridTemplateColumns});else if(rule.cssRules)rules(rule.cssRules);}}
+      for(const sheet of [...document.styleSheets,...document.adoptedStyleSheets])rules(sheet.cssRules);
+      const minimum=Math.min(18*rootFont,r.width),expectedCount=Math.max(1,Math.floor((r.width+gap)/(minimum+gap)));
+      return{component:n.getAttribute('data-sem-c'),columnsAttribute:n.getAttribute('data-columns'),width:r.width,rootFont,gap,tracks,expectedCount,minimumTrack:minimum,matched,
+        labelWidths:[...n.querySelectorAll('label')].map(x=>x.getBoundingClientRect().width)};
+    });
+
+    item.pickers[title].labels=[];item.pickers[title].inputs=[];
+    for(const label of await root.locator('label').all()){const bounds=await probe(label);assert(fits(bounds),'Complete Monitor device label must fit actual clipping ancestors');item.pickers[title].labels.push(bounds);}
+    for(const input of await root.getByRole('checkbox').all()){assert.equal(await input.evaluate(n=>n.closest('[data-sem-c]').getAttribute('data-sem-c')),'checkbox');const bounds=await probe(input);assert(fits(bounds));item.pickers[title].inputs.push(bounds);}
+    item.pickers[title].overlaps=await root.locator('[data-sem-c="checkbox"]').evaluateAll(nodes=>{const r=nodes.map(n=>{const a=n.querySelector('input').getBoundingClientRect(),b=n.querySelector('label').getBoundingClientRect();return{left:Math.min(a.left,b.left),right:Math.max(a.right,b.right),top:Math.min(a.top,b.top),bottom:Math.max(a.bottom,b.bottom)};}),pairs=[];for(let i=0;i<r.length;i++)for(let j=i+1;j<r.length;j++)if(Math.min(r[i].right,r[j].right)-Math.max(r[i].left,r[j].left)>1&&Math.min(r[i].bottom,r[j].bottom)-Math.max(r[i].top,r[j].top)>1)pairs.push([i,j]);return pairs;});assert.deepEqual(item.pickers[title].overlaps,[],'Native checkbox labels/controls must not overlap');
+    await capture('monitor-devices-'+slug(title)+'-'+width+'-'+height+'-'+scale);
+    await toggle.click();await settle();
   }
   item.document=await geometry();assert.equal(item.document.scrollWidth,width);return item;
 }
@@ -348,9 +368,10 @@ try{
 
   for(const [width,height,scale] of (['causal','timing'].includes(cohort)?[[1440,900,1],[390,900,1]]:[[1440,900,1],[390,900,1],[390,320,1],[768,600,2]])){
     await openMonitor(width,height,scale);
-    const item=await (cohort==='help'?helpInventory:cohort==='states'?stateInventory:cohort==='details'?visibleDetails:cohort==='timing'?nativeScrollTiming:causalMonitor)(width,height,scale);
+    const item=await (cohort==='help'?helpInventory:cohort==='states'?stateInventory:cohort==='details'?visibleDetails:cohort==='selectors'?selectorInventory:cohort==='timing'?nativeScrollTiming:causalMonitor)(width,height,scale);
     item.forbidden=await page.evaluate(()=>monitorFixture.forbidden);assert.deepEqual(item.forbidden,[]);result.cases.push(item);
   }
+  if(cohort==='selectors')for(const item of result.cases)for(const picker of Object.values(item.pickers))assertSelectorLayout(picker.layout);
   assert.deepEqual(result.pageErrors,[]);assert.deepEqual(result.networkRequests,[]);assert.equal(result.webSockets,0);
 }catch(error){result.failure=error.message;result.failedGeometry=await geometry().catch(()=>null);result.diagnostic=await page?.evaluate(()=>({text:document.body.innerText,state:window.monitorFixture?.state,membership:window.monitorFixture?.membership})).catch(()=>null);await page?.screenshot({path:resolve(output,'failure.png')}).catch(()=>{});process.exitCode=1;}
 finally{

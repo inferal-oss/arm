@@ -8579,3 +8579,37 @@ no page errors, real sockets or forbidden calls occur. Representative compact,
 short and doubled-text captures are visually inspected. Independent final-diff
 review, composed checks/rebuild, installed activation and full UX acceptance
 remain separate gates.
+
+
+## Monitor selector-grid specificity — focused review correction
+
+Independent review found the intended Monitor selector track minimum ineffective
+against native Grid `[data-columns]`. A fresh baseline records the actual
+adopted stylesheet cascade and all four viewport cases before failing the new
+track-count assertion. At 390px the old tracks are 148.5px/labels 120.5px; doubled
+768px tracks are 152.25px/labels 124.25px. All text fit/nonoverlap checks could pass
+while this reading-width defect remained. The baseline is a preserved failure,
+not acceptance.
+
+Only the existing MonitorDeviceSelectors style gains the matching state.
+Computed corrected columns are two 320.25px desktop tracks and one 302px narrow/
+short track or 309.5px doubled-token track. Usable labels measure 292.25px, 274px
+and 281.5px respectively in both pickers. Actual computed-track count/minimum,
+label-width, complete label/input, no-overlap and document-width assertions pass.
+The original main, native engine, theme and interactive controls remain unchanged.
+
+The [source-bound correction record](validation/ux-monitor-selector-grid-2026-10-29.json)
+contains the failing control, final affected selector/help/state cohorts,
+positive original cleanup and exact source hashes. The earlier layout record,
+native Home timing qualifications and all original artifacts remain preserved.
+No broader suite, build, installation, runtime activation or real transport is
+part of this follow-up; independent current-composition acceptance remains open.
+
+The affected final cohorts run sequentially through the unchanged FIFO:
+selector tracks 14515ms, full help/geometry 68532ms and state/identity 32498ms,
+each with all four viewport cases and positive original CDP/context/browser/
+server cleanup. No forbidden call, real socket or page error occurs. Twenty-seven
+focused native graph/ownership tests pass with two workers, zero failures/skips.
+Earlier separate inline-detail, native-key timing and helper-test receipts keep
+their original `889923e` source qualification. All 339 original artifact hashes
+are reverified without changing those artifacts.

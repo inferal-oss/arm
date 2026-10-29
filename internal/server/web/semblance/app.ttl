@@ -488,7 +488,8 @@ arm:MonitorSurface a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-monitor
 arm:MonitorDeviceSelectors a owl:Class ; rdfs:subClassOf c:Grid ; sem:slug "arm-monitor-device-selectors" .
 arm:MonitorHelpBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-monitor-help-body" .
 arm:MonitorHelpFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-monitor-help-facts" .
-[] a sty:StyleRule ; sty:appliesTo arm:MonitorDeviceSelectors ;
+# Match the native Grid column-state specificity so this minimum takes effect.
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorDeviceSelectors ; sty:state "[data-columns]" ;
  sty:declares [ sty:property "min-width" ; sty:raw "0" ],
               [ sty:property "grid-template-columns" ; sty:raw "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))" ] .
 [] a sty:StyleRule ; sty:appliesTo arm:MonitorDeviceSelectors ; sty:part "[data-sem-c=\"checkbox\"], .sem-row, label" ;

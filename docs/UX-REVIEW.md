@@ -226,3 +226,16 @@ rapid timing remain unclaimed. The
 [normalized owner record](validation/ux-monitor-layout-2026-10-29.json) binds
 source, controls and positive cleanup. This does not close independent
 composition/rebuild, live transport, terminal parity or the full UX pass.
+
+
+## Monitor selector-column review finding
+
+Independent review of `889923e` found that label fit/nonoverlap missed the
+selector rule losing to native Grid `[data-columns]` specificity. Narrow labels
+were still 120.5px wide. A Monitor-only matching state makes the intended
+18rem/available-width minimum effective; computed tracks and usable label widths
+now supplement complete text checks. Desktop retains two useful columns, narrow
+and doubled-token cards one. The
+[focused correction evidence](validation/ux-monitor-selector-grid-2026-10-29.json)
+preserves the negative baseline and original layout record. Independent
+composition remains open.

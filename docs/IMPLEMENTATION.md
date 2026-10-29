@@ -3560,3 +3560,21 @@ strict Home/End targets, original focus and full tooltip checks. Background
 End chaining is observed and unchanged; arbitrary rapid timing is not claimed.
 [Owner evidence](validation/ux-monitor-layout-2026-10-29.json) does not establish
 independent composition or full UX acceptance. Generated assets stay unchanged.
+
+
+## Monitor selector-grid cascade correction
+
+The MonitorDeviceSelectors rule now matches native Grid `[data-columns]` state
+specificity. Its existing 18rem/available-width minimum therefore takes effect
+without changing native grid data, the renderer, main code or using important.
+The actual adopted stylesheet cascade and computed tracks are measured. Narrow
+and doubled-token cards use one column; wider desktop retains two useful
+columns. Direct native checkbox identities, callbacks and selection/focus
+behavior remain unchanged.
+
+The earlier `889923e` geometry checks established complete labels and no
+overlap, but missed the overridden column rule. The new regression also asserts
+computed track count/minimum and usable label width, including 390px and actual
+doubled tokens at 768px. Both the failed baseline and corrected evidence remain
+[source-bound](validation/ux-monitor-selector-grid-2026-10-29.json); the original
+Monitor layout evidence is preserved unchanged.
