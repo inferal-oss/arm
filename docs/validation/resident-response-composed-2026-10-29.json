@@ -316,5 +316,13 @@
     "No full Go or browser suite, real peers/SSH, environment setup or Linux execution.",
     "No total legacy result/encoder/allocator memory guarantee or global connection admission cap.",
     "Optional metadata consumers must own release/stale-handle budgets; no production observer or worker route is activated."
-  ]
+  ],
+  "public_ci": {
+    "commit": "26d69bf943840fcbc7c350e75d82606bed6f4530",
+    "run_id": 40962840343,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40962840343",
+    "scope": "Public source workflow; no installed activation or complete API/UI reload acceptance"
+  }
 }

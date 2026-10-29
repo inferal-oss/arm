@@ -30,6 +30,25 @@ No blocking source finding remains; see the
 [composed record](validation/resident-response-composed-2026-10-29.json). Worker/grant/
 IPC/controller/activation, UI/assets, startup/install and shared state stay outside
 this cut; the user-selected replaceable API/UI objective remains open.
+Integration `26d69bf` passes its [public source workflow](https://github.com/inferal-oss/arm/actions/runs/40962840343).
+
+Next existing-owner scope is source inspection/documentation only on accepted
+`26d69bf`: specify the original native worker-owner/controller prerequisite.
+Return exact modules/signatures and current/missing primitives for immutable
+artifact staging/provenance, admitted CPU/memory/temporary-resource ownership,
+durable same-key launch/unknown outcomes, inherited-channel/native process/sole
+Wait/group/I/O custody, inactive handshake and stop-revision-bound activation
+permits. Separate initial adoption from later replacement; no active job may be
+cancelled to bootstrap. Readiness/seal/timeouts cannot replace actual joins or
+mint cleanup credit. Keep native reporting, origin/token/generation and existing
+resource/transport owners resident. Define explicit compatible API/UI adapters
+and coherent asset/version-pair acceptance still needed beyond metadata-only
+coordination. Private worker-role bootstrap must fail closed before ordinary
+CLI/default-home/plugin handling, without implementing it here. No Go, CLI,
+Manager/model/schema/module, role/IPC/controller, runtime tests/builds, native
+launch, installation/environment or shared-state edit is allocated by this
+contract step. Preserve accepted branches and return policy/interface gaps
+before any shared source change.
 
 The complete product scope is [SPEC.md](../SPEC.md). This plan records current
 technical ownership, accepted milestones, dependencies and remaining gates.

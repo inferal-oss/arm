@@ -32,6 +32,9 @@ fixed/per-connection/receipt sizes are not a whole-process or global connection
 budget. No worker/IPC/controller/grant activation, outage/version-pair, browser,
 full-Go, native Linux, provider/transport/core or installed-runtime acceptance is
 inferred. The actual API/UI replacement objective remains open.
+Integration `26d69bf` passes its
+[public source workflow](https://github.com/inferal-oss/arm/actions/runs/40962840343).
+That source result does not activate a worker or change the installed backend.
 
 ## Original response settlement — scoped owner evidence
 
