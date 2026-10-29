@@ -109,9 +109,14 @@ have scoped evidence. Independent review confirms a P2 resource-help technical
 grid with 24px or effectively zero value columns. Remediation is allocated only
 to the resource-kind path of `main.mjs` help() plus additive Resource-help styles
 and focused fixtures; Monitor helpers, copy/accounting, native controls/disposal,
-transport and shared graph/shell remain protected. A separate narrow post-disposal
-width observation has no assigned cause; read-only reproduction is allocated,
-with product edits requiring a concrete reviewed cause. Full transport/auth/timing,
+transport and shared graph/shell remain protected. Returned fix `a75c1fe` passes
+source-boundary review; final current-composition acceptance remains pending.
+Focused A/B/A reproduction identifies the separate narrow-width cause as the
+Resource help button's centered tooltip pseudo-element: focus widens the page,
+blur restores it and refocus reproduces it. A separate correction is allocated
+only to ResourceSurface help-tooltip app styles with complete viewport-bounded
+text and preserved keyboard/hover semantics. Stock tooltip/pin/graph/shell and
+non-resource Monitor styles remain protected. Full transport/auth/timing,
 route and broader UX acceptance remain open; installation is separate. Keep the validated
 build staged while the reviewed upgrade design addresses immutable runtime
 paths. Broader shell/Mesh/global helper and backend/pin changes remain centrally
