@@ -31,11 +31,19 @@ feature tests and earlier screenshots do not close those gates.
    validation above the scrolled form; background refresh preserves draft focus.
    Mesh, forwarding and naming modal width remain source candidates: the stock
    480px cap alone is not a defect and their dialogs have not been changed.
-3. **Resource and host metadata: source candidate, reproduction pending.**
-   Resource consumers combine owner/agent/quantity/project/state/expiry in one
-   text string; host capabilities are individual Text children. Dense, long and
-   empty fixtures must establish whether structured grouping is needed.
-4. **Shell and small terminal geometry: reproduction pending.** Validate sticky
+3. **Resources: reproduced and corrected; composition pending.** A 568px
+   consumer action clipped inside 338/356px cards at desktop/mobile widths.
+   Accounting values, full lease IDs and multiline reasons also clipped or
+   collapsed. Resource-specific containment, wrapping, paragraph styling and
+   labeled Quantity/Owner/State fields keep these readable. Agent, project and
+   formatted/exact expiry remain in a native disclosure with stable identity.
+   Doubled-text testing also reproduced a stock statistic reaching 777px in a
+   768px viewport; resource-only box constraints fix it. Neighboring compact
+   summaries keep natural height beside an expanded dense consumer list.
+   Budget arithmetic, freshness and warning construction are byte-identical.
+4. **Host metadata: source candidate, reproduction pending.** Capability labels
+   still require dense/long/empty native fixtures before any presentation change.
+5. **Shell and small terminal geometry: reproduction pending.** Validate sticky
    shell controls during scrolling, zoom and short viewports, and terminal action
    hints/scrolling at narrow widths. Full-page browser screenshots place fixed
    controls inside taller captures; that alone is not a product overlap defect.
@@ -50,7 +58,7 @@ states; no principal view is declared complete from source inspection.
 | --- | --- | --- | --- |
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
 | Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Source inventory only | Dense cores/devices, stale/unknown/reset/disconnected, pause and help dialogs |
-| Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Source inventory only | Long names/IDs, int64 quantities, deficits, stale budgets, filter and held focus |
+| Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Owner resource-component slice: 320/390/768/1440/1920, 390×320 short window, actual 15px/30px text; long/multiline consumer data, exact counts/IDs, clipping ancestors, stable disclosures/focus/filter, stale/unknown/empty projections | Independent current composition/rebuild; full route loading/transport and nearby-instance/help-dialog visuals remain pending |
 | Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, actual doubled text-token coverage (15px/30px), short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild accepted; native subpool/drain/resume/delete and broader pagination/hierarchy density |
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |
 | Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Accepted focused default/detail/lifecycle cut in c830982 | Remaining route/geometry coverage; preserve reader and cleanup invariants |
@@ -117,3 +125,15 @@ tokens and assert 15px/30px body text. See the
 [correction record](validation/ux-pools-short-window-2026-10-29.json) for current
 font sizes, usable reading space, actual keyboard scrolling and stale-state
 captures. No product Messages or theme font declarations changed.
+
+## Resource consumer slice
+
+Owner: `codex/ux-resource-layout`, based on accepted `6035548`, which contains the
+accepted Pools/short-window and prior presentation slices. This continuation
+changes only the resource component and additive Resource styles/tests. Its
+[native source-bound record](validation/ux-resources-2026-10-29.json) covers ten
+component cases; it does not establish complete Resources-page or terminal
+acceptance. The fixture uses the main view's four-column/280px grid and a native
+help icon. It waits for disclosure expansion before measuring actual clipping
+ancestors and fixed shell bounds. Native callback checks record only an exact
+lease ID in a stub; no backend or live resource action occurs.

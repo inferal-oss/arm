@@ -385,3 +385,44 @@ arm:PoolShortWindow a sty:WidthClass ; sty:media "(max-height: 40rem)" .
 [] a sty:StyleRule ; sty:atWidth arm:PoolShortWindow ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > :is([data-sem-c=\"arm-pool-manager-body\"],[data-sem-c=\"arm-pool-editor-body\"])) > .sem-panel > .sem-body" ;
  sty:declares [ sty:property "overflow" ; sty:raw "visible" ],
               [ sty:property "flex" ; sty:raw "none" ] .
+
+# Resource details remain inside their own cards, including long consumer names.
+arm:ResourceSurface a owl:Class ; rdfs:subClassOf c:Grid ; sem:slug "arm-resource-surface" .
+arm:ResourceConsumer a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-resource-consumer" .
+arm:ResourceFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-resource-facts" .
+arm:ResourceIdentity a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-resource-identity" .
+arm:ResourceReason a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-resource-reason" .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "align-items" ; sty:raw "start" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:part "[data-sem-c=\"stack\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "max-width" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceConsumer ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "max-width" ; sty:raw "100%" ] ,
+              [ sty:property "padding-block" ; sty:token tok:space-3 ] ,
+              [ sty:property "border-top" ; sty:raw "1px solid var(--sem-border)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceConsumer ; sty:part "> button" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "max-width" ; sty:raw "100%" ] ,
+              [ sty:property "white-space" ; sty:raw "pre-wrap" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] ,
+              [ sty:property "text-align" ; sty:raw "start" ] ,
+              [ sty:property "justify-content" ; sty:raw "flex-start" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceFacts ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceIdentity ;
+ sty:declares [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] ,
+              [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+              [ sty:property "color" ; sty:token tok:muted ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceReason ;
+ sty:declares [ sty:property "white-space" ; sty:raw "pre-wrap" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# Keep the stock stat's flex basis from adding padding beyond a narrow card.
+[] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:part "[data-sem-c=\"stat\"]" ;
+ sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "max-width" ; sty:raw "100%" ] .

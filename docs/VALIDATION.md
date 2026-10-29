@@ -8165,3 +8165,28 @@ box ends at y=270.6875 and its text at y=269.6875. The warning and all three
 controls fit together in the final bottom capture. Separate content, exact-value,
 warning and per-control captures are retained; earlier clipped captures remain
 private historical evidence and are not acceptance.
+
+## Resource consumer layout — scoped owner evidence
+
+The [source-hash record](validation/ux-resources-2026-10-29.json), based on accepted
+`6035548`, binds 23 passing resource/accounting tests, 28 passing real RDF/native
+type/ownership/focus tests and ten native synthetic cases. The matrix covers
+320/390/768/1440/1920 widths, a 390×320 short window and actual doubled pixel
+text tokens (body 15px/30px, metadata 13px/26px). It checks complete control/text
+rectangles against clipping ancestors and shell bounds, long/unbroken labels,
+multiline reasons, exact int64 counts/IDs/original expiry, native Enter/expanded
+detail focus, refresh/membership changes, filter/unfilter, collapsed-deficit
+warning prominence and stale/unavailable/unknown/empty projections. A local stub
+records the original lease callback ID only; backend/mutation calls are zero.
+Original browser/context/Vite handles positively close/join. Desktop/narrow/
+short/doubled-text captures are visually inspected.
+
+Baseline private evidence shows a 568px button clipped by 338/356px cards while
+document width itself remains contained. A separate doubled-text failure shows
+a statistic extending content to 777px in a 768px viewport. Both are corrected
+with Resource-scoped styles. A fixture textbox selector was corrected to the
+native searchbox role; it is not a product finding. Disclosure animations settle
+before geometry checks. Resource presentation math/warning construction and the
+preexisting ontology prefix are verified unchanged. Full Resources transport/
+loading/disconnect and help-dialog visuals, independent composition/rebuild,
+other routes and terminal UX remain outside this slice.

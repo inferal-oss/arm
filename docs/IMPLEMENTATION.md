@@ -3381,3 +3381,19 @@ squeezed between a fixed header and warning/action footer. Existing warnings and
 Back/Cancel/confirmation stay in normal flow and are individually reachable.
 Normal-height panels keep their independent body scroll and footer. No callback,
 request, protocol, Messages product source or theme font behavior changed.
+
+## Resource consumer/accounting layout
+
+Resource details constrain long consumer actions and exact IDs to their own
+cards, preserve multiline reason paragraphs, and show labeled Quantity/Owner/
+State values. Agent/project and formatted plus original expiry values use a
+clearly named stock disclosure. Existing rows, buttons and disclosure handles
+survive refresh/filtering; unchanged polls retain metadata field lists. Direct native Button types and exact lease callback
+IDs remain unchanged. Missing identity does not create a lease action.
+
+Resource-only statistic box sizing prevents doubled-text overflow, and compact
+summary cards do not stretch to a neighboring dense consumer list. Existing
+accounting/freshness/deficit warning construction is byte-identical and remains
+outside disclosures. No resource admission, arithmetic, backend, shared graph/
+main shell/theme/pin or generated bundle is changed. Broader route/terminal
+coverage and independent composition remain separate gates.

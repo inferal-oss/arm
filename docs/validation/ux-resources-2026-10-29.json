@@ -1,0 +1,249 @@
+{
+  "scope": "Resource consumer/accounting presentation owner evidence; independent current composition pending",
+  "base": "60355480d46ae5a2c8e55fc4e83ab35d645d8fd7",
+  "sources": {
+    "internal/server/web/semblance/resources.mjs": "3be9b23bbfb30d3c018e4597102886f6120bde1e356a1130aef2f486106e55c0",
+    "internal/server/web/semblance/app.ttl": "be8bddd5e5088ce75111313c56c3810028fae1c1890cd655e8399fe45d8a0433",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/pool-model.mjs": "90998db3f04ddb0dd5a743bfcbfc0a3f4621fe924bb48d91478ce8e6000b8e19",
+    "scripts/dashboard-screenshots/ux-resources.mjs": "59f502bf96ccf4fe3525d2e2fe46a895401c75817ded706ecc49823b873225b9"
+  },
+  "test_sources": {
+    "internal/server/web/semblance/resources.test.mjs": "e30fbaac525dac9e3bf354a259aad5b2f4d4d5fde8256622275214e0c2079566",
+    "internal/server/web/metric-help.test.mjs": "606ed9144f1e949979f440f345a9c540717100af726d4337107d75a5e308b47d",
+    "internal/server/web/pool-model.test.mjs": "451158d4ec7f231ba84cc0157b28d5e169d08ea4fe2c5ae08b795b6c57446946",
+    "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+    "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+    "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+  },
+  "protected_behavior": {
+    "resourcePresentation_byte_identical": true,
+    "preexisting_app_ontology_prefix_unchanged": true,
+    "no_backend_or_resource_mutation": true
+  },
+  "baseline": {
+    "widths": [
+      1440,
+      390
+    ],
+    "consumer_button_width": 568,
+    "containing_card_widths": [
+      338,
+      356
+    ],
+    "component_text_clipping": true,
+    "document_overflow": false,
+    "doubled_text_stat_overflow": {
+      "viewport_width": 768,
+      "document_width": 777
+    }
+  },
+  "regressions": {
+    "resource_budget_and_accounting": 23,
+    "rdf_resource_ownership_focus": 28
+  },
+  "native": {
+    "cases": [
+      {
+        "width": 320,
+        "height": 640,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "button_bounds": {
+          "left": 57,
+          "right": 263,
+          "top": 274.1875,
+          "bottom": 366.1875
+        },
+        "button_clipping_bounds": {
+          "left": 41,
+          "right": 279,
+          "top": 61,
+          "bottom": 595
+        },
+        "exact_count_and_lease_id_preserved": true,
+        "expanded_detail_focus_refresh": true,
+        "filter_retains_state": true,
+        "compact_summary_card_height": 342.25,
+        "dense_consumer_card_height": 3795.25,
+        "reason_quantity_exact_expiry_and_warning_fit_clipping_ancestors": true
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "button_bounds": {
+          "left": 57,
+          "right": 333,
+          "top": 412.9375,
+          "bottom": 486.9375
+        },
+        "button_clipping_bounds": {
+          "left": 41,
+          "right": 349,
+          "top": 123.9375,
+          "bottom": 855
+        },
+        "exact_count_and_lease_id_preserved": true,
+        "expanded_detail_focus_refresh": true,
+        "filter_retains_state": true,
+        "compact_summary_card_height": 326.25,
+        "dense_consumer_card_height": 3366,
+        "reason_quantity_exact_expiry_and_warning_fit_clipping_ancestors": true
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "button_bounds": {
+          "left": 57,
+          "right": 335,
+          "top": 262.9375,
+          "bottom": 336.9375
+        },
+        "button_clipping_bounds": {
+          "left": 41,
+          "right": 351,
+          "top": 75,
+          "bottom": 555
+        },
+        "exact_count_and_lease_id_preserved": true,
+        "expanded_detail_focus_refresh": true,
+        "filter_retains_state": true,
+        "compact_summary_card_height": 326.25,
+        "dense_consumer_card_height": 3366,
+        "reason_quantity_exact_expiry_and_warning_fit_clipping_ancestors": true
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "button_bounds": {
+          "left": 57,
+          "right": 315,
+          "top": 412.9375,
+          "bottom": 486.9375
+        },
+        "button_clipping_bounds": {
+          "left": 41,
+          "right": 331,
+          "top": 123.9375,
+          "bottom": 851
+        },
+        "exact_count_and_lease_id_preserved": true,
+        "expanded_detail_focus_refresh": true,
+        "filter_retains_state": true,
+        "compact_summary_card_height": 326.25,
+        "dense_consumer_card_height": 3412.5,
+        "reason_quantity_exact_expiry_and_warning_fit_clipping_ancestors": true
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "button_bounds": {
+          "left": 57,
+          "right": 435,
+          "top": 511.6875,
+          "bottom": 567.6875
+        },
+        "button_clipping_bounds": {
+          "left": 41,
+          "right": 451,
+          "top": 269.1875,
+          "bottom": 1031
+        },
+        "exact_count_and_lease_id_preserved": true,
+        "expanded_detail_focus_refresh": true,
+        "filter_retains_state": true,
+        "compact_summary_card_height": 303,
+        "dense_consumer_card_height": 3069,
+        "reason_quantity_exact_expiry_and_warning_fit_clipping_ancestors": true
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "text_token_scale": 2,
+        "body_font_px": 30,
+        "metadata_font_px": 26,
+        "button_bounds": {
+          "left": 57,
+          "right": 335,
+          "top": 263.1875,
+          "bottom": 337.1875
+        },
+        "button_clipping_bounds": {
+          "left": 41,
+          "right": 351,
+          "top": 75,
+          "bottom": 540.5
+        },
+        "exact_count_and_lease_id_preserved": true,
+        "expanded_detail_focus_refresh": true,
+        "filter_retains_state": true,
+        "compact_summary_card_height": 613,
+        "dense_consumer_card_height": 6920.5,
+        "reason_quantity_exact_expiry_and_warning_fit_clipping_ancestors": true
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "text_token_scale": 1,
+        "body_font_px": 15,
+        "metadata_font_px": 13,
+        "button_bounds": {
+          "left": 57,
+          "right": 333,
+          "top": 122.9375,
+          "bottom": 196.9375
+        },
+        "button_clipping_bounds": {
+          "left": 41,
+          "right": 349,
+          "top": 61,
+          "bottom": 275
+        },
+        "exact_count_and_lease_id_preserved": true,
+        "expanded_detail_focus_refresh": true,
+        "filter_retains_state": true,
+        "compact_summary_card_height": 326.25,
+        "dense_consumer_card_height": 3366,
+        "reason_quantity_exact_expiry_and_warning_fit_clipping_ancestors": true
+      },
+      {
+        "state": "stale-unavailable-unknown-consumer",
+        "promisesRetained": true,
+        "noInventedLeaseAction": true
+      },
+      {
+        "state": "no-consumers"
+      },
+      {
+        "state": "empty-resources"
+      }
+    ],
+    "elapsed_ms": 15586,
+    "backend_calls": 0,
+    "cleanup": {
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    }
+  },
+  "remaining": [
+    "Independent current-composition review and central asset rebuild",
+    "Full Resources route loading/transport/disconnect lifecycle and help-dialog visual coverage",
+    "Broader route/state/terminal UX coverage in UX-REVIEW.md"
+  ]
+}

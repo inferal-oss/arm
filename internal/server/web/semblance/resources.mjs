@@ -3,6 +3,8 @@ import {count,bytes,quantity,stringifyJSON} from '../core.mjs';
 import {cpuBudgetFields,memoryBudgetFields,diskBudgetFields,cpuBudgetKnown,memoryBudgetKnown,diskBudgetKnown,cpuCores,budgetForView} from '../metric-help.mjs';
 import {poolBudgetFields} from '../pool-model.mjs';
 
+const RDF_TYPE='http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM='https://arm.local/ui#';
+
 // Keep the authoritative quantities and freshness rules shared with Monitor.
 // Only the presentation is progressive; promises and material warnings stay out.
 export function resourcePresentation(r,budgets) {
@@ -50,9 +52,11 @@ export function resourcePresentation(r,budgets) {
 }
 
 export function createResourceOverview({ui,root,owner,onLease,help}) {
+  const typed=(component,name)=>{ui.put?.(component.iri,RDF_TYPE,ARM+name,true);return component;};
+  typed(root,'ResourceSurface');
   const cards=new Map(),empty=ui.text('No matching resources').retain();
   function create(r,model){
-    const available=ui.stat(...model.available),summary=ui.text(''),commitment=ui.text(''),warnings=ui.stack(),facts=ui.descriptions([]),notes=ui.stack(),consumers=ui.stack();
+    const available=ui.stat(...model.available),summary=ui.text(''),commitment=ui.text(''),warnings=ui.stack(),facts=typed(ui.descriptions([]),'ResourceFacts'),notes=ui.stack(),consumers=ui.stack();
     const details=ui.disclosure('Accounting & consumers',[facts,notes,consumers]);
     const context={current:model.context};
     const explanation=help(r.custom?.pool?'resource-custom':'resource-'+r.kind,()=>context.current);
@@ -81,14 +85,18 @@ export function createResourceOverview({ui,root,owner,onLease,help}) {
         wantedConsumers.add(key);let consumer=h.consumerRows.get(key);
         const caption=(u.lease_display_name??u.reason)||u.lease||'Consumer';
         if(!consumer){
-          const action=u.lease?ui.button(caption,()=>onLease(u.lease)):ui.text(caption);
-          const identity=ui.text(''),reason=ui.text(''),metadata=ui.text('');
-          consumer={row:ui.stack([action,identity,reason,metadata]),action,identity,reason,metadata};h.consumerRows.set(key,consumer);
+          const action=u.lease?ui.button(caption,()=>onLease(u.lease)):typed(ui.text(caption),'ResourceReason');
+          const identity=typed(ui.text(''),'ResourceIdentity'),reason=typed(ui.text(''),'ResourceReason'),metadata=typed(ui.descriptions([]),'ResourceFacts'),extra=typed(ui.descriptions([]),'ResourceFacts');
+          const details=ui.disclosure('Agent, project & expiry',[extra]);
+          consumer={row:typed(ui.stack([action,identity,reason,metadata,details]),'ResourceConsumer'),action,identity,reason,metadata,extra,details};h.consumerRows.set(key,consumer);
         }
         consumer.action.set({label:caption});
         consumer.identity.set({label:u.lease?'Lease ID '+u.lease:'',hidden:!u.lease});
         consumer.reason.set({label:u.reason??'',hidden:!(u.lease_display_name&&u.reason)});
-        consumer.metadata.set({label:[u.agent,owner(u),quantity(u.quantity,r.unit),u.project,u.state,u.expires_at?'Expires '+new Date(u.expires_at).toLocaleString():''].filter(Boolean).join(' · ')});
+        const metadata=[['Quantity',quantity(u.quantity,r.unit)],['Owner',owner(u)||'—'],['State',u.state||'—']];
+        const extra=[['Agent',u.agent||'—'],['Project',u.project||'—'],['Expires',u.expires_at?new Date(u.expires_at).toLocaleString():'—'],['Exact expiry',u.expires_at||'—']];
+        const stamp=stringifyJSON([metadata,extra]);
+        if(stamp!==consumer.metadataStamp){consumer.metadata.setPairs(metadata);consumer.extra.setPairs(extra);consumer.metadataStamp=stamp;}
         rows.push(consumer.row);
       }
       h.consumers.replace(...(rows.length?rows:[ui.text('No current consumers')]));

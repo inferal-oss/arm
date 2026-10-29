@@ -1189,3 +1189,14 @@ warnings/actions. The prior scaled Messages/Pool cases are qualified as root-rem
 only; corrected bounded fixtures assert actual doubled pixel text tokens.
 Accepted Messages/run/lease/private-input runtime `c830982` remains unchanged.
 Resources source work is held; composed review/rebuild and broader UX gates remain.
+
+## Resource consumer layout — owner slice ready for review
+
+Owner: `codex/ux-resource-layout`, from accepted `6035548`. Reproduced clipped
+consumer actions/IDs/accounting, collapsed reason paragraphs and doubled-text
+stat overflow are corrected within resources.mjs and additive Resource styles.
+Labeled quantity/owner/state remain visible; a native secondary disclosure keeps
+agent/project/expiry inspectable. Focus, expanded state, callback IDs and filter
+behavior have source-bound native/regression evidence. Resource presentation
+math/warnings and protected shared sources are unchanged. Independent composed
+review/rebuild and broader UX coverage remain; no bundle replacement is included.
