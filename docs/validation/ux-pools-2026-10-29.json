@@ -1,0 +1,327 @@
+{
+  "scope": "Pool presentation owner evidence; not full UX or composed-source acceptance",
+  "base": "5c01b72",
+  "sources": {
+    "internal/server/web/semblance/pools.mjs": "50656cd5f8652212a9adc83a734231ff3e6c11aac3ed0d4395286df825757468",
+    "internal/server/web/semblance/app.ttl": "57464ec1699481ead9b1d67d55ff92cbceae11dff0ae6a54fa06437040878b8c",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/pool-model.mjs": "90998db3f04ddb0dd5a743bfcbfc0a3f4621fe924bb48d91478ce8e6000b8e19",
+    "internal/server/web/pool-operations.mjs": "450b46206b14841d82b6c84fdbeb316b9e4a82bf3b31c6b761d0dd5128e4d559",
+    "scripts/dashboard-screenshots/ux-pools.mjs": "afecc9fe3d3f74f96cfe4483866a10f5f830bd11a5d84888c170672ee85b7d45",
+    "internal/server/web/semblance/pools.test.mjs": "12c2ce2288ae1906d0aede4413ecf641a7a761341e84796494a8a7c2379aec68",
+    "web/test/pool-layout.test.mjs": "8f9ea7892d0f4b75cf9d4c2a632173ac90c7ff813a875d696f8e7887b2ff93ab"
+  },
+  "regressions": {
+    "pool_behavior_protocol": 43,
+    "rdf_rendering_ownership_focus": 30
+  },
+  "native": {
+    "cases": [
+      {
+        "width": 320,
+        "height": 640,
+        "text_scale": 1,
+        "manager_panel": {
+          "x": 24,
+          "y": 24,
+          "width": 272,
+          "height": 592
+        },
+        "review_panel": {
+          "x": 24,
+          "y": 24,
+          "width": 272,
+          "height": 592
+        },
+        "body_overflow_px": 0,
+        "manager_body_scrolls": true,
+        "review_body_scrolls": true,
+        "footer_actions_fit": true,
+        "after_value_bounds": {
+          "x": 78,
+          "y": 244.9375,
+          "width": 164,
+          "height": 19.5
+        },
+        "exact_19_digit_values_single_line": true,
+        "stale_warning_bounds": {
+          "x": 49,
+          "y": 342,
+          "width": 222,
+          "height": 93
+        },
+        "stale_body_height": 235,
+        "journal_focus": true,
+        "back_to_edit_enter": true,
+        "offline_stale_blocked": true,
+        "escape_return": true
+      },
+      {
+        "width": 390,
+        "height": 800,
+        "text_scale": 1,
+        "manager_panel": {
+          "x": 24,
+          "y": 24,
+          "width": 342,
+          "height": 752
+        },
+        "review_panel": {
+          "x": 24,
+          "y": 24,
+          "width": 342,
+          "height": 752
+        },
+        "body_overflow_px": 0,
+        "manager_body_scrolls": true,
+        "review_body_scrolls": true,
+        "footer_actions_fit": true,
+        "after_value_bounds": {
+          "x": 78,
+          "y": 627.4375,
+          "width": 234,
+          "height": 19.5
+        },
+        "exact_19_digit_values_single_line": true,
+        "stale_warning_bounds": {
+          "x": 49,
+          "y": 589.25,
+          "width": 292,
+          "height": 69.75
+        },
+        "stale_body_height": 482,
+        "journal_focus": true,
+        "back_to_edit_enter": true,
+        "offline_stale_blocked": true,
+        "escape_return": true
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "text_scale": 1,
+        "manager_panel": {
+          "x": 24,
+          "y": 24,
+          "width": 720,
+          "height": 552
+        },
+        "review_panel": {
+          "x": 24,
+          "y": 24,
+          "width": 720,
+          "height": 552
+        },
+        "body_overflow_px": 0,
+        "manager_body_scrolls": true,
+        "review_body_scrolls": true,
+        "footer_actions_fit": true,
+        "after_value_bounds": {
+          "x": 78,
+          "y": 280.1875,
+          "width": 273,
+          "height": 19.5
+        },
+        "exact_19_digit_values_single_line": true,
+        "stale_warning_bounds": {
+          "x": 49,
+          "y": 458.5,
+          "width": 670,
+          "height": 46.5
+        },
+        "stale_body_height": 352,
+        "journal_focus": true,
+        "back_to_edit_enter": true,
+        "offline_stale_blocked": true,
+        "escape_return": true
+      },
+      {
+        "width": 1440,
+        "height": 800,
+        "text_scale": 1,
+        "manager_panel": {
+          "x": 208,
+          "y": 24,
+          "width": 1024,
+          "height": 752
+        },
+        "review_panel": {
+          "x": 304,
+          "y": 24,
+          "width": 832,
+          "height": 752
+        },
+        "body_overflow_px": 0,
+        "manager_body_scrolls": true,
+        "review_body_scrolls": true,
+        "footer_actions_fit": true,
+        "after_value_bounds": {
+          "x": 358,
+          "y": 525.1875,
+          "width": 197.328125,
+          "height": 19.5
+        },
+        "exact_19_digit_values_single_line": true,
+        "stale_warning_bounds": {
+          "x": 329,
+          "y": 681.75,
+          "width": 680.265625,
+          "height": 23.25
+        },
+        "stale_body_height": 575,
+        "journal_focus": true,
+        "back_to_edit_enter": true,
+        "offline_stale_blocked": true,
+        "escape_return": true
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "text_scale": 1,
+        "manager_panel": {
+          "x": 448,
+          "y": 24,
+          "width": 1024,
+          "height": 1032
+        },
+        "review_panel": {
+          "x": 544,
+          "y": 71.90625,
+          "width": 832,
+          "height": 936.1875
+        },
+        "body_overflow_px": 0,
+        "manager_body_scrolls": true,
+        "review_body_scrolls": false,
+        "footer_actions_fit": true,
+        "after_value_bounds": {
+          "x": 598,
+          "y": 573.09375,
+          "width": 197.328125,
+          "height": 19.5
+        },
+        "exact_19_digit_values_single_line": true,
+        "stale_warning_bounds": {
+          "x": 569,
+          "y": 929.46875,
+          "width": 680.265625,
+          "height": 23.25
+        },
+        "stale_body_height": 790,
+        "journal_focus": true,
+        "back_to_edit_enter": true,
+        "offline_stale_blocked": true,
+        "escape_return": true
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "text_scale": 2,
+        "manager_panel": {
+          "x": 24,
+          "y": 48,
+          "width": 720,
+          "height": 504
+        },
+        "review_panel": {
+          "x": 24,
+          "y": 48,
+          "width": 720,
+          "height": 504
+        },
+        "body_overflow_px": 0,
+        "manager_body_scrolls": true,
+        "review_body_scrolls": true,
+        "footer_actions_fit": true,
+        "after_value_bounds": {
+          "x": 78,
+          "y": 280.1875,
+          "width": 612,
+          "height": 19.5
+        },
+        "exact_19_digit_values_single_line": true,
+        "stale_warning_bounds": {
+          "x": 49,
+          "y": 434.5,
+          "width": 670,
+          "height": 46.5
+        },
+        "stale_body_height": 304,
+        "journal_focus": true,
+        "back_to_edit_enter": true,
+        "offline_stale_blocked": true,
+        "escape_return": true
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "text_scale": 1,
+        "manager_panel": {
+          "x": 24,
+          "y": 24,
+          "width": 342,
+          "height": 272
+        },
+        "review_panel": {
+          "x": 24,
+          "y": 24,
+          "width": 342,
+          "height": 272
+        },
+        "body_overflow_px": 0,
+        "manager_body_scrolls": true,
+        "review_body_scrolls": true,
+        "footer_actions_fit": true,
+        "after_value_bounds": {
+          "x": 78,
+          "y": 117.4375,
+          "width": 234,
+          "height": 19.5
+        },
+        "exact_19_digit_values_single_line": true,
+        "stale_warning_bounds": {
+          "x": 49,
+          "y": 115,
+          "width": 292,
+          "height": 69.75
+        },
+        "stale_body_height": 8,
+        "journal_focus": true,
+        "back_to_edit_enter": true,
+        "offline_stale_blocked": true,
+        "escape_return": true
+      },
+      {
+        "state": "pending-inspection-cancelled",
+        "lateReplyIgnored": true
+      },
+      {
+        "state": "deficit-review",
+        "exactDeficit": "9223372036854775799",
+        "warningBeforeComparisons": true
+      },
+      {
+        "state": "restored-unknown-offline"
+      },
+      {
+        "state": "empty-create-validation-cancel",
+        "mutationCalls": 0
+      },
+      {
+        "state": "inventory-error",
+        "mutationCalls": 0
+      }
+    ],
+    "mutation_calls": 0,
+    "elapsed_ms": 12579,
+    "cleanup": {
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    }
+  },
+  "remaining": [
+    "Independent current-composition review and central asset rebuild",
+    "Native visual coverage of subpool, pause, resume and deletion flows",
+    "Broader route/state/terminal coverage in UX-REVIEW.md"
+  ]
+}

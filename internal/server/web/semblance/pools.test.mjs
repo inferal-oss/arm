@@ -29,10 +29,12 @@ function graphUI() {
   for(const kind of ['field','area'])ui[kind]=(label,props={},fn)=>{const c=component(kind,{label,...props});if(fn)c.on('input',fn);return c;};
   ui.select=(label,options,props={},fn)=>{const c=component('select',{label,options,...props});if(fn)c.on('change',fn);return c;};
   ui.card=(label,children=[],props={})=>component('card',{label,...props},children);
-  ui.dialog=(label,children=[],actions=[])=>{const dialog=component('dialog',{label},[...children,...actions]);ui.desktop.append(dialog);return dialog;};
+  ui.dialog=(label,children=[],actions=[])=>{const dialog=component('dialog',{label});dialog.body=component('stack',{},children);dialog.append(dialog.body,...actions);dialog.replace=(...content)=>{dialog.body.replace(...content);return dialog;};ui.desktop.append(dialog);return dialog;};
   ui.disclosure=(label,children=[],props={})=>component('disclosure',{label,...props},children);
   ui.json=(value,label='JSON')=>component('disclosure',{label,value:poolRequestCopy(value)});
   ui.table=(headers,rows)=>component('table',{headers,rows});
+  ui.descriptions=pairs=>component('descriptions',{pairs});
+  ui.grid=(children=[],props={})=>component('grid',props,children);
   return ui;
 }
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
@@ -226,4 +228,14 @@ test('pool direct and subtree consumer names keep exact lease IDs as the action 
  f.update();await flush();f.console.focusLease('lease-a');assert.ok(f.find('Lease ID lease-a','text'));await f.find('Readable direct lease','button').fire();
  assert.ok(f.find('Lease ID subtree-lease','text'));await f.find('Readable subtree lease','button').fire();
  assert.deepEqual(opened,['lease-a','subtree-lease']);
+});
+
+
+test('explicit review errors receive reading focus without background refresh stealing a draft field',async()=>{
+  const f=fixture();f.list(()=>[]);f.route({view:'resources',pool:null});await flush();
+  await f.find('Manage pools…','button').fire();await f.find('Create pool…','button').fire();
+  const reason=f.find('Why are you making this change?','area');reason.value='Synthetic review from the last field';reason.focus();await f.find('Review change','button').fire();
+  assert.match(f.ui.active.label,/Name must/);assert.equal(f.ui.active.kind,'text');
+  const name=f.find('Pool name','field');name.focus();f.list(()=>{throw Error('Synthetic background refresh failure');});f.update();await flush();assert.equal(f.ui.active,name);
+  assert.equal(f.calls.filter(([op])=>op==='pool_mutate').length,0);f.console.dispose();
 });

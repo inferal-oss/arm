@@ -8081,3 +8081,27 @@ The earlier run/lease capture remains specifically qualified to `344402a`; the
 Screen Sharing cut rebuilds the combined asset with its separate evidence.
 Coordinator combined-source review/acceptance remains pending. No source install,
 actual adoption/policy/lease changes, full Go suite or Linux validation is claimed.
+
+## Pool dialog layout remediation — scoped owner evidence
+
+The [normalized record](validation/ux-pools-2026-10-29.json) binds final source
+hashes to 43 passing pool behavior/protocol tests and 30 passing real RDF
+rendering/ownership/focus tests. Twelve native synthetic cases cover 320/390/768/
+1440/1920px widths, 200% text at 768px, a 390×320 short window, dense journal
+scrolling and refresh focus, exact 19-digit before/after values, actual panel/
+action/value bounds, Enter/back/Escape, stale/disconnected blocking with visible
+warning, cancelled pending inspection, deficit context, restored unknown/offline
+recovery, empty inventory, errors and explicit validation from the last field.
+No native mutation calls occur. Browser/context close and Vite server join are
+positively awaited. Desktop, narrow, short-window and deficit captures are
+visually inspected.
+
+Baseline captures reproduce right-edge review clipping; their first geometry
+probe incorrectly selected a descendant panel and is not quantitative evidence.
+Final probes measure the actual dialog panel and retain bounds. The mock dialog
+fixture was corrected to model separate native body/footer ownership. A native
+journal-label focus assumption and the explicit-error test's expected validator
+label were corrected separately from product findings. Raw receipts remain
+private. Current composed review/rebuild and native visual checks of other pool
+operations/modal families/terminal views remain open; full UX acceptance is not
+claimed.

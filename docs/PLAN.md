@@ -1151,3 +1151,10 @@ pass with four desktop/narrow images. No actual connection/authentication/privat
 clipboard transfer occurred. The original owner branch and exact uncommitted PLAN
 remain preserved; this isolated continuation contains four focused feature cuts.
 Final current-main review/composition/publication belongs to the coordinator.
+
+The next focused Pool slice fixes reproduced narrow review clipping, cramped
+exact counts and offscreen explicit validation. Pool-only markers contain body
+scrolling and bound panel widths; existing actions use native footers with the
+exact stale-review warning beside them. Owner pool/RDF regressions and twelve
+synthetic native cases pass. Independent composition and central asset rebuild
+remain; other modal families and terminal views stay outside this acceptance.

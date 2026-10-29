@@ -2,7 +2,7 @@
 
 Owner: `codex/ux-layout-review`, starting from accepted source `476f6fc`.
 This is an ongoing remediation pass. Inventory is not acceptance: only the
-Messages slice below has current synthetic native-browser evidence. All other
+Messages and Pool slices below have current synthetic native-browser evidence. All other
 rows require current composed-source rendering and keyboard checks. Existing
 feature tests and earlier screenshots do not close those gates.
 
@@ -16,11 +16,16 @@ feature tests and earlier screenshots do not close those gates.
    fields and stack labels at the compact breakpoint. All authority values remain
    visible before confirmation. Initial suspicion of inline concatenation was
    rejected by native baseline rendering: card children already stack.
-2. **Modal width: source candidate, reproduction pending.** Stock Dialog panels
-   cap width at 480px. Pool history/edit/review, Mesh connection/install/recovery,
-   forwarding and naming all share this default. Establish which dense forms
-   actually become hard to scan before allocating component-specific widths.
-   Do not change the pinned theme or all dialogs on that basis alone.
+2. **Pools: reproduced and corrected.** At 390px the selected-pool review
+   overflowed its dialog, clipping the After values, prose, disclosure labels and
+   confirmation action. Exact large counts fragmented in cramped columns after
+   containment alone. Pool-specific body scrolling, viewport-bounded panels,
+   paired Before/After fields and native footers keep full values and actions
+   readable. The exact stale-review warning stays beside disabled actions. An
+   explicit review error now receives reading focus after reproduction showed
+   validation above the scrolled form; background refresh preserves draft focus.
+   Mesh, forwarding and naming modal width remain source candidates: the stock
+   480px cap alone is not a defect and their dialogs have not been changed.
 3. **Resource and host metadata: source candidate, reproduction pending.**
    Resource consumers combine owner/agent/quantity/project/state/expiry in one
    text string; host capabilities are individual Text children. Dense, long and
@@ -41,7 +46,7 @@ states; no principal view is declared complete from source inspection.
 | Shell/navigation/status | `app.ttl`, `main.mjs`, `graph-ui.mjs`; theme menu, palette, live drawer, login link | Shell present in synthetic Messages fixture; no shell changes | Full routing, sticky controls, popovers, focus, reconnect, short viewport |
 | Monitor | `main.mjs` `initMonitor`/`renderMonitor`; CPU cores, RAM/storage, I/O charts/selectors, metric help | Source inventory only | Dense cores/devices, stale/unknown/reset/disconnected, pause and help dialogs |
 | Resources | `resources.mjs`, `main.mjs`; accounting disclosures, consumers, nearby-instance reports | Source inventory only | Long names/IDs, int64 quantities, deficits, stale budgets, filter and held focus |
-| Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Source inventory only | Dense hierarchy/history, modal width, empty/error/loading, stale review and exact values |
+| Pools | `pools.mjs`; manager, hierarchy, details, history, editor/review, uncertain operations | Corrected slice: 320/390/768/1440/1920 widths, 200% text, short 390×320 window; dense journal scrolling/focus, exact int64 before/after, stale/offline warnings, pending-inspection cancel, retained uncertainty, deficit, empty/error/validation | Independent composition/rebuild; native subpool/drain/resume/delete and broader pagination/hierarchy density |
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Reserved focused presentation cut; no edits | Review accepted cut before remaining layout/state coverage |
 | Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Reserved focused presentation cut; no edits | Preserve original readers, cursors, follow/pause, focus and independent cleanup |
 | Messages | `messages.mjs`; composer, recipient/reply review, conversation, deliveries, saved-send recovery | Corrected slice: 320/390/768/1440/1920 widths, 768 at 200% text; long/unbroken values, stale/disconnected review, held focus, restored unknown/offline, empty and validation error | Independent composed-source review/rebuild; broader broadcast density and recorded-result visual states |
@@ -82,3 +87,11 @@ Browser, context and Vite server cleanup are positively awaited. Raw receipts
 and images remain outside version control; the normalized source-hash record
 contains no operational identities or personal paths. No backend, delivery,
 resource mutation, credential, OS setup, pin or protocol change is included.
+
+The pool fixture `scripts/dashboard-screenshots/ux-pools.mjs` additionally uses
+the actual native pool dialogs and body/footer ownership. It records actual
+panel, action, After-value and stale-warning bounds; all native mutating calls
+are refused and none occur. Behavioral tests separately exercise confirmation
+against a pure mock transport. Native pending coverage is an inspection read
+cancelled before its delayed reply, not a real in-flight mutation. Source-qualified
+owner evidence does not replace independent composition or a full UX pass.

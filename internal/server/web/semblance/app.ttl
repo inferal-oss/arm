@@ -322,3 +322,56 @@ arm:MessageLabel a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-message-la
  sty:declares [ sty:property "font-weight" ; sty:raw "650" ] ,
               [ sty:property "font-size" ; sty:token tok:text-sm ] ,
               [ sty:property "color" ; sty:token tok:muted ] .
+
+# Pool-specific body markers keep native Dialog types, close/focus behavior and
+# other application dialogs intact. Footer actions remain outside body scrolling.
+arm:PoolDialogBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-pool-dialog-body" .
+arm:PoolManagerBody a owl:Class ; rdfs:subClassOf arm:PoolDialogBody ; sem:slug "arm-pool-manager-body" .
+arm:PoolEditorBody a owl:Class ; rdfs:subClassOf arm:PoolDialogBody ; sem:slug "arm-pool-editor-body" .
+arm:PoolActions a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-pool-actions" .
+[] a sty:StyleRule ; sty:appliesTo arm:PoolDialogBody ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "max-width" ; sty:raw "100%" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:PoolDialogBody ; sty:part "[data-sem-c=\"stack\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:PoolActions ;
+ sty:declares [ sty:property "width" ; sty:raw "100%" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "flex-wrap" ; sty:raw "wrap" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:PoolActions ; sty:part "> button" ;
+ sty:declares [ sty:property "max-width" ; sty:raw "100%" ] ,
+              [ sty:property "white-space" ; sty:raw "normal" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > :is([data-sem-c=\"arm-pool-manager-body\"],[data-sem-c=\"arm-pool-editor-body\"])) > .sem-panel" ;
+ sty:declares [ sty:property "display" ; sty:raw "flex" ] ,
+              [ sty:property "flex-direction" ; sty:raw "column" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "max-height" ; sty:raw "calc(100dvh - 3rem)" ] ,
+              [ sty:property "overflow" ; sty:raw "hidden" ] ,
+              [ sty:property "box-sizing" ; sty:raw "border-box" ]  .
+[] a sty:StyleRule ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > :is([data-sem-c=\"arm-pool-manager-body\"],[data-sem-c=\"arm-pool-editor-body\"])) > .sem-panel > .sem-body" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "min-height" ; sty:raw "0" ] ,
+              [ sty:property "overflow" ; sty:raw "auto" ] ,
+              [ sty:property "flex" ; sty:raw "1 1 auto" ]  .
+[] a sty:StyleRule ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > :is([data-sem-c=\"arm-pool-manager-body\"],[data-sem-c=\"arm-pool-editor-body\"])) > .sem-panel > :is(.sem-head,.sem-actions)" ;
+ sty:declares [ sty:property "flex" ; sty:raw "0 0 auto" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ]  .
+[] a sty:StyleRule ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > [data-sem-c=\"arm-pool-manager-body\"]) > .sem-panel" ;
+ sty:declares [ sty:property "width" ; sty:raw "min(64rem, 100%)" ]  .
+[] a sty:StyleRule ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > [data-sem-c=\"arm-pool-editor-body\"]) > .sem-panel" ;
+ sty:declares [ sty:property "width" ; sty:raw "min(52rem, 100%)" ]  .
+
+# Exact counts get their full reading width; comparison fields remain paired.
+arm:PoolComparison a owl:Class ; rdfs:subClassOf c:Grid ; sem:slug "arm-pool-comparison" .
+arm:PoolFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-pool-facts" .
+arm:PoolBudget a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-pool-budget" .
+[] a sty:StyleRule ; sty:appliesTo arm:PoolFacts ;
+ sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:PoolBudget ; sty:atWidth sty:CompactWidth ;
+ sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+
+[] a sty:StyleRule ; sty:appliesTo arm:PoolActions ; sty:part "> [role=\"alert\"]" ;
+ sty:declares [ sty:property "flex-basis" ; sty:raw "100%" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] .

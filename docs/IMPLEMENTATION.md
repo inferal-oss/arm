@@ -3351,3 +3351,20 @@ visually primary. Required validation, focus and take/clear/destroy remain intac
 Credentials and private clipboard/login-link text stay exclusively in native DOM,
 with no RDF/LDES outputs. No authentication, VNC protocol or backend behavior is
 changed.
+
+## Pool dialog layout remediation
+
+The custom-pool manager and editor use pool-specific viewport-bounded widths,
+internal body scrolling and native action footers. Direct stock Dialog/Button
+types and existing action callbacks remain intact. Budget descriptions and
+paired Before/After fields retain exact int64 values without narrow table
+columns. Material review paragraphs precede comparison fields; the existing
+stale/connection warning stays beside its disabled review controls. Explicit
+review failures receive reading focus so errors above a scrolled form are
+reachable. Background refresh does not steal draft-field focus.
+
+Only additive Pool classes and selectors scoped by their body markers are used;
+shared dialog defaults, themes, pins, graph helpers, backend, request preparation
+and resource admission are unchanged. History keeps its existing readers,
+pagination, expanded records and focus identity. The
+[coverage matrix](UX-REVIEW.md) records remaining visual and composition gates.

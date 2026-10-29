@@ -3,6 +3,7 @@ import { stringifyJSON, count, ownerDisplay } from '../core.mjs';
 import { preparePoolMutation, poolRequestCopy, poolTreeRows } from '../pool-model.mjs';
 import { createPoolOperations } from '../pool-operations.mjs';
 
+const RDF_TYPE='http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM='https://arm.local/ui#';
 const stateLabel = state => ({active:'Open for leases',draining:'New requests paused',deleted:'Historical pool'})[state] || state;
 const operationLabel = (operation, child = false) => ({create:child?'Create subpool':'Create pool','create-child':'Create subpool',set:'Change total capacity',adjust:'Add or remove units',drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'})[operation] || operation;
 
@@ -22,11 +23,18 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
   let detailDisclosures=[],leaseControls=new Map(),actionControls=[];
   let detailFocusTargets=new Map(),journalFocusTargets=new Map(),journalItems=new Map();
   const allOnline=new Map();
+  const typed=(component,name)=>{if(component)ui.put?.(component.iri,RDF_TYPE,ARM+name,true);return component;};
+  const comparison=rows=>typed(ui.grid(rows.map(([label,before,after])=>ui.card(label,[typed(ui.descriptions([['Before',before],['After',after]]),'PoolFacts')])),{columns:3,minWidth:'14rem',gap:2}),'PoolComparison');
+  // Style stock body stacks, preserving direct Dialog and interactive types.
+  const managerActions=typed(ui.stack([],{row:true}),'PoolActions');
+  const formActions=typed(ui.stack([],{row:true,hidden:true}),'PoolActions');
+  const reviewActions=typed(ui.stack([],{row:true,hidden:true}),'PoolActions');
   const feedback=ui.text('',{role:'status',hidden:true});
   const overviewFeedback=ui.text('',{role:'status',hidden:true});
   const summary=ui.text('Loading custom pools…');
   const summaryWarnings=ui.stack();
-  const manager=ui.dialog('Custom resource pools');
+  const manager=ui.dialog('Custom resource pools',[],[managerActions]);
+  typed(manager.body,'PoolManagerBody');
   const manageButton=ui.button('Manage pools…',()=>{manager.showModal(manageButton);filter.focus();});
   manager.on('close',()=>{if(closingManager||disposed)return;closeEditor(false);if(selected)select('');});
   const filter=ui.field('Find custom pools',{type:'search',placeholder:'Find custom pools'},()=>renderRows());
@@ -39,11 +47,13 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
   const editorStep=ui.text('');
   const editorContext=ui.text('');
   const dialogFeedback=ui.text('',{role:'alert',hidden:true});
-  const editor=ui.dialog('Change resource pool',[editorStep,editorContext,dialogFeedback,formBox,reviewBox]);
+  const editor=ui.dialog('Change resource pool',[editorStep,editorContext,dialogFeedback,formBox,reviewBox],[formActions,reviewActions]);
+  typed(editor.body,'PoolEditorBody');
   editor.on('close',()=>{if(!editorClosing&&editorOperation)closeEditor();});
   const createButton=online(ui.button('Create pool…',()=>begin('create',createButton)));
   const refreshButton=online(ui.button('Refresh pools',()=>load(true)));
-  manager.replace(filter,ui.stack([createButton,refreshButton],{row:true}),
+  managerActions.replace(createButton,refreshButton);
+  manager.replace(filter,
     ui.text('Counted cooperative resources. Global pools use this one authority; physical resources retain their own policies.'),
     feedback,rows,detail,operations,journal);
   root.append(ui.card('Custom resource pools',[summary,overviewFeedback,summaryWarnings,manageButton]));
@@ -66,7 +76,7 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
     const operation=editorOperation;editorOperation='';
     formGeneration++;
     review=null;reviewStale=true;confirm=reviewMessage=null;inputs={};
-    formBox.hidden=reviewBox.hidden=true;formBox.replace();reviewBox.replace();
+    formBox.hidden=reviewBox.hidden=formActions.hidden=reviewActions.hidden=true;formBox.replace();reviewBox.replace();formActions.replace();reviewActions.replace();
     editorClosing=true;editor.close();editorClosing=false;
     dialogFeedback.set({label:'',hidden:true});
     if(restore) {
@@ -147,11 +157,11 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
       ui.stack((view.ancestors||[p.id]).map(id=>ui.button(poolName(id),()=>select(id))),{row:true})];
     if(p.description)content.push(ui.text(p.description));
     if(view.review?.unavailable)content.push(ui.text('Read only: this complete tree exceeds dashboard review limits. Browsing and existing obligations remain available; no change can use a truncated review.',{tone:'warning'}));
-    content.push(ui.table(['Budget','Exact count'],[
+    content.push(typed(ui.descriptions([
       ['Total capacity',`${count(p.capacity)} ${p.unit}`],['Directly leased',`${count(view.partition?.direct_reserved??view.reserved)} ${p.unit}`],
       ['Backing for children',`${count(view.partition?.child_backing??0)} ${p.unit}`],['Uncarved available',`${count(view.available)} ${p.unit}`],
       ['Held in parent',p.parent?`${count(view.partition?.held_backing??0)} ${p.unit}`:'—'],['Pending return',`${count(view.partition?.pending_return??0)} ${p.unit}`]
-    ]));
+    ]),'PoolBudget'));
     if(view.deficit>0)content.push(ui.text(`Over capacity by ${count(view.deficit)} ${p.unit}. Existing promises keep their backing; the parent cannot reuse it yet.`,{tone:'warning'}));
     content.push(ui.text('Direct leases plus child backing are this node’s commitments. Parent and child figures overlap; do not add tree rows together.'));
     if(p.state!=='deleted') {
@@ -285,7 +295,7 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
     return ui.batch(()=>{
     if(disposed||!connected()||operation!=='create'&&(!current()||current().review?.unavailable))return;
     fail();opener=source;review=null;reviewStale=true;inputs={};
-    formBox.hidden=false;reviewBox.hidden=true;
+    formBox.hidden=formActions.hidden=false;reviewBox.hidden=reviewActions.hidden=true;
     const descriptions={
       'create-child':`A child partitions ${current()?.pool.name}. Scope and count units are inherited. It does not add capacity; all ancestors must have enough backing.`,
       create:'Choose a name, scope and total count. Agents can lease units from this pool.',
@@ -320,29 +330,29 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
         if(disposed||generation!==formGeneration)return;
         review=preparePoolMutation(data,snapshot,status?.host,key());
         if(snapshot){const index=pools.findIndex(v=>v.pool.id===snapshot.pool.id);if(index>=0)pools[index]=snapshot;}
-        formBox.hidden=true;renderReview();
-      }catch(error){if(generation===formGeneration)fail(error.message);}
+        formBox.hidden=formActions.hidden=true;renderReview();
+      }catch(error){if(generation===formGeneration){fail(error.message);dialogFeedback.focus();}}
       finally {if(generation===formGeneration){for(const handle of Object.values(inputs))handle.disabled=false;reviewButton.disabled=false;}}
     });
-    content.push(ui.stack([ui.button('Cancel',()=>closeEditor()),reviewButton],{row:true}));
+    formActions.replace(ui.button('Cancel',()=>closeEditor()),reviewButton);
     formBox.replace(...content);showEditor(1,operation);Object.values(inputs)[0]?.focus();
     });
   }
   function renderReview() {
     return ui.batch(()=>{
     if(!review)return;
-    const plan=review;reviewBox.hidden=false;showEditor(2,plan.request.parent?'create-child':plan.request.operation);
+    const plan=review;reviewBox.hidden=reviewActions.hidden=false;showEditor(2,plan.request.parent?'create-child':plan.request.operation);
     const content=[ui.heading('Proposed change',3),ui.text(`${plan.scope==='global'?'Global pool · single authority':'Pool on this host'} · ${plan.name}`),ui.text(`Reason · ${plan.request.reason}`)];
+    content.push(...plan.paragraphs.map(label=>ui.text(label)));
     if(plan.parent) {
       const parent=plan.parent,committed=BigInt(parent.partition?.committed??parent.reserved),available=BigInt(parent.available);
       content.push(ui.heading('New child · '+plan.name,4),ui.text(`Within ${parent.pool.name}. Inherits ${parent.pool.scope} scope and ${plan.unit} units. Initial capacity: ${plan.capacity} ${plan.unit}.`),
         ui.heading('Parent · '+parent.pool.name,4),ui.text(`Exact parent revision ${plan.request.parent_revision}. Its total capacity stays ${parent.pool.capacity} ${plan.unit}; ${plan.capacity} units move into child backing.`),
-        ui.table(['Effect','Before','After'],[['Committed backing',String(committed),String(committed+plan.capacity)],['Uncarved available',String(available),String(available-plan.capacity)]]));
-    }else content.push(ui.table(['Effect','Before','After'],[
+        comparison([['Committed backing',String(committed),String(committed+plan.capacity)],['Uncarved available',String(available),String(available-plan.capacity)]]));
+    }else content.push(comparison([
       ['Capacity',String(plan.before?.pool.capacity??'New'),String(plan.capacity)],['State',stateLabel(plan.before?.pool.state??'New'),stateLabel(plan.state)],
       ['Committed backing',String(plan.before?.partition?.committed??plan.before?.reserved??0),String(plan.reserved)],['Available',String(plan.before?.available??0),String(plan.available)],['Deficit',String(plan.before?.deficit??0),String(plan.deficit)]
     ]));
-    content.push(...plan.paragraphs.map(label=>ui.text(label)));
     let scopePage=0;
     const consumers=plan.request.reviewed.consumers,scopeRows=ui.stack(),scopeLabel=ui.text('');
     const scopeBack=ui.button('Earlier obligations',()=>{scopePage--;renderScope();});
@@ -357,16 +367,16 @@ export function createPoolConsole({ui,root,call,connected,onLease=()=>{},onChang
       ...(plan.request.reviewed.hierarchy?[ui.text(`Root ${plan.request.reviewed.hierarchy.root}. Exact definitions, lineage, backing and all queued/consuming claims are bound by this snapshot. Direct selected-pool claims are listed below; subtree browsing shows their owners and reasons.`)]:[]),
       scopeRows,ui.stack([scopeBack,scopeLabel,scopeNext],{row:true})]));
     content.push(ui.disclosure('Technical review details',[ui.json(plan.before??{authority:plan.authority},'Reviewed snapshot and obligations'),ui.json(plan.request,'Exact request and complete consumer revisions')]));
-    reviewMessage=ui.text('',{hidden:true,role:'alert'});content.push(reviewMessage);
+    reviewMessage=ui.text('',{hidden:true,role:'alert'});
     const cancel=ui.button('Cancel change',()=>closeEditor());
-    const back=ui.button('Back to edit',()=>{review=null;reviewBox.hidden=true;formBox.hidden=false;showEditor(1,plan.request.parent?'create-child':plan.request.operation);inputs.reason?.focus();});
+    const back=ui.button('Back to edit',()=>{review=null;reviewBox.hidden=reviewActions.hidden=true;formBox.hidden=formActions.hidden=false;showEditor(1,plan.request.parent?'create-child':plan.request.operation);inputs.reason?.focus();});
     const label=({create:plan.request.parent?'Create subpool':'Create pool',set:`Set total capacity to ${count(plan.capacity)}`,adjust:plan.request.delta>0?`Add ${count(plan.request.delta)} units`:`Remove ${count(-plan.request.delta)} units`,drain:'Pause new requests',resume:'Allow new requests',delete:'Delete empty pool'})[plan.request.operation];
     confirm=ui.button(label,()=>{
       setBusyState();if(disposed||!review||reviewStale||!connected())return;
       const request=poolRequestCopy(review.request);closeEditor();
       ops.submit(request).then(()=>{if(!disposed){onChanged();load(true);}}).catch(error=>{if(!disposed)fail(error.message);});
     },{tone:plan.request.operation==='delete'?'danger':undefined});
-    content.push(ui.stack([cancel,back,confirm],{row:true}));reviewBox.replace(...content);setBusyState();cancel.focus();
+    reviewActions.replace(reviewMessage,cancel,back,confirm);reviewBox.replace(...content);setBusyState();cancel.focus();
     });
   }
   function renderOperations() {
