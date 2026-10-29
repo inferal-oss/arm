@@ -93,6 +93,34 @@ Use sequential unchanged-FIFO cohorts within 120s including cleanup and two CPU/
 two GiB, positive original cleanup, no broad builds/suites/install/environment,
 new chats or subagents. Preserve all prior frozen branches and evidence.
 
+Shared-dialog inventory `be9af44` is reviewed against 23 fixed source inputs and
+164 retained artifacts. Four reproduced P2s have source-backed causes: naming
+body/control intrinsic overflow; button-open Search focus landing on its panel;
+unchanged naming reads replacing a dirty field; and long palette labels leaving
+native contextual help zero width. Display settings remains a positive control.
+The original failed report's recovered source/stack verifies awaited original
+context/browser/Vite close completion before serialization failed; the lost
+initial inventory result and stronger OS/group/reap facts remain unclaimed.
+
+Allocate only app-owned naming/palette modules and appended focused styles:
+noninteractive naming body/field/action containment; one-shot button-open focus
+on the current native palette query; dirty-name preservation only on the same
+source/owner/context, exact binding, unchanged saved reservation and exact
+revision; and useful native palette label/help/shortcut layout. Preserve native
+interactive types, full values and existing compaction/keyword/category limits,
+filter/highlight/arrow/activation behavior, direct callbacks, naming validators,
+CAS/unknown-intent/persistence/result semantics and pending/cancel guards. Do not
+implicitly rebase dirty intent across changed revisions or contexts; return
+that policy before widening. Do not alter graph/engine/global focus machinery,
+Display or other accepted surfaces. Validate actual first typing after button
+and shortcut open, refresh focus/query, complete controls within true dialog
+clips and meaningful help allocation, plus same/changed binding/revision and
+unknown-intent regressions. Pure isolated unit stubs may verify original write
+arguments; browser fixtures still refuse every mutation and real transport.
+Use focused separate commits and source-bound sequential native/browser cohorts
+within existing 120s/two-CPU/two-GiB bounds, with original cleanup. No owner asset
+build, install, backend/Go/schema/module/CLI edit or new task is allocated.
+
 ## Stage-two read-grant contract — reviewed, production grants inactive
 
 Owner: `codex/resident-read-grant-contract`, from accepted Stage-one composition
