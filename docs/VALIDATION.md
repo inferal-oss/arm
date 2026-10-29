@@ -22,6 +22,13 @@ read/result admission and resident per-response settlement remain missing
 primitives; policy/interface decisions precede implementation. The future test
 matrix is not executed evidence. Stage-one acceptance below remains separately
 scoped and is not production worker-replacement acceptance.
+Independent current-main contract review verifies all 22 source hashes, both
+client units, the enumerated arena/base64 arithmetic, six-document-only scope
+and added-scope privacy. Eighty-six local links in the two owner contracts pass;
+the owner's 90-link contract/tracking roster has a different stated scope.
+The reviewed policy selects additional overhead/current request-bound views,
+with later connection/sink/native costs separately accountable. No runtime
+acceptance follows; original response-sink settlement is allocated separately.
 
 ## Resident caller extraction — independent composition
 

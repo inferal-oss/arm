@@ -16,6 +16,10 @@ separate accounting; current source cannot certify a bounded total response path
 or browser handling. Public native bytes and browser UTF-16 limits stay unchanged.
 Missing factories, explicit policy choices and future lifecycle/parser/overflow
 tests are documented before any code or activation allocation.
+Independent contract review now selects bounded incremental overhead and current
+request-bound views; it adds no runtime implementation. Original resident
+response ownership/write settlement is the next isolated source primitive.
+Worker activation and actual API/UI replacement remain separate gates.
 
 ## Resident caller and dispatch extraction — reviewed composition
 

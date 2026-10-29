@@ -1,13 +1,13 @@
 # Stage-two resident read grants
 
-Status: source-backed contract refinement only, against accepted
+Status: independently reviewed source-backed contract, against accepted
 `06fd4360f174eb31ae7d716301b44dc315b07b3b`. No production/prototype source,
 protocol, client limit, controller, installation or running state changes here.
 The [accepted in-process boundary](../validation/resident-dispatch-composed-2026-10-29.json)
 provides caller ownership and prepared dispatch; it does not provide the worker,
 result-memory or writer-settlement capabilities proposed below.
 
-## Recommended boundary and unresolved decisions
+## Recommended boundary and reviewed policy selection
 
 Keep the original resident as the sole data reader, projector, public-response
 owner and writer. A worker receives only an opaque read grant and bounded state
@@ -23,9 +23,9 @@ original invocation; it never reconstructs a prepared call or takes a new
 snapshot. All seven operations remain direct today. Eligibility below is not
 authority to enable any grant, and an inactive candidate receives none.
 
-Before production grants, central review must choose the memory scope (additional
-bridge overhead or the entire result pipeline) and the read-view retention scope
-(original ingress or recoverable exact snapshots across reconnect):
+The alternatives below distinguish the memory scope (additional bridge overhead
+or the entire result pipeline) and read-view lifetime (original ingress or
+recoverable exact snapshots across reconnect):
 
 | Choice | Compatible behavior and cost | Recommendation |
 | --- | --- | --- |
@@ -37,6 +37,30 @@ These choices are not product changes. No positive factory may substitute an
 observed small prior response, a worker-ready flag, a timeout, or a heap estimate
 for the missing proof. Direct fallback preserves compatibility; it does not
 establish a bounded total legacy data path.
+
+Central source review selects **bounded additional bridge overhead over the
+existing resident data path**, and **original request-bound v1 views**. It does
+not require a newly bounded total legacy response pipeline or a cross-ingress
+snapshot store for this intermediate boundary. A response's unknown legacy final
+size alone is not a new grant denial or public limit under this policy: it stays
+with the original resident materialization/encoder/sink. Missing admitted
+incremental bookkeeping, retained-request capacity or an owned sink still keeps
+the call direct before invocation. No positive worker/grant route exists yet.
+
+The arena total below covers only its enumerated logical components. Any new
+per-connection queue/ticket bookkeeping, allocator/native/runtime cost or changed
+retention must be separately quantified before code acceptance and admission;
+it must not be called globally bounded merely because each queue is finite.
+Existing unbounded connection/result materialization is not silently repaired or
+exempted by this choice. Unchanged callbacks and the original encoder must not
+gain another owning result reference or copy for worker receipts.
+
+Metadata-only request coordination is an intermediate proof. The selected
+resident-supervision objective still requires actual replaceable compatible
+API/UI adapters and coherent assets under separately reviewed controller/version
+tests. Keeping query implementations resident here does not complete that goal.
+The next allocated primitive is original resident response ownership and write
+settlement, without a worker, grant route, new public ACK or snapshot store.
 
 ## Existing client units and producer limits
 

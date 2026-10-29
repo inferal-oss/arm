@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "date": "2026-10-29",
-  "status": "Documentation-only proposal; policy/interface review pending",
+  "status": "Independently source-reviewed contract; worker/grant route inactive",
   "baseline_commit": "06fd4360f174eb31ae7d716301b44dc315b07b3b",
   "source_sha256": {
     "internal/server/resident_auth.go": "5c9f1a9cc09da97fe233cdc93bfccc169eb8e79615ebb0f684096b5c358f853d",
@@ -74,5 +74,14 @@
     "scope": "six documentation/evidence files; no tracked non-document change",
     "arithmetic": "8,491,008 logical bridge/request bytes; 12,582,912 browser-compatible UTF-8 envelope bytes; 87,384 base64 bytes per full 64KiB log page",
     "qualification": "No allocation measurement, runtime check or positive capability is inferred"
+  },
+  "central_review": {
+    "source_hashes_verified": 22,
+    "owner_contract_links_verified": 86,
+    "memory_policy": "Bounded incremental bridge bookkeeping over unchanged legacy result materialization; additional connection/sink/native costs separately quantified and admitted",
+    "view_policy": "Original request-bound v1 views; no new application ACK or cross-ingress retained snapshot store",
+    "replacement_scope": "Intermediate metadata-only proof; actual compatible API/UI adapter replacement remains required",
+    "next_source_scope": "Original resident response ownership and socket-write settlement only; no worker/controller/grant route",
+    "runtime_evidence_added": false
   }
 }
