@@ -1,0 +1,69 @@
+{
+  "status": "SCOPED_COMPONENT_ACCEPTED",
+  "source_base": "6e95aebe559a46f61c472a618ac4085b260ba19c",
+  "candidate_tree": "41169337b1f7f11ea6a5b99dd08dd35068ff006f",
+  "source_sha256": {
+    "internal/manager/kubernetes_forward_port.go": "87523ebec1c0bdab9215d965ec831bafaa0f082a7781d13211f665f9ee733052",
+    "internal/manager/kubernetes_source.go": "a823f83f7a0bc67a4379898eb4ebab91c4f97bd24bac9d2f6bad5534cb25519f",
+    "internal/manager/kubernetes_source_invocation.go": "90177f90a6d2a5c28d60a7747174c4455fab8a9bb62ca28e2a8dc20f364d7de0",
+    "internal/manager/kubernetes_source_invocation_test.go": "c4462094a38eade1348d5057d28cfb02d74dbe17d82892faeb72932ea62f6ee6",
+    "internal/manager/manager.go": "5470903ce0081c7fecfe4718d5e9e8ef624207cde9c5c450cf9aa65b45515927"
+  },
+  "validation": {
+    "normal": {
+      "roots": 20,
+      "named_pass": 60,
+      "named_fail": 0,
+      "named_skip": 0,
+      "mandatory_new_named_nodes": 52
+    },
+    "race": {
+      "roots": 20,
+      "named_pass": 60,
+      "named_fail": 0,
+      "named_skip": 0,
+      "mandatory_new_named_nodes": 52
+    },
+    "normal_race_named_sets_equal": true,
+    "vet": "Manager package passed",
+    "original_phase_returns": 3,
+    "original_controller_command_returns": 8,
+    "ordinary_nonforced_shutdown_original_foreground_return_and_pipe_cleanup": true,
+    "source_members_unchanged": 2913,
+    "selected_inputs_unchanged": 64
+  },
+  "roots": [
+    "TestKubernetesInvocationSeparatesNoAdmissionAndPartialRefusal",
+    "TestKubernetesInvocationCapturesIdentityBeforeAdmissionSQL",
+    "TestKubernetesInvocationUnacknowledgedCommitNeverBecomesNoAdmission",
+    "TestKubernetesInvocationRolledBackInsertHasExactAbsence",
+    "TestKubernetesInvocationClosedOriginalsRetainStorageDebt",
+    "TestKubernetesInvocationCensusRejectsCorruptPhysicalAndBodyRows",
+    "TestKubernetesInvocationNativeCloseFailureStaysUnknown",
+    "TestKubernetesInvocationCannotBeReconstructedOrReadDuringClose",
+    "TestKubernetesInvocationCensusFindsMalformedPhysicalMatchesBeforeAbsence",
+    "TestKubernetesSourceConstructorsRefuseInterposedOriginalKeys",
+    "TestKubernetesSourceReservedRequestsRequirePrivatePermit",
+    "TestKubernetesSourceSameOperationAdmissionIsExclusive",
+    "TestKubernetesSourcePartialAdmissionNeverWaitsUnpublishedCaller",
+    "TestKubernetesSourceLostDebtAckDoesNotExposeOrUnlink",
+    "TestKubernetesSourceNewContractRefusalPrecedesAdmission",
+    "TestKubernetesForwardOriginalTripleCloseAndCachedBinding",
+    "TestKubernetesForwardManagerCloseWaitsForOriginalCaller",
+    "TestKubernetesForwardSQLFailureStillClosesOriginalAndRetainsSettlement",
+    "TestKubernetesInvocationCapabilitiesRequireOriginalProvisioning",
+    "TestKubernetesInvocationNoPortAttemptPreservesOriginalDebts"
+  ],
+  "scope": "Original Kubernetes source-constructor outcome and cleanup component: exact original admission/custody census, legitimate storage capability transition, proven no-port-attempt refusal, conservative unknown commit and retained obligations.",
+  "history": {
+    "earlier_normal_gate": "FAILED:18roots14pass4fail;51named29pass22fail;race/vet unstarted. Failure preserved.",
+    "cancellation_controls": "Earlier source-bound before/during controls remain qualified expected aborts, not feature passes."
+  },
+  "limits": [
+    "Selected component tests and vet only; no full-suite or multi-platform runtime acceptance.",
+    "No public worker/factory/workflow, real cluster, enrollment or installer activation acceptance.",
+    "The private visibility controller is not a build or acceptance of the current CLI or generated frontend assets.",
+    "Controlled SQL/unknown-ACK fixtures are scoped causal tests, not proof of arbitrary physical commit-failure behavior.",
+    "Original helper Wait/pipe receipts establish the inspected owners only; no universal descendant, hermetic environment or native quota claim."
+  ]
+}

@@ -7821,3 +7821,27 @@ Automatic main build and Pages deployment both pass on `dd365d8` in
 The subsequent review-queue/publication updates are documentation only; runtime
 inputs remain identical to reviewed/tested `5b625b1`. This accepts the scoped
 rollout feature without broadening the platform or full-suite limits above.
+
+## Original Kubernetes constructor outcome component
+
+The corrected five-file component is validated on main base `6e95aebe`,
+preserving the rollout source and current module inputs. Normal and race each
+pass the exact 20 roots / 60 named cases, including all 52 mandatory new nodes,
+with equal complete rosters and no failures or skips. Manager vet passes.
+Controls cover bounded corrupt physical/body rows, original identity capture,
+unknown commit acknowledgments, retained storage, exact provider capabilities
+and interposed source/storage/port keys. The selected source and inputs remain
+unchanged through original process returns and ordinary cleanup.
+
+The earlier 18-root normal run remains failed: 14 roots passed and four failed;
+race and vet did not start. Its failures exposed the legitimate provider
+capability transition and the distinction between proven pre-admission refusal
+and uncertain port admission. The passing successor includes both corrections
+and meaningful capability-tampering, retained-debt and lost-acknowledgment
+controls. Earlier cancellation checks are expected abort evidence only.
+
+This is selected component acceptance, not a full suite, current CLI/frontend
+build, public worker, protected V2 activation, enrollment, native installation
+or live-cluster result. Controlled SQL fixtures do not prove arbitrary physical
+commit-failure behavior or exhaustive descendant containment.
+[Normalized component evidence](validation/kubernetes-constructor-outcome-2026-10-28.json).

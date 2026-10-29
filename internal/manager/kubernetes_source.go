@@ -20,6 +20,7 @@ type KubernetesSourceResult = kubesource.Result
 // KubernetesSourcePreparation is an unused original native pair capability.
 // No row/ID/path/FD or browser request can reconstruct it after admission.
 type KubernetesSourcePreparation struct {
+	invocation          *KubernetesSourceInvocation
 	lostDebtAck         bool // private fixture: committed observation with lost acknowledgment
 	manager             *Manager
 	scope               kubesource.Scope
@@ -134,7 +135,10 @@ func (m *Manager) PrepareKubernetesForwardSource(ctx context.Context, scope kube
 	}
 	return m.prepareKubernetesSource(ctx, scope, callerJoined)
 }
-func (m *Manager) prepareKubernetesSource(ctx context.Context, scope kubesource.Scope, callerJoined <-chan struct{}) (result *KubernetesSourcePreparation, resultErr error) {
+func (m *Manager) prepareKubernetesSource(ctx context.Context, scope kubesource.Scope, callerJoined <-chan struct{}) (*KubernetesSourcePreparation, error) {
+	return m.prepareKubernetesSourceRecorded(ctx, scope, callerJoined, nil)
+}
+func (m *Manager) prepareKubernetesSourceRecorded(ctx context.Context, scope kubesource.Scope, callerJoined <-chan struct{}, invocation *KubernetesSourceInvocation) (result *KubernetesSourcePreparation, resultErr error) {
 	if ctx == nil || callerJoined == nil || scope.Validate() != nil {
 		return nil, model.Err("invalid_request", "closed native source scope and original caller required")
 	}
@@ -179,12 +183,12 @@ func (m *Manager) prepareKubernetesSource(ctx context.Context, scope kubesource.
 	if m.sourceBeforeAdmission != nil {
 		m.sourceBeforeAdmission()
 	}
-	transit, err := m.acquireKubernetesSourceTransit(ctx, scope, budget, joined)
+	transit, err := m.acquireKubernetesSourceTransitRecorded(ctx, scope, budget, joined, invocation)
 	if err != nil {
 		return nil, err
 	}
 	life, cancel := context.WithCancel(transit.Context())
-	k := &KubernetesSourcePreparation{manager: m, scope: scope, transit: transit, ctx: life, cancel: cancel, callerJoined: callerJoined, privateJoined: joined, done: make(chan struct{})}
+	k := &KubernetesSourcePreparation{invocation: invocation, manager: m, scope: scope, transit: transit, ctx: life, cancel: cancel, callerJoined: callerJoined, privateJoined: joined, done: make(chan struct{})}
 	// The registered transit owns construction itself; Close cannot miss it.
 	defer func() {
 		if problem := recover(); problem != nil {
@@ -201,6 +205,9 @@ func (m *Manager) prepareKubernetesSource(ctx context.Context, scope kubesource.
 		m.kubernetesSources = map[string]*KubernetesSourcePreparation{}
 	}
 	m.kubernetesSources[transit.id] = k
+	if invocation != nil {
+		invocation.preparation = k
+	}
 	m.mu.Unlock()
 	if err = transit.CheckActive(life); err != nil {
 		return nil, err
@@ -210,7 +217,7 @@ func (m *Manager) prepareKubernetesSource(ctx context.Context, scope kubesource.
 		err = model.Err("backend_stopping", "source construction cancelled")
 	} else {
 		request := scope.Request(m.host, budget, true)
-		k.parent, err = m.acquireWithSourcePermit(request, nil, false, nil, &kubernetesSourcePermit{manager: m, scope: scope, parent: true, request: request}, nil)
+		k.parent, err = m.acquireWithSourcePermit(request, nil, false, nil, &kubernetesSourcePermit{manager: m, scope: scope, parent: true, request: request, invocation: invocation}, nil)
 	}
 	if k.parent.ID != "" {
 		m.kubernetesSources[k.parent.ID] = k
@@ -436,11 +443,15 @@ func (k *KubernetesSourcePreparation) finish(published bool) {
 // This permit has no public constructor or wire representation. Generic entry
 // points pass nil; only this source constructor builds its exact request.
 type kubernetesSourcePermit struct {
-	manager *Manager
-	scope   kubesource.Scope
-	parent  bool
-	port    bool
-	request model.Request
+	// Set only by this permit's bounded pre-INSERT key lookup. The same
+	// constructor call consumes it; an empty lease or an error is not proof.
+	existingKeyRefused bool
+	invocation         *KubernetesSourceInvocation
+	manager            *Manager
+	scope              kubesource.Scope
+	parent             bool
+	port               bool
+	request            model.Request
 }
 
 func validateSourcePermit(m *Manager, r model.Request, p *kubernetesSourcePermit) error {
@@ -463,9 +474,19 @@ func validateSourcePermit(m *Manager, r model.Request, p *kubernetesSourcePermit
 	if p == nil || p.manager != m || p.scope.Validate() != nil || p.port && (!p.parent || p.scope.Stage != kubesource.Forward) || !reflect.DeepEqual(r, p.request) || !reflect.DeepEqual(r, want) {
 		return model.Err("invalid_request", "reserved source request requires exact native admission permit")
 	}
+	if p.invocation != nil {
+		i := p.invocation
+		c := i.candidate(p.parent, p.port)
+		if !i.valid() || i.manager != m || i.scope != p.scope || c == nil || c.id == "" || c.key != r.Key || !reflect.DeepEqual(c.request, r) {
+			return unknownKubernetesInvocation()
+		}
+	}
 	return nil
 }
 func (m *Manager) acquireKubernetesSourceTransit(ctx context.Context, scope kubesource.Scope, budget string, joined <-chan struct{}) (*RelayTransit, error) {
+	return m.acquireKubernetesSourceTransitRecorded(ctx, scope, budget, joined, nil)
+}
+func (m *Manager) acquireKubernetesSourceTransitRecorded(ctx context.Context, scope kubesource.Scope, budget string, joined <-chan struct{}, invocation *KubernetesSourceInvocation) (*RelayTransit, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if ctx.Err() != nil {
@@ -473,7 +494,7 @@ func (m *Manager) acquireKubernetesSourceTransit(ctx context.Context, scope kube
 	}
 	request := scope.Request(m.host, budget, false)
 	request.Kind = relayTransitKind
-	lease, err := m.acquireWithSourcePermit(request, nil, true, nil, &kubernetesSourcePermit{manager: m, scope: scope, request: request}, nil)
+	lease, err := m.acquireWithSourcePermit(request, nil, true, nil, &kubernetesSourcePermit{manager: m, scope: scope, request: request, invocation: invocation}, nil)
 	if err != nil {
 		return nil, err
 	}

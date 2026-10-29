@@ -3152,8 +3152,9 @@ The historical codec preserves prior decisions and observations while current
 prefixes fence stale approvals. A fresh explicit review may follow an identical
 runtime refresh; unknown or changed identity cannot revive old authority.
 Protected V2 writing, native workflow dispatch and public onboarding are not
-activated. Durable pre-Pod ownership, truthful constructor outcomes, typed
-workers and the unified dashboard flow remain separate work.
+activated. Durable pre-Pod ownership, typed workers and the unified dashboard
+flow remain separate work. The original constructor-outcome component is
+described below.
 [Scoped validation](validation/kubernetes-components-integration-2026-10-28.json).
 
 ### Reviewed gradual-rollout integration
@@ -3171,3 +3172,25 @@ fuzzy-search module supports the existing pinned Charm list component; no other
 module/dependency promotion, backend protocol or web editor is introduced.
 The accepted boundary remains cooperative, local and CLI-first. Native metadata
 compatibility is fixture-tested and version-dependent rather than attested.
+
+### Original Kubernetes constructor outcomes
+
+A private invocation captures proposed source, storage and port identities and
+request keys before admission bookkeeping, then records bounded original
+admission bodies before insertion.
+Failed construction retains that invocation; neither saved rows nor a new
+caller can reconstruct its native owners. After the original caller joins, a
+bounded read-only census checks physical keys, canonical bodies and the exact
+original acknowledgments. Unknown commit, malformed rows and uncertain native
+cleanup remain unknown with retained obligations.
+
+The census accepts only the exact storage capability pair added by the
+acknowledged original provider, with its owned artifact identity and exact
+cached/census lists. A private permit records proven existing-key refusal before
+any insertion attempt; only that fact avoids inventing port-cleanup uncertainty.
+Lost commit acknowledgments remain uncertain. Generic acquisition idempotency
+is unchanged; source construction cannot adopt an interposed existing row.
+
+This component supplies outcome evidence, not worker authority. Public workflow
+dispatch, protected V2 writing, enrollment and installation remain gated.
+[Scoped validation](validation/kubernetes-constructor-outcome-2026-10-28.json).

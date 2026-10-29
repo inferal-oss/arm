@@ -909,7 +909,7 @@ source review alone does not establish runtime acceptance or production enableme
 | Ownership branch | Current reviewed boundary | Next gate |
 | --- | --- | --- |
 | `codex/storage-native-integration-review` | Published storage source is composed with native custody; `cca2e738` closes the scoped namespace, benchmark-original and retained-placement findings. Normal/race each pass 46 roots / 246 names, with targeted vet. | Broader suite/platform/runtime acceptance and the paired named-root accounting bridge remain separate. No new activation follows. |
-| `codex/kubernetes-constructor-outcome-current` | Core, managed, historical and private helper components are integrated as `17f39cd2`: normal/race each 85 roots / 195 names, targeted vet and three Linux ARM64 compile-only artifacts. The separate constructor-outcome candidate failed its normal gate: 14 of 18 roots passed; race/vet did not start. | Correct the exact provisioned-storage capability comparison and proven pre-admission port-refusal handling, retaining uncertain commit/cleanup debt. Durable intent, competing-source fencing, protected V2 compatibility and typed public workers remain open. |
+| `codex/kubernetes-constructor-outcome-main-current` | Core, managed, historical and private helper components are integrated as `17f39cd2`. The corrected original-constructor outcome component passes current-base normal/race: 20 roots / 60 names each, plus Manager vet. The earlier failed gate remains failed. | Durable pre-Pod intent, competing-source fencing, protected V2 compatibility and typed public workers remain open. Constructor census evidence cannot recreate owners or authorize installation. |
 | `codex/unified-onboarding-ui-integration` | Current-main source projection is reviewed. Earlier component evidence passes 51 Node cases, three RDF cases and eight Go race roots / 15 names on its recorded source. | Validate final composed assets, current Go behavior and actual connect/install dialogs with controlled node discovery. Installation and live-cluster acceptance remain open. Dependency changes require affected component tests again. |
 | `codex/forward-worker-current406` | Private binder is integrated as `25d60cc`. Older worker source has scoped six-package vet and four Linux ARM64 compile-only evidence; earlier route/cleanup failures remain failed. Current-main extraction needs source fixes. | Refuse changed storage bindings at default-root native and application-byte gates; make failure-path test joins unconditional; then validate the finite current composition. Intermittent cleanup uncertainty and production enablement remain unresolved. |
 | `codex/provider-pair-c3-current` | Unused primitives are integrated as `53938db`; current full-hook source is reviewed, with 198 finite roots proposed and unrun. | Correct atomic cancellation-marker publication and the final complete phase-budget check before running the reviewed controls and separate test windows. C4/C5, named-root accounting and public activation remain separate. |
@@ -989,8 +989,16 @@ The composed normal/race, vet and compile-only evidence is
 [scoped component acceptance](validation/kubernetes-components-integration-2026-10-28.json).
 
 The requested unified connect/install dashboard remains unfinished. Remaining
-gates include an original constructor-outcome contract, durable pre-Pod intent
-and competing-source fencing, protected V2 compatibility activation, typed
+gates include durable pre-Pod intent and competing-source fencing,
+protected V2 compatibility activation, typed
 workers, live review deadlines and actual cluster/node/runtime acceptance.
 Fixed helpers are private and unexposed; historical data cannot recreate native
 owners. These component checks do not enable production installation.
+
+The original constructor-outcome component now captures proposed identities
+before admission SQL and performs a bounded census only after original callers
+join. It distinguishes proven no admission from retained obligations and unknown
+commit or cleanup. Normal/race each pass 20 roots / 60 names, with Manager vet;
+the exact storage capability and proven pre-admission port-refusal corrections
+are included. See the [scoped record](validation/kubernetes-constructor-outcome-2026-10-28.json).
+Public workers, native installation and live-cluster acceptance remain open.

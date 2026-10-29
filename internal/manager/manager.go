@@ -1104,7 +1104,22 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 	if r.Key != "" {
 		var old []byte
 		var savedRun sql.NullString
-		e := m.db.QueryRow(`SELECT data,run FROM leases WHERE request_key=?`, r.Key).Scan(&old, &savedRun)
+		var e error
+		if source != nil {
+			// An original private source constructor never adopts an existing
+			// idempotency result, even with an identical request. Read no body
+			// or saved command, and include bounded BLOB key aliases in refusal.
+			var present int
+			e = m.db.QueryRow(`SELECT 1 FROM leases WHERE CASE WHEN typeof(request_key) IN ('text','blob') AND length(CAST(request_key AS BLOB)) BETWEEN 1 AND 128 THEN CAST(request_key AS TEXT) END=? LIMIT 1`, r.Key).Scan(&present)
+			if e == nil {
+				// This exact permit has performed no INSERT, Commit or native
+				// port operation. Preserve that fact for original cleanup only.
+				source.existingKeyRefused = true
+				return empty, model.Err("idempotency_conflict", "original source request key already exists; native owner cannot be adopted")
+			}
+		} else {
+			e = m.db.QueryRow(`SELECT data,run FROM leases WHERE request_key=?`, r.Key).Scan(&old, &savedRun)
+		}
 		if e == nil {
 			var l model.Lease
 			if e = json.Unmarshal(old, &l); e != nil {
@@ -1203,7 +1218,17 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		return empty, e
 	}
 	used.Disk = diskReserved
-	l := model.Lease{ID: local.ID(), Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Request: r, Created: time.Now().UTC(), State: "queued", Revision: 1, Capabilities: capabilities}
+	var leaseID string
+	if source != nil && source.invocation != nil {
+		c := source.invocation.candidate(source.parent, source.port)
+		if !source.invocation.valid() || source.invocation.manager != m || c == nil {
+			return empty, unknownKubernetesInvocation()
+		}
+		leaseID = c.id
+	} else {
+		leaseID = local.ID()
+	}
+	l := model.Lease{ID: leaseID, Host: m.host, Owner: m.owner, OwnerUsername: m.ownerUsername, Request: r, Created: time.Now().UTC(), State: "queued", Revision: 1, Capabilities: capabilities}
 	if r.StoragePool != "" {
 		p := m.storagePools[r.StoragePool]
 		l.StorageBinding = &model.StoragePoolBinding{Name: r.StoragePool, Volume: p.record.Volume, Backing: p.record.Backing, SharesDefault: p.record.Backing != "" && p.record.Backing == m.defaultStorageLocation.Backing}
@@ -1291,11 +1316,24 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		projectCargo(&l, cargoNewRecord(l, run))
 	}
 	b, _ := json.Marshal(l)
+	if source != nil {
+		if e = source.captureCandidate(m, l, b, rb); e != nil {
+			return empty, e
+		}
+	}
 	tx, e := m.db.Begin()
 	if e != nil {
 		return empty, e
 	}
-	defer tx.Rollback()
+	defer func() {
+		rollbackErr := tx.Rollback()
+		if source != nil && source.invocation != nil {
+			c := source.invocation.candidate(source.parent, source.port)
+			if !c.commitAttempted && rollbackErr == nil {
+				c.rolledBack = true
+			}
+		}
+	}()
 	var key any
 	if r.Key != "" {
 		key = r.Key
@@ -1307,6 +1345,9 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		if e = excludeSourceOperationTx(tx, source.scope); e != nil {
 			return empty, e
 		}
+	}
+	if source != nil && source.invocation != nil {
+		source.invocation.candidate(source.parent, source.port).attempted = true
 	}
 	if _, e = tx.Exec(`INSERT INTO leases VALUES(?,?,?,?)`, l.ID, key, string(b), rb); e != nil {
 		return empty, e
@@ -1346,9 +1387,19 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 			return empty, e
 		}
 	}
+	if source != nil && source.invocation != nil {
+		source.invocation.candidate(source.parent, source.port).commitAttempted = true
+	}
 	e = tx.Commit()
 	if e != nil {
 		return empty, e
+	}
+	if source != nil && source.invocation != nil {
+		c := source.invocation.candidate(source.parent, source.port)
+		if c.lostAdmissionACK {
+			return empty, unknownKubernetesInvocation()
+		}
+		c.acknowledged = true
 	}
 	if sync != nil {
 		sync.acknowledgeHandoff()

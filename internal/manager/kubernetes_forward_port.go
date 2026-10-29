@@ -83,7 +83,8 @@ func (k *KubernetesSourcePreparation) prepareForwardPort(budget string) error {
 	}
 	request := k.scope.PortRequest(m.host, budget, m.portNamespace)
 	var err error
-	k.port, err = m.acquireWithSourcePermit(request, nil, false, nil, &kubernetesSourcePermit{manager: m, scope: k.scope, parent: true, port: true, request: request}, nil)
+	permit := &kubernetesSourcePermit{manager: m, scope: k.scope, parent: true, port: true, request: request, invocation: k.invocation}
+	k.port, err = m.acquireWithSourcePermit(request, nil, false, nil, permit, nil)
 	k.portID = k.port.ID
 	if k.port.ID != "" {
 		m.kubernetesSources[k.port.ID] = k
@@ -91,7 +92,12 @@ func (k *KubernetesSourcePreparation) prepareForwardPort(budget string) error {
 	state := k.port.State
 	m.mu.Unlock()
 	if err != nil {
-		_ = k.transit.MarkCleanupUncertain("forward port admission acknowledgment unresolved")
+		// Only this original permit's pre-INSERT existing-key refusal proves
+		// no port attempt. Lost Commit ACK also returns an empty lease, but
+		// must keep the transit's irreversible uncertainty.
+		if !permit.existingKeyRefused {
+			_ = k.transit.MarkCleanupUncertain("forward port admission acknowledgment unresolved")
+		}
 		return err
 	}
 	if state != "provisioning" {
