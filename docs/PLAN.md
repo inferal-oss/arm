@@ -151,69 +151,38 @@ Original browser/context/probe/server owners close/join, with no real transport
 or mutation. See the [composed record](validation/ux-resource-help-composed-2026-10-29.json).
 Source publication is separate from installation and activation; the installed
 runtime stays unchanged while the upgrade design addresses immutable paths.
-Monitor's existing narrow tooltip overflow, full transport/auth and complete
-route/state/terminal UX coverage remain open. Historical owner review-pending
+Monitor findings from this Resource checkpoint are handled below; full
+transport/auth and complete route/state/terminal UX coverage remain open. Historical owner review-pending
 notes below retain their original source scope and are superseded by this
 independent acceptance. Broader shell/Mesh/global helper and backend/pin changes
 remain centrally coordinated.
 
-Next bounded inventory: reuse the UX owner on accepted `ab4f06b` for Monitor
-only, preserving all earlier branches/evidence. Render the actual route with
-contract-shaped synthetic observations, dense cores/devices, stale/unknown and
-pause/selection retention, six help kinds and desktop/narrow/short/doubled-token
-geometry. The existing narrow Monitor tooltip overflow is a reproduced starting
-finding. Read-only fixture/report additions are allocated through the unchanged
-bounded FIFO; product main/styles, metric arithmetic and Resource controls stay
-protected until a concrete scoped correction is reviewed. No real transport,
-backend, OS/device discovery or environment setup is allocated.
+Monitor inventory `2b21806`, layout `889923e` and selector correction `b00439e`
+are independently reviewed and composed. The scoped changes keep device labels
+readable, stack compact inline facts, contain whole Stats and widen technical
+help with bounded native tooltips. Exact hook-removal and ontology-prefix guards
+preserve all metric/I/O math, native control types/callbacks, IDs/selection/focus,
+shared graph/engine/pins and accepted Resource behavior.
 
-Monitor inventory `2b21806` is reviewed read-only: fifteen current/protected
-hashes match and product files are unchanged. Native images reproduce overlapping
-device labels, technical help columns as narrow as 8px under selected doubled
-tokens, and tooltips crossing narrow/right-column viewport edges. Remediation is
-allocated only to the existing noninteractive Monitor surface and selector-grid
-hooks, the six explicit Monitor help kinds, and additive Monitor-specific styles.
-Native control types, exact IDs/selection/focus, current-context help, disposal,
-all metric/I/O calculations and accepted Resource behavior remain protected.
-Return complete label/value/tooltip clipping and native keyboard evidence plus
-state/selection regressions through the same bounded FIFO. Vertical compensation
-requires a native-user causal reproduction; prefer existing CSS scroll behavior
-and do not add lifecycle/focus code without another concrete reviewed finding.
-No global engine/theme/shell, backend/protocol/pin, live transport or installation
-changes are allocated. Independent final composition remains a gate.
-The doubled-token follow-up reproduces a native Stat box extending to 786px in a
-768px viewport. One additional MonitorSurface-only Stat rule is allocated:
-border-box sizing, zero minimum inline size and a 100% maximum. Preserve the
-original failing width control, native Stat values and all other surface styles.
-Any remaining zero-width detail values require a separate concrete finding;
-document containment alone does not establish readability.
-Opened Monitor memory/storage facts independently reproduce zero-width values
-after Stat containment: native description grids use a 7rem label minimum and
-subgrid, leaving 224px/0px columns under selected doubled tokens. MonitorSurface-
-only inline DescriptionList stacking/minimum-size/wrapping styles are allocated
-at existing compact and medium width classes (including 768px). No new main hook,
-native field/type/value/math, Resource or global style change is allocated.
-Verify all seven memory/storage values and inline rates, full clipping ancestors
-and useful value widths; preserve the negative geometry rather than counting
-its successful diagnostic exit as visual acceptance.
-Earlier Monitor Home controls fail with insufficiently settled native scrolling.
-The timing diagnostic preserves those failures and verifies that settling both
-panel/document for 200ms lets single Home and the full native sequence reach the
-panel top. Focus remains native and keys remain unprevented. No product overscroll,
-focus or lifecycle change is needed; background chaining and arbitrary rapid-key
-timing are not claimed fixed.
+Independent final-source checks pass 445 JS tests, 34 native component/ownership
+cases, native build, deterministic assets and six guarded browser cohorts:
+selectors, help, state/selection, opened facts, causal keys and timing. Actual
+computed tracks now give 292.25px desktop, 274px narrow and 281.5px doubled-tablet
+labels. All seven memory/storage and four rate values have useful readable
+width; whole Stats fit. The earlier containment-only grid minimum was overridden
+by native column-state specificity; its negative control stays preserved.
+The final app-only matching-state rule is verified in the adopted cascade.
 
-Owner correction `889923e` passes independent current-composition checks:
-445 JS, 34 native component/ownership cases, native build, deterministic assets
-and all five guarded help/state/detail/keyboard browser cohorts with positive
-original cleanup. Final source/test hashes and exact hook/prefix guards pass.
-Independent visual review nevertheless finds the intended 18rem device-grid
-minimum overridden by the native Grid `[data-columns]` state rule: narrow labels
-still occupy 120.5px. Landing is held for an app-only Monitor selector-state
-specificity correction and computed-track/usable-width regression, with existing
-ID/selection/focus/math and wider-layout controls preserved. Earlier successful
-containment evidence remains source-qualified; it does not establish useful grid
-reading width. No global/pinned-engine, main property or runtime scope expands.
+Settled native Home reaches the panel beginning while preserving original focus
+and unprevented keys. The fixture waits for both scrollers for 200ms; background
+chaining and arbitrary rapid-key timing are not claimed fixed, and no product
+scroll/focus/lifecycle handler is added. Original probe/context/browser/server
+owners close/join with no live Backend/resource mutation. Source-qualified
+narrow/desktop/short/doubled images are visually reviewed. See the
+[composed record](validation/ux-monitor-composed-2026-10-29.json).
+Source publication is separate from installation/activation. Historical owner
+review-pending statements retain their scope; broader transport, state/size,
+terminal and complete UX coverage remain open.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
@@ -1411,3 +1380,60 @@ Before/after causal runs preserve the native Home/PageDown/End/Home/Escape
 failure and its CSS-only correction. No shared focus, tooltip engine, shell,
 backend, pins or generated assets change. Independent composition/rebuild and
 broader UX gates remain open.
+
+## Monitor inventory — read-only findings ready for allocation
+
+Owner: `codex/ux-monitor-inventory`, from accepted `ab4f06b`. The completed
+Resource branch and artifacts remain preserved. This continuation adds only a
+fresh synthetic Monitor Backend, native inventory runner and evidence/docs.
+Main/app styles, metric help, monitor/I/O math, graph/engine/protocol, dependency
+pins, Resource fixtures/tests and generated assets remain byte-identical.
+
+The [Monitor inventory](validation/ux-monitor-inventory-2026-10-29.json)
+reproduces three P2 findings: overlapping/clipped device labels, cramped
+technical-help values and centered help tooltips crossing viewport edges.
+Proposed allocation is limited to distinct noninteractive Monitor selector/
+surface/help hooks in main initialization/help and additive Monitor-scoped app
+styles. No product correction is implemented or authorized by this report.
+
+Two sequential bounded cohorts cover desktop/narrow/short/selected doubled
+tokens, six help kinds, dense valid cores/devices and read-only pause/selection/
+unknown/reset/stale/disconnect/reconnect behavior. Native identity/selection/
+focus and gap controls are observed intact. All product edits, independent
+review/composition and broader UX acceptance remain separate gates.
+
+## Monitor layout — owner implementation, independent review pending
+
+Owner: `codex/ux-monitor-layout`, from frozen inventory `2b21806`. The allocated
+correction adds distinct noninteractive Monitor selector/surface/help hooks;
+only Monitor presentation rules change. Native checkbox/dialog/button types,
+selection callbacks, current-context help, close/disposal and graph/math remain
+unchanged. Compact and medium inline facts stack after the doubled-token
+inventory exposed zero-width values; whole Monitor Stats keep their padding
+inside the existing grid tracks. No shared component, Resource code, backend,
+protocol, pin or generated asset change is included.
+
+The [Monitor layout record](validation/ux-monitor-layout-2026-10-29.json)
+binds final source and bounded owner cohorts to label/technical reading widths,
+short-dialog reading floors, full tooltip border/painted text and native
+selection/focus/gap controls. Failed rapid key sequences remain preserved;
+settling both native scrollers between keys reaches every Home/End target.
+This qualifies the fixture timing, without claiming to fix background scroll
+chaining or all rapid input sequences. Original owners close and join.
+
+Review gates: independent final-diff review, composed validation and central
+asset rebuild remain open. No build, install, runtime activation or live
+transport was performed in this allocation. Broader Monitor routes/states,
+universal zoom, terminal parity and the full UX pass remain open.
+
+
+## Monitor selector-grid review correction
+
+Independent composition of `889923e` found that complete label fit alone did
+not prove useful selector columns. The native Grid `[data-columns]` state rule
+overrode the less-specific Monitor grid rule: narrow labels remained 120.5px
+wide. The focused follow-up matches that state only on MonitorDeviceSelectors;
+no main/native/global style or interactive hook changes. The
+[selector-grid record](validation/ux-monitor-selector-grid-2026-10-29.json)
+preserves the failing computed-track control and affected final revalidation.
+Independent review/composition remains the landing gate.

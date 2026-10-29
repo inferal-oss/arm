@@ -1,5 +1,30 @@
 # Validation record
 
+## Monitor layout — independent composed acceptance
+
+Focused inventory `2b21806`, layout `889923e` and selector correction `b00439e`
+pass independent final-source review. The unchanged FIFO passes 445 JS tests,
+34 native component/ownership/lifecycle cases, native build and byte-identical
+asset rebuilds. Six guarded browser cohorts pass on the same final inputs:
+selectors, help, states, opened details, causal keys and timing. They cover four
+viewport/token cases, 24 help dialogs, 48 painted tooltip samples and eight edge
+checks; all original probe/context/browser/server owners close/join. There are
+no page errors, nonfixture requests, live Backend/WebSockets or resource mutations.
+
+Computed device tracks are two at desktop and one at narrow/doubled tablet,
+with 292.25px/274px/281.5px label space. Earlier containment alone left the new
+minimum overridden by native Grid state; that failed control is preserved.
+Complete Stats, all seven memory/storage values and four rate values fit, with
+useful reading widths. Settled native Home reaches the panel top; the fixture
+waits for both scrollers for 200ms. Earlier rapid/insufficiently settled failures
+remain qualified. No product scroll/focus/keyboard behavior is added, and
+background chaining or arbitrary rapid timing is not claimed fixed. Narrow,
+desktop, short and doubled-token images are visually reviewed. Selected text
+token doubling is not universal zoom. Protected math/graph/module/pin and
+Resource sources remain unchanged. No installed activation, real backend/auth,
+compiled-bundle browser, full-Go/Linux/terminal or complete UX acceptance is
+inferred. [Normalized record](validation/ux-monitor-composed-2026-10-29.json).
+
 ## Resident prototype — independent composed acceptance
 
 Focused source `1a9b7ba` and correction `3992f88` pass final isolated review and
@@ -74,7 +99,8 @@ correction uses existing opener restoration. The final asserting causal mode
 has separate source-qualified owner evidence. Backend/module/pin/shared-engine
 bytes remain unchanged. No installed activation, compiled-bundle browser run,
 universal zoom, Linux/full-Go or complete UX acceptance is inferred. Monitor's
-existing narrow tooltip overflow remains open.
+existing narrow tooltip overflow remained open at this Resource checkpoint;
+the later Monitor owner correction below awaits independent composition.
 Published integration `ab4f06b` passes
 [Public website workflow 40922316270](https://github.com/inferal-oss/arm/actions/runs/40922316270).
 [Normalized record](validation/ux-resource-help-composed-2026-10-29.json).
@@ -8474,3 +8500,141 @@ positive original cleanup. The full-matrix receipt retains its earlier fixture
 hash; the final fixture differs only by added assertions in the inactive
 causality-only branch. Product/shared source hashes are identical between those
 runs. Both exact fixture hashes are retained in the normalized record.
+
+## Monitor actual-route inventory — read-only evidence
+
+The [Monitor source-hash record](validation/ux-monitor-inventory-2026-10-29.json)
+uses accepted `ab4f06b` product source unchanged and a fresh synthetic Backend.
+Two cohorts run sequentially through the unchanged FIFO: help/layout takes
+55302ms, state/selection takes 32839ms, including original native-probe/context/
+browser/server cleanup. No page errors, forbidden operations or live transports
+occur. No broad suites, builds, installation or product edits are included.
+A successful inventory exit means collection and safety/lifecycle checks
+completed; negative geometry results are findings, not passing visual checks.
+
+The matrix is 1440×900, 390×900, 390×320 and 768×600 with selected pixel text
+tokens doubled. Actual help body 15/30px and technical 13/26px values are asserted.
+Native checkbox labels remain 14px and tooltip font behavior remains unchanged;
+whole-browser zoom coverage is not claimed. The actual modal panel is measured,
+with complete control/text clipping ancestors and fixed shell bounds. Generated
+HTML tooltip borders and painted text use native browser layout measurements;
+SVG chart marks use platform title tooltips and are outside those CSS bounds.
+
+Twenty-four native help dialogs cover CPU, memory/swap, filesystem, disk I/O,
+network and unavailable GPU. All plain help paragraphs, actual modal panels,
+Close controls, original opener restoration and disposal are observed intact.
+Forty-eight keyboard/hover tooltip samples reproduce viewport crossing, including
+all six narrow help icons and right-edge desktop/doubled columns. At 390px,
+Network reaches x=421.21875. Memory technical values measure 38.734375px and
+filesystem 33.859375px; at doubled 768px they shrink to 16.78125px and 8.234375px.
+This is reading-width evidence, not a modal containment defect. Long device
+labels overlap neighboring checkbox cells and clip at narrow/doubled sizes;
+All/None controls remain readable. Dense 32-core bounds and fresh headline
+values fit in these cases. Representative labels, technical fields and native
+tooltip captures are visually inspected.
+
+State controls retain the displayed CPU reading and pause focus until unpause,
+then apply a valid zero reading. Initial native chart dots/lines preserve the
+expected CPU/disk/network unavailable/membership gaps. All/None/subset/removed/
+returned/explicit-All checked counts are 12/0/1/1/1/13. Custom membership does
+not silently select the new ID. The original checkbox node, checked identity
+and focus survive missing/returned labels and reconnect. Selected-ID rates
+return to 1/2 MiB/s; missing/reset/None are unavailable, while actual zero is
+0 B/s. Empty disk inventory shows zero selectable devices. Unknown, stale and
+disconnected headline boxes/text are individually measured and visually
+captured. Global stale notice remains readable; CPU retains a numeric last
+observation while remaining RAM/storage become unavailable. This is an
+observation, not a separately established semantic defect.
+
+Some initial state captures remained scrolled near device controls and do not
+establish headline visual evidence. Those receipts remain preserved. The final
+state cohort adds explicit headline bounds/captures only within stateInventory;
+substituting its earlier function reproduces the help-cohort fixture hash.
+Both exact fixture hashes are retained, with identical product/shared/Backend
+source hashes. Some vertical tooltip flags follow measurement/navigation scroll
+state; no focus compensation is proposed without a native-user causal test.
+Independent source review, explicit product allocation and broader UX/real
+transport acceptance remain open.
+
+## Monitor layout — scoped owner regression evidence
+
+The [source-bound Monitor layout record](validation/ux-monitor-layout-2026-10-29.json)
+retains the accepted inventory and failed controls, then records the corrected
+actual-route renderer with a synthetic, contract-shaped Backend. Separate
+unchanged-FIFO cohorts run one at a time within the allocated two-CPU/two-GiB,
+120-second window including cleanup. No broad suite, build, installation,
+backend/socket activation or real mutation is included.
+
+The four cases are 1440×900, 390×900, short 390×320 and 768×600 with selected
+pixel tokens doubled. All 24 help dialogs assert complete prose, technical
+labels/values/tails, useful widths, bounded panels, native controls and original
+Close/Escape disposal. Short panels assert 120px/four computed reading lines.
+Native help body text is 15/30px and technical text 13/26px; this is selected-token
+scaling, not universal browser zoom. All 48 keyboard/hover tooltip samples plus
+eight visible-edge samples assert native pseudo-element borders and painted
+text. Both twelve-device selector sets assert every complete label/input and
+no pair overlap. Whole Stats and all seven opened RAM/storage values plus four
+inline rate facts fit actual clipping ancestors; desktop remains paired and
+compact/medium facts stack.
+
+State regressions assert pause/resume, All/None/subset/missing/returned/new-ID
+membership, the original checked input and focus through removal/reconnect,
+1/2 MiB/s custom rates, unavailable/reset gaps versus genuine 0 B/s, unknown and
+stale/disconnected remaining headlines, and empty inventory. Initial native
+CPU/disk/network dots/lines preserve their expected discontinuities. A stale
+CPU last observation is recorded under its stale label; this patch does not
+change measurement semantics.
+
+The failed native rapid Home/PageDown/End/Home sequence remains evidence. A
+read-only diagnostic observes native SECTION focus and unprevented keys; End
+then single Home and the full sequence reach panel 0 after both panel/document
+scrollers settle. The corrected causal oracle waits for both scrollers before
+subsequent input and keeps every reached-target assertion. It does not suppress
+native background chaining or establish all rapid-key timings. Original
+Close/Escape focus, full tooltip geometry and disposal pass.
+
+Thirteen focused helper tests and 27 native graph/ownership tests pass with
+zero failures/skips and complement the browser checks.
+Source guards prove the main file matches the inventory base after removing
+only the exact allocated noninteractive hooks, and the entire pre-existing
+ontology is an unchanged prefix. Protected renderer/math/help/backend/model,
+Resource fixtures/tests, shared tooltip ontology and embedded asset bytes match
+the base. All original CDP/context/browser/server owners positively close/join;
+no page errors, real sockets or forbidden calls occur. Representative compact,
+short and doubled-text captures are visually inspected. Independent final-diff
+review, composed checks/rebuild, installed activation and full UX acceptance
+remain separate gates.
+
+
+## Monitor selector-grid specificity — focused review correction
+
+Independent review found the intended Monitor selector track minimum ineffective
+against native Grid `[data-columns]`. A fresh baseline records the actual
+adopted stylesheet cascade and all four viewport cases before failing the new
+track-count assertion. At 390px the old tracks are 148.5px/labels 120.5px; doubled
+768px tracks are 152.25px/labels 124.25px. All text fit/nonoverlap checks could pass
+while this reading-width defect remained. The baseline is a preserved failure,
+not acceptance.
+
+Only the existing MonitorDeviceSelectors style gains the matching state.
+Computed corrected columns are two 320.25px desktop tracks and one 302px narrow/
+short track or 309.5px doubled-token track. Usable labels measure 292.25px, 274px
+and 281.5px respectively in both pickers. Actual computed-track count/minimum,
+label-width, complete label/input, no-overlap and document-width assertions pass.
+The original main, native engine, theme and interactive controls remain unchanged.
+
+The [source-bound correction record](validation/ux-monitor-selector-grid-2026-10-29.json)
+contains the failing control, final affected selector/help/state cohorts,
+positive original cleanup and exact source hashes. The earlier layout record,
+native Home timing qualifications and all original artifacts remain preserved.
+No broader suite, build, installation, runtime activation or real transport is
+part of this follow-up; independent current-composition acceptance remains open.
+
+The affected final cohorts run sequentially through the unchanged FIFO:
+selector tracks 14515ms, full help/geometry 68532ms and state/identity 32498ms,
+each with all four viewport cases and positive original CDP/context/browser/
+server cleanup. No forbidden call, real socket or page error occurs. Twenty-seven
+focused native graph/ownership tests pass with two workers, zero failures/skips.
+Earlier separate inline-detail, native-key timing and helper-test receipts keep
+their original `889923e` source qualification. All 339 original artifact hashes
+are reverified without changing those artifacts.

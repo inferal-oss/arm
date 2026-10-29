@@ -482,3 +482,62 @@ arm:ResourceHelpFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug
 # Existing native opener restoration leaves readable space for the tooltip.
 [] a sty:StyleRule ; sty:appliesTo arm:ResourceSurface ; sty:part "[data-sem-c=\"icon-button\"][data-sem-tooltip]" ;
  sty:declares [ sty:property "scroll-margin-block" ; sty:raw "4rem" ] .
+
+# Monitor hooks remain noninteractive; native controls and data stay unchanged.
+arm:MonitorSurface a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-monitor-surface" .
+arm:MonitorDeviceSelectors a owl:Class ; rdfs:subClassOf c:Grid ; sem:slug "arm-monitor-device-selectors" .
+arm:MonitorHelpBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-monitor-help-body" .
+arm:MonitorHelpFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-monitor-help-facts" .
+# Match the native Grid column-state specificity so this minimum takes effect.
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorDeviceSelectors ; sty:state "[data-columns]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "grid-template-columns" ; sty:raw "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorDeviceSelectors ; sty:part "[data-sem-c=\"checkbox\"], .sem-row, label" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorDeviceSelectors ; sty:part ".sem-row" ;
+ sty:declares [ sty:property "align-items" ; sty:raw "flex-start" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorDeviceSelectors ; sty:part "label" ;
+ sty:declares [ sty:property "white-space" ; sty:raw "normal" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorDeviceSelectors ; sty:part "input[type=\"checkbox\"]" ;
+ sty:declares [ sty:property "flex-shrink" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorHelpBody ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorHelpFacts ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorHelpFacts ; sty:part "dt, dd" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "white-space" ; sty:raw "pre-wrap" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > [data-sem-c=\"arm-monitor-help-body\"]) > .sem-panel" ;
+ sty:declares [ sty:property "width" ; sty:raw "min(52rem, 100%)" ] .
+arm:MonitorShortWindow a sty:WidthClass ; sty:media "(max-height: 640px)" .
+[] a sty:StyleRule ; sty:atWidth arm:MonitorShortWindow ; sty:part "[data-sem-c=\"dialog\"]:has(> .sem-panel > .sem-body > [data-sem-c=\"arm-monitor-help-body\"]) > .sem-panel" ;
+ sty:declares [ sty:property "min-height" ; sty:raw "min(18rem, calc(100dvh - 48px))" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorSurface ; sty:part "[data-sem-c=\"icon-button\"][data-sem-tooltip]::after" ;
+ sty:declares [ sty:property "left" ; sty:raw "auto" ],
+              [ sty:property "right" ; sty:raw "0" ],
+              [ sty:property "transform" ; sty:raw "none" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "max-width" ; sty:raw "min(320px, calc(100vw - 3rem))" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorSurface ; sty:part "[data-sem-c=\"icon-button\"][data-sem-tooltip]" ;
+ sty:declares [ sty:property "scroll-margin-block" ; sty:raw "4rem" ] .
+
+# Keep the native Monitor Stat minimum and padding inside its grid track.
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorSurface ; sty:part "[data-sem-c=\"stat\"]" ;
+ sty:declares [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ] .
+
+# Compact and medium Monitor cards need full reading width for inline facts.
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorSurface ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part "[data-sem-c=\"description-list\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MonitorSurface ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part "[data-sem-c=\"description-list\"] dt, [data-sem-c=\"description-list\"] dd" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "white-space" ; sty:raw "pre-wrap" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .

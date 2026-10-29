@@ -1,0 +1,1552 @@
+{
+  "scope": "Focused MonitorDeviceSelectors specificity correction following independent P2 review; owner evidence, independent composition pending",
+  "base": "889923e8a4271bb2b530852f605d44c21e2d8f55",
+  "finding": "Native Grid[data-columns] has two attribute selectors and defeats the one-attribute Monitor rule. Earlier full label fit/nonoverlap did not establish useful columns.",
+  "correction": "Only the existing MonitorDeviceSelectors style gains sty:state [data-columns], matching native state specificity. Existing later source order applies the intended18rem/available-width minimum. No important/global/native/main/grid-data change.",
+  "current_sources": {
+    "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+    "internal/server/web/semblance/app.ttl": "dddf3b27d712a714a74eaa09a91dd32ff2aadab4f11796542fc46b7adcec99ba",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/monitor-capacity.mjs": "fe3058f1b81ced5a88704a7f30ea7fca4e303035428e20b881e5eddaa7295fa2",
+    "internal/server/web/io-devices.mjs": "85118f54d54fd1f68331bbd3198e5cb5c8ebf274747634fac503bed895e13d32",
+    "internal/model/monitor.go": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c",
+    "internal/model/measurement.go": "446e28b25fc78192cbac58926df74ee37aec4206e1f62895b200ec2b58b808e1",
+    "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+    "scripts/dashboard-screenshots/ux-monitor.mjs": "94c315a605775dd143704cc88248b2cb87d528489dc45a15a5593f47c15854be",
+    "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843"
+  },
+  "source_guards": {
+    "base": "889923e8a4271bb2b530852f605d44c21e2d8f55",
+    "ontology_diff_exactly_scoped_state_and_comment": true,
+    "protected_sources": {
+      "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+      "internal/server/web/monitor-capacity.mjs": "fe3058f1b81ced5a88704a7f30ea7fca4e303035428e20b881e5eddaa7295fa2",
+      "internal/server/web/io-devices.mjs": "85118f54d54fd1f68331bbd3198e5cb5c8ebf274747634fac503bed895e13d32",
+      "internal/server/web/assets/arm.mjs": "77a4979fa03b415ad4c728574669d5ad519915537daf83c03265f3287a58c5ce",
+      "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+      "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+      "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843",
+      "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+      "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+      "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815",
+      "docs/validation/ux-monitor-layout-2026-10-29.json": "2587d9ce7a41511893f355ebee18c7ced5613a93e4add9eca6a0be396082cdd5"
+    }
+  },
+  "before": {
+    "failure": "Monitor selector must apply its intended compact track count\n\n4 !== 2\n",
+    "receipt_sha256": "7355212efc9b5c52249dc80cd46d2f5d8da73b675d64e23f35af5dd3fa2a1aaa",
+    "sources": {
+      "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+      "internal/server/web/semblance/app.ttl": "e95dc0b5ba7008be9e97321f6e3888700ebd3b8eaa43bc41825c49a6ab5032b0",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+      "internal/server/web/monitor-capacity.mjs": "fe3058f1b81ced5a88704a7f30ea7fca4e303035428e20b881e5eddaa7295fa2",
+      "internal/server/web/io-devices.mjs": "85118f54d54fd1f68331bbd3198e5cb5c8ebf274747634fac503bed895e13d32",
+      "internal/model/monitor.go": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c",
+      "internal/model/measurement.go": "446e28b25fc78192cbac58926df74ee37aec4206e1f62895b200ec2b58b808e1",
+      "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+      "scripts/dashboard-screenshots/ux-monitor.mjs": "94c315a605775dd143704cc88248b2cb87d528489dc45a15a5593f47c15854be",
+      "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843"
+    },
+    "elapsed_ms": 14624,
+    "cleanup": {
+      "nativeProbeDetached": true,
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    },
+    "cases": [
+      {
+        "width": 1440,
+        "height": 900,
+        "textScale": 1,
+        "document_width": 1440,
+        "pickers": {
+          "Disk I/O": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 645.5,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                157.625,
+                157.625,
+                157.625,
+                157.625
+              ],
+              "expectedCount": 2,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          },
+          "Network": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 645.5,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                157.625,
+                157.625,
+                157.625,
+                157.625
+              ],
+              "expectedCount": 2,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625,
+                129.625
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "textScale": 1,
+        "document_width": 390,
+        "pickers": {
+          "Disk I/O": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 302,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                148.5,
+                148.5
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          },
+          "Network": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 302,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                148.5,
+                148.5
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "textScale": 1,
+        "document_width": 390,
+        "pickers": {
+          "Disk I/O": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 302,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                148.5,
+                148.5
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          },
+          "Network": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 302,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                148.5,
+                148.5
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5,
+                120.5
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          }
+        }
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "textScale": 2,
+        "document_width": 768,
+        "pickers": {
+          "Disk I/O": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 309.5,
+              "rootFont": 32,
+              "gap": 5,
+              "tracks": [
+                152.25,
+                152.25
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 309.5,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          },
+          "Network": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 309.5,
+              "rootFont": 32,
+              "gap": 5,
+              "tracks": [
+                152.25,
+                152.25
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 309.5,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25,
+                124.25
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          }
+        }
+      }
+    ]
+  },
+  "after": {
+    "cases": [
+      {
+        "width": 1440,
+        "height": 900,
+        "textScale": 1,
+        "document_width": 1440,
+        "pickers": {
+          "Disk I/O": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 645.5,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                320.25,
+                320.25
+              ],
+              "expectedCount": 2,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          },
+          "Network": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 645.5,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                320.25,
+                320.25
+              ],
+              "expectedCount": 2,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25,
+                292.25
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "textScale": 1,
+        "document_width": 390,
+        "pickers": {
+          "Disk I/O": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 302,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                302
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          },
+          "Network": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 302,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                302
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "textScale": 1,
+        "document_width": 390,
+        "pickers": {
+          "Disk I/O": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 302,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                302
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          },
+          "Network": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 302,
+              "rootFont": 16,
+              "gap": 5,
+              "tracks": [
+                302
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 288,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274,
+                274
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          }
+        }
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "textScale": 2,
+        "document_width": 768,
+        "pickers": {
+          "Disk I/O": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 309.5,
+              "rootFont": 32,
+              "gap": 5,
+              "tracks": [
+                309.5
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 309.5,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          },
+          "Network": {
+            "native_inputs": 12,
+            "layout": {
+              "component": "arm-monitor-device-selectors",
+              "columnsAttribute": "4",
+              "width": 309.5,
+              "rootFont": 32,
+              "gap": 5,
+              "tracks": [
+                309.5
+              ],
+              "expectedCount": 1,
+              "minimumTrack": 309.5,
+              "matched": [
+                {
+                  "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                  "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+                },
+                {
+                  "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                  "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+                }
+              ],
+              "labelWidths": [
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5,
+                281.5
+              ]
+            },
+            "complete_labels_fit": true,
+            "complete_inputs_fit": true,
+            "overlaps": []
+          }
+        }
+      }
+    ]
+  },
+  "execution": {
+    "unchanged_fifo": true,
+    "sequential_cohorts": true,
+    "allocated_cpu_max": 2,
+    "allocated_memory_gib_max": 2,
+    "allocated_seconds_per_cohort_including_cleanup_max": 120,
+    "cohorts": {
+      "selectors": {
+        "elapsed_ms": 14515,
+        "viewport_cases": 4,
+        "receipt_sha256": "89e28dcd58fd0ff0036d8a60c231046332ed9046b74ed06f030092deb98a1f62",
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "assertions_pass": true,
+        "errors": 0,
+        "real_sockets": 0,
+        "forbidden_operations": 0
+      },
+      "help": {
+        "elapsed_ms": 68532,
+        "viewport_cases": 4,
+        "receipt_sha256": "81321218fb287a4dfdff667225f6499a75d44b6ca5c63b94afa752e892bb084d",
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "assertions_pass": true,
+        "errors": 0,
+        "real_sockets": 0,
+        "forbidden_operations": 0
+      },
+      "states": {
+        "elapsed_ms": 32498,
+        "viewport_cases": 4,
+        "receipt_sha256": "8b46ef0362bbbe968859de1a0fee9eea73f73ce1685aaff0317c9fccc3c22f82",
+        "cleanup": {
+          "nativeProbeDetached": true,
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "assertions_pass": true,
+        "errors": 0,
+        "real_sockets": 0,
+        "forbidden_operations": 0
+      }
+    }
+  },
+  "regression_oracle": {
+    "computed_track_count": "Expected fit count for18rem minimum and available grid width; assert actual computed tracks equal it",
+    "minimum_track": "Each computed pixel track is at least min(18*actual root font, available grid width)",
+    "usable_label_width": "Every native label is at least the smallest actual track minus40px",
+    "other_checks": [
+      "Every complete label/input fits actual clipping ancestors and shell",
+      "No native input/label pair overlap",
+      "Native Checkbox component/IDs/All/None/subset/missing/return membership",
+      "Original checked input and focus through missing/returned device and reconnect",
+      "Existing pause/gaps/unknown/reset/stale/disconnected/zero semantics",
+      "Whole Stat/help prose/technical reading widths and native focus/hover tooltip geometry"
+    ]
+  },
+  "help": {
+    "dialogs": 24,
+    "centered_native_tooltips": 48,
+    "edge_native_tooltips": 8,
+    "body_fonts_asserted": [
+      15,
+      30
+    ],
+    "technical_fonts_asserted": [
+      13,
+      26
+    ],
+    "selector_layouts": [
+      {
+        "width": 1440,
+        "height": 900,
+        "textScale": 1,
+        "pickers": {
+          "Disk I/O": {
+            "component": "arm-monitor-device-selectors",
+            "columnsAttribute": "4",
+            "width": 645.5,
+            "rootFont": 16,
+            "gap": 5,
+            "tracks": [
+              320.25,
+              320.25
+            ],
+            "expectedCount": 2,
+            "minimumTrack": 288,
+            "matched": [
+              {
+                "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+              }
+            ],
+            "labelWidths": [
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25
+            ]
+          },
+          "Network": {
+            "component": "arm-monitor-device-selectors",
+            "columnsAttribute": "4",
+            "width": 645.5,
+            "rootFont": 16,
+            "gap": 5,
+            "tracks": [
+              320.25,
+              320.25
+            ],
+            "expectedCount": 2,
+            "minimumTrack": 288,
+            "matched": [
+              {
+                "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+              }
+            ],
+            "labelWidths": [
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25,
+              292.25
+            ]
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "textScale": 1,
+        "pickers": {
+          "Disk I/O": {
+            "component": "arm-monitor-device-selectors",
+            "columnsAttribute": "4",
+            "width": 302,
+            "rootFont": 16,
+            "gap": 5,
+            "tracks": [
+              302
+            ],
+            "expectedCount": 1,
+            "minimumTrack": 288,
+            "matched": [
+              {
+                "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+              }
+            ],
+            "labelWidths": [
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274
+            ]
+          },
+          "Network": {
+            "component": "arm-monitor-device-selectors",
+            "columnsAttribute": "4",
+            "width": 302,
+            "rootFont": 16,
+            "gap": 5,
+            "tracks": [
+              302
+            ],
+            "expectedCount": 1,
+            "minimumTrack": 288,
+            "matched": [
+              {
+                "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+              }
+            ],
+            "labelWidths": [
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274
+            ]
+          }
+        }
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "textScale": 1,
+        "pickers": {
+          "Disk I/O": {
+            "component": "arm-monitor-device-selectors",
+            "columnsAttribute": "4",
+            "width": 302,
+            "rootFont": 16,
+            "gap": 5,
+            "tracks": [
+              302
+            ],
+            "expectedCount": 1,
+            "minimumTrack": 288,
+            "matched": [
+              {
+                "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+              }
+            ],
+            "labelWidths": [
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274
+            ]
+          },
+          "Network": {
+            "component": "arm-monitor-device-selectors",
+            "columnsAttribute": "4",
+            "width": 302,
+            "rootFont": 16,
+            "gap": 5,
+            "tracks": [
+              302
+            ],
+            "expectedCount": 1,
+            "minimumTrack": 288,
+            "matched": [
+              {
+                "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+              }
+            ],
+            "labelWidths": [
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274,
+              274
+            ]
+          }
+        }
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "textScale": 2,
+        "pickers": {
+          "Disk I/O": {
+            "component": "arm-monitor-device-selectors",
+            "columnsAttribute": "4",
+            "width": 309.5,
+            "rootFont": 32,
+            "gap": 5,
+            "tracks": [
+              309.5
+            ],
+            "expectedCount": 1,
+            "minimumTrack": 309.5,
+            "matched": [
+              {
+                "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+              }
+            ],
+            "labelWidths": [
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5
+            ]
+          },
+          "Network": {
+            "component": "arm-monitor-device-selectors",
+            "columnsAttribute": "4",
+            "width": 309.5,
+            "rootFont": 32,
+            "gap": 5,
+            "tracks": [
+              309.5
+            ],
+            "expectedCount": 1,
+            "minimumTrack": 309.5,
+            "matched": [
+              {
+                "selector": "[data-sem-c=\"grid\"], [data-sem-c=\"arm-pool-comparison\"], [data-sem-c=\"arm-resource-surface\"], [data-sem-c=\"arm-monitor-device-selectors\"]",
+                "columns": "repeat(auto-fill, minmax(min(100%, var(--grid-min, 240px)), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"grid\"][data-columns], [data-sem-c=\"arm-pool-comparison\"][data-columns], [data-sem-c=\"arm-resource-surface\"][data-columns], [data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(100%, max(var(--grid-min, 160px), calc((100% - (var(--grid-columns) - 1) * var(--sem-space-8)) / var(--grid-columns)))), 1fr))"
+              },
+              {
+                "selector": "[data-sem-c=\"arm-monitor-device-selectors\"][data-columns]",
+                "columns": "repeat(auto-fit, minmax(min(18rem, 100%), 1fr))"
+              }
+            ],
+            "labelWidths": [
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5,
+              281.5
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "states": [
+    {
+      "width": 1440,
+      "height": 900,
+      "textScale": 1,
+      "gap_assertions": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "pause_retains_reading": true,
+      "pause_retains_focus": true,
+      "selectors": {
+        "Disk I/O": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "reconnectIdentityRetained": true,
+            "reconnectFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          }
+        },
+        "Network": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          }
+        }
+      }
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "textScale": 1,
+      "gap_assertions": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "pause_retains_reading": true,
+      "pause_retains_focus": true,
+      "selectors": {
+        "Disk I/O": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "reconnectIdentityRetained": true,
+            "reconnectFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          }
+        },
+        "Network": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          }
+        }
+      }
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "textScale": 1,
+      "gap_assertions": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "pause_retains_reading": true,
+      "pause_retains_focus": true,
+      "selectors": {
+        "Disk I/O": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "reconnectIdentityRetained": true,
+            "reconnectFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          }
+        },
+        "Network": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          }
+        }
+      }
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "textScale": 2,
+      "gap_assertions": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "pause_retains_reading": true,
+      "pause_retains_focus": true,
+      "selectors": {
+        "Disk I/O": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "reconnectIdentityRetained": true,
+            "reconnectFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          }
+        },
+        "Network": {
+          "checked_counts": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "identity_and_focus": {
+            "missingIdentityRetained": true,
+            "missingFocusRetained": true,
+            "returnedIdentityRetained": true,
+            "returnedFocusRetained": true
+          }
+        }
+      }
+    }
+  ],
+  "focused_tests": {
+    "native_graph_and_ownership": 27,
+    "duration_ms": 1760,
+    "failures": 0,
+    "skips": 0,
+    "workers_max": 2,
+    "log_sha256": "cfa4462849439eee140d8d33dc422322a4640880ca9e80b2e9ec6e38bd54e21e",
+    "test_sources": {
+      "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+      "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+    },
+    "syntax_diff_checks": "pass"
+  },
+  "carried_forward": {
+    "original339_artifact_hashes_reverified": true,
+    "original_record": "ux-monitor-layout-2026-10-29.json",
+    "record_sha256": "2587d9ce7a41511893f355ebee18c7ced5613a93e4add9eca6a0be396082cdd5",
+    "qualification": "Original889923e evidence remains unchanged. Details/causal/timing and13 helper tests were run against that earlier source; not repeated or relabeled as current-source evidence here. New selector/help/state and27 native checks bind this follow-up. All339 original artifacts and timing-qualified negative controls remain preserved."
+  },
+  "initial_diagnostic": {
+    "receipt_sha256": "79c438b32b00cc2a7a27df6459722694508394bd7f71953b25123f8689d809b8",
+    "sources": {
+      "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+      "internal/server/web/semblance/app.ttl": "e95dc0b5ba7008be9e97321f6e3888700ebd3b8eaa43bc41825c49a6ab5032b0",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+      "internal/server/web/monitor-capacity.mjs": "fe3058f1b81ced5a88704a7f30ea7fca4e303035428e20b881e5eddaa7295fa2",
+      "internal/server/web/io-devices.mjs": "85118f54d54fd1f68331bbd3198e5cb5c8ebf274747634fac503bed895e13d32",
+      "internal/model/monitor.go": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c",
+      "internal/model/measurement.go": "446e28b25fc78192cbac58926df74ee37aec4206e1f62895b200ec2b58b808e1",
+      "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+      "scripts/dashboard-screenshots/ux-monitor.mjs": "d7aac9cb00016517b9346b779bd58fc00f16658126a4aeddc5bece91fc3a3864",
+      "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843"
+    },
+    "failure": "Monitor selector must apply its intended compact track count\n\n4 !== 2\n",
+    "qualification": "Initial computed-track baseline has identical product bytes and all four cases, but CSSOM collection omitted adopted stylesheets. The subsequent cascade-before control includes the actual native adopted stylesheet and is the canonical cascade evidence."
+  },
+  "limitations": [
+    "Independent current-main recomposition/rebuild/browser review pending",
+    "No broad suites/build/install/runtime activation/real transport/mutation",
+    "Selected pixel token doubling, not universal zoom; existing native checkbox font sizes retained",
+    "Only affected selector/help/state cohorts repeated; earlier separate timing/inline evidence remains qualified by its source",
+    "Full UX and terminal parity remain open"
+  ]
+}

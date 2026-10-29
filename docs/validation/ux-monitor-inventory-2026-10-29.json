@@ -1,0 +1,1463 @@
+{
+  "scope": "Read-only actual Monitor route inventory; visual findings, not product remediation or full UX acceptance",
+  "base": "ab4f06b46898e5d5189dd8c1c42f491c6a4f6ab5",
+  "current_sources": {
+    "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+    "internal/server/web/semblance/app.ttl": "9d28b18de7363df65c241d4727ca8f02fa672f2beafc1f04fc0ef8313a107ed3",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/monitor-capacity.mjs": "fe3058f1b81ced5a88704a7f30ea7fca4e303035428e20b881e5eddaa7295fa2",
+    "internal/server/web/io-devices.mjs": "85118f54d54fd1f68331bbd3198e5cb5c8ebf274747634fac503bed895e13d32",
+    "internal/model/monitor.go": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c",
+    "internal/model/measurement.go": "446e28b25fc78192cbac58926df74ee37aec4206e1f62895b200ec2b58b808e1",
+    "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+    "scripts/dashboard-screenshots/ux-monitor.mjs": "8206e4128e524f12b70a0d49335320ec37bb321ab5ca7b762b58d1caa2185f1f",
+    "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843"
+  },
+  "help_cohort_sources": {
+    "internal/server/web/semblance/main.mjs": "986b7d590a51722e89f0f7f622e944ecfeb022ff582217e5301ae0fd86c4ebbf",
+    "internal/server/web/semblance/app.ttl": "9d28b18de7363df65c241d4727ca8f02fa672f2beafc1f04fc0ef8313a107ed3",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/monitor-capacity.mjs": "fe3058f1b81ced5a88704a7f30ea7fca4e303035428e20b881e5eddaa7295fa2",
+    "internal/server/web/io-devices.mjs": "85118f54d54fd1f68331bbd3198e5cb5c8ebf274747634fac503bed895e13d32",
+    "internal/model/monitor.go": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c",
+    "internal/model/measurement.go": "446e28b25fc78192cbac58926df74ee37aec4206e1f62895b200ec2b58b808e1",
+    "web/third_party/semblance/ontology/layers/tooltip.ttl": "1e59a6bd236bcede9e0a0a0acc9a7e412700936518d10bce24669bcd6a537196",
+    "scripts/dashboard-screenshots/ux-monitor.mjs": "575109382f97d02cc6b9a53e982dfcda7fe1408cab4f9efd069f13175072bc36",
+    "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843"
+  },
+  "help_source_qualification": "Only the inactive stateInventory function later gained explicit unknown/stale/disconnected headline bounds/captures. Replacing that function reproduces the help-cohort fixture hash exactly; all product/shared/Backend fixture bytes are identical.",
+  "protected_resource_sources": {
+    "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+    "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+    "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815",
+    "internal/server/web/assets/arm.mjs": "77a4979fa03b415ad4c728574669d5ad519915537daf83c03265f3287a58c5ce"
+  },
+  "product_source_changes": false,
+  "execution": {
+    "help_viewport_cases": 4,
+    "monitor_help_dialogs": 24,
+    "native_keyboard_and_hover_help_tooltips": 48,
+    "state_viewport_cases": 4,
+    "synthetic_logical_cores": 32,
+    "synthetic_devices_per_scope": 12,
+    "new_device_membership_case": 13,
+    "history_points_initial": 12,
+    "history_points_maximum": 24,
+    "cohorts_run_one_at_a_time": true,
+    "help_elapsed_ms": 55302,
+    "states_elapsed_ms": 32839,
+    "help_cleanup": {
+      "nativeProbeDetached": true,
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    },
+    "states_cleanup": {
+      "nativeProbeDetached": true,
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    },
+    "live_transports": 0,
+    "unexpected_operations": 0,
+    "page_errors": 0,
+    "interpretation": "Successful collection checks fixture/safety/disposal invariants; negative geometry flags below are product findings and are not counted as passing visual regressions."
+  },
+  "prioritized_findings": [
+    {
+      "priority": 2,
+      "area": "Disk/network device picker labels",
+      "evidence": "Long public-contract-valid names overlap adjacent checkbox cells and clip at390px and doubled-token768px. Both pickers retain usable All/None controls, but complete labels do not fit their clipping ancestors.",
+      "cause": "initMonitor uses a four-column128px-minimum native selector grid without Monitor-specific label wrapping/compact layout.",
+      "proposed_allocation": [
+        "main.mjs initMonitor(): mark only the noninteractive device-selector grids with a Monitor-specific class",
+        "app.ttl: additive Monitor selector label/row containment and compact column layout; preserve native Checkbox types/labels/callbacks/IDs and focus"
+      ]
+    },
+    {
+      "priority": 2,
+      "area": "Monitor technical-help reading width",
+      "evidence": "At390px, memory technical values have38.734375px and filesystem values33.859375px; at actual doubled tokens in768px, they have16.78125px and8.234375px. Actual modal panels stay within the viewport and native Close/Escape remain reachable.",
+      "cause": "The non-resource help branch uses the stock480px dialog and max-content description labels, which squeeze values.",
+      "proposed_allocation": [
+        "main.mjs help(): only the explicit Monitor kinds cpu/memory/filesystem/disk_io/network/gpu get noninteractive MonitorHelpBody/MonitorHelpFacts hooks",
+        "app.ttl: distinct Monitor help body/facts reading-width and label/value styles; preserve metricHelp/get-current-context/copy/accounting and native controls/disposal"
+      ]
+    },
+    {
+      "priority": 2,
+      "area": "Monitor help tooltips cross viewport edges",
+      "evidence": "All six centered help tooltips cross the390px right edge under both keyboard focus and centered hover; Network reaches421.21875px. Right-column desktop and doubled-token tooltips also cross their viewport. Native border and painted text are measured, not document width alone.",
+      "cause": "The stock centered max-content tooltip is placed on an inline-end Monitor action.",
+      "proposed_allocation": [
+        "main.mjs initMonitor(): mark only the existing noninteractive monitorCards root with a Monitor-specific surface hook",
+        "app.ttl: additive Monitor-surface native help IconButton tooltip alignment/viewport rules; no global tooltip, Resource class promotion or interactive marker"
+      ]
+    }
+  ],
+  "help_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "text_token_scale": 1,
+      "core_count": 32,
+      "last_core_bounds_fit": true,
+      "fresh_headline_bounds_fit": true,
+      "device_pickers": {
+        "Disk I/O": {
+          "checkbox_count": 12,
+          "label_font_px": 14,
+          "first_label_width": 351.375,
+          "first_label_fits": true,
+          "last_label_fits": true,
+          "all_none_controls_fit": true
+        },
+        "Network": {
+          "checkbox_count": 12,
+          "label_font_px": 14,
+          "first_label_width": 351.375,
+          "first_label_fits": true,
+          "last_label_fits": true,
+          "all_none_controls_fit": true
+        }
+      },
+      "help": [
+        {
+          "title": "CPU activity",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 240.171875,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 480,
+            "right": 960,
+            "top": 167.75,
+            "bottom": 732.25,
+            "readingHeight": 515
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            390.390625,
+            -17.859375,
+            517.609375,
+            -17.859375,
+            517.609375,
+            10.9375,
+            390.390625,
+            10.9375
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            390.390625,
+            321.140625,
+            517.609375,
+            321.140625,
+            517.609375,
+            349.9375,
+            390.390625,
+            349.9375
+          ],
+          "centered_hover_tooltip_full_text_fits": true,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Memory & swap",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 176.734375,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 480,
+            "right": 960,
+            "top": 24,
+            "bottom": 876,
+            "readingHeight": 802
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            850.84375,
+            321.140625,
+            999.15625,
+            321.140625,
+            999.15625,
+            349.9375,
+            850.84375,
+            349.9375
+          ],
+          "keyboard_tooltip_full_text_fits": true,
+          "centered_hover_tooltip_border": [
+            850.84375,
+            321.140625,
+            999.15625,
+            321.140625,
+            999.15625,
+            349.9375,
+            850.84375,
+            349.9375
+          ],
+          "centered_hover_tooltip_full_text_fits": true,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Storage space",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 171.859375,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 480,
+            "right": 960,
+            "top": 24,
+            "bottom": 876,
+            "readingHeight": 802
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            1326.3515625,
+            321.140625,
+            1465.6484375,
+            321.140625,
+            1465.6484375,
+            349.9375,
+            1326.3515625,
+            349.9375
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            1326.3515625,
+            321.140625,
+            1465.6484375,
+            321.140625,
+            1465.6484375,
+            349.9375,
+            1326.3515625,
+            349.9375
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Disk activity",
+          "body_font_px": 15,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 480,
+            "right": 960,
+            "top": 289.375,
+            "bottom": 610.625,
+            "readingHeight": 271
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            626.03125,
+            633.28125,
+            752.96875,
+            633.28125,
+            752.96875,
+            662.078125,
+            626.03125,
+            662.078125
+          ],
+          "keyboard_tooltip_full_text_fits": true,
+          "centered_hover_tooltip_border": [
+            626.03125,
+            398.28125,
+            752.96875,
+            398.28125,
+            752.96875,
+            427.078125,
+            626.03125,
+            427.078125
+          ],
+          "centered_hover_tooltip_full_text_fits": true,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Network activity",
+          "body_font_px": 15,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 480,
+            "right": 960,
+            "top": 289.375,
+            "bottom": 610.625,
+            "readingHeight": 271
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            1320.78125,
+            398.28125,
+            1471.21875,
+            398.28125,
+            1471.21875,
+            427.078125,
+            1320.78125,
+            427.078125
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            1320.78125,
+            398.28125,
+            1471.21875,
+            398.28125,
+            1471.21875,
+            427.078125,
+            1320.78125,
+            427.078125
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "GPU monitoring",
+          "body_font_px": 15,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 480,
+            "right": 960,
+            "top": 378.75,
+            "bottom": 521.25,
+            "readingHeight": 93
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            1322.2421875,
+            783.53125,
+            1469.7578125,
+            783.53125,
+            1469.7578125,
+            812.328125,
+            1322.2421875,
+            812.328125
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            1322.2421875,
+            679.53125,
+            1469.7578125,
+            679.53125,
+            1469.7578125,
+            708.328125,
+            1322.2421875,
+            708.328125
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        }
+      ],
+      "document_width_after_help": 1470
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "text_token_scale": 1,
+      "core_count": 32,
+      "last_core_bounds_fit": true,
+      "fresh_headline_bounds_fit": true,
+      "device_pickers": {
+        "Disk I/O": {
+          "checkbox_count": 12,
+          "label_font_px": 14,
+          "first_label_width": 351.375,
+          "first_label_fits": false,
+          "last_label_fits": false,
+          "all_none_controls_fit": true
+        },
+        "Network": {
+          "checkbox_count": 12,
+          "label_font_px": 14,
+          "first_label_width": 351.375,
+          "first_label_fits": false,
+          "last_label_fits": false,
+          "all_none_controls_fit": true
+        }
+      },
+      "help": [
+        {
+          "title": "CPU activity",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 102.171875,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 29.375,
+            "bottom": 870.625,
+            "readingHeight": 791
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            282.390625,
+            398.03125,
+            409.609375,
+            398.03125,
+            409.609375,
+            426.828125,
+            282.390625,
+            426.828125
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            282.390625,
+            398.03125,
+            409.609375,
+            398.03125,
+            409.609375,
+            426.828125,
+            282.390625,
+            426.828125
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Memory & swap",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 38.734375,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 876,
+            "readingHeight": 802
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            271.84375,
+            688.578125,
+            420.15625,
+            688.578125,
+            420.15625,
+            717.375,
+            271.84375,
+            717.375
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            271.84375,
+            398.578125,
+            420.15625,
+            398.578125,
+            420.15625,
+            427.375,
+            271.84375,
+            427.375
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Storage space",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 33.859375,
+          "technical_value_whole_box_or_text_clipping_count": 2,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 876,
+            "readingHeight": 802
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            276.3515625,
+            689.125,
+            415.6484375,
+            689.125,
+            415.6484375,
+            717.921875,
+            276.3515625,
+            717.921875
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            276.3515625,
+            398.125,
+            415.6484375,
+            398.125,
+            415.6484375,
+            426.921875,
+            276.3515625,
+            426.921875
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Disk activity",
+          "body_font_px": 15,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 231.25,
+            "bottom": 668.75,
+            "readingHeight": 388
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            282.53125,
+            688.671875,
+            409.46875,
+            688.671875,
+            409.46875,
+            717.46875,
+            282.53125,
+            717.46875
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            282.53125,
+            398.671875,
+            409.46875,
+            398.671875,
+            409.46875,
+            427.46875,
+            282.53125,
+            427.46875
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Network activity",
+          "body_font_px": 15,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 231.25,
+            "bottom": 668.75,
+            "readingHeight": 388
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            270.78125,
+            772.8125,
+            421.21875,
+            772.8125,
+            421.21875,
+            801.609375,
+            270.78125,
+            801.609375
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            270.78125,
+            397.8125,
+            421.21875,
+            397.8125,
+            421.21875,
+            426.609375,
+            270.78125,
+            426.609375
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "GPU monitoring",
+          "body_font_px": 15,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 367.125,
+            "bottom": 532.875,
+            "readingHeight": 116
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            272.2421875,
+            771.953125,
+            419.7578125,
+            771.953125,
+            419.7578125,
+            800.75,
+            272.2421875,
+            800.75
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            272.2421875,
+            683.953125,
+            419.7578125,
+            683.953125,
+            419.7578125,
+            712.75,
+            272.2421875,
+            712.75
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        }
+      ],
+      "document_width_after_help": 420
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "text_token_scale": 1,
+      "core_count": 32,
+      "last_core_bounds_fit": true,
+      "fresh_headline_bounds_fit": true,
+      "device_pickers": {
+        "Disk I/O": {
+          "checkbox_count": 12,
+          "label_font_px": 14,
+          "first_label_width": 351.375,
+          "first_label_fits": false,
+          "last_label_fits": false,
+          "all_none_controls_fit": true
+        },
+        "Network": {
+          "checkbox_count": 12,
+          "label_font_px": 14,
+          "first_label_width": 351.375,
+          "first_label_fits": false,
+          "last_label_fits": false,
+          "all_none_controls_fit": true
+        }
+      },
+      "help": [
+        {
+          "title": "CPU activity",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 102.171875,
+          "technical_value_whole_box_or_text_clipping_count": 1,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            282.390625,
+            108.03125,
+            409.609375,
+            108.03125,
+            409.609375,
+            136.828125,
+            282.390625,
+            136.828125
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            282.390625,
+            108.03125,
+            409.609375,
+            108.03125,
+            409.609375,
+            136.828125,
+            282.390625,
+            136.828125
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Memory & swap",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 38.734375,
+          "technical_value_whole_box_or_text_clipping_count": 3,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            271.84375,
+            108.578125,
+            420.15625,
+            108.578125,
+            420.15625,
+            137.375,
+            271.84375,
+            137.375
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            271.84375,
+            108.578125,
+            420.15625,
+            108.578125,
+            420.15625,
+            137.375,
+            271.84375,
+            137.375
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Storage space",
+          "body_font_px": 15,
+          "technical_font_px": 13,
+          "minimum_technical_value_width": 33.859375,
+          "technical_value_whole_box_or_text_clipping_count": 2,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            276.3515625,
+            108.125,
+            415.6484375,
+            108.125,
+            415.6484375,
+            136.921875,
+            276.3515625,
+            136.921875
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            276.3515625,
+            108.125,
+            415.6484375,
+            108.125,
+            415.6484375,
+            136.921875,
+            276.3515625,
+            136.921875
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Disk activity",
+          "body_font_px": 15,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            282.53125,
+            108.671875,
+            409.46875,
+            108.671875,
+            409.46875,
+            137.46875,
+            282.53125,
+            137.46875
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            282.53125,
+            108.671875,
+            409.46875,
+            108.671875,
+            409.46875,
+            137.46875,
+            282.53125,
+            137.46875
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Network activity",
+          "body_font_px": 15,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 24,
+            "bottom": 296,
+            "readingHeight": 222
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            270.78125,
+            251.8125,
+            421.21875,
+            251.8125,
+            421.21875,
+            280.609375,
+            270.78125,
+            280.609375
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            270.78125,
+            107.8125,
+            421.21875,
+            107.8125,
+            421.21875,
+            136.609375,
+            270.78125,
+            136.609375
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "GPU monitoring",
+          "body_font_px": 15,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 24,
+            "right": 366,
+            "top": 77.125,
+            "bottom": 242.875,
+            "readingHeight": 116
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            272.2421875,
+            251.953125,
+            419.7578125,
+            251.953125,
+            419.7578125,
+            280.75,
+            272.2421875,
+            280.75
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            272.2421875,
+            107.953125,
+            419.7578125,
+            107.953125,
+            419.7578125,
+            136.75,
+            272.2421875,
+            136.75
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        }
+      ],
+      "document_width_after_help": 420
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "text_token_scale": 2,
+      "core_count": 32,
+      "last_core_bounds_fit": true,
+      "fresh_headline_bounds_fit": true,
+      "device_pickers": {
+        "Disk I/O": {
+          "checkbox_count": 12,
+          "label_font_px": 14,
+          "first_label_width": 351.375,
+          "first_label_fits": false,
+          "last_label_fits": false,
+          "all_none_controls_fit": true
+        },
+        "Network": {
+          "checkbox_count": 12,
+          "label_font_px": 14,
+          "first_label_width": 351.375,
+          "first_label_fits": false,
+          "last_label_fits": false,
+          "all_none_controls_fit": true
+        }
+      },
+      "help": [
+        {
+          "title": "CPU activity",
+          "body_font_px": 30,
+          "technical_font_px": 26,
+          "minimum_technical_value_width": 134.53125,
+          "technical_value_whole_box_or_text_clipping_count": 1,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 144,
+            "right": 624,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            166.390625,
+            248.28125,
+            293.609375,
+            248.28125,
+            293.609375,
+            277.078125,
+            166.390625,
+            277.078125
+          ],
+          "keyboard_tooltip_full_text_fits": true,
+          "centered_hover_tooltip_border": [
+            166.390625,
+            248.28125,
+            293.609375,
+            248.28125,
+            293.609375,
+            277.078125,
+            166.390625,
+            277.078125
+          ],
+          "centered_hover_tooltip_full_text_fits": true,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Memory & swap",
+          "body_font_px": 30,
+          "technical_font_px": 26,
+          "minimum_technical_value_width": 16.78125,
+          "technical_value_whole_box_or_text_clipping_count": 12,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 144,
+            "right": 624,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            402.84375,
+            248.28125,
+            551.15625,
+            248.28125,
+            551.15625,
+            277.078125,
+            402.84375,
+            277.078125
+          ],
+          "keyboard_tooltip_full_text_fits": true,
+          "centered_hover_tooltip_border": [
+            402.84375,
+            248.28125,
+            551.15625,
+            248.28125,
+            551.15625,
+            277.078125,
+            402.84375,
+            277.078125
+          ],
+          "centered_hover_tooltip_full_text_fits": true,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Storage space",
+          "body_font_px": 30,
+          "technical_font_px": 26,
+          "minimum_technical_value_width": 8.234375,
+          "technical_value_whole_box_or_text_clipping_count": 5,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 144,
+            "right": 624,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            654.3515625,
+            248.28125,
+            793.6484375,
+            248.28125,
+            793.6484375,
+            277.078125,
+            654.3515625,
+            277.078125
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            654.3515625,
+            248.28125,
+            793.6484375,
+            248.28125,
+            793.6484375,
+            277.078125,
+            654.3515625,
+            277.078125
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Disk activity",
+          "body_font_px": 30,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 144,
+            "right": 624,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            290.03125,
+            247.875,
+            416.96875,
+            247.875,
+            416.96875,
+            276.671875,
+            290.03125,
+            276.671875
+          ],
+          "keyboard_tooltip_full_text_fits": true,
+          "centered_hover_tooltip_border": [
+            290.03125,
+            247.875,
+            416.96875,
+            247.875,
+            416.96875,
+            276.671875,
+            290.03125,
+            276.671875
+          ],
+          "centered_hover_tooltip_full_text_fits": true,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "Network activity",
+          "body_font_px": 30,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 144,
+            "right": 624,
+            "top": 24,
+            "bottom": 576,
+            "readingHeight": 502
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            648.78125,
+            247.875,
+            799.21875,
+            247.875,
+            799.21875,
+            276.671875,
+            648.78125,
+            276.671875
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            648.78125,
+            247.875,
+            799.21875,
+            247.875,
+            799.21875,
+            276.671875,
+            648.78125,
+            276.671875
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        },
+        {
+          "title": "GPU monitoring",
+          "body_font_px": 30,
+          "technical_font_px": null,
+          "minimum_technical_value_width": null,
+          "technical_value_whole_box_or_text_clipping_count": 0,
+          "prose_fits": true,
+          "actual_panel": {
+            "left": 144,
+            "right": 624,
+            "top": 174.84375,
+            "bottom": 425.140625,
+            "readingHeight": 200
+          },
+          "close_fits": true,
+          "native_close_escape_original_opener_and_disposal": true,
+          "keyboard_tooltip_border": [
+            650.2421875,
+            346.015625,
+            797.7578125,
+            346.015625,
+            797.7578125,
+            374.8125,
+            650.2421875,
+            374.8125
+          ],
+          "keyboard_tooltip_full_text_fits": false,
+          "centered_hover_tooltip_border": [
+            650.2421875,
+            346.015625,
+            797.7578125,
+            346.015625,
+            797.7578125,
+            374.8125,
+            650.2421875,
+            374.8125
+          ],
+          "centered_hover_tooltip_full_text_fits": false,
+          "actual_panel_fits_viewport": true
+        }
+      ],
+      "document_width_after_help": 798
+    }
+  ],
+  "state_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "text_token_scale": 1,
+      "native_history_gap_controls": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "pause_displayed_cpu_and_focus_retained": true,
+      "unpause_applies_latest_zero_cpu_and_memory": true,
+      "unknown_headlines_unavailable_and_fit": true,
+      "stale_warning_and_headlines_fit": true,
+      "stale_cpu_display": "46.5%",
+      "device_scopes": {
+        "Disk I/O": {
+          "checked_counts_all_none_subset_removed_returned_explicit_all": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "new_id_not_silently_selected_in_custom_mode": true,
+          "same_original_input_identity_and_focus_on_removal_return": true,
+          "none_missing_reset_are_unavailable_not_zero": true,
+          "returned_exact_selected_id_rates": [
+            "1 MiB/s",
+            "2 MiB/s"
+          ],
+          "real_zero_rates": [
+            "0 B/s",
+            "0 B/s"
+          ],
+          "same_original_input_identity_selection_and_focus_after_reconnect": true,
+          "disconnected_cpu_display": "46.5%",
+          "disconnected_remaining_memory_storage_unavailable": true,
+          "disconnected_headline_bounds_fit": true
+        },
+        "Network": {
+          "checked_counts_all_none_subset_removed_returned_explicit_all": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "new_id_not_silently_selected_in_custom_mode": true,
+          "same_original_input_identity_and_focus_on_removal_return": true,
+          "none_missing_reset_are_unavailable_not_zero": true,
+          "returned_exact_selected_id_rates": [
+            "1 MiB/s",
+            "2 MiB/s"
+          ],
+          "real_zero_rates": [
+            "0 B/s",
+            "0 B/s"
+          ]
+        }
+      },
+      "empty_disk_inventory": {
+        "checkboxes": 0,
+        "summary": "Sum of 0 selected device reports"
+      }
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "text_token_scale": 1,
+      "native_history_gap_controls": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "pause_displayed_cpu_and_focus_retained": true,
+      "unpause_applies_latest_zero_cpu_and_memory": true,
+      "unknown_headlines_unavailable_and_fit": true,
+      "stale_warning_and_headlines_fit": true,
+      "stale_cpu_display": "46.5%",
+      "device_scopes": {
+        "Disk I/O": {
+          "checked_counts_all_none_subset_removed_returned_explicit_all": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "new_id_not_silently_selected_in_custom_mode": true,
+          "same_original_input_identity_and_focus_on_removal_return": true,
+          "none_missing_reset_are_unavailable_not_zero": true,
+          "returned_exact_selected_id_rates": [
+            "1 MiB/s",
+            "2 MiB/s"
+          ],
+          "real_zero_rates": [
+            "0 B/s",
+            "0 B/s"
+          ],
+          "same_original_input_identity_selection_and_focus_after_reconnect": true,
+          "disconnected_cpu_display": "46.5%",
+          "disconnected_remaining_memory_storage_unavailable": true,
+          "disconnected_headline_bounds_fit": true
+        },
+        "Network": {
+          "checked_counts_all_none_subset_removed_returned_explicit_all": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "new_id_not_silently_selected_in_custom_mode": true,
+          "same_original_input_identity_and_focus_on_removal_return": true,
+          "none_missing_reset_are_unavailable_not_zero": true,
+          "returned_exact_selected_id_rates": [
+            "1 MiB/s",
+            "2 MiB/s"
+          ],
+          "real_zero_rates": [
+            "0 B/s",
+            "0 B/s"
+          ]
+        }
+      },
+      "empty_disk_inventory": {
+        "checkboxes": 0,
+        "summary": "Sum of 0 selected device reports"
+      }
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "text_token_scale": 1,
+      "native_history_gap_controls": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "pause_displayed_cpu_and_focus_retained": true,
+      "unpause_applies_latest_zero_cpu_and_memory": true,
+      "unknown_headlines_unavailable_and_fit": true,
+      "stale_warning_and_headlines_fit": true,
+      "stale_cpu_display": "46.5%",
+      "device_scopes": {
+        "Disk I/O": {
+          "checked_counts_all_none_subset_removed_returned_explicit_all": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "new_id_not_silently_selected_in_custom_mode": true,
+          "same_original_input_identity_and_focus_on_removal_return": true,
+          "none_missing_reset_are_unavailable_not_zero": true,
+          "returned_exact_selected_id_rates": [
+            "1 MiB/s",
+            "2 MiB/s"
+          ],
+          "real_zero_rates": [
+            "0 B/s",
+            "0 B/s"
+          ],
+          "same_original_input_identity_selection_and_focus_after_reconnect": true,
+          "disconnected_cpu_display": "46.5%",
+          "disconnected_remaining_memory_storage_unavailable": true,
+          "disconnected_headline_bounds_fit": true
+        },
+        "Network": {
+          "checked_counts_all_none_subset_removed_returned_explicit_all": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "new_id_not_silently_selected_in_custom_mode": true,
+          "same_original_input_identity_and_focus_on_removal_return": true,
+          "none_missing_reset_are_unavailable_not_zero": true,
+          "returned_exact_selected_id_rates": [
+            "1 MiB/s",
+            "2 MiB/s"
+          ],
+          "real_zero_rates": [
+            "0 B/s",
+            "0 B/s"
+          ]
+        }
+      },
+      "empty_disk_inventory": {
+        "checkboxes": 0,
+        "summary": "Sum of 0 selected device reports"
+      }
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "text_token_scale": 2,
+      "native_history_gap_controls": {
+        "cpuDots11Lines9": true,
+        "diskReadDots10Lines7": true,
+        "networkSendDots11Lines9": true
+      },
+      "pause_displayed_cpu_and_focus_retained": true,
+      "unpause_applies_latest_zero_cpu_and_memory": true,
+      "unknown_headlines_unavailable_and_fit": true,
+      "stale_warning_and_headlines_fit": true,
+      "stale_cpu_display": "46.5%",
+      "device_scopes": {
+        "Disk I/O": {
+          "checked_counts_all_none_subset_removed_returned_explicit_all": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "new_id_not_silently_selected_in_custom_mode": true,
+          "same_original_input_identity_and_focus_on_removal_return": true,
+          "none_missing_reset_are_unavailable_not_zero": true,
+          "returned_exact_selected_id_rates": [
+            "1 MiB/s",
+            "2 MiB/s"
+          ],
+          "real_zero_rates": [
+            "0 B/s",
+            "0 B/s"
+          ],
+          "same_original_input_identity_selection_and_focus_after_reconnect": true,
+          "disconnected_cpu_display": "46.5%",
+          "disconnected_remaining_memory_storage_unavailable": true,
+          "disconnected_headline_bounds_fit": true
+        },
+        "Network": {
+          "checked_counts_all_none_subset_removed_returned_explicit_all": [
+            12,
+            0,
+            1,
+            1,
+            1,
+            13
+          ],
+          "new_id_not_silently_selected_in_custom_mode": true,
+          "same_original_input_identity_and_focus_on_removal_return": true,
+          "none_missing_reset_are_unavailable_not_zero": true,
+          "returned_exact_selected_id_rates": [
+            "1 MiB/s",
+            "2 MiB/s"
+          ],
+          "real_zero_rates": [
+            "0 B/s",
+            "0 B/s"
+          ]
+        }
+      },
+      "empty_disk_inventory": {
+        "checkboxes": 0,
+        "summary": "Sum of 0 selected device reports"
+      }
+    }
+  ],
+  "qualifications": [
+    "Published Go Monitor/Measurement contracts anchor valid synthetic metrics/history/devices. No real sockets, backend, collectors, discovery, policy or environment setup is used.",
+    "Only selected pixel text tokens are doubled: help body15/30px and technical13/26px are asserted. Native checkbox labels remain14px and platform tooltip font remains unchanged; this is not whole-browser zoom coverage.",
+    "Initial state captures remained scrolled near device controls and do not establish headline visual evidence. Original receipts are preserved; refined state captures measure and show each actual headline.",
+    "Some keyboard-tooltip vertical flags follow measurement/navigation scroll state. Horizontal clipping is independently reproduced with centered native hover; no vertical/focus compensation is proposed without separate native-user causal reproduction.",
+    "CPU retains a numeric last observation under the explicit stale/disconnected notice while remaining RAM/storage become unavailable. This is recorded behavior, not promoted to a product defect by this inventory.",
+    "Pause evidence covers displayed CPU retention and focus; native history-gap geometry and rate-state controls are separately inventoried.",
+    "SVG chart marks use platform title tooltips; complete CSS border/text measurements here apply to the six HTML help IconButton tooltips.",
+    "No broad suites, generated bundle, build/install, live mutation or product source change is included."
+  ],
+  "remaining": [
+    "Independent source/evidence review and explicit product allocation before any remediation",
+    "Monitor-only proposed hooks/styles require composed native review; accepted Resource styles remain unchanged",
+    "Broader Monitor/route/terminal UX and real transport lifecycle acceptance remain open"
+  ]
+}

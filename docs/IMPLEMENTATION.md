@@ -1,5 +1,15 @@
 # Backend and CLI implementation
 
+## Monitor readability composition
+
+Scoped Monitor styles now provide useful device-label columns, stacked compact
+inline facts, bounded Stats and readable technical help/tooltips. Independent
+composition catches and corrects a native Grid-state specificity conflict; the
+final computed tracks apply the intended minimum. Native controls, IDs, state,
+metric calculations and Resource behavior remain unchanged. See the
+[composed acceptance](validation/ux-monitor-composed-2026-10-29.json).
+This source integration does not install or activate a backend.
+
 ## Resident prototype composition
 
 The unconnected private boundary and typed-alias correction are independently
@@ -39,7 +49,8 @@ Resource help uses full-width stacked technical fields and a bounded reading
 panel. Resource-only native tooltip alignment, wrapping and opener scroll margin
 preserve readable focus restoration after keyboard scrolling. Native dialog,
 button, authentication and accounting behavior stay unchanged; Monitor retains
-its existing presentation. Independent tests, guarded source-runtime rendering
+its existing presentation in this accepted Resource cut. The later Monitor-only
+owner correction is recorded below and awaits composition. Independent tests, guarded source-runtime rendering
 and deterministic embedded assets support the
 [scoped acceptance](validation/ux-resource-help-composed-2026-10-29.json).
 This source change is not installed or activated in a running backend.
@@ -3514,3 +3525,66 @@ from the browser's layout data, including generated content absent from the
 ordinary DOM. The fixture distinguishes native pointer Close, which may leave
 a tooltip inactive, from keyboard refocus and hover, which must render it.
 Non-resource Monitor controls retain their centered stock tooltip styling.
+
+## Read-only Monitor inventory fixtures
+
+The Monitor inventory imports the actual unchanged main route and substitutes
+only a fresh read-only Backend module. Published Monitor/Measurement shapes
+provide synthetic physical observations, 32 logical cores, twelve devices per
+I/O scope, stable exact IDs, bounded history and deliberate unavailable/reset
+gaps. Device removal/return and a new ID exercise custom versus All membership.
+No OS collectors, real socket/backend calls, setup or mutation is used.
+
+The help cohort inventories six actual Monitor dialog kinds and native CSS
+tooltip border/painted-text geometry under keyboard focus and centered hover.
+The state cohort records pause, All/None/subset, original input identity/focus,
+removal/reconnect, zero versus unavailable, stale/disconnected headlines and
+native history-gap geometry. These fixtures collect findings; they do not
+implement Monitor remediation or establish full UX acceptance.
+
+## Monitor layout and reading width
+
+Monitor initialization marks only the existing noninteractive monitorCards root
+and device-selector grids. The six explicit Monitor help kinds mark only their
+existing dialog body and technical DescriptionList. Native direct Checkbox,
+Dialog and IconButton types, IDs, callbacks and ownership remain intact. The
+help lookup still reads current context when opened; metricHelp text and
+measurement formatting are unchanged.
+
+Monitor selector labels wrap unbroken names with a flexible grid, while input
+controls retain their size. Technical fields stack at a useful width inside a
+viewport-bounded native panel. Short windows retain at least 120px/four computed
+reading lines through scoped panel sizing. Monitor-only inline-end native
+help tooltips wrap within the viewport; a scoped opener scroll margin supports
+existing native restoration after scrolling. No new focus/hover listener or
+lifecycle callback is added. Whole Monitor Stats contain their native padding;
+compact/medium native inline DescriptionLists stack labels and values so doubled
+text cannot collapse the value column. Wider desktop keeps paired columns.
+
+The read-only fixture now asserts the corrected geometry as well as the
+existing selection/identity, pause, unknown/zero/reset, reconnect and history-gap
+controls. A native keyboard diagnostic found that waiting only for a target
+crossing sent subsequent keys during an unfinished scroll. The final oracle
+observes both panel and document stability before the next input and retains
+strict Home/End targets, original focus and full tooltip checks. Background
+End chaining is observed and unchanged; arbitrary rapid timing is not claimed.
+[Owner evidence](validation/ux-monitor-layout-2026-10-29.json) does not establish
+independent composition or full UX acceptance. Generated assets stay unchanged.
+
+
+## Monitor selector-grid cascade correction
+
+The MonitorDeviceSelectors rule now matches native Grid `[data-columns]` state
+specificity. Its existing 18rem/available-width minimum therefore takes effect
+without changing native grid data, the renderer, main code or using important.
+The actual adopted stylesheet cascade and computed tracks are measured. Narrow
+and doubled-token cards use one column; wider desktop retains two useful
+columns. Direct native checkbox identities, callbacks and selection/focus
+behavior remain unchanged.
+
+The earlier `889923e` geometry checks established complete labels and no
+overlap, but missed the overridden column rule. The new regression also asserts
+computed track count/minimum and usable label width, including 390px and actual
+doubled tokens at 768px. Both the failed baseline and corrected evidence remain
+[source-bound](validation/ux-monitor-selector-grid-2026-10-29.json); the original
+Monitor layout evidence is preserved unchanged.
