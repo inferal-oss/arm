@@ -1060,3 +1060,12 @@ record, resolves loaded host names by exact ID, labels only verified local ARM
 identity and excludes year-one times. It passes 67 focused JS, full terminal
 package, native three-case lifecycle and web/native builds. Associated lease
 polish and final synthetic desktop/narrow visual checks remain in progress.
+
+
+Run/associated-lease presentation is complete pending coordinator review: null
+commands/full reason/unknown outcomes, exact host locality, compact summaries,
+truthful off/pending check-ins, preserved reviewed actions and narrow log tail.
+The final owner capture binds thirteen inputs and eleven synthetic images with
+five successful checks and no page errors. Logic passes 116 JS/full terminal race;
+final CSS rebuild/native three cases/CLI build and visual checks pass. The separate
+Screen Sharing/private-input stacked-layout correction follows this frozen cut.

@@ -263,3 +263,9 @@ test('run Details retain full purpose and exact record while names refresh witho
  assert.ok(f.ui.all.some(h=>h.kind==='DescriptionList'&&h.pairs.some(([label,value])=>label==='Last report'&&value==='Not reported')));assert.ok(f.ui.all.some(h=>h.kind==='Code'&&h.value.includes('123456789Z')&&h.value.includes('0001-01-01')));
  name='Renamed station';const reads=f.calls.filter(([op])=>op==='run_output').length;await f.panel.refresh();assert.equal(details.open,true);assert.ok(metadata.pairs.some(([label,value])=>label==='Host'&&value==='Renamed station · Local'));assert.equal(output.value,text);assert.equal(f.ui.all.filter(h=>h.kind==='Code').at(-1),output);assert.equal(f.calls.filter(([op])=>op==='run_output').length,reads);
 });
+
+test('a null-command historical record still opens, follows and disposes its original transcript',async t=>{
+ const record={...run,command:null};const f=fixture(t,(op,args)=>op==='runs'?[record]:{run:record,offset:args.offset,next_offset:args.offset+1,data:encoded('x'),done:false});
+ f.panel.setActive(true);await tick();await f.panel.open(record);const view=logUI(f,record.reason),original=view.output;assert.ok(f.ui.all.some(h=>h.kind==='Code'&&h.value==='Command unavailable'));assert.ok(f.ui.all.some(h=>h.kind==='Code'&&h.value.includes('"command":null')));
+ await f.panel.refresh();assert.equal(view.output,original);assert.equal(original.value,'xx');await view.button('Pause following').emit('activate');const reads=f.calls.filter(([op])=>op==='run_output').length;await f.panel.refresh();assert.equal(f.calls.filter(([op])=>op==='run_output').length,reads);f.panel.closeLog(record.id);assert.equal(original.disposed,true);
+});

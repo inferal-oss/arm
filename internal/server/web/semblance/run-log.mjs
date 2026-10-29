@@ -11,14 +11,14 @@ export function createRunLogView({ui,record,request,connected,context,hostContex
   const root=ui.stack(),label=r=>r.name||r.id;
   const title=()=>`${run.agent?compactRunText(run.agent,32)+' · ':''}${runPurpose(run)} · Log output`;
   const typed=(component,name)=>{ui.put?.(component.iri,RDF_TYPE,ARM+name,true);return component;};
-  display={heading:ui.heading(runPurpose(run),3),command:typed(ui.code(''),'RunDetailCommand'),fullCommand:ui.code(''),metadata:ui.descriptions([]),times:ui.descriptions([]),identity:ui.descriptions([]),exact:ui.code(''),host:typed(ui.text(''),'RunSecondary'),state:ui.badge(''),cursor:ui.text(''),error:ui.text('',{role:'status',tone:'warning',hidden:true}),output:ui.code(''),follow:ui.button('Pause following',toggleFollow),next:ui.button('Next output page',()=>onRead(api,true)),lost:ui.text('Reporter lost; process completion is unknown',{tone:'warning',hidden:true})};
+  display={heading:ui.heading(runPurpose(run),3),command:typed(ui.code(''),'RunDetailCommand'),fullCommand:ui.code(''),metadata:ui.descriptions([]),times:ui.descriptions([]),identity:ui.descriptions([]),exact:ui.code(''),host:typed(ui.text(''),'RunSecondary'),state:ui.badge(''),cursor:ui.text(''),error:ui.text('',{role:'status',tone:'warning',hidden:true}),output:ui.code(''),follow:ui.button('Pause following',toggleFollow),next:ui.iconButton('Next output page','›',()=>onRead(api,true)),lost:ui.text('Reporter lost; process completion is unknown',{tone:'warning',hidden:true})};
   display.output.set({language:''});display.command.set({language:''});display.fullCommand.set({language:''});
   display.expand=ui.button('Fullscreen log',()=>setFull(!full));
   display.exitHint=ui.text('Escape returns to the run details',{hidden:true});
   display.fold=ui.disclosure('Saved log output',[display.cursor,display.lost,display.output],{open:true});
   display.layout=ui.iconButton('Tile log windows','▦',onLayout);display.close=ui.iconButton('Close log','×',()=>onClose(api));
   display.transcriptHeading=ui.heading(title(),3);display.foldHint=ui.text('Folding hides the transcript; capture and following continue.');
-  display.transcript=ui.stack([display.transcriptHeading,ui.toolbar('Run log controls',[display.follow,display.expand,ui.button('Read from start',readStart),display.next,display.layout,display.close]),display.exitHint,display.error,display.foldHint,display.fold]);
+  display.transcript=ui.stack([display.transcriptHeading,ui.toolbar('Run log controls',[display.follow,display.expand,ui.iconButton('Read from start','↶',readStart),display.next,display.layout,display.close]),display.exitHint,display.error,display.foldHint,display.fold]);
   ui.put?.(display.transcript.iri,RDF_TYPE,ARM+'RunTranscript',true);
   ui.put?.(display.output.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type','https://arm.local/ui#RunOutput',true);
   ui.put?.(display.output.iri,'https://semblance.dev/ns/component#block',true);
@@ -33,7 +33,8 @@ export function createRunLogView({ui,record,request,connected,context,hostContex
   display.window=ui.detachable(title(),display.transcript);
   display.window.on('detach',()=>{setFull(false,false);renderPresentation();onDetach(api);if(following&&display.fold.open)display.output.scrollEnd?.();});
   display.window.on('layout',()=>{if(following&&display.fold.open)display.output.scrollEnd?.();});
-  root.replace(ui.button('Back to runs',()=>onClose(api),{emphasis:'Quiet'}),display.heading,display.command,display.state,ui.text('Drag the log tab out, use its pop-out control, or press Shift+Enter. Closing its window returns the log here.'),display.window);
+  const summary=typed(ui.stack([display.heading,display.state],{row:true}),'RunSummary');
+  root.replace(ui.toolbar('Run navigation',[ui.button('Back to runs',()=>onClose(api),{emphasis:'Quiet'})]),summary,display.command,typed(ui.text('Drag the log tab out, use its pop-out control, or press Shift+Enter. Closing its window returns the log here.'),'RunSecondary'),display.window);
   function renderErrors(){
     if(display){const errors=[!connected()?'Disconnected; cached output is stale':'',listError?'Run list unavailable: '+listError:'',logError?'Output unavailable: '+logError:''].filter(Boolean);display.error.set({label:errors.join(' · '),hidden:!errors.length});}
   }
@@ -55,7 +56,7 @@ export function createRunLogView({ui,record,request,connected,context,hostContex
   });}
   function renderPresentation(){
     if(!display)return;const detached=Boolean(display.window?.detached);
-    ui.batch(()=>{ui.put?.(display.transcript.iri,RDF_TYPE,ARM+(detached?'RunTranscriptWindow':'RunTranscript'),true);display.transcriptHeading.hidden=display.foldHint.hidden=detached&&!full;});
+    ui.batch(()=>{ui.put?.(display.transcript.iri,RDF_TYPE,ARM+(detached?'RunTranscriptWindow':'RunTranscript'),true);display.transcriptHeading.hidden=!full;display.foldHint.hidden=detached&&!full;});
   }
   function setFull(enabled,restoreFocus=true){
     if(!display||full===Boolean(enabled))return;
@@ -111,5 +112,5 @@ export function createRunLogView({ui,record,request,connected,context,hostContex
     setLayout(tiled){display.layout.set({label:tiled?'Float log windows':'Tile log windows'});},
     dispose(){if(disposed)return;setFull(false,false);disposed=true;active=false;retire();unwatch?.();display.window.dispose();root.dispose();}
   };
-  render();return api;
+  renderPresentation();render();return api;
 }

@@ -234,7 +234,7 @@ func safeRunOutput(data []byte, done bool) string {
 
 // A cosmetic host name never establishes local identity. Only the exact known
 // local ARM host ID can carry the Local marker; unknown IDs remain inspectable.
-func (m *dashboardModel) runHostLabel(host string) string {
+func (m *dashboardModel) hostContextLabel(host string) string {
 	if host == "" {
 		return "Unknown host"
 	}
@@ -245,7 +245,7 @@ func (m *dashboardModel) runHostLabel(host string) string {
 	return name
 }
 func runDetailTime(value time.Time) string {
-	if value.IsZero() {
+	if value.IsZero() || value.Year() <= 1 {
 		return "Not reported"
 	}
 	return value.Local().Format("Jan 02, 2006 15:04:05 MST")
@@ -269,7 +269,7 @@ func (m *dashboardModel) runsText() string {
 		fmt.Fprintf(&out, "Runs unavailable: %s\n\n", safe(ui.err))
 	}
 	if r := ui.selected; r != nil {
-		fmt.Fprintf(&out, "%s · %s\n%s\n\nCommand: %s\nAgent: %s\nHost: %s\nDirectory: %s\n\nStarted: %s\nEnded: %s\nCreated: %s\nLast report: %s\n\nRun: %s\nRun ID: %s\nHost ID: %s\n", safe(runListPurpose(*r)), safe(runStatusLabel(*r)), safe(r.Reason), safe(strings.Join(r.Command, " ")), safe(r.Agent), m.runHostLabel(r.Host), safe(r.CWD), runDetailDate(r.Started), runDetailDate(r.Ended), runDetailTime(r.Created), runDetailTime(r.LastReported), safe(r.Name), safe(r.ID), safe(r.Host))
+		fmt.Fprintf(&out, "%s · %s\n%s\n\nCommand: %s\nAgent: %s\nHost: %s\nDirectory: %s\n\nStarted: %s\nEnded: %s\nCreated: %s\nLast report: %s\n\nRun: %s\nRun ID: %s\nHost ID: %s\n", safe(runListPurpose(*r)), safe(runStatusLabel(*r)), safe(r.Reason), safe(strings.Join(r.Command, " ")), safe(r.Agent), m.hostContextLabel(r.Host), safe(r.CWD), runDetailDate(r.Started), runDetailDate(r.Ended), runDetailTime(r.Created), runDetailTime(r.LastReported), safe(r.Name), safe(r.ID), safe(r.Host))
 		if r.Outcome != "" {
 			fmt.Fprintf(&out, "Outcome: %s\n", safe(r.Outcome))
 		}

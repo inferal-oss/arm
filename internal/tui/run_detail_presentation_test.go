@@ -31,3 +31,31 @@ func TestRunDetailsHostIdentityAndZeroTimes(t *testing.T) {
 		t.Fatal("year-one date displayed")
 	}
 }
+
+func TestAssociatedLeaseHostUsesSameVerifiedLocalIdentity(t *testing.T) {
+	m, _ := fixtureDashboard(t)
+	local, remote := strings.Repeat("a", 32), strings.Repeat("b", 32)
+	m.data.status.Host = local
+	m.data.names = renderLabels{authority: local, hostName: "Build station"}
+	l := activeLease("sample")
+	l.Host = local
+	m.detail = &l
+	if !strings.Contains(m.leaseDetailText(), "Build station · Local") {
+		t.Fatal(m.leaseDetailText())
+	}
+	l.Host = remote
+	if strings.Contains(m.leaseDetailText(), "· Local") {
+		t.Fatal("remote lease marked local")
+	}
+}
+
+func TestUnfamiliarRunStateNeverInheritsFinishedOutcome(t *testing.T) {
+	for _, state := range []string{"future_state", "constructor", "__proto__"} {
+		for _, outcome := range []string{"expired", "released", "cancelled", "rejected", "failed", "completed"} {
+			r := model.Run{State: state, Outcome: outcome}
+			if runStatusLabel(r) != "Unknown" || !currentRunRecord(r) {
+				t.Fatal("uncertain run presented as finished", r)
+			}
+		}
+	}
+}

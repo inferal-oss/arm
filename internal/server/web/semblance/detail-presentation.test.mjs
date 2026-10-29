@@ -1,6 +1,7 @@
+import {controlUI} from './control-test-ui.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {hostPresentation,detailTime,displayCommand,exactRunRecord} from './detail-presentation.mjs';
+import {hostPresentation,detailTime,displayCommand,exactRunRecord,createLeaseSummary} from './detail-presentation.mjs';
 const local='a'.repeat(32),remote='b'.repeat(32);
 test('host name and Local marker require exact identity, never a selected node or hostname',()=>{
  const hosts=[{host:local,display_name:'Build station'},{host:remote,name:'Remote station',local:true}];
@@ -17,4 +18,17 @@ test('human timing excludes absent, invalid and year-one values without altering
  const raw='2026-10-29T12:34:56.123456789Z';assert.match(detailTime(raw,'Not recorded','en-US'),/2026/);assert.ok(!detailTime(raw).includes('T12:'));
  const record={created_at:raw,last_reported_at:'0001-01-01T00:00:00Z',log_bytes:9007199254740993n};assert.match(exactRunRecord(record),/9007199254740993/);assert.match(exactRunRecord(record),/123456789Z/);assert.match(exactRunRecord(record),/0001-01-01/);
  assert.equal(displayCommand(['/tools/go','test','a b']),'/tools/go test "a b"');
+});
+
+test('associated lease summary groups claims and exact owner context with honest local identity',()=>{
+ const ui=controlUI(),lease={id:'lease-sample',display_name:'Readable lease',host:local,revision:9007199254740993n,state:'active',expires_at:'0001-01-01T00:00:00Z',request:{reason:'Compile preview',agent:'build-agent',project:'demo',resources:{cpu:2,memory_bytes:2147483648}}};
+ const summary=createLeaseSummary({ui,lease,owner:'Operator',hostContext:{localHost:local,hosts:[{host:local,display_name:'Build station'}]}});
+ assert.equal(summary.children[0].children[0].label,'Compile preview');assert.ok(ui.all.some(h=>h.pairs?.some(([k,v])=>k==='Resources'&&v.includes('2 CPU')&&v.includes('2 GiB'))));assert.ok(ui.all.some(h=>h.pairs?.some(([k,v])=>k==='Host'&&v==='Build station · Local')));
+ assert.ok(ui.all.some(h=>h.pairs?.some(([k,v])=>k==='Expires'&&v==='No expiry recorded')));assert.equal(Boolean(ui.get('Owner & context').open),false);assert.ok(ui.all.some(h=>h.pairs?.some(([k,v])=>k==='Revision'&&v==='9007199254740993')));
+ const other=controlUI();createLeaseSummary({ui:other,lease:{...lease,host:remote,host_display_name:'Worker station'},owner:'Operator',hostContext:{localHost:local}});assert.equal(other.get('Local'),undefined);assert.ok(other.all.some(h=>h.pairs?.some(([k,v])=>k==='Host'&&v==='Worker station')));
+});
+
+test('missing or empty command arrays retain a readable unavailable label and exact null source',()=>{
+ for(const command of [undefined,null,[]])assert.equal(displayCommand(command),'Command unavailable');
+ assert.match(exactRunRecord({command:null}),/"command"\s*:\s*null/);
 });

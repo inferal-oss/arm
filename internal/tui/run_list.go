@@ -44,6 +44,9 @@ func runStatusLabel(run model.Run) string {
 	if run.State == "interrupted" {
 		return "Interrupted"
 	}
+	if run.State != "terminal" {
+		return "Unknown"
+	}
 	switch run.Outcome {
 	case "rejected":
 		return "Rejected"

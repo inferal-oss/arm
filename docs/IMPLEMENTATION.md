@@ -3253,3 +3253,23 @@ exact IDs available. Terminal run details use existing name metadata and the sam
 exact local-ID rule, meaningful times and the existing complete-record key.
 Metadata refresh updates the existing components without restarting a transcript,
 byte cursor or paused/following state.
+
+
+### Associated lease presentation
+
+The associated lease dialog leads with purpose/status, current resource claims,
+verified host identity and expiry. Owner/agent/project and exact IDs/revision live
+in a compact disclosure; the complete lease record remains accessible. Extend
+is visually primary while release/cancel and refresh remain separate reviewed
+controls. Check-ins show Off/no current reply request when there is no pending
+question; the awaiting heading appears only with actual pending records. Policy,
+safety explanations and bounded conversation history remain in disclosures, and
+read errors show Unavailable. Exact-revision actions, confirmation, unknown-outcome
+handling and off-by-default check-in behavior are unchanged.
+
+Follow-up run presentation handles null/absent command arrays, preserves exact raw
+null data and labels unfamiliar nonterminal lifecycles Unknown even with a recorded
+terminal-style outcome. Saved-output Start/Next use native icon controls with their
+unchanged accessible labels. Floating logs reserve a complete readable tail and
+scroll expanded metadata independently; a viewport-bounded minimum floating frame
+height keeps narrow controls readable without changing tiled layout or readers.

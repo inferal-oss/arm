@@ -29,3 +29,7 @@ test('terminal start deadline rejection remains explicitly Rejected',()=>{assert
 test('unfamiliar and prototype-named lifecycle states remain truthfully Unknown',()=>{
  for(const state of ['future_state','constructor','__proto__','toString','',undefined])assert.deepEqual(runStatus({...run,state}),{label:'Unknown',tone:'warning'});
 });
+
+test('unfamiliar nonterminal state never becomes a finished label from its outcome',()=>{
+ for(const state of ['future_state','constructor','__proto__'])for(const outcome of ['expired','released','cancelled','rejected','failed','completed'])assert.deepEqual(runStatus({...run,state,outcome}),{label:'Unknown',tone:'warning'});
+});

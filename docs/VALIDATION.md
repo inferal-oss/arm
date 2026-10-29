@@ -7952,3 +7952,26 @@ Prototype-named lifecycle states explicitly assert Unknown/warning. Existing
 reader/window/cursor and action/reconnect tests remain passing. Combined
 synthetic desktop/narrow screenshots and associated-lease polish are pending;
 these checks alone are not a visual/composed-main acceptance claim.
+
+
+### Run/lease presentation final owner evidence
+
+The unchanged JavaScript/Go logic passes 116 affected Node cases and the complete
+terminal package with the race detector. After the final CSS-only layout fixes,
+three native Semblance lifecycle cases, deterministic web rebuild, native command
+build and the source-bound synthetic browser capture pass through the normal
+shared FIFO. Five browser checks and eleven desktop/narrow PNGs verify grouped
+metadata/name refresh, original transcript identity, off versus pending check-ins,
+error/read-only controls and actual readable following tails at 390px. All thirteen
+feature input hashes and eleven artifact hashes match the retained final capture;
+normalized evidence is `validation/dashboard-active-defaults-details-2026-10-29.json`.
+
+Review fixes include null-command compatibility, full wrapping purpose, conservative
+unknown lifecycle labels, native output sizing and scrollable metadata. An earlier
+native style floor/duplicate declaration and cramped secondary controls caused
+visual failures; computed-layout inspection resolved them. Failed test expectations,
+source-overlapped captures and recorder cleanup/height-threshold mistakes remain
+excluded from acceptance and retained privately. The final fixture unmounts the
+app/runtime/store, closes browser/context and joins its development server. No
+actual ARM backend, adoption or lease/check-in mutation was used. This is owner
+component/visual evidence; coordinator composition/acceptance remains pending.

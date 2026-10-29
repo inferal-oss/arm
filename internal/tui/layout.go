@@ -425,7 +425,7 @@ func (m *dashboardModel) resourcesText() string {
 func (m *dashboardModel) leaseDetailText() string {
 	l := m.detail
 	var out strings.Builder
-	fmt.Fprintf(&out, "%s\nID: %s\nState: %s · revision %d\nWhy: %s\nOwner: %s\nAgent: %s\nProject: %s\nHost: %s\nHost ID: %s\n\nCPU: %g cores\nMemory: %s\nDisk: %s\nExpires: %s\n", m.leaseDisplayName(l.ID, l.Host), safe(l.ID), leaseLabel(*l), l.Revision, safe(l.Request.Reason), m.owner(l.Owner, l.OwnerUsername, l.Host), safe(l.Request.Agent), safe(l.Request.Project), m.hostDisplayName(l.Host), safe(l.Host), l.Request.Resources.CPU, byteCount(fmt.Sprint(l.Request.Resources.Memory)), byteCount(fmt.Sprint(l.Request.Resources.Disk)), date(l.Expires))
+	fmt.Fprintf(&out, "%s\nID: %s\nState: %s · revision %d\nWhy: %s\nOwner: %s\nAgent: %s\nProject: %s\nHost: %s\nHost ID: %s\n\nCPU: %g cores\nMemory: %s\nDisk: %s\nExpires: %s\n", m.leaseDisplayName(l.ID, l.Host), safe(l.ID), leaseLabel(*l), l.Revision, safe(l.Request.Reason), m.owner(l.Owner, l.OwnerUsername, l.Host), safe(l.Request.Agent), safe(l.Request.Project), m.hostContextLabel(l.Host), safe(l.Host), l.Request.Resources.CPU, byteCount(fmt.Sprint(l.Request.Resources.Memory)), byteCount(fmt.Sprint(l.Request.Resources.Disk)), runDetailDate(l.Expires))
 	if l.State == "terminal" {
 		fmt.Fprintf(&out, "Lifecycle: terminal · recorded outcome: %s\n", safe(l.Outcome))
 	}
