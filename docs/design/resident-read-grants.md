@@ -388,6 +388,10 @@ grant availability cannot all be promised.
 
 ## Missing primitives, protected inputs and future review gates
 
+The [native worker-owner prerequisite](resident-worker-owner.md) refines the
+Manager/native admission, immutable staging, original child/channel custody and
+stop-bound activation interfaces before any factory code. It adds no worker.
+
 Before a positive production route, central review must supply:
 
 1. An original native launch/channel/staging and stop/activation-permit factory;

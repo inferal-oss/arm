@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "status": "Independently reviewed documentation contract; no runtime activation",
+  "owner_commit": "e4c03c8826d244e8723c79686e09a852e3b954ac",
+  "composed_on": "3bda04fc6f20a66d41ac23a2be7b1513b1dadd38",
+  "source_inventory": "docs/validation/resident-worker-owner-contract-2026-10-29.json",
+  "source_inventory_sha256": "e20782d8c8bbec8799ad70f0eae13bdc0b0c1befa4f9fa58f0dead90bcde9314",
+  "contract_sha256": "eb74bb58d582b5573f25f17271c3e43c730814f68c3c569dcf02dd3a3c49f9b6",
+  "checks": {
+    "unchanged_source_hashes": 24,
+    "owner_documentation_paths": 6,
+    "added_local_links": 24,
+    "source_line_anchors": 17,
+    "scope": "Documentation only; production source unchanged",
+    "review": "No blocking source-contract finding"
+  },
+  "accepted_decisions": [
+    "Original Manager retains resource/artifact/native process/group/sole Wait/I/O and settlement custody; original Server retains protocol/dispatch and stop-bound routing",
+    "First path uses explicitly reviewed trusted local packages and one original Manager transaction",
+    "At most two live or unresolved native generations; finite pinned-artifact capacity defers further staging",
+    "Legacy adoption waits for actual original owners without cancelling jobs"
+  ],
+  "remaining_gates": [
+    "Concrete Manager reservation/intent/lifetime transaction and bootstrap authority contract",
+    "Finite admitted runtime/preparation/retention profile and provenance policy",
+    "Older-writer format compatibility and original native/protocol/dispatch joins",
+    "Stop-bound activation, coherent assets, versioned API data plane and distinct-version proof",
+    "Separate initial idle bootstrap/install review"
+  ],
+  "runtime_evidence_added": false,
+  "source_changes": false,
+  "limits": [
+    "Documentation and source inspection do not authorize Start, production routing, admission, install or state changes",
+    "No build, test, native launch, download or browser acceptance is inferred",
+    "Resident core/job supervision remains original code; complete hot upgrade is not implemented"
+  ]
+}

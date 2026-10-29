@@ -1,5 +1,47 @@
 # ARM delivery plan
 
+## Native worker-owner prerequisite — reviewed source contract
+
+Owner: `codex/resident-worker-owner-contract`, from accepted response composition
+`26d69bf943840fcbc7c350e75d82606bed6f4530`. The
+[prerequisite contract](design/resident-worker-owner.md) assigns future dedicated
+resource/artifact/native child/sole Wait custody to the original Manager and
+handshake/protocol/routing tasks to the original Server. It identifies missing
+native bootstrap authority, admitted different-version staging, transactional
+launch/lifetime attachment and stop-revision activation permits before source.
+
+The proposal keeps old and inactive/sealed/unknown generations and artifact pins
+within explicitly finite resources, with same-key lookup and no reconstructed
+PID authority or timeout reclamation. Initial legacy adoption waits for original
+owners; it cannot cancel jobs or transfer waiters. Metadata-only coordination is
+not completed API/UI replacement: coherent assets and a separate compatible API
+data plane still require actual distinct-version proof. Runtime resource floors,
+artifact/history/log bounds, provenance and consumer-retention/reload policy are
+explicit remaining decisions. This cut adds no code, tests/builds/native launch,
+download/install/environment or default/shared-state changes. Central review
+precedes any native factory/Manager/schema/bootstrap allocation.
+
+Independent composition on `3bda04f` verifies all 24 unchanged source hashes
+against the proposal and its accepted baseline. The six-document scope and 24
+added local links, including 17 source-line anchors, pass. Source inspection
+finds no blocking contract issue; this accepts the ownership split and identifies
+missing capabilities, without implementing or authorizing native Start.
+
+The next existing-owner allocation is a narrow source-only refinement of the
+Manager reservation/launch-intent/lifetime transaction and original bootstrap
+authority. Select one original Manager transaction, trusted explicitly reviewed
+local packages, two live/unresolved native generations and deferral at pinned
+artifact capacity for the first path. Return exact records, atomic boundaries,
+same-key failure/restart outcomes, native ownership attachment, expiry/renewal/
+settlement ordering and older-writer format fencing. Define how bootstrap is
+issued from actual owned Manager/directory/lock/generation/stop state, including
+idle legacy adoption without cancelling jobs. Distinguish stop/activation and
+remaining API/assets work; do not repeat the broad architecture. Propose finite
+profile/retention limits and their measurement or derivation gates, never invent
+measured floors from source inspection. No implementation/schema mutation,
+factory, build/test/process/admission/install/environment/shared-state work is
+allocated until that concrete transaction/bootstrap contract is reviewed.
+
 ## Original response settlement — independently reviewed composition
 
 Owner: `codex/resident-response-settlement`, from accepted policy `5765652`.
