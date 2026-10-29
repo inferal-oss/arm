@@ -2,6 +2,10 @@
 
 ## Dashboard presentation — independent composed acceptance
 
+Published runtime `c830982` passes the public website build/deploy workflow
+[40893893323](https://github.com/inferal-oss/arm/actions/runs/40893893323).
+This is not a full Go-suite or Linux runtime result.
+
 Final combined source passes 444 JS tests, 27 native WAT/rendering/lifecycle
 cases and the terminal package race suite: 446 passing nodes (216 roots),
 zero failures and six optional preview/helper skips. Affected vet, native CLI
@@ -23,8 +27,11 @@ Owner 18-check/four-PTY terminal evidence matches these inputs except the exact
 formatting change; all original PTYs exited zero. No independent terminal replay
 or real native delivery is claimed. Source review checks project boundaries,
 policy/executable/message revalidation, default-no confirmation, durable pending
-keys, no uncertain resend and cancellation/worker joins. Publication/installation
-remain separate steps. [Normalized record](validation/rollout-discovery-activation-composed-2026-10-29.json).
+keys, no uncertain resend and cancellation/worker joins. Published runtime `c830982` also passes 11 activation CLI race cases and native
+compilation. Its requested executable installation completes in 38.154s; all four
+carrier streams verify, protected policy/instruction/endpoint hashes remain
+unchanged, and the offline adoption gate stays disabled. No backend restart or
+agent activation occurs. [Normalized record](validation/rollout-discovery-activation-composed-2026-10-29.json).
 
 ## Organization directory listing — published
 
@@ -8048,12 +8055,15 @@ component/visual evidence; coordinator composition/acceptance remains pending.
 On the source hashes in [the normalized record](validation/ux-messages-2026-10-29.json),
 34 affected protocol/control tests and 29 real RDF rendering/ownership/focus
 tests pass. Eight synthetic native-browser cases cover 320/390/768/1440/1920
-pixel widths, doubled root-rem at 768px (pixel body text unscaled), long/unbroken body and authority values, review
+pixel widths, doubled root-rem sizing at 768px (pixel body text unscaled), long/unbroken body and authority
+values, review
 keyboard focus, refresh-held controls, stale/disconnected blocking, restored
 unknown/offline recovery, empty history and validation error. Stock synthetic
 dialog containment and Escape return are checked without claiming acceptance of
 product-specific dialogs. No transport calls occur; browser/context close and
 server join are awaited. Desktop and narrow screenshots are visually inspected.
+The root-rem fixture did not double fixed-pixel text tokens, so it does not
+establish actual 200% text-size acceptance; that coverage remains open.
 
 Private baseline evidence distinguishes the rejected inline-layout suspicion
 from reproduced collapsed whitespace and dense prose metadata. Fixture selector

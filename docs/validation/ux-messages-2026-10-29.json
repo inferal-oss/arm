@@ -184,5 +184,6 @@
     "Independent composed-source review",
     "Central embedded asset rebuild",
     "Broader route/state/terminal coverage as recorded in UX-REVIEW.md"
-  ]
+  ],
+  "scale_semantics": "The retained scaled case doubles the root rem size only. Fixed-pixel text tokens are not doubled; this is not actual 200% text-size acceptance. Original source hashes and raw evidence remain unchanged."
 }

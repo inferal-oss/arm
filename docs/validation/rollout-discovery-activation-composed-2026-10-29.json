@@ -64,6 +64,44 @@
   "limitations": [
     "Synthetic native metadata and queue helpers only; no actual agent delivery, clipboard, adoption, policy or backend startup",
     "No full Go suite, live native identity attestation or Linux runtime acceptance",
-    "Executable installation remains a separate post-publication step"
-  ]
+    "Executable installation does not restart an existing backend or activate agents."
+  ],
+  "published_runtime": "c830982d46c8eb1727084baf299f45ab253422d1",
+  "final_composition_smoke": [
+    {
+      "name": "activation-smoke",
+      "exit": 0,
+      "seconds": 47.76,
+      "roots": 11,
+      "names": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "native-build",
+      "exit": 0,
+      "seconds": 10.185
+    }
+  ],
+  "installation": {
+    "source": "c830982d46c8eb1727084baf299f45ab253422d1",
+    "exit": 0,
+    "seconds": 38.154,
+    "binary_sha256": "251d0e3674c2592a2abb26f303f542e89ea70c798a146e358736b54b94e01fcf",
+    "source_inputs_match_reviewed": true,
+    "catalog_digest": "e1107fa3c5a4172957d4fe2aa1631dcc1415aba0b809e5756af9e31fec0c5093",
+    "coordinate": false,
+    "eligible": false,
+    "postflight_exit": 0,
+    "carrier_payload_streams_verified": 4,
+    "rollout_policy_unchanged": true,
+    "managed_instruction_manifest_unchanged": true,
+    "backend_endpoint_unchanged": true
+  },
+  "public_website_ci": {
+    "source": "c830982d46c8eb1727084baf299f45ab253422d1",
+    "run": 40893893323,
+    "conclusion": "success",
+    "url": "https://github.com/inferal-oss/arm/actions/runs/40893893323"
+  }
 }
