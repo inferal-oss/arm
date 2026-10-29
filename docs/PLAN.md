@@ -187,6 +187,13 @@ border-box sizing, zero minimum inline size and a 100% maximum. Preserve the
 original failing width control, native Stat values and all other surface styles.
 Any remaining zero-width detail values require a separate concrete finding;
 document containment alone does not establish readability.
+Monitor's native Home target fails in both baseline and corrected desktop help,
+even though the corrected tooltip fits. A bounded read-only timing, focus,
+default-prevention and panel/background scroll diagnostic is allocated first.
+If a settled native-user path still reproduces scroll chaining, a Monitor-help-
+panel-only CSS containment trial may follow, retaining separate before/after
+source and failures. No forced focus/scroll, global handler or engine/lifecycle
+changes are allocated; fixture timing alone does not justify product changes.
 
 Owner: `codex/ux-layout-review`. Inventory and remediate the web and terminal
 route/dialog/state/viewport matrix: information hierarchy, text density,
