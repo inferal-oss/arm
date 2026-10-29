@@ -187,6 +187,15 @@ border-box sizing, zero minimum inline size and a 100% maximum. Preserve the
 original failing width control, native Stat values and all other surface styles.
 Any remaining zero-width detail values require a separate concrete finding;
 document containment alone does not establish readability.
+Opened Monitor memory/storage facts independently reproduce zero-width values
+after Stat containment: native description grids use a 7rem label minimum and
+subgrid, leaving 224px/0px columns under selected doubled tokens. MonitorSurface-
+only inline DescriptionList stacking/minimum-size/wrapping styles are allocated
+at existing compact and medium width classes (including 768px). No new main hook,
+native field/type/value/math, Resource or global style change is allocated.
+Verify all seven memory/storage values and inline rates, full clipping ancestors
+and useful value widths; preserve the negative geometry rather than counting
+its successful diagnostic exit as visual acceptance.
 Monitor's native Home target fails in both baseline and corrected desktop help,
 even though the corrected tooltip fits. A bounded read-only timing, focus,
 default-prevention and panel/background scroll diagnostic is allocated first.
