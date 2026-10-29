@@ -45,8 +45,13 @@ feature tests and earlier screenshots do not close those gates.
    reading width and pairs desktop consumer text/accounting. Tablet details use
    the full width; nested open details do not prevent compact outer collapse.
    Budget arithmetic, freshness and warning construction are byte-identical.
-4. **Host metadata: source candidate, reproduction pending.** Capability labels
-   still require dense/long/empty native fixtures before any presentation change.
+4. **Activity/Host: reproduced findings, correction allocation pending.** Host
+   technical and infrastructure records render empty because their setters use
+   the Code predicate that the native renderer does not read. Activity retains
+   its page/selection but replaces a focused open exact reader on refresh. A
+   valid long host name also overflows the shared narrow header. Human/exact
+   fields and known capability labels fit; Host disclosure identity/focus stays
+   intact through refresh/reconnect. These inventory findings are not acceptance.
 5. **Shell and small terminal geometry: reproduction pending.** Validate sticky
    shell controls during scrolling, zoom and short viewports, and terminal action
    hints/scrolling at narrow widths. Full-page browser screenshots place fixed
@@ -67,8 +72,8 @@ states; no principal view is declared complete from source inspection.
 | Leases | `main.mjs`, `lease-controls.mjs`; list, detail, actions and check-ins | Accepted focused run/lease cut in c830982 | Broader state/density/viewport coverage remains |
 | Runs | `runs.mjs`, `run-list.mjs`, `run-log.mjs`, `graph-ui.mjs`; list/detail, tabs, floating/tiled/fullscreen logs | Accepted focused default/detail/lifecycle cut in c830982 | Remaining route/geometry coverage; preserve reader and cleanup invariants |
 | Messages | `messages.mjs`; composer, recipient/reply review, conversation, deliveries, saved-send recovery | Corrected slice: 320/390/768/1440/1920 widths, 768 at actual doubled text-token coverage (15px/30px); long/unbroken values, stale/disconnected review, held focus, restored unknown/offline, empty and validation error | Message product source accepted in c830982; corrected text-scale evidence accepted with Pools composition; broader broadcast density and recorded-result visual states |
-| Activity | `main.mjs`; history pages, timeline, event picker/detail, live drawer | Source inventory only | Dense/empty/long events, exact record, pause, disconnected retention and keyboard scrolling |
-| Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Source inventory only | Many/empty capabilities, long IDs, disclosure retention and read-only context |
+| Activity | `main.mjs`; history pages, timeline, event picker/detail, live drawer | Read-only four-case dense/empty/native page and exact-record inventory; refresh reader-loss P2 reproduced | Product allocation/review, live drawer/transport and broader acceptance remain open |
+| Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Read-only four-case human/exact fields, capability/fallback/draining and refresh/reconnect retention; empty technical-record P2 reproduced | Two Host value setters await allocation/review; shared-header name overflow and full acceptance remain open |
 | Mesh | `mesh.mjs`; roster, node detail, connect/reconnect, installation, stop, uninstall, handoff, operations | Source inventory only | Dense nodes, every draft/review/unknown/cancel/error state, exact pins/revisions and control visibility |
 | Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Source inventory only | Dense inventory, unverified/stale/unavailable states; no cluster operations |
 | Forwarding | `forward.mjs`; preparation/review, tunnel list and retained operations | Source inventory only | Long endpoints, narrow dialogs, uncertainty and cleanup warnings; no real forwarding |
@@ -239,3 +244,13 @@ and doubled-token cards one. The
 [focused correction evidence](validation/ux-monitor-selector-grid-2026-10-29.json)
 preserves the negative baseline and original layout record. Independent
 composition remains open.
+
+## Activity and Host inventory boundary
+
+The [read-only inventory](validation/ux-activity-host-inventory-2026-10-29.json)
+records concrete P2 findings and positive native controls from accepted
+`2e58e7e`. Proposed product boundaries are the two Host technical/infrastructure
+value setters, Activity-only stable selected-record handles, and separate
+shell-owned long host-label containment. No product correction is included.
+Original failed probes and negative controls remain preserved; selected-token
+scaling and fixed native-font limits are explicit. Full UX acceptance stays open.

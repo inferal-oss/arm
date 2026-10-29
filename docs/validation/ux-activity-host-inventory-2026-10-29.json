@@ -1,0 +1,2719 @@
+{
+  "scope": "Read-only Activity and Host route inventory; concrete findings/proposed boundaries, not product remediation or full UX acceptance",
+  "base": "2e58e7e3f28764793f720962122756577e6d1dbe",
+  "current_sources": {
+    "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+    "internal/server/web/semblance/app.ttl": "dddf3b27d712a714a74eaa09a91dd32ff2aadab4f11796542fc46b7adcec99ba",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "internal/server/web/activity-feed.mjs": "78a4225ddc8580e2614fe3c6a5bc6fc6d8c85d606ca758204224cfe442f87e8e",
+    "web/third_party/semblance/ontology/components/type.ttl": "80bc0082a1cecab49f7f68cccf7f42c0f6cb356416b353d94fa4346f960d6ad0",
+    "web/third_party/semblance/src/components/type.ts": "b00e05c8010fdd3f78ef53d0748e4509061eb10956fc266863743de078caddd8",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/named_views.go": "a9452987a249df10e53b66b85ab552b20dad727acf5b7219885aaa76f1ffbc21",
+    "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+    "internal/model/ports.go": "5878a419ce1efd05b32e3eff7c8bd30a9bdde3f3fb0c13996d0302bb0984f42e",
+    "internal/model/node_metadata.go": "37f47880669571a310d5e0a84df56097c60c7e8fcfb94b7a234769872f526441",
+    "internal/local/identity.go": "0e67003d24d448e10c5b3f65101e52ae4fbef66ea530fc572d3d7ebcbbf21ad8",
+    "internal/manager/manager.go": "5470903ce0081c7fecfe4718d5e9e8ef624207cde9c5c450cf9aa65b45515927",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+    "web/third_party/semblance/ontology/theme/data.ttl": "5dfefcfb38b77459150851b67a386faf419f9c4f0eb26cb681b5997007fbaeff",
+    "scripts/dashboard-screenshots/ux-activity-host.mjs": "d9a681a15716056cd9d4563e430bfe7c73351341daed891027faa7941d721862",
+    "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+  },
+  "source_guards": {
+    "base": "2e58e7e3f28764793f720962122756577e6d1dbe",
+    "protected_sources": {
+      "internal/server/web/semblance/main.mjs": "b6ed02e2950228f8bd49081026fbc114de23acf52b958433a239d25ce689c42b",
+      "internal/server/web/semblance/app.ttl": "dddf3b27d712a714a74eaa09a91dd32ff2aadab4f11796542fc46b7adcec99ba",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+      "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+      "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+      "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+      "internal/server/web/semblance/lease-controls.mjs": "f5dd804d8e2e4f6b12897f121b8cb8bb4b32fb1987e4238c9748f75497387466",
+      "scripts/dashboard-screenshots/ux-monitor.mjs": "94c315a605775dd143704cc88248b2cb87d528489dc45a15a5593f47c15854be",
+      "scripts/dashboard-screenshots/ux-monitor-backend.mjs": "fd56f47264519afa32707579d40d63a541bd05d0fd84496c3e7b8c60ed512843",
+      "scripts/dashboard-screenshots/ux-resources-route.mjs": "2c957e0964085ed61916d71915557e25cbb85d562b7c22431bbaeb139e34b3ec",
+      "scripts/dashboard-screenshots/ux-resources-route-backend.mjs": "9cb64d69667c096ede6420882afabfa113c48e4e76cf1174158ade3d2b777815",
+      "web/test/resource-layout.test.mjs": "fad5da2ca882d8f3b1068f778b17ca26f7447e3939a89f8fc1e6987c1e34b421",
+      "internal/server/web/assets/arm.mjs": "d329b2b4efb7f5a7075e29a52891de643aeed927d43d711458d93fb8199e7e42",
+      "web/third_party/semblance/src/components/type.ts": "b00e05c8010fdd3f78ef53d0748e4509061eb10956fc266863743de078caddd8",
+      "web/third_party/semblance/ontology/components/type.ttl": "80bc0082a1cecab49f7f68cccf7f42c0f6cb356416b353d94fa4346f960d6ad0"
+    },
+    "all_preexisting_tracked_internal_web_and_accepted_scripts_bytes_unchanged": true
+  },
+  "fixture_contracts": {
+    "event": "model.Event: int64 sequence, type/entity strings, RFC3339 at, arbitrary JSON data; exact large integers use BigInt/stringifyJSON",
+    "status": "model.Status plus namedStatus response display_name; known/null/empty capabilities and infrastructure slices",
+    "ports": "model.PortBinding/PortClaim: tcp4/documentation-range addresses/hold/infrastructure state; synthetic detail strings",
+    "initial_journal": "200 events arrive between initial status snapshot and catch-up; published manager limit256, client retains200. No fabricated already-known cursor is bypassed.",
+    "names": {
+      "display_name_characters": 111,
+      "custom_name_pattern_valid": true,
+      "owner_username_characters": 178,
+      "owner_username_ascii_no_control_under256": true,
+      "host_and_lease_ids": "32 lowercase hexadecimal characters"
+    },
+    "local_host_metadata_boundary": "The local Host route does not call node_metadata or render NodeMetadata platform/inventory fields; no such discovery/data was added.",
+    "mutations": "Backend strict read allowlist plus in-memory subscriptions; every other operation, including inspect, refuses. Clipboard/socket/API paths are blocked."
+  },
+  "execution": {
+    "unchanged_shared_fifo": true,
+    "sequential": true,
+    "allocated_cpu_max": 2,
+    "allocated_memory_gib_max": 2,
+    "allocated_seconds_active_including_cleanup_per_cohort_max": 120,
+    "cohorts": {
+      "activity": {
+        "elapsed_ms": 18183,
+        "viewport_cases": 4,
+        "receipt_sha256": "c1e225f92245af10c7c9a60ac56a5e0d95d759bc1605352b450ed40e0f86af44",
+        "cleanup": {
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "collection_completed": true,
+        "visual_acceptance": false,
+        "operation_counts": {
+          "agents": 28,
+          "events": 8,
+          "mesh_operator_watch": 8,
+          "messages": 28,
+          "monitor_subscribe": 8,
+          "node_list": 8,
+          "pool_list": 8,
+          "status": 28,
+          "subscribe": 8
+        }
+      },
+      "host": {
+        "elapsed_ms": 28239,
+        "viewport_cases": 4,
+        "receipt_sha256": "b035f76d128b6360d1d1be9c69058e3f23d01203cb8a41fff23f7408951252e5",
+        "cleanup": {
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "collection_completed": true,
+        "visual_acceptance": false,
+        "operation_counts": {
+          "agents": 32,
+          "events": 8,
+          "mesh_operator_watch": 8,
+          "messages": 32,
+          "monitor_subscribe": 8,
+          "node_list": 8,
+          "pool_list": 8,
+          "status": 32,
+          "subscribe": 8
+        }
+      },
+      "truncation": {
+        "elapsed_ms": 5246,
+        "viewport_cases": 2,
+        "receipt_sha256": "c1623b5bb7004f049fa4d586c830a20c4eed510ba03179fc4b736e051b1e40fb",
+        "cleanup": {
+          "contextClosed": true,
+          "browserClosed": true,
+          "serverJoined": true
+        },
+        "collection_completed": true,
+        "visual_acceptance": false,
+        "operation_counts": {
+          "agents": 8,
+          "events": 4,
+          "mesh_operator_watch": 4,
+          "messages": 8,
+          "monitor_subscribe": 4,
+          "node_list": 4,
+          "pool_list": 4,
+          "status": 8,
+          "subscribe": 4
+        }
+      }
+    },
+    "page_errors": 0,
+    "real_sockets": 0,
+    "external_or_backend_requests": 0,
+    "clipboard_attempts": 0,
+    "clipboard_writes": 0,
+    "forbidden_calls": 0,
+    "interpretation": "Collection/safety completion does not turn the negative Code/reader/header results into passing visual regressions."
+  },
+  "prioritized_findings": [
+    {
+      "priority": 2,
+      "area": "Host technical/infrastructure Code is empty",
+      "evidence": "All four cases show26 capability identifiers (expected1073 characters) and8 ports (expected3409 JSON characters), but both native Code text lengths are0.23 known-feature prose labels confirm populated status reached the route.",
+      "cause": "main renderHost uses technical.set({code:...}) and infrastructure.set({code:...}); graph-ui maps code to c:code. Native codeRun reads c:label then c:value. Initial c:value remains empty.",
+      "source_sites": [
+        "internal/server/web/semblance/main.mjs:259",
+        "internal/server/web/semblance/main.mjs:260",
+        "internal/server/web/semblance/graph-ui.mjs:81",
+        "web/third_party/semblance/src/components/type.ts:141"
+      ],
+      "proposed_exact_boundary": "Only the two renderHost setters should use value, retaining current data/stringifyJSON/display cap. Reproduce metadata presentation after this binding correction before allocating any layout style. No global graph-ui Code mapping change.",
+      "acceptance": "Not implemented or authorized by this inventory"
+    },
+    {
+      "priority": 2,
+      "area": "Activity refresh replaces the open selected exact reader and loses focus",
+      "evidence": "At every viewport, duplicate replay and a new durable Event leave page2 and selected int64 sequence intact but disconnect the original Exact event record button, lose its focus and close the replacement disclosure. Native page/Choice nodes and focused Choice survive separately.",
+      "cause": "renderActivity always calls renderEventDetail; renderEventDetail replaces description/disclosure handles each time, including status refresh and an identical selected record.",
+      "source_sites": [
+        "internal/server/web/semblance/main.mjs:125",
+        "internal/server/web/semblance/main.mjs:229",
+        "internal/server/web/semblance/main.mjs:232"
+      ],
+      "proposed_exact_boundary": "Activity-only retained selected-detail model/handles keyed by selected sequence. Update existing fields/exact code when appropriate; preserve existing page-selection clearing, exact formatting/display cap and lifecycle cleanup. No shared Choice, disclosure or focus-engine change.",
+      "acceptance": "Not implemented or authorized by this inventory"
+    },
+    {
+      "priority": 2,
+      "area": "Shared header overflows with a valid long host name",
+      "evidence": "At390px, the shared brand text reaches562.859375px and document width563. Activity/Host body fields, controls and native labels remain bounded. The111-character synthetic display_name is within the128-character cosmetic-name grammar.",
+      "cause": "Both routes receive the same long status display_name through hostLabel; shared header brand text remains unbroken beyond its narrow allocation.",
+      "proposed_exact_boundary": "Separate centrally allocated shell hostLabel/brand containment review. No Activity/Host body-width correction follows from this finding.",
+      "acceptance": "Reported outside the body-specific correction boundary; no shell changes authorized"
+    }
+  ],
+  "activity_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "textScale": 1,
+      "pages": [
+        "Latest 50 events",
+        "Events 51\u2013100",
+        "Events 101\u2013150",
+        "Events 151\u2013200"
+      ],
+      "visible_timeline_rows": 50,
+      "page2_event_options": 50,
+      "last_page_options_including_placeholder": 51,
+      "selected_sequence": "9007199254741072",
+      "exact_json_equal": true,
+      "exact_int64": true,
+      "detail_fields": [
+        {
+          "label": "Type",
+          "value": "lease.released",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 1280,
+          "font_size": 13
+        },
+        {
+          "label": "At",
+          "value": "10/29/2026, 5:00:00 AM",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 1280,
+          "font_size": 13
+        },
+        {
+          "label": "Entity",
+          "value": "dddddddddddddddddddddddddddddddd",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 1280,
+          "font_size": 13
+        },
+        {
+          "label": "Sequence",
+          "value": "9007199254741072",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 1280,
+          "font_size": 13
+        }
+      ],
+      "native_choice_control_boxes_fit": true,
+      "native_labels": {
+        "history": {
+          "count": 1,
+          "bounds": {
+            "value": "History page",
+            "textLength": 12,
+            "valuePreviewOnly": false,
+            "box": {
+              "left": 29,
+              "right": 120.625,
+              "top": 293.1875,
+              "bottom": 309.6875
+            },
+            "text": {
+              "left": 29,
+              "right": 120.625,
+              "top": 294.1875,
+              "bottom": 307.1875
+            },
+            "clip": {
+              "left": 0,
+              "right": 1440,
+              "top": 0,
+              "bottom": 851
+            },
+            "fontSize": 11,
+            "fullBoxFits": true,
+            "fullTextFits": true
+          }
+        },
+        "event": {
+          "count": 1,
+          "bounds": {
+            "value": "Inspect an event",
+            "textLength": 16,
+            "valuePreviewOnly": false,
+            "box": {
+              "left": 29,
+              "right": 149.171875,
+              "top": 760.1875,
+              "bottom": 776.6875
+            },
+            "text": {
+              "left": 29,
+              "right": 149.171875,
+              "top": 761.1875,
+              "bottom": 774.1875
+            },
+            "clip": {
+              "left": 0,
+              "right": 1440,
+              "top": 108,
+              "bottom": 900
+            },
+            "fontSize": 11,
+            "fullBoxFits": true,
+            "fullTextFits": true
+          }
+        }
+      },
+      "timeline_caption_fits": true,
+      "first_and_last_summary_fit": [
+        true,
+        true
+      ],
+      "summary_length": 320,
+      "code": {
+        "length": 687,
+        "sha256": "77f9ef78a104940f9254593ed86c6f07bcc4a43877567dcfc9c5354ea4eca02c",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "tail": " event detail\"}}",
+          "left": 1023.6875,
+          "right": 1150.859375,
+          "top": 766.203125,
+          "bottom": 781.203125,
+          "clip": {
+            "left": 16,
+            "right": 1424,
+            "top": 682.4375,
+            "bottom": 802.4375
+          },
+          "fullTextFits": true,
+          "documentY": 4618
+        },
+        "nativeScrollSettled": {
+          "documentY": 4618,
+          "settledFor": 207.90000000596046
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 1374,
+          "scrollWidth": 1374,
+          "clientHeight": 102,
+          "scrollHeight": 102,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "inspect_lease_control": {
+        "value": "Inspect lease",
+        "textLength": 13,
+        "valuePreviewOnly": false,
+        "box": {
+          "left": 16,
+          "right": 1424,
+          "top": 591.4375,
+          "bottom": 629.4375
+        },
+        "text": {
+          "left": 673.03125,
+          "right": 766.96875,
+          "top": 601.4375,
+          "bottom": 619.4375
+        },
+        "clip": {
+          "left": 0,
+          "right": 1440,
+          "top": 108,
+          "bottom": 900
+        },
+        "fontSize": 15,
+        "fullBoxFits": true,
+        "fullTextFits": true
+      },
+      "duplicate": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "historyNodeRetained": true,
+        "choiceNodeRetained": true,
+        "exactNodeRetained": false,
+        "exactFocusRetained": false,
+        "exactOpen": "false"
+      },
+      "new_event_while_reading": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "exactNodeRetained": false,
+        "exactFocusRetained": false,
+        "exactOpen": "false"
+      },
+      "append_with_focused_choice": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "choiceNodeRetained": true,
+        "choiceFocusRetained": true
+      },
+      "page_change_clears_selection": true,
+      "empty": {
+        "timelineItems": 0,
+        "historyOptions": 1,
+        "eventOptions": 1
+      },
+      "document": {
+        "scrollWidth": 1440,
+        "scrollLeft": 0,
+        "viewport": 1440,
+        "bodyWidth": 1440,
+        "elements": []
+      }
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "textScale": 1,
+      "pages": [
+        "Latest 50 events",
+        "Events 51\u2013100",
+        "Events 101\u2013150",
+        "Events 151\u2013200"
+      ],
+      "visible_timeline_rows": 50,
+      "page2_event_options": 50,
+      "last_page_options_including_placeholder": 51,
+      "selected_sequence": "9007199254741072",
+      "exact_json_equal": true,
+      "exact_int64": true,
+      "detail_fields": [
+        {
+          "label": "Type",
+          "value": "lease.released",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 230,
+          "font_size": 13
+        },
+        {
+          "label": "At",
+          "value": "10/29/2026, 5:00:00 AM",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 230,
+          "font_size": 13
+        },
+        {
+          "label": "Entity",
+          "value": "dddddddddddddddddddddddddddddddd",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 230,
+          "font_size": 13
+        },
+        {
+          "label": "Sequence",
+          "value": "9007199254741072",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 230,
+          "font_size": 13
+        }
+      ],
+      "native_choice_control_boxes_fit": true,
+      "native_labels": {
+        "history": {
+          "count": 1,
+          "bounds": {
+            "value": "History page",
+            "textLength": 12,
+            "valuePreviewOnly": false,
+            "box": {
+              "left": 23,
+              "right": 367,
+              "top": 242.4375,
+              "bottom": 258.9375
+            },
+            "text": {
+              "left": 29,
+              "right": 120.625,
+              "top": 243.4375,
+              "bottom": 256.4375
+            },
+            "clip": {
+              "left": 0,
+              "right": 390,
+              "top": 0,
+              "bottom": 855
+            },
+            "fontSize": 11,
+            "fullBoxFits": true,
+            "fullTextFits": true
+          }
+        },
+        "event": {
+          "count": 1,
+          "bounds": {
+            "value": "Inspect an event",
+            "textLength": 16,
+            "valuePreviewOnly": false,
+            "box": {
+              "left": 23,
+              "right": 367,
+              "top": 727.9375,
+              "bottom": 744.4375
+            },
+            "text": {
+              "left": 29,
+              "right": 149.171875,
+              "top": 728.9375,
+              "bottom": 741.9375
+            },
+            "clip": {
+              "left": 0,
+              "right": 390,
+              "top": 61,
+              "bottom": 900
+            },
+            "fontSize": 11,
+            "fullBoxFits": true,
+            "fullTextFits": true
+          }
+        }
+      },
+      "timeline_caption_fits": true,
+      "first_and_last_summary_fit": [
+        true,
+        true
+      ],
+      "summary_length": 320,
+      "code": {
+        "length": 687,
+        "sha256": "77f9ef78a104940f9254593ed86c6f07bcc4a43877567dcfc9c5354ea4eca02c",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "tail": " event detail\"}}",
+          "left": 213.09375,
+          "right": 340.265625,
+          "top": 770.859375,
+          "bottom": 785.859375,
+          "clip": {
+            "left": 16,
+            "right": 374,
+            "top": 409.9375,
+            "bottom": 806.9375
+          },
+          "fullTextFits": true,
+          "documentY": 9878
+        },
+        "nativeScrollSettled": {
+          "documentY": 9878,
+          "settledFor": 209
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "clientHeight": 379,
+          "scrollHeight": 379,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "inspect_lease_control": {
+        "value": "Inspect lease",
+        "textLength": 13,
+        "valuePreviewOnly": false,
+        "box": {
+          "left": 16,
+          "right": 374,
+          "top": 430.9375,
+          "bottom": 468.9375
+        },
+        "text": {
+          "left": 148.03125,
+          "right": 241.96875,
+          "top": 440.9375,
+          "bottom": 458.9375
+        },
+        "clip": {
+          "left": 0,
+          "right": 390,
+          "top": 61,
+          "bottom": 855
+        },
+        "fontSize": 15,
+        "fullBoxFits": true,
+        "fullTextFits": true
+      },
+      "duplicate": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "historyNodeRetained": true,
+        "choiceNodeRetained": true,
+        "exactNodeRetained": false,
+        "exactFocusRetained": false,
+        "exactOpen": "false"
+      },
+      "new_event_while_reading": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "exactNodeRetained": false,
+        "exactFocusRetained": false,
+        "exactOpen": "false"
+      },
+      "append_with_focused_choice": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "choiceNodeRetained": true,
+        "choiceFocusRetained": true
+      },
+      "page_change_clears_selection": true,
+      "empty": {
+        "timelineItems": 0,
+        "historyOptions": 1,
+        "eventOptions": 1
+      },
+      "document": {
+        "scrollWidth": 563,
+        "scrollLeft": 0,
+        "viewport": 390,
+        "bodyWidth": 390,
+        "elements": [
+          {
+            "component": null,
+            "tag": "SPAN",
+            "left": 28,
+            "right": 562.859375,
+            "text": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenoden"
+          },
+          {
+            "component": "text",
+            "tag": "P",
+            "left": 64,
+            "right": 562.859375,
+            "text": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenoden"
+          }
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "textScale": 1,
+      "pages": [
+        "Latest 50 events",
+        "Events 51\u2013100",
+        "Events 101\u2013150",
+        "Events 151\u2013200"
+      ],
+      "visible_timeline_rows": 50,
+      "page2_event_options": 50,
+      "last_page_options_including_placeholder": 51,
+      "selected_sequence": "9007199254741072",
+      "exact_json_equal": true,
+      "exact_int64": true,
+      "detail_fields": [
+        {
+          "label": "Type",
+          "value": "lease.released",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 230,
+          "font_size": 13
+        },
+        {
+          "label": "At",
+          "value": "10/29/2026, 5:00:00 AM",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 230,
+          "font_size": 13
+        },
+        {
+          "label": "Entity",
+          "value": "dddddddddddddddddddddddddddddddd",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 230,
+          "font_size": 13
+        },
+        {
+          "label": "Sequence",
+          "value": "9007199254741072",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 230,
+          "font_size": 13
+        }
+      ],
+      "native_choice_control_boxes_fit": true,
+      "native_labels": {
+        "history": {
+          "count": 1,
+          "bounds": {
+            "value": "History page",
+            "textLength": 12,
+            "valuePreviewOnly": false,
+            "box": {
+              "left": 23,
+              "right": 367,
+              "top": 151.4375,
+              "bottom": 167.9375
+            },
+            "text": {
+              "left": 29,
+              "right": 120.625,
+              "top": 152.4375,
+              "bottom": 165.4375
+            },
+            "clip": {
+              "left": 0,
+              "right": 390,
+              "top": 61,
+              "bottom": 275
+            },
+            "fontSize": 11,
+            "fullBoxFits": true,
+            "fullTextFits": true
+          }
+        },
+        "event": {
+          "count": 1,
+          "bounds": {
+            "value": "Inspect an event",
+            "textLength": 16,
+            "valuePreviewOnly": false,
+            "box": {
+              "left": 23,
+              "right": 367,
+              "top": 151.9375,
+              "bottom": 168.4375
+            },
+            "text": {
+              "left": 29,
+              "right": 149.171875,
+              "top": 152.9375,
+              "bottom": 165.9375
+            },
+            "clip": {
+              "left": 0,
+              "right": 390,
+              "top": 61,
+              "bottom": 320
+            },
+            "fontSize": 11,
+            "fullBoxFits": true,
+            "fullTextFits": true
+          }
+        }
+      },
+      "timeline_caption_fits": true,
+      "first_and_last_summary_fit": [
+        true,
+        true
+      ],
+      "summary_length": 320,
+      "code": {
+        "length": 687,
+        "sha256": "77f9ef78a104940f9254593ed86c6f07bcc4a43877567dcfc9c5354ea4eca02c",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "tail": " event detail\"}}",
+          "left": 213.09375,
+          "right": 340.265625,
+          "top": 190.859375,
+          "bottom": 205.859375,
+          "clip": {
+            "left": 16,
+            "right": 374,
+            "top": 61,
+            "bottom": 226.9375
+          },
+          "fullTextFits": true,
+          "documentY": 10458
+        },
+        "nativeScrollSettled": {
+          "documentY": 10458,
+          "settledFor": 216.69999998807907
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "clientHeight": 379,
+          "scrollHeight": 379,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": false,
+        "whole_text_fits": false,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "inspect_lease_control": {
+        "value": "Inspect lease",
+        "textLength": 13,
+        "valuePreviewOnly": false,
+        "box": {
+          "left": 16,
+          "right": 374,
+          "top": 140.9375,
+          "bottom": 178.9375
+        },
+        "text": {
+          "left": 148.03125,
+          "right": 241.96875,
+          "top": 150.9375,
+          "bottom": 168.9375
+        },
+        "clip": {
+          "left": 0,
+          "right": 390,
+          "top": 61,
+          "bottom": 275
+        },
+        "fontSize": 15,
+        "fullBoxFits": true,
+        "fullTextFits": true
+      },
+      "duplicate": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "historyNodeRetained": true,
+        "choiceNodeRetained": true,
+        "exactNodeRetained": false,
+        "exactFocusRetained": false,
+        "exactOpen": "false"
+      },
+      "new_event_while_reading": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "exactNodeRetained": false,
+        "exactFocusRetained": false,
+        "exactOpen": "false"
+      },
+      "append_with_focused_choice": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "choiceNodeRetained": true,
+        "choiceFocusRetained": true
+      },
+      "page_change_clears_selection": true,
+      "empty": {
+        "timelineItems": 0,
+        "historyOptions": 1,
+        "eventOptions": 1
+      },
+      "document": {
+        "scrollWidth": 563,
+        "scrollLeft": 0,
+        "viewport": 390,
+        "bodyWidth": 390,
+        "elements": [
+          {
+            "component": null,
+            "tag": "SPAN",
+            "left": 28,
+            "right": 562.859375,
+            "text": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenoden"
+          },
+          {
+            "component": "text",
+            "tag": "P",
+            "left": 64,
+            "right": 562.859375,
+            "text": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenoden"
+          }
+        ]
+      }
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "textScale": 2,
+      "pages": [
+        "Latest 50 events",
+        "Events 51\u2013100",
+        "Events 101\u2013150",
+        "Events 151\u2013200"
+      ],
+      "visible_timeline_rows": 50,
+      "page2_event_options": 50,
+      "last_page_options_including_placeholder": 51,
+      "selected_sequence": "9007199254741072",
+      "exact_json_equal": true,
+      "exact_int64": true,
+      "detail_fields": [
+        {
+          "label": "Type",
+          "value": "lease.released",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 496,
+          "font_size": 26
+        },
+        {
+          "label": "At",
+          "value": "10/29/2026, 5:00:00 AM",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 496,
+          "font_size": 26
+        },
+        {
+          "label": "Entity",
+          "value": "dddddddddddddddddddddddddddddddd",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 496,
+          "font_size": 26
+        },
+        {
+          "label": "Sequence",
+          "value": "9007199254741072",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 496,
+          "font_size": 26
+        }
+      ],
+      "native_choice_control_boxes_fit": true,
+      "native_labels": {
+        "history": {
+          "count": 1,
+          "bounds": {
+            "value": "History page",
+            "textLength": 12,
+            "valuePreviewOnly": false,
+            "box": {
+              "left": 29,
+              "right": 120.625,
+              "top": 291.9375,
+              "bottom": 308.4375
+            },
+            "text": {
+              "left": 29,
+              "right": 120.625,
+              "top": 292.9375,
+              "bottom": 305.9375
+            },
+            "clip": {
+              "left": 0,
+              "right": 768,
+              "top": 0,
+              "bottom": 540.5
+            },
+            "fontSize": 11,
+            "fullBoxFits": true,
+            "fullTextFits": true
+          }
+        },
+        "event": {
+          "count": 1,
+          "bounds": {
+            "value": "Inspect an event",
+            "textLength": 16,
+            "valuePreviewOnly": false,
+            "box": {
+              "left": 29,
+              "right": 149.171875,
+              "top": 448.9375,
+              "bottom": 465.4375
+            },
+            "text": {
+              "left": 29,
+              "right": 149.171875,
+              "top": 449.9375,
+              "bottom": 462.9375
+            },
+            "clip": {
+              "left": 0,
+              "right": 768,
+              "top": 75,
+              "bottom": 600
+            },
+            "fontSize": 11,
+            "fullBoxFits": true,
+            "fullTextFits": true
+          }
+        }
+      },
+      "timeline_caption_fits": true,
+      "first_and_last_summary_fit": [
+        true,
+        true
+      ],
+      "summary_length": 320,
+      "code": {
+        "length": 687,
+        "sha256": "77f9ef78a104940f9254593ed86c6f07bcc4a43877567dcfc9c5354ea4eca02c",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "tail": " event detail\"}}",
+          "left": 523.03125,
+          "right": 650.203125,
+          "top": 456.140625,
+          "bottom": 471.140625,
+          "clip": {
+            "left": 16,
+            "right": 752,
+            "top": 293.1875,
+            "bottom": 492.1875
+          },
+          "fullTextFits": true,
+          "documentY": 16814
+        },
+        "nativeScrollSettled": {
+          "documentY": 16814,
+          "settledFor": 210.89999997615814
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 702,
+          "scrollWidth": 702,
+          "clientHeight": 181,
+          "scrollHeight": 181,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "inspect_lease_control": {
+        "value": "Inspect lease",
+        "textLength": 13,
+        "valuePreviewOnly": false,
+        "box": {
+          "left": 16,
+          "right": 752,
+          "top": 281.1875,
+          "bottom": 319.1875
+        },
+        "text": {
+          "left": 337.03125,
+          "right": 430.96875,
+          "top": 291.1875,
+          "bottom": 309.1875
+        },
+        "clip": {
+          "left": 0,
+          "right": 768,
+          "top": 75,
+          "bottom": 540.5
+        },
+        "fontSize": 15,
+        "fullBoxFits": true,
+        "fullTextFits": true
+      },
+      "duplicate": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "historyNodeRetained": true,
+        "choiceNodeRetained": true,
+        "exactNodeRetained": false,
+        "exactFocusRetained": false,
+        "exactOpen": "false"
+      },
+      "new_event_while_reading": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "exactNodeRetained": false,
+        "exactFocusRetained": false,
+        "exactOpen": "false"
+      },
+      "append_with_focused_choice": {
+        "page": "2",
+        "selected": "9007199254741072",
+        "choiceNodeRetained": true,
+        "choiceFocusRetained": true
+      },
+      "page_change_clears_selection": true,
+      "empty": {
+        "timelineItems": 0,
+        "historyOptions": 1,
+        "eventOptions": 1
+      },
+      "document": {
+        "scrollWidth": 768,
+        "scrollLeft": 0,
+        "viewport": 768,
+        "bodyWidth": 768,
+        "elements": []
+      }
+    }
+  ],
+  "host_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "textScale": 1,
+      "summary": [
+        {
+          "label": "Host",
+          "value": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenode",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 1230,
+          "font_size": 13
+        },
+        {
+          "label": "Owner",
+          "value": "synthetic_accountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccount (UID 1000)",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 1230,
+          "font_size": 13
+        },
+        {
+          "label": "Mode",
+          "value": "Accepting reviewed requests",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 1230,
+          "font_size": 13
+        }
+      ],
+      "identity": [
+        {
+          "label": "Host ID",
+          "value": "cccccccccccccccccccccccccccccccc",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 1198,
+          "font_size": 13
+        },
+        {
+          "label": "Event cursor",
+          "value": "9,007,199,254,741,192",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 1198,
+          "font_size": 13
+        }
+      ],
+      "known_capability_labels": 23,
+      "known_labels_fit": true,
+      "known_label_font": 15,
+      "disclosure_controls_fit": {
+        "identityControl": true,
+        "technicalControl": true,
+        "infrastructureControl": true
+      },
+      "expected": {
+        "technicalLength": 1073,
+        "infrastructureLength": 3409,
+        "portCount": 8
+      },
+      "technical": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 542,
+          "settledFor": 211.90000000596046
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 1374,
+          "scrollWidth": 1374,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "infrastructure": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 563,
+          "settledFor": 211.19999998807907
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 1374,
+          "scrollWidth": 1374,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "retained_node_order": [
+        "authority card",
+        "identity disclosure button",
+        "technical disclosure button",
+        "infrastructure disclosure button"
+      ],
+      "states": {
+        "draining": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Draining",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            }
+          ]
+        },
+        "unknown": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            }
+          ]
+        },
+        "empty": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            }
+          ]
+        },
+        "fresh": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenode",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "synthetic_accountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccount (UID 1000)",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 1230,
+              "font_size": 13
+            }
+          ]
+        }
+      },
+      "disconnected": {
+        "nodes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "focus": true,
+        "identityOpen": "true",
+        "technicalOpen": "true",
+        "infrastructureOpen": "true",
+        "technicalLength": 0
+      },
+      "reconnected": {
+        "nodes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "focus": true,
+        "identityOpen": "true",
+        "technicalOpen": "true",
+        "infrastructureOpen": "true",
+        "technicalLength": 0
+      },
+      "document": {
+        "scrollWidth": 1440,
+        "scrollLeft": 0,
+        "viewport": 1440,
+        "bodyWidth": 1440,
+        "elements": []
+      }
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "textScale": 1,
+      "summary": [
+        {
+          "label": "Host",
+          "value": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenode",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 180,
+          "font_size": 13
+        },
+        {
+          "label": "Owner",
+          "value": "synthetic_accountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccount (UID 1000)",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 180,
+          "font_size": 13
+        },
+        {
+          "label": "Mode",
+          "value": "Accepting reviewed requests",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 180,
+          "font_size": 13
+        }
+      ],
+      "identity": [
+        {
+          "label": "Host ID",
+          "value": "cccccccccccccccccccccccccccccccc",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 148,
+          "font_size": 13
+        },
+        {
+          "label": "Event cursor",
+          "value": "9,007,199,254,741,192",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 148,
+          "font_size": 13
+        }
+      ],
+      "known_capability_labels": 23,
+      "known_labels_fit": true,
+      "known_label_font": 15,
+      "disclosure_controls_fit": {
+        "identityControl": true,
+        "technicalControl": true,
+        "infrastructureControl": true
+      },
+      "expected": {
+        "technicalLength": 1073,
+        "infrastructureLength": 3409,
+        "portCount": 8
+      },
+      "technical": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 1261,
+          "settledFor": 208.90000000596046
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "infrastructure": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 1282,
+          "settledFor": 210.30000001192093
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "retained_node_order": [
+        "authority card",
+        "identity disclosure button",
+        "technical disclosure button",
+        "infrastructure disclosure button"
+      ],
+      "states": {
+        "draining": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Draining",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            }
+          ]
+        },
+        "unknown": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            }
+          ]
+        },
+        "empty": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            }
+          ]
+        },
+        "fresh": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenode",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "synthetic_accountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccount (UID 1000)",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            }
+          ]
+        }
+      },
+      "disconnected": {
+        "nodes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "focus": true,
+        "identityOpen": "true",
+        "technicalOpen": "true",
+        "infrastructureOpen": "true",
+        "technicalLength": 0
+      },
+      "reconnected": {
+        "nodes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "focus": true,
+        "identityOpen": "true",
+        "technicalOpen": "true",
+        "infrastructureOpen": "true",
+        "technicalLength": 0
+      },
+      "document": {
+        "scrollWidth": 563,
+        "scrollLeft": 0,
+        "viewport": 390,
+        "bodyWidth": 390,
+        "elements": [
+          {
+            "component": null,
+            "tag": "SPAN",
+            "left": 28,
+            "right": 562.859375,
+            "text": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenoden"
+          },
+          {
+            "component": "text",
+            "tag": "P",
+            "left": 64,
+            "right": 562.859375,
+            "text": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenoden"
+          }
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "textScale": 1,
+      "summary": [
+        {
+          "label": "Host",
+          "value": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenode",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 180,
+          "font_size": 13
+        },
+        {
+          "label": "Owner",
+          "value": "synthetic_accountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccount (UID 1000)",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 180,
+          "font_size": 13
+        },
+        {
+          "label": "Mode",
+          "value": "Accepting reviewed requests",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 180,
+          "font_size": 13
+        }
+      ],
+      "identity": [
+        {
+          "label": "Host ID",
+          "value": "cccccccccccccccccccccccccccccccc",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 148,
+          "font_size": 13
+        },
+        {
+          "label": "Event cursor",
+          "value": "9,007,199,254,741,192",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 148,
+          "font_size": 13
+        }
+      ],
+      "known_capability_labels": 23,
+      "known_labels_fit": true,
+      "known_label_font": 15,
+      "disclosure_controls_fit": {
+        "identityControl": true,
+        "technicalControl": true,
+        "infrastructureControl": true
+      },
+      "expected": {
+        "technicalLength": 1073,
+        "infrastructureLength": 3409,
+        "portCount": 8
+      },
+      "technical": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 1841,
+          "settledFor": 216.5
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "infrastructure": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 1862,
+          "settledFor": 210.30000001192093
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "retained_node_order": [
+        "authority card",
+        "identity disclosure button",
+        "technical disclosure button",
+        "infrastructure disclosure button"
+      ],
+      "states": {
+        "draining": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Draining",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            }
+          ]
+        },
+        "unknown": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            }
+          ]
+        },
+        "empty": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            }
+          ]
+        },
+        "fresh": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenode",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Owner",
+              "value": "synthetic_accountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccount (UID 1000)",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 180,
+              "font_size": 13
+            }
+          ]
+        }
+      },
+      "disconnected": {
+        "nodes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "focus": true,
+        "identityOpen": "true",
+        "technicalOpen": "true",
+        "infrastructureOpen": "true",
+        "technicalLength": 0
+      },
+      "reconnected": {
+        "nodes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "focus": true,
+        "identityOpen": "true",
+        "technicalOpen": "true",
+        "infrastructureOpen": "true",
+        "technicalLength": 0
+      },
+      "document": {
+        "scrollWidth": 563,
+        "scrollLeft": 0,
+        "viewport": 390,
+        "bodyWidth": 390,
+        "elements": [
+          {
+            "component": null,
+            "tag": "SPAN",
+            "left": 28,
+            "right": 562.859375,
+            "text": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenoden"
+          },
+          {
+            "component": "text",
+            "tag": "P",
+            "left": 64,
+            "right": 562.859375,
+            "text": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenoden"
+          }
+        ]
+      }
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "textScale": 2,
+      "summary": [
+        {
+          "label": "Host",
+          "value": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenode",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 446,
+          "font_size": 26
+        },
+        {
+          "label": "Owner",
+          "value": "synthetic_accountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccount (UID 1000)",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 446,
+          "font_size": 26
+        },
+        {
+          "label": "Mode",
+          "value": "Accepting reviewed requests",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 446,
+          "font_size": 26
+        }
+      ],
+      "identity": [
+        {
+          "label": "Host ID",
+          "value": "cccccccccccccccccccccccccccccccc",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 414,
+          "font_size": 26
+        },
+        {
+          "label": "Event cursor",
+          "value": "9,007,199,254,741,192",
+          "label_fits": true,
+          "value_fits": true,
+          "value_width": 414,
+          "font_size": 26
+        }
+      ],
+      "known_capability_labels": 23,
+      "known_labels_fit": true,
+      "known_label_font": 30,
+      "disclosure_controls_fit": {
+        "identityControl": true,
+        "technicalControl": true,
+        "infrastructureControl": true
+      },
+      "expected": {
+        "technicalLength": 1073,
+        "infrastructureLength": 3409,
+        "portCount": 8
+      },
+      "technical": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 1769,
+          "settledFor": 211.5
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 702,
+          "scrollWidth": 702,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "infrastructure": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 1790,
+          "settledFor": 211.69999998807907
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 702,
+          "scrollWidth": 702,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text."
+      },
+      "retained_node_order": [
+        "authority card",
+        "identity disclosure button",
+        "technical disclosure button",
+        "infrastructure disclosure button"
+      ],
+      "states": {
+        "draining": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            },
+            {
+              "label": "Mode",
+              "value": "Draining",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            }
+          ]
+        },
+        "unknown": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            }
+          ]
+        },
+        "empty": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "cccccccccccc\u2026",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            },
+            {
+              "label": "Owner",
+              "value": "UID 1000",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            }
+          ]
+        },
+        "fresh": {
+          "nodes": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "focus": true,
+          "identityOpen": "true",
+          "technicalOpen": "true",
+          "infrastructureOpen": "true",
+          "technicalLength": 0,
+          "summary": [
+            {
+              "label": "Host",
+              "value": "synthetic-host-nodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenodenode",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            },
+            {
+              "label": "Owner",
+              "value": "synthetic_accountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccountaccount (UID 1000)",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            },
+            {
+              "label": "Mode",
+              "value": "Accepting reviewed requests",
+              "label_fits": true,
+              "value_fits": true,
+              "value_width": 446,
+              "font_size": 26
+            }
+          ]
+        }
+      },
+      "disconnected": {
+        "nodes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "focus": true,
+        "identityOpen": "true",
+        "technicalOpen": "true",
+        "infrastructureOpen": "true",
+        "technicalLength": 0
+      },
+      "reconnected": {
+        "nodes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "focus": true,
+        "identityOpen": "true",
+        "technicalOpen": "true",
+        "infrastructureOpen": "true",
+        "technicalLength": 0
+      },
+      "document": {
+        "scrollWidth": 768,
+        "scrollLeft": 0,
+        "viewport": 768,
+        "bodyWidth": 768,
+        "elements": []
+      }
+    }
+  ],
+  "truncation_cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "textScale": 1,
+      "activity": {
+        "length": 256020,
+        "sha256": "3bfd8969d27816e7ec01e22a9bb08b41e59203b246eddc2aced3d62dab21b961",
+        "endsWithTruncation": true,
+        "nativeEndTail": {
+          "tail": "splay truncated]",
+          "left": 761.4375,
+          "right": 888.609375,
+          "top": 766.734375,
+          "bottom": 781.734375,
+          "clip": {
+            "left": 16,
+            "right": 1424,
+            "top": 108,
+            "bottom": 803.4375
+          },
+          "fullTextFits": true,
+          "documentY": 29637
+        },
+        "nativeScrollSettled": {
+          "documentY": 29637,
+          "settledFor": 215.40000000596046
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 1374,
+          "scrollWidth": 1374,
+          "clientHeight": 29679,
+          "scrollHeight": 29679,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": false,
+        "whole_text_fits": false,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text.",
+        "truncation_rendered": true
+      },
+      "host": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 454,
+          "settledFor": 211.10000002384186
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 1374,
+          "scrollWidth": 1374,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Blank Host Code is the binding finding, not a passing truncation check.",
+        "truncation_rendered": false
+      }
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "textScale": 1,
+      "activity": {
+        "length": 256020,
+        "sha256": "3bfd8969d27816e7ec01e22a9bb08b41e59203b246eddc2aced3d62dab21b961",
+        "endsWithTruncation": true,
+        "nativeEndTail": {
+          "tail": "splay truncated]",
+          "left": 213.09375,
+          "right": 340.265625,
+          "top": 191,
+          "bottom": 206,
+          "clip": {
+            "left": 16,
+            "right": 374,
+            "top": 61,
+            "bottom": 226.9375
+          },
+          "fullTextFits": true,
+          "documentY": 130660
+        },
+        "nativeScrollSettled": {
+          "documentY": 130660,
+          "settledFor": 200.59999999403954
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "clientHeight": 129989,
+          "scrollHeight": 129989,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": false,
+        "whole_text_fits": false,
+        "qualification": "Inline Code is read by document scrolling. Whole-block visibility in a short viewport is not required; native End tail is measured separately. Empty Host Code has no rendered text.",
+        "truncation_rendered": true
+      },
+      "host": {
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "endsWithTruncation": false,
+        "nativeEndTail": {
+          "empty": true
+        },
+        "nativeScrollSettled": {
+          "documentY": 1714,
+          "settledFor": 209.19999998807907
+        },
+        "metrics": {
+          "tag": "CODE",
+          "tabIndex": -1,
+          "clientWidth": 324,
+          "scrollWidth": 324,
+          "clientHeight": 3,
+          "scrollHeight": 3,
+          "fontSize": 13.2,
+          "whiteSpace": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        "whole_box_fits": true,
+        "whole_text_fits": true,
+        "qualification": "Blank Host Code is the binding finding, not a passing truncation check.",
+        "truncation_rendered": false
+      }
+    }
+  ],
+  "measurement_qualification": {
+    "common_viewports": [
+      [
+        1440,
+        900,
+        1
+      ],
+      [
+        390,
+        900,
+        1
+      ],
+      [
+        390,
+        320,
+        1
+      ],
+      [
+        768,
+        600,
+        2
+      ]
+    ],
+    "selected_token_scaling": "Capability prose15/30px, timeline summary11/22px and DescriptionList13/26px. Native Choice selects remain13px; labels11px and inline Code13.2px also stay fixed. Not universal zoom.",
+    "native_selects": "Native option IRIs are selected through the native control. Box/DOM label/selected value/retention are recorded; painted selected-option glyph bounds are not available and fullTextFits is null.",
+    "scrolling": "Geometry probes scroll to measured content. Reading-tail controls separately press native End, wait for200ms document stability and inspect actual ancestor/fixed-shell clipping. No product focus/scroll listener is added.",
+    "known_limits": "Timeline summaries use the existing320-character source cut; JSON display uses256000 JS string characters plus20-character marker. Synthetic ASCII makes character/byte counts coincide here.",
+    "native_code": "The current ui.code helper creates inline native Code; the fixture does not assume a preformatted child or invent a scrollable Code surface."
+  },
+  "preserved_diagnostics": [
+    {
+      "name": "activity-probe",
+      "receipt_sha256": "53b46c4a69d9fd548c65b572b82e92e47b5589426fdd444debfa83aa5ef0f9e0",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "3b6b74f1e48b495fa042880074c0dfcfcd811243ed277bc6c2614f604832a486",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": "locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('combobox', { name: 'History page', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <select id=\"https://arm.local/ui#c91/~select\">\u2026</select>\u001b[22m\n\u001b[2m  - attempting select option action\u001b[22m\n\u001b[2m    2 \u00d7 waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 \u00d7 waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    20 \u00d7 waiting for element to be visible and enabled\u001b[22m\n\u001b[2m       - did not find some options\u001b[22m\n\u001b[2m     - retrying select option action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+      "elapsed_ms": 11344,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Fixture failed selecting literal page2; native Choice values are option IRIs. Not a product page-switch failure."
+    },
+    {
+      "name": "activity-native-choice",
+      "receipt_sha256": "50553f2c5694585fd0da885525e6a8aa37f10050baa89d9aacf7010ca5f54078",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "d449e32a3b25b891b4adc56e9808350361289ee76c844e23867e23f8968cf7c0",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": "locator.innerText: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-sem-c=\"code\"]').filter({ has: locator('code').filter({ hasText: 'END-REASON' }) }).last().locator('code')\u001b[22m\n",
+      "elapsed_ms": 11934,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Fixture then assumed a nested code child. Native Code is inline by default. Not a product missing-record diagnosis."
+    },
+    {
+      "name": "host-probe",
+      "receipt_sha256": "7e4b4c74e1759b026c236bb995e570f6564bead0272bdfb429a06c3f0812d596",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "2790232b205cf9b48f5e4deceda43a616c68cca482757829645d539316de8729",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": "locator.evaluate: TypeError: Cannot read properties of undefined (reading 'textContent')\n    at eval (eval at evaluate (:370:30), <anonymous>:2:194)\n    at UtilityScript.evaluate (<anonymous>:372:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+      "elapsed_ms": 2621,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Empty Host Code caused the early tail probe to dereference absent text; later fixture records empty output as the actual binding finding."
+    },
+    {
+      "name": "activity-inline-code",
+      "receipt_sha256": "b51013d64e5b17c1c50688640135f8ed44dce6b40545c4bacb3e83b6975deffe",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "2790232b205cf9b48f5e4deceda43a616c68cca482757829645d539316de8729",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": null,
+      "elapsed_ms": 13584,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Prior four-case inventory with native Code support; selected-reader negative and exact int64 controls preserved. Final same-source receipt adds stable baseline/new-event/label controls."
+    },
+    {
+      "name": "host-empty-code",
+      "receipt_sha256": "d11bb70d9c024d0dab55538310fddcf81336a061b651af499a69763e2f49c0c0",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "1d2ce7f57f788c4f4de61d05ed5837bf1eb7f010c4e64243ab8269d40347c20d",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": null,
+      "elapsed_ms": 26953,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Prior four-case Host collection records the binding finding and retention; final receipt adds stable initial refresh/control geometry."
+    },
+    {
+      "name": "truncation-final",
+      "receipt_sha256": "2162ce4f6bccc4ea3af06e7ac3862d552e06c80a7f582b35eb36c287f7f2347f",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "3057093759cd773f81e45f56d13957c194ff7ea35da5b366e7ebd90f983ff784",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": null,
+      "elapsed_ms": 3703,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Early large-record geometry was measured after the startup status refresh closed/replaced its reader. The hidden zero-height clipping surface is not a separate truncation defect."
+    },
+    {
+      "name": "truncation-ancestors",
+      "receipt_sha256": "58735a5f85553805818324097d2bdeef4336957e28e66af175862867eca36200",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "ab64a71cfaa0acb182ed239e740dab043398c833d01b0805b2710c2092647fbf",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": null,
+      "elapsed_ms": 3708,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Ancestor diagnostic confirms collapsed disclosure clip after startup refresh; superseded for baseline geometry by stable refresh/scroll timing."
+    },
+    {
+      "name": "truncation-stable",
+      "receipt_sha256": "f85c8776a1ff25d04677c196c642b7e56550878af25c0ec2fe36de73f70a3bca",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "d42b39df7b5ce6bb54a448dbdd940e59bfba051f6f2e7c1988c565c2124d0fae",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": null,
+      "elapsed_ms": 5258,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "After waiting for startup refresh, Activity cap/marker/tail is reachable; Host remains empty. Final receipt uses final frozen fixture hash."
+    },
+    {
+      "name": "activity-final",
+      "receipt_sha256": "11a70ee2be4f7dffce146c257ec0b77ef693b14408424eb8225394518278b099",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "082fbfe52f0fa9861dbf674c48476142fba3a578789c7d0d909837aafe93e553",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": null,
+      "elapsed_ms": 17695,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Earlier source-qualified successful collection before adding explicit label/control bounds; preserve its exact source map."
+    },
+    {
+      "name": "host-final",
+      "receipt_sha256": "977521e644c06da01bf79a435b2f05e4523c3e15e30e8f91b5e3a49cb6cb65a5",
+      "sources": {
+        "scripts/dashboard-screenshots/ux-activity-host.mjs": "082fbfe52f0fa9861dbf674c48476142fba3a578789c7d0d909837aafe93e553",
+        "scripts/dashboard-screenshots/ux-activity-host-backend.mjs": "417bc9dd94f8fa75589ccf3b1c3937963e056ed9639c83d83a60a8ca1f4f9389"
+      },
+      "failure": null,
+      "elapsed_ms": 27918,
+      "cleanup": {
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "qualification": "Earlier source-qualified collection before adding all disclosure control bounds; preserve its exact source map."
+    }
+  ],
+  "limitations": [
+    "No product correction, independent acceptance or full UX completion",
+    "No build, broad suites, install, live activation, auth handshake, mutation, real clipboard or discovery",
+    "Host populated technical geometry remains untestable until the demonstrated binding issue is corrected",
+    "Live Activity drawer/pause/disconnected Activity workflow, actual lease inspection, broader route/state coverage and terminal parity remain open",
+    "Native selected-option painted glyphs and whole-browser zoom are not covered"
+  ]
+}

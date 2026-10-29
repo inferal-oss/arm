@@ -3642,3 +3642,29 @@ computed track count/minimum and usable label width, including 390px and actual
 doubled tokens at 768px. Both the failed baseline and corrected evidence remain
 [source-bound](validation/ux-monitor-selector-grid-2026-10-29.json); the original
 Monitor layout evidence is preserved unchanged.
+
+## Read-only Activity and Host inventory
+
+Fresh fixtures import the unchanged actual main routes. Synthetic Event,
+Status, namedStatus and PortBinding shapes follow the published Go contracts;
+large integer sequences/cursors stay exact. The journal can publish 200 entries
+between the first status snapshot and catch-up (manager limit 256, UI cap 200),
+then replay an identical event or append new ones. All non-allowlisted calls
+refuse, including mutations and lease inspection. No real transport, clipboard,
+OS/host/cluster discovery, configuration, policy or resource action occurs.
+
+Activity records native page/event Choice identities, an exact JSON/int64
+control, long 320-character summaries, native labels/controls, empty state and
+reading retention under duplicate/new events. Host records human/exact identity,
+known and unknown capability identifiers, populated/empty/null infrastructure,
+draining/fallback/disconnected/reconnected states and original disclosure nodes.
+The local Host route does not request NodeMetadata; no unrendered OS/inventory
+fields are invented for it.
+
+The fixtures expose existing behavior without changing it. Host updates c:code
+while native Code reads c:label/c:value, so technical and infrastructure Code
+remain empty despite populated records. Activity recreates its selected reader
+on every render, closing a focused exact disclosure on refresh. Long valid
+host names cross the shared narrow header. Product corrections await separate
+review/allocation; the [normalized findings](validation/ux-activity-host-inventory-2026-10-29.json)
+retain source/contract hashes, qualified controls and cleanup evidence.

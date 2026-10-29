@@ -8780,3 +8780,71 @@ focused native graph/ownership tests pass with two workers, zero failures/skips.
 Earlier separate inline-detail, native-key timing and helper-test receipts keep
 their original `889923e` source qualification. All 339 original artifact hashes
 are reverified without changing those artifacts.
+
+## Activity and Host actual-route inventory — read-only findings
+
+The [source-bound inventory](validation/ux-activity-host-inventory-2026-10-29.json)
+uses accepted `2e58e7e` product bytes with fresh read-only synthetic fixtures.
+Sequential unchanged-FIFO cohorts remain within the allocated two-CPU/two-GiB,
+120-second active window including original context/browser/server cleanup.
+There are no real Backend/socket/API/clipboard writes, discovery, mutations,
+configuration/policy/enrollment changes, builds, installs or broad suites.
+Successful collection means fixture/safety completion; the negative rendering
+and retained-reader results are findings and are not counted as acceptance.
+
+The common matrix is 1440×900, 390×900, 390×320 and 768×600 with selected pixel
+text tokens doubled. Actual capability prose scales 15/30px, timeline summary
+11/22px and DescriptionList fields 13/26px; native selects remain 13px and inline
+Code 13.2px. Native select painted glyph bounds are unavailable here: their
+control boxes, labels, selected text and selection behavior are qualified
+separately. This is not whole-browser zoom. Complete DOM labels/text/controls
+are measured against actual clipping ancestors and fixed shell bounds; tall
+code cannot all fit simultaneously in a short viewport, so native End/tail
+reachability is recorded separately.
+
+Dense Activity retains 200 events in four 50-row pages. The ordinary selected Event JSON matches
+all source characters and preserves int64 sequence/data values beyond JS safe
+integer precision. Page and native Choice identity/selection remain under
+refresh; focusing that Choice survives a new event. Replaying the selected
+Event or appending a new Event while its exact reader is open replaces the
+original disclosure, closes it and loses focus in all four cases. This is the
+selected-reader P2; genuine page changes still clear an out-of-page selection.
+Empty Activity has zero timeline rows and one placeholder per native Choice.
+The existing 320-character summary cut is observed, with its full value retained
+in the exact record. The lease inspection affordance is measured but not used.
+
+Host human/exact identity, owner/mode and 23 known-capability labels fit. Existing
+authority/identity/technical/infrastructure nodes, open states and focused
+technical control survive draining/unknown/empty/fresh refresh, disconnection
+and reconnect. Null versus empty capability arrays produce the same empty
+known-feature projection; this is observed behavior, not an invented semantic
+requirement. Yet 26 capability IDs (1073 characters) and 8 populated ports (3409
+JSON characters) yield two empty native Code elements. The source updates the
+wrong Code predicate; no populated technical-reading geometry is accepted.
+
+At 390px a valid long host display name makes the shared header/document reach
+562.859375/563px. Activity/Host body fields remain bounded; this is a shared-shell
+finding, not an Activity body width diagnosis. The separately measured large
+Activity record displays 256000 characters plus the 20-character truncation
+marker, with its tail reachable by settled native End at desktop/short sizes.
+Host infrastructure still renders empty in the corresponding truncation case.
+Initial fixture assumptions about Choice values and Code nesting failed and
+remain preserved. An early large-record probe was also closed by the real
+startup refresh; its hidden-body geometry is not treated as a separate defect.
+The final baseline waits for that refresh, then tests explicit new/replayed
+Event refresh causally. No focus or product scroll behavior is manufactured.
+
+Exact source guards preserve main/app, event/identity/auth/operation semantics,
+accepted Monitor/Resource fixtures/styles/tests, graph/engine/pins/modules and
+embedded assets. Representative native captures are visually reviewed. Focused
+findings/proposed boundaries await independent review and explicit allocation;
+full route/state/real-transport, live drawer, terminal and complete UX gates
+remain open.
+
+The final frozen-source cohorts take 18183ms for Activity (four cases), 28239ms
+for Host (four) and 5246ms for large-record/truncation diagnostics (two). Source
+maps are identical across all three. Original context/browser/server owners
+positively close/join; no page errors, forbidden calls, real sockets, external
+requests or clipboard attempts occur. The private artifact roster retains all
+initial fixture-assumption and timing diagnostics; no earlier negative was
+silently relabeled as a passing visual test.

@@ -1667,3 +1667,25 @@ no main/native/global style or interactive hook changes. The
 [selector-grid record](validation/ux-monitor-selector-grid-2026-10-29.json)
 preserves the failing computed-track control and affected final revalidation.
 Independent review/composition remains the landing gate.
+
+## Activity and Host inventory — findings awaiting allocation
+
+Owner: `codex/ux-activity-host-inventory`, from accepted `2e58e7e`. The clean
+Monitor correction and earlier branches/evidence remain preserved. This slice
+adds only fresh synthetic read-only Backend/route fixtures, normalized evidence
+and required documentation; no product or accepted fixture/style change.
+
+The [Activity/Host inventory](validation/ux-activity-host-inventory-2026-10-29.json)
+reproduces three P2 findings: populated Host technical/infrastructure records
+render empty Code, Activity refresh replaces the open selected exact-record
+reader and loses focus, and a valid long host name overflows the shared narrow
+header. Proposed correction boundaries are respectively the two Host value
+setters, Activity-only selected-detail retention, and a separately allocated
+shell host-label containment review. No correction is authorized by this report.
+
+Four viewport/token cases cover dense/empty Activity, exact int64 records,
+page/selection retention, Host identity/capability/fallback/draining states and
+disclosure/node/focus retention through refresh/reconnect. Separate large-record
+controls qualify the source-defined display cap and native scrolling. Inventory
+collection is not visual acceptance. Independent review, exact product
+allocation, live transport and the broader/full UX task remain open.
