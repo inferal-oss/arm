@@ -121,6 +121,12 @@ Use focused separate commits and source-bound sequential native/browser cohorts
 within existing 120s/two-CPU/two-GiB bounds, with original cleanup. No owner asset
 build, install, backend/Go/schema/module/CLI edit or new task is allocated.
 
+The inner naming form alone leaves its app-created dialog-body Stack at its
+intrinsic minimum. Source inspection confirms that this second Stack is created
+by the app adapter, independently of the native Dialog body/panel. The same
+noninteractive naming containment hook may cover this existing Stack as well;
+native body/panel properties and graph/adapter behavior remain protected.
+
 ## Stage-two read-grant contract — reviewed, production grants inactive
 
 Owner: `codex/resident-read-grant-contract`, from accepted Stage-one composition
