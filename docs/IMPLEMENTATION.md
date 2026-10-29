@@ -1,5 +1,23 @@
 # Backend and CLI implementation
 
+## Proposed resident dispatcher extraction — not implemented
+
+The source-backed [dispatcher contract](design/resident-dispatch-contract.md)
+proposes private `authenticatedCaller`, `preparedCall` and `dispatchResult`
+types in `internal/server`, followed by a separate bounded `residentipc.Execute`
+DTO carrying only protocol, worker epoch, correlation ID and an opaque grant.
+The resident retains original credentials, operation/params/key/revision, response
+projection and execution authority. Native reporting, job-bearing transports,
+administration and mutations keep their existing resident paths; seven
+local-browser reads form the first proposed worker allowlist.
+
+The first shared step is an in-process extraction with unchanged public v1
+behavior. Production worker launch, stable-origin asset routing and immutable
+bootstrap come later. Candidate readiness grants no serving/effect authority;
+old-epoch sealing, admitted-dispatch settlement and original worker/I/O joins
+precede successor activation. This documentation adds no implementation or
+evidence beyond the separately accepted private prototype.
+
 ## Monitor readability composition
 
 Scoped Monitor styles now provide useful device-label columns, stacked compact
