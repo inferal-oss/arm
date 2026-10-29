@@ -1,5 +1,22 @@
 # Backend and CLI implementation
 
+## Resident worker boundary — private prototype
+
+The selected [resident design](design/resident-supervision.md) now has an
+unconnected [private implementation](../internal/resident/README.md) in `1a9b7ba`. A resident
+callback retains all actual Manager/native ownership; exec'd fixture workers
+forward bounded requests under exact resident/worker/principal binding. Sealed
+epochs cannot dispatch new effects. The private journal persists exact mutation
+keys/hashes before dispatch and preserves complete/pending/unknown outcomes.
+Worker loss never calls Manager.Close or cancels resident job context.
+
+This is a generic-job boundary/proof milestone. It has no public Serve/CLI/model/
+database-schema/module/default changes, production worker launcher, browser/native
+principal translation, legacy proxy continuity or provider/transport acceptance.
+Only two same-binary fixture generations are supported per authority lifetime;
+journal continuation after registered workers is conservatively refused.
+
+
 ## Resource help and tooltip composition
 
 Resource help uses full-width stacked technical fields and a bounded reading

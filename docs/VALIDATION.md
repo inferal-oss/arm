@@ -1,5 +1,24 @@
 # Validation record
 
+## Resident worker boundary — scoped native prototype
+
+The [evidence record](validation/resident-worker-prototype-2026-10-29.json) binds
+source/proof `1a9b7ba` to reviewed base `80ca1ed`. Eight unit and four real native
+roots pass in focused normal and race cohorts; selected failures
+and skips are zero. Focused vet and Linux amd64 compilation pass. Healthy retirement/replacement,
+committed-response loss/replay, original-worker SIGKILL/replacement and no-worker
+expiry are separate controls. The real existing Manager retains original native
+identity, daemon lock, output/deadline/renewal and original Wait/charge settlement;
+fixture worker groups and private transport owners are positively joined.
+
+All exec'd generations within a cohort use the same fixture binary/version;
+hashes provide integrity evidence only. Earlier passing cohorts cover their own
+source states. No production startup, distinct-code version-pair, proxy/provider/
+browser/mesh continuity, resident-core upgrade, physical suspend or uninterrupted
+connection acceptance is inferred. Raw process/session/state receipts remain
+private; only normalized source/test results are published.
+
+
 ## Resource help and tooltips — independent composed acceptance
 
 Focused source `1233ba1`, `a75c1fe` and `2a1d728` passes independent review and

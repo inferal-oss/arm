@@ -6,39 +6,31 @@ Implemented behavior and scoped evidence are detailed in
 [IMPLEMENTATION.md](IMPLEMENTATION.md) and [VALIDATION.md](VALIDATION.md).
 A completed milestone does not establish full specification coverage.
 
-## Resident supervision and replaceable workers — selected; first proof allocated
+## Resident supervision and replaceable workers — private proof
 
-Owner: the existing live-upgrade task, preserving reviewed design `23e211f` on
-`codex/live-upgrade-design`. The user selects active jobs spanning API/UI worker
-replacement, with a brief API reconnect acceptable. Verified implementation base
-is `80ca1ed`; its backend source matches accepted `6035548`, with later accepted
-frontend source `03f8a40`. Existing owned drafts and design history stay preserved;
-a separate `codex/resident-api-workers` implementation branch is allocated.
+Owner: `codex/resident-api-workers`, based on reviewed `80ca1ed`. Original design
+`23e211f` and selected contract `ff034de` remain preserved separately. The selected
+[resident architecture](design/resident-supervision.md) requires active jobs to
+span API/UI worker replacement and permits a brief reconnect; idle cutover is
+only a resident-core replacement alternative.
 
-Independent read-only review confirms install/runtime identity, supervision,
-drain/recovery, proxy reporting and generation/authority boundaries. Fifty-eight
-added local source/document links and scoped privacy/diff checks pass. The idle
-cutover remains an alternative, not the selected active-work mechanism.
+The [private prototype](../internal/resident/README.md) keeps the existing Manager,
+ledger writer/lock, original children/waiters, clocks, output and provider/mesh
+custody resident. Bounded fixture IPC, fixed principal, epoch sealing and durable
+keyed mutation receipts are implemented without public startup/CLI/schema changes.
+Focused source/proof commit: `1a9b7ba`.
+Focused normal/race native proof covers generic jobs through healthy retirement,
+IPC loss, abrupt owned-worker exit and replacement, plus no-worker expiry.
+The [scoped evidence](validation/resident-worker-prototype-2026-10-29.json)
+distinguishes same-binary generations from version compatibility and native
+execution from Linux compilation. Independent source/proof review remains open.
 
-First review gate: refine resident/worker ownership and bounded private IPC,
-then implement an isolated generic-job/two-worker proof using the existing real
-Manager and child-owner boundary. One resident retains the ledger/lock, original
-waiters/output/clocks/provider/mesh custody; worker retirement cannot close it.
-Stale epochs, exact operation keys/unknown outcomes, renewal/expiry and positive
-original cleanup require controls. Legacy proxy reporting needs a stable resident
-path; a generic-job proof cannot establish proxy/provider/full-product continuity.
-Workers are trusted same-account code, not an OS security sandbox.
-
-The unchanged shared FIFO is allocated for bounded focused tests/builds and
-private native proof cohorts; one Go worker, at most two CPU/2GiB and 120 seconds
-active per cohort. No installed/default/shared backend, enrollment/policy, real
-jobs, live restart/install/deployment, SSH/environment changes or modules/schema/
-provider-policy edits are allocated. Production Serve/CLI rewiring follows a
-reviewed concrete interface; the first proof uses new private package/test/helper
-files only. Initial legacy bootstrap and resident-core replacement remain separate
-review gates; original process-local custody cannot be retroactively adopted.
-This milestone does not complete the selected product goal or establish connection
-continuity. Pending frontend help/tooltip files remain separately reserved.
+Next gates: reviewed production dispatcher/principal extraction, stable legacy
+proxy reporting, durable native worker-controller keys/cleanup, immutable staging,
+version pairs, production routing/browser reconnection and provider/transport
+coverage. Initial monolithic bootstrap, resident-core/schema upgrades and
+uninterrupted connections remain separate. No main integration, installed/live
+backend change or production activation is included in this milestone.
 
 ## Dashboard visibility and detail presentation — reviewed and integrated
 
