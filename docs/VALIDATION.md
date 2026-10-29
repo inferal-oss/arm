@@ -17,6 +17,8 @@ Added-scope privacy and 77 local-link checks pass. Same-binary fixture evidence
 does not establish version compatibility, production startup/auth/routing,
 legacy proxy/provider continuity or resident-core replacement. Raw native
 receipts stay private; no installed/default runtime is changed.
+Published prototype `f150f6b` passes
+[Public website workflow 40928937007](https://github.com/inferal-oss/arm/actions/runs/40928937007).
 [Normalized record](validation/resident-worker-composed-2026-10-29.json).
 
 ## Resident typed JSON aliases — correction proof

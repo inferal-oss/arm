@@ -157,5 +157,10 @@
     "Original signal/Wait denial, PID reuse and physical suspend remain outside the tested native controls.",
     "Linux compile-only; no Linux execution, full Go suite or new browser evidence.",
     "No resident-core/schema replacement or retroactive adoption of legacy process ownership."
-  ]
+  ],
+  "publication": {
+    "source": "f150f6bfc8693cdfb8a91d2cd9ab98558357a93f",
+    "workflow_id": 40928937007,
+    "conclusion": "success"
+  }
 }
