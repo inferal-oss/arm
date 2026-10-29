@@ -264,7 +264,7 @@ func TestRolloutActivationUIReviewCopyAndNoDefaultSend(t *testing.T) {
 func TestRolloutPostOnboardingOfferDefaultsToNo(t *testing.T) {
 	var out bytes.Buffer
 	a := app{ctx: t.Context(), home: t.TempDir(), in: strings.NewReader("\n"), out: &out}
-	if e := a.offerRolloutDiscovery("demo", "/missing/codex", "/missing/claude"); e != nil {
+	if e := a.offerRolloutDiscovery("demo", "all", "/missing/codex", "/missing/claude"); e != nil {
 		t.Fatal(e)
 	}
 	if !strings.Contains(out.String(), "Discover agents now? [y/N]") || !strings.Contains(out.String(), "rollout discover --project demo") {
@@ -352,7 +352,7 @@ func TestRolloutPostOnboardingOfferAcceptsDiscoveryWithoutSending(t *testing.T) 
 	}
 	var out bytes.Buffer
 	a := app{ctx: t.Context(), home: home, in: strings.NewReader("yes\n"), out: &out}
-	if e = a.offerRolloutDiscovery("demo", native, filepath.Join(t.TempDir(), "absent")); e != nil {
+	if e = a.offerRolloutDiscovery("demo", "all", native, filepath.Join(t.TempDir(), "absent")); e != nil {
 		t.Fatal(e)
 	}
 	if !strings.Contains(out.String(), id) || !strings.Contains(out.String(), `"read_only": true`) {
@@ -364,6 +364,29 @@ func TestRolloutPostOnboardingOfferAcceptsDiscoveryWithoutSending(t *testing.T) 
 	after, e := os.ReadFile(filepath.Join(home, "rollout.json"))
 	if e != nil || !bytes.Equal(before, after) {
 		t.Fatal("post-onboarding discovery enrolled or changed policy", e)
+	}
+}
+
+func TestRolloutPostOnboardingOfferPreservesSelectedAdapterAndHomes(t *testing.T) {
+	home, native, _, id := activationFixture(t)
+	// Codex metadata is valid, so its absence proves the Claude-only selection
+	// did not silently broaden discovery to both adapters.
+	claude := filepath.Join(t.TempDir(), "custom claude's home")
+	if e := os.Mkdir(claude, 0700); e != nil {
+		t.Fatal(e)
+	}
+	var out bytes.Buffer
+	a := app{ctx: t.Context(), home: home, in: strings.NewReader("yes\n"), out: &out}
+	if e := a.offerRolloutDiscovery("demo", "claude", native, claude); e != nil {
+		t.Fatal(e)
+	}
+	for _, want := range []string{"--adapter claude", "--claude-home " + activation.Quote(claude), `"read_only": true`, `"sessions": []`} {
+		if !strings.Contains(out.String(), want) {
+			t.Fatal(want, out.String())
+		}
+	}
+	if strings.Contains(out.String(), id) || strings.Contains(out.String(), "--codex-home") {
+		t.Fatal("Claude-only discovery broadened to Codex", out.String())
 	}
 }
 

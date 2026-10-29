@@ -14,6 +14,7 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"getarm.org/internal/activation"
 	"getarm.org/internal/agentprojects"
 	"getarm.org/internal/install"
 	"getarm.org/internal/model"
@@ -112,11 +113,28 @@ func (a *app) rolloutOnboard(args []string) error {
 	if model.cancelled || model.plan.After.Mode == "disabled" || model.plan.After.ID == "" {
 		return nil
 	}
-	return a.offerRolloutDiscovery(model.plan.After.ID, *codexHome, *claudeHome)
+	return a.offerRolloutDiscovery(model.plan.After.ID, *adapter, *codexHome, *claudeHome)
 }
 
-func (a *app) offerRolloutDiscovery(project, codexHome, claudeHome string) error {
-	command := installNextCommand(a.home, "rollout discover --project "+project)
+func (a *app) offerRolloutDiscovery(project, adapter, codexHome, claudeHome string) error {
+	args := []string{"--project", project}
+	command := "rollout discover --project " + project
+	if adapter != "all" {
+		args = append(args, "--adapter", adapter)
+		command += " --adapter " + adapter
+	}
+	for _, target := range []struct{ kind, home string }{{"codex", codexHome}, {"claude", claudeHome}} {
+		if adapter != "all" && adapter != target.kind {
+			continue
+		}
+		flag := "--" + target.kind + "-home"
+		args = append(args, flag, target.home)
+		defaultHome, e := a.nativeHome(target.kind, "")
+		if e != nil || filepath.Clean(target.home) != filepath.Clean(defaultHome) {
+			command += " " + flag + " " + activation.Quote(target.home)
+		}
+	}
+	command = installNextCommand(a.home, command)
 	fmt.Fprintf(a.out, "\nProject policy is saved. Activate your existing agents next.\nRun: `%s`\nDiscover agents now? [y/N] ", terminalSafe(command))
 	type reply struct {
 		line string
@@ -137,7 +155,7 @@ func (a *app) offerRolloutDiscovery(project, codexHome, claudeHome string) error
 			return nil
 		}
 	}
-	return a.rolloutDiscover([]string{"--project", project, "--codex-home", codexHome, "--claude-home", claudeHome})
+	return a.rolloutDiscover(args)
 }
 
 func rolloutOutcomeUnknown(home string, err error) error {
