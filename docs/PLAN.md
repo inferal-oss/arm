@@ -29,6 +29,16 @@ original cleanup require controls. Legacy proxy reporting needs a stable residen
 path; a generic-job proof cannot establish proxy/provider/full-product continuity.
 Workers are trusted same-account code, not an OS security sandbox.
 
+Owner source `1a9b7ba` and evidence `aea8327` are frozen in an isolated review
+composition. Independent normal/race cohorts pass all twelve selected unit/native
+roots, with seven original worker/channel joins and four job settlements in each;
+focused vet also passes. A separate compiler-overlay refusal control reproduces
+a P2 decoder ambiguity: differently cased JSON keys can overwrite the same typed
+operation or key despite exact-spelling duplicate checks. Integration is held
+for a focused alias-refusal correction and final-source revalidation. Earlier
+native continuity evidence retains its exact input scope. No prototype source,
+ordinary startup change or production activation has landed yet.
+
 The unchanged shared FIFO is allocated for bounded focused tests/builds and
 private native proof cohorts; one Go worker, at most two CPU/2GiB and 120 seconds
 active per cohort. No installed/default/shared backend, enrollment/policy, real
