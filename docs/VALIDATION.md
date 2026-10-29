@@ -1,5 +1,26 @@
 # Validation record
 
+## Worker-owner prerequisite — documentation/source checks only
+
+The [native owner contract](design/resident-worker-owner.md) is inspected against
+accepted `26d69bf943840fcbc7c350e75d82606bed6f4530`. Its
+[source inventory](validation/resident-worker-owner-contract-2026-10-29.json)
+binds unchanged admission/gated-run/Cargo/sync, childowner, artifact ownership/
+runtime proof, Server stop/helper/endpoint, CLI start and private-prototype inputs.
+Source inspection distinguishes existing code-backed primitives from missing
+native/bootstrap/transaction/admission/activation and retention policy.
+The six-document scope, all 24 source hashes against that baseline, 24 local links
+including 17 source-line anchors, added-line privacy scan and whitespace checks
+pass. Line anchors establish locations; the accompanying source inspection is
+the evidence for their described behavior.
+
+The proposed future test sequence is not executed evidence. No Go/module/
+prototype/frontend/CLI/Manager/schema source, process/admission/build/test/browser,
+download/install/environment/default/shared-state change occurs. Native resource
+floors, finite storage/history/log policy and concrete capability factories remain
+unresolved gates before code; source/link/privacy checks cannot authorize Start.
+The user-selected replaceable API/UI objective remains broader than this proposal.
+
 ## Original response settlement — independent composition
 
 Focused source `a202c1b` and docs `605d55c` compose on main `6ac9840` in an

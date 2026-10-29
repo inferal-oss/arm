@@ -1,5 +1,26 @@
 # ARM delivery plan
 
+## Native worker-owner prerequisite — source-only proposal pending review
+
+Owner: `codex/resident-worker-owner-contract`, from accepted response composition
+`26d69bf943840fcbc7c350e75d82606bed6f4530`. The
+[prerequisite contract](design/resident-worker-owner.md) assigns future dedicated
+resource/artifact/native child/sole Wait custody to the original Manager and
+handshake/protocol/routing tasks to the original Server. It identifies missing
+native bootstrap authority, admitted different-version staging, transactional
+launch/lifetime attachment and stop-revision activation permits before source.
+
+The proposal keeps old and inactive/sealed/unknown generations and artifact pins
+within explicitly finite resources, with same-key lookup and no reconstructed
+PID authority or timeout reclamation. Initial legacy adoption waits for original
+owners; it cannot cancel jobs or transfer waiters. Metadata-only coordination is
+not completed API/UI replacement: coherent assets and a separate compatible API
+data plane still require actual distinct-version proof. Runtime resource floors,
+artifact/history/log bounds, provenance and consumer-retention/reload policy are
+explicit remaining decisions. This cut adds no code, tests/builds/native launch,
+download/install/environment or default/shared-state changes. Central review
+precedes any native factory/Manager/schema/bootstrap allocation.
+
 ## Original response settlement — independently reviewed composition
 
 Owner: `codex/resident-response-settlement`, from accepted policy `5765652`.

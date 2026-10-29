@@ -1,5 +1,22 @@
 # Backend and CLI implementation
 
+## Native worker owner/controller — proposed prerequisite only
+
+The [worker-owner proposal](design/resident-worker-owner.md) adds no implementation.
+It specifies dedicated Manager-side preparation/staging, positive CPU/memory/temp
+reservation, durable keyed native launch, sole original childowner/Wait/I/O and
+settlement, with Server-side original-channel verification and lifecycle permits.
+Generic Acquire/Run, Cargo/sync capabilities, stored PIDs and readiness flags do
+not supply that controller attachment. Current mesh artifact validation expects
+the running build version and is not a different-version worker factory.
+
+All proposed capabilities require original live ownership and separately reviewed
+bootstrap/schema/resource policy. The original Manager, jobs, helper image,
+ledger/listener/token/generation and job-bearing transports remain resident.
+Versioned API data/asset routing, retained-build consumer policy and actual
+observable A-to-B replacement remain later stages; no worker activation or
+installation follows from the accepted response-settlement primitive.
+
 ## Original response owner and write settlement — reviewed composition
 
 The private [sink implementation](../internal/server/resident_response.go) is

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "status": "Source-only worker-owner prerequisite proposal; central policy/interface review pending",
+  "baseline_commit": "26d69bf943840fcbc7c350e75d82606bed6f4530",
+  "source_sha256": {
+    "internal/manager/manager.go": "5470903ce0081c7fecfe4718d5e9e8ef624207cde9c5c450cf9aa65b45515927",
+    "internal/manager/cargo_launch.go": "c7b4ba8762e68d0ce54eef9d0eb30bce36457c86603c374e45f5d9d2b847e1c1",
+    "internal/manager/sync_admission.go": "68f0c7e6fa84db395238f6162462d955a7f024ba299e177a839a29321b4ef4d8",
+    "internal/manager/sync_preparation.go": "28b124c9e654aface775acd6b8e8c270efc8d04f288610ba0e4eb002be221351",
+    "internal/childowner/owner.go": "b7065ffbc4ccd5b251322d96d6f9cb68413d073f73eb5309d001d4fbb741d1a2",
+    "internal/childowner/observe_darwin.go": "e9149ff478819417178d9b9ca8997b039ed23f3e84df09aa9496cd05b35b3c85",
+    "internal/childowner/observe_linux.go": "9645effe47b3991c94580d874ee8f5aa251cdb4170caf893951d099bbc70a4a2",
+    "internal/mesh/artifacts.go": "c00647b8335e60f475fbf9016dc872d16de20d0d121dc6813023e2595d06dd2c",
+    "internal/mesh/artifact_stream.go": "4b1b75170c6408fd0c047bc8ddc9d48e4183fdfbd63f1efe3d0eaf82579d8a00",
+    "internal/mesh/install_ownership.go": "298e3cebdd5e4c867d8d9f43794807b2cf93627ad3f90baf6910d5e34292666b",
+    "internal/mesh/runtime_identity.go": "7f84fc2cc8e39384a2492561115886eccd6e98fc3127c82a7b6b9f9f277aed79",
+    "internal/server/server.go": "7e08bd79239d987a8bea54371aec6beca55313a0c7ce7538e84417e54ec035aa",
+    "internal/server/node_stop.go": "72317c05aac5470531a5a828080760008cda800b105cceaf40148ee990c3d3c2",
+    "internal/server/shutdown.go": "0d9914636f0cc23b8bda51cc754a7cf4a97fd2cc4c722bdaa7ad95c56e43e3cb",
+    "internal/server/resident_auth.go": "e95728d19a9c3618ef9f5192face86732f5a2a4829cfc447050872c20cb58755",
+    "internal/server/resident_response.go": "b17076e7bdd749df179cc8e0c634d5fbef8a6f772a2fb239c7d724f8b77eecdf",
+    "internal/server/resident_dispatch.go": "f0944a2972c4f73ab6abd853da8e440e7d8576b032cd9f89971d56a43ee6a6d6",
+    "internal/resident/authority.go": "b8def86a31d355f52e8e63c6a9cd1e5f9cc84062a4ff5012c8f29a31a09f4681",
+    "internal/resident/journal.go": "50b0d787bd1fa045ce09cedd7df40a61c658b7b77ed297f923ade79c7f273d13",
+    "internal/resident/native_test.go": "9179c00c52c52203fe7c9d23cbad9d43521ebcc8a80a59785ab05682753b3dc6",
+    "internal/resident/README.md": "d769edead7d1bfe73c50fa55d1ca1103ff0b4fa9ab6173b28bc7d90c2aab0b79",
+    "internal/cli/cli.go": "885a1a8b15a13844ef065eca214e98553250c8352ab27f6e43cb1447622c5be0",
+    "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+    "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6"
+  },
+  "source_count": 24,
+  "recommended_custody": "Original Manager owns dedicated admission/intent/artifact/native process/sole Wait/resource settlement. Original Server owns handshake/protocol/dispatch tasks and stop-bound routing permits; no second Manager or off-ledger exec beside a generic lease.",
+  "existing_source_limits": [
+    "Generic RunRequest does not expose inherited descriptors or original job/sole Wait to a Server controller.",
+    "Existing mesh Artifact.Validate requires current resident build version/lifecycle protocol, not arbitrary different-version worker candidates.",
+    "RuntimeExecutable proof pins original resident startup image/path, not a new child.",
+    "Childowner requires original process-local started unwaited group leader; never reconstructed from serialized PID.",
+    "Existing daemon start returns if backend runs and does not bootstrap this controller."
+  ],
+  "missing_capabilities": [
+    "actual native bootstrap authority bound to original Manager/directory/lock/generation/lifecycle",
+    "different-version package approval/provenance and admitted immutable ownership/staging/pins",
+    "dedicated Manager positive CPU/memory/temp admission, durable launch-intent and native lifetime attachment",
+    "original inherited-channel/native/protocol join records and stop-revision initial/replacement activation permits",
+    "explicit finite runtime/resource/history/log/artifact-retention policy",
+    "versioned coherent asset routing and compatible API data-plane contracts beyond metadata-only coordination"
+  ],
+  "finite_ownership_policy": {
+    "live_or_unresolved_native_generations": 2,
+    "qualification": "Count is not a total byte/resource limit; all preparation/runtime/artifact/history/log/descriptor/task bounds require explicit admitted finite policy. Unknowns stay charged. Full capacity defers launch."
+  },
+  "retention_policy_choice": "Initially defer staging when finite artifact count/bytes remain pinned. Any TTL/reload release behavior needs explicit versioned UI retention policy; no mixing latest assets or inferring consumer release from connection close.",
+  "future_proof_sequence": [
+    "native bootstrap/admission/lifecycle/schema contract first",
+    "resource-admitted trusted local staging/ownership and keyed intent lookup",
+    "separately allocated inactive fixed private role and original native launch/Wait/I/O proof",
+    "stop-bound controller activation with separate dispatch/native/protocol joins",
+    "actual distinct-version API/UI adapter and pinned-asset replacement with active jobs/reporting",
+    "composed source and idle initial bootstrap/install separately reviewed"
+  ],
+  "runtime_evidence_added": false,
+  "documentation_checks": {
+    "changed_documentation_paths": 6,
+    "unchanged_source_hashes_verified_against_baseline": 24,
+    "local_links_checked": 24,
+    "source_line_anchors_checked": 17,
+    "added_line_privacy_scan": "pass",
+    "whitespace_and_git_diff_check": "pass",
+    "runtime_checks_run": false
+  },
+  "validation_scope": "Source/contract/link/privacy checks only; no source edits, admission, process, build/test/browser/download/install/environment/default/shared-state work."
+}
