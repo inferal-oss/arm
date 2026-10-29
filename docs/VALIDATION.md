@@ -7975,3 +7975,21 @@ excluded from acceptance and retained privately. The final fixture unmounts the
 app/runtime/store, closes browser/context and joins its development server. No
 actual ARM backend, adoption or lease/check-in mutation was used. This is owner
 component/visual evidence; coordinator composition/acceptance remains pending.
+
+## Messages layout remediation — scoped owner evidence
+
+On the source hashes in [the normalized record](validation/ux-messages-2026-10-29.json),
+34 affected protocol/control tests and 29 real RDF rendering/ownership/focus
+tests pass. Eight synthetic native-browser cases cover 320/390/768/1440/1920
+pixel widths, 200% text at 768px, long/unbroken body and authority values, review
+keyboard focus, refresh-held controls, stale/disconnected blocking, restored
+unknown/offline recovery, empty history and validation error. Stock synthetic
+dialog containment and Escape return are checked without claiming acceptance of
+product-specific dialogs. No transport calls occur; browser/context close and
+server join are awaited. Desktop and narrow screenshots are visually inspected.
+
+Private baseline evidence distinguishes the rejected inline-layout suspicion
+from reproduced collapsed whitespace and dense prose metadata. Fixture selector
+and module-transform failures were corrected separately; they are not product
+findings. Full route/state/terminal coverage, independent current composition
+and asset rebuilding remain open in the [coverage matrix](UX-REVIEW.md).

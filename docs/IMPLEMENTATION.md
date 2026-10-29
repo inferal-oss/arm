@@ -3273,3 +3273,17 @@ terminal-style outcome. Saved-output Start/Next use native icon controls with th
 unchanged accessible labels. Floating logs reserve a complete readable tail and
 scroll expanded metadata independently; a viewport-bounded minimum floating frame
 height keeps narrow controls readable without changing tiled layout or readers.
+
+## Messages layout remediation
+
+The web Messages view preserves paragraph breaks in conversation, replies,
+recipient review and saved-send recovery using message-specific Text styles.
+Exact recipient authority, related IDs, saved request keys and delivery states
+use stock DescriptionList rows; compact widths stack labels over wrapping
+values. Full request records and material unknown/stale/disconnected warnings
+remain discoverable. Transport, exact sender/recipient checks, request keys,
+confirmation, retry and focus-held history behavior are unchanged.
+
+This is a focused slice of the [ongoing UX review](UX-REVIEW.md). It does not
+change terminal layout, global shell/theme, pinned components, other dialogs or
+embedded assets; composed-source review and central rebuild precede acceptance.

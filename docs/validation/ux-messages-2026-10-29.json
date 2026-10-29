@@ -1,0 +1,188 @@
+{
+  "scope": "Messages presentation owner evidence; not full UX or composed-source acceptance",
+  "base": "476f6fc",
+  "sources": {
+    "internal/server/web/semblance/messages.mjs": "84df62f02f8c8c680e169004f6e25b29c7594b322b83293ebecd967917202022",
+    "internal/server/web/semblance/app.ttl": "36a2ad908f157418dfa3b577f104dcb66c817db741e1db721ecac32078f07506",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/operator-messaging.mjs": "ac036d7aeb9a2e61a575c231c8b31e4fa01acb406f98205010bd7ea8fa946fb8",
+    "scripts/dashboard-screenshots/ux-messages.mjs": "37565d6e1c2574d5a3c733f6dbaa7861b373f1d84cdec5cd8acc4610f9754c9b"
+  },
+  "native": {
+    "cases": [
+      {
+        "width": 320,
+        "height": 640,
+        "textScale": 1,
+        "paragraphs": true,
+        "exactAuthority": true,
+        "focusRefresh": true,
+        "reviewKeyboard": true,
+        "staleOffline": true,
+        "dialogContainment": true,
+        "escapeReturn": true,
+        "layout": {
+          "viewport": 320,
+          "document": 320,
+          "body_whitespace": [
+            "pre-wrap"
+          ],
+          "word_wrap": [
+            "anywhere"
+          ],
+          "maximum_fact_overflow_px": 0.047
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "textScale": 1,
+        "paragraphs": true,
+        "exactAuthority": true,
+        "focusRefresh": true,
+        "reviewKeyboard": true,
+        "staleOffline": true,
+        "dialogContainment": true,
+        "escapeReturn": true,
+        "layout": {
+          "viewport": 390,
+          "document": 390,
+          "body_whitespace": [
+            "pre-wrap"
+          ],
+          "word_wrap": [
+            "anywhere"
+          ],
+          "maximum_fact_overflow_px": 0
+        }
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "textScale": 1,
+        "paragraphs": true,
+        "exactAuthority": true,
+        "focusRefresh": true,
+        "reviewKeyboard": true,
+        "staleOffline": true,
+        "dialogContainment": true,
+        "escapeReturn": true,
+        "layout": {
+          "viewport": 768,
+          "document": 768,
+          "body_whitespace": [
+            "pre-wrap"
+          ],
+          "word_wrap": [
+            "anywhere"
+          ],
+          "maximum_fact_overflow_px": 0
+        }
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "textScale": 1,
+        "paragraphs": true,
+        "exactAuthority": true,
+        "focusRefresh": true,
+        "reviewKeyboard": true,
+        "staleOffline": true,
+        "dialogContainment": true,
+        "escapeReturn": true,
+        "layout": {
+          "viewport": 1440,
+          "document": 1440,
+          "body_whitespace": [
+            "pre-wrap"
+          ],
+          "word_wrap": [
+            "anywhere"
+          ],
+          "maximum_fact_overflow_px": 0
+        }
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "textScale": 1,
+        "paragraphs": true,
+        "exactAuthority": true,
+        "focusRefresh": true,
+        "reviewKeyboard": true,
+        "staleOffline": true,
+        "dialogContainment": true,
+        "escapeReturn": true,
+        "layout": {
+          "viewport": 1920,
+          "document": 1920,
+          "body_whitespace": [
+            "pre-wrap"
+          ],
+          "word_wrap": [
+            "anywhere"
+          ],
+          "maximum_fact_overflow_px": 0
+        }
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "textScale": 2,
+        "paragraphs": true,
+        "exactAuthority": true,
+        "focusRefresh": true,
+        "reviewKeyboard": true,
+        "staleOffline": true,
+        "dialogContainment": true,
+        "escapeReturn": true,
+        "layout": {
+          "viewport": 768,
+          "document": 768,
+          "body_whitespace": [
+            "pre-wrap"
+          ],
+          "word_wrap": [
+            "anywhere"
+          ],
+          "maximum_fact_overflow_px": 0
+        }
+      },
+      {
+        "state": "restored-unknown-offline",
+        "transportCalls": 0,
+        "layout": {
+          "viewport": 390,
+          "document": 390,
+          "body_whitespace": [
+            "pre-wrap"
+          ],
+          "word_wrap": [
+            "anywhere"
+          ],
+          "maximum_fact_overflow_px": 0
+        }
+      },
+      {
+        "state": "empty-validation-error",
+        "transportCalls": 0
+      }
+    ],
+    "elapsed_ms": 3719,
+    "transport_calls": 0,
+    "cleanup": {
+      "browserClosed": true,
+      "contextClosed": true,
+      "serverJoined": true
+    }
+  },
+  "regressions": {
+    "message_protocol_and_controls": 34,
+    "rdf_rendering_ownership_focus": 29
+  },
+  "remaining": [
+    "Independent composed-source review",
+    "Central embedded asset rebuild",
+    "Broader route/state/terminal coverage as recorded in UX-REVIEW.md"
+  ]
+}

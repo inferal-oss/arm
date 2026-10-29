@@ -299,3 +299,26 @@ arm:RunSummary a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-run-summary
 [] a sty:StyleRule ; sty:appliesTo c:Window ; sty:state ":not([data-sem-tiled]):has([data-sem-c=\"arm-run-transcript-window\"]):not([hidden])" ;
  sty:declares [ sty:property "min-height" ; sty:raw "min(32rem, calc(100dvh - 3rem))" ] .
 
+# Message prose preserves paragraphs through review, recovery and conversation.
+# These application classes leave the stock dialog, shell and other views alone.
+arm:MessageSurface a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-message-surface" .
+arm:MessageBody a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-message-body" .
+arm:MessageFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-message-facts" .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageSurface ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageBody ;
+ sty:declares [ sty:property "display" ; sty:raw "block" ] ,
+              [ sty:property "white-space" ; sty:raw "pre-wrap" ] ,
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] ,
+              [ sty:property "min-width" ; sty:raw "0" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageFacts ; sty:atWidth sty:CompactWidth ;
+ sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageFacts ; sty:atWidth sty:CompactWidth ; sty:part "> .sem-pair" ;
+ sty:declares [ sty:property "row-gap" ; sty:token tok:space-1 ] .
+
+arm:MessageLabel a owl:Class ; rdfs:subClassOf c:Text ; sem:slug "arm-message-label" .
+[] a sty:StyleRule ; sty:appliesTo arm:MessageLabel ;
+ sty:declares [ sty:property "font-weight" ; sty:raw "650" ] ,
+              [ sty:property "font-size" ; sty:token tok:text-sm ] ,
+              [ sty:property "color" ; sty:token tok:muted ] .

@@ -1069,3 +1069,13 @@ The final owner capture binds thirteen inputs and eleven synthetic images with
 five successful checks and no page errors. Logic passes 116 JS/full terminal race;
 final CSS rebuild/native three cases/CLI build and visual checks pass. The separate
 Screen Sharing/private-input stacked-layout correction follows this frozen cut.
+
+## Full layout and usability review — ongoing
+
+Owner: `codex/ux-layout-review`. The [coverage matrix](UX-REVIEW.md) inventories
+principal web and terminal routes, dialogs and state gates. The first focused
+Messages slice preserves paragraph whitespace, structures exact-recipient and
+delivery metadata, and retains reviewed request/recovery behavior. Owner
+regressions and synthetic native rendering pass; independent composed-source
+review and central asset rebuild remain. Other surfaces remain inventory-only
+or reserved for their accepted presentation cut; this is not full UX acceptance.
