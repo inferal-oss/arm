@@ -35,6 +35,16 @@ uncertain-delivery recovery without automatic retry. Disposable validation,
 independent review and integration precede the requested push and executable
 installation; actual agent activation and policy changes are not validation scope.
 
+## OSS project directory entry — in progress
+
+Owner: `codex/add-arm-oss-listing` in
+[`inferal-oss/inferal-oss.github.io`](https://github.com/inferal-oss/inferal-oss.github.io).
+Add ARM to the existing project directory and assistant index, linking to
+`https://getarm.org/` and the public source. Match the existing card/mark design,
+preserve attribution and validate the static site. Coordinator review and
+publication follow the focused handoff; no hosting/domain/settings migration is
+assigned.
+
 ## Rollout removal and stale-boundary continuation
 
 Owner: `codex/rollout-removal`, based on main `53d7062`. Scope is reviewed
