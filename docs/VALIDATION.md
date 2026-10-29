@@ -21,8 +21,19 @@ missing-path removal, retained project/history inspection and uninstall retainin
 the exact policy. Synthetic instructions are uninstalled; no sessions enroll and
 no rollout fixture backend starts. Go/module input hashes stay unchanged through
 the independent gate. Full Go suite, Linux rollout runtime and native identity
-attestation remain unaccepted. Publication and executable installation are pending
-separate checks. Source hashes and boundaries are recorded in the
+attestation remain unaccepted. Main integration `6ff254f` is normally pushed;
+automatic workflow `40827614694` passes build and deployment. Serial `make install`
+passes knowledge validation, four platform payload builds and the native carrier
+build/install. The installed catalog proof stream-verifies all four payloads;
+installed removal help and the actual offline policy gate pass. Rollout policy
+and managed-instruction records remain byte-identical; adoption stays disabled
+and no backend starts.
+
+The original installation verifier incorrectly expected a VCS stamp, which the
+existing isolated carrier build deliberately omits. That verifier remains failed;
+corrected postflight accepts the carrier tags, platform/CGo metadata, source-input
+hashes and catalog proof without repeating installation. Foreign payloads remain
+compile/stream-verification evidence, not target-runtime execution. Source hashes and boundaries are recorded in the
 [normalized acceptance record](validation/rollout-removal-integration-2026-10-28.json).
 
 ## Rollout removal and stale boundaries — owner continuation

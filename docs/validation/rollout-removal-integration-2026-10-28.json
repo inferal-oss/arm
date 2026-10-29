@@ -1,5 +1,5 @@
 {
-  "status": "scoped source review and composed validation accepted; publication and executable installation pending",
+  "status": "scoped review accepted; integrated, normally pushed and executable installation verified",
   "base": "53d706203cf9f4f78de2874a47b7cb103baa6a9b",
   "source": "95f16ed4297e667d03f762fadfaca1c7d72bb883",
   "focused_commits": [
@@ -103,6 +103,52 @@
     "No full Go suite or Linux rollout-runtime acceptance.",
     "Original owner Linux amd64 check is compile-only on source928fd3b.",
     "No real policy mutation, agent enrollment, native client attestation or web policy editor acceptance.",
-    "Pending executable installation and publication are not established by these checks."
-  ]
+    "Embedded foreign payloads were compiled and stream-verified, not executed on their target platforms."
+  ],
+  "integration": {
+    "commit": "6ff254f36269f28b0229d5d081acdfd2ec7ab52e",
+    "push": "normal; shared main history preserved",
+    "public_workflow": {
+      "run_id": 40827614694,
+      "url": "https://github.com/inferal-oss/arm/actions/runs/40827614694",
+      "build": "success",
+      "deployment": "success"
+    }
+  },
+  "executable_installation": {
+    "source": "6ff254f36269f28b0229d5d081acdfd2ec7ab52e",
+    "command": [
+      "make",
+      "install",
+      "BUNDLE_JOBS=1"
+    ],
+    "exit": 0,
+    "native_carrier": {
+      "os": "darwin",
+      "arch": "arm64",
+      "cgo_enabled": false,
+      "sha256": "b5712b70210b634744613aa1cde19a5d6450b02210fd57aef74885d500d70747",
+      "embedded_payloads": 4,
+      "embedded_catalog_digest": "dee4d253f12a16fac1aedbeb63dc1923afee3a25ab07a52ac08509138d1f6f23",
+      "payload_stream_proof_exit": 0,
+      "vcs_stamp": "deliberately omitted by carrier build; clean main source and input hashes verified separately"
+    },
+    "state": {
+      "rollout_policy_bytes_preserved": true,
+      "managed_instruction_record_bytes_preserved": true,
+      "automatic_adoption": false,
+      "backend_started": false
+    },
+    "installed_removal_help_exit": 0,
+    "offline_gate": {
+      "coordinate": false,
+      "eligible": false
+    },
+    "failed_verifier_control": {
+      "outcome": "failed",
+      "reason": "Verifier expected a VCS stamp deliberately omitted by the carrier build.",
+      "corrected_postflight_exit": 0,
+      "installation_repeated": false
+    }
+  }
 }

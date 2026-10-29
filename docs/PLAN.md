@@ -11,13 +11,13 @@ A completed milestone does not establish full specification coverage.
 Owner: `codex/rollout-removal`, based on main `53d7062`. Scope is reviewed
 project/filesystem/client-binding removal, retained history and deny fences,
 stale-boundary status, onboarding compatibility and focused regressions. No
-actual rollout policy or agent adoption is changed. Review/validation and
-coordinator composition precede the user-requested push and executable install.
+actual rollout policy or agent adoption is changed. Reviewed and normally
+integrated/pushed as `6ff254f`; the requested executable installation passes.
 Feature source: `928fd3b`. Core normal/race suites, selected CLI race regressions
 (266 passing nodes), affected vet and native/Linux CLI compilation pass after
 owner source review. A clean-source disposable terminal replay passes 35 checks
-across seven joined sessions. Publication and executable installation remain
-pending following the independent acceptance below.
+across seven joined sessions. Main build/publication and serial `make install`
+pass after the independent acceptance below.
 
 Coordinator source review found onboarding selecting an older removed fence over
 an active same-root replacement. Correction `95f16ed` selects active bindings;
@@ -29,9 +29,16 @@ native build and 35 checks across seven original joined terminal sessions pass.
 Restoring the original selector reproduces the regression failure; the previous
 accepted binary refuses the extended removal ledger without altering it. See
 the [scoped acceptance record](validation/rollout-removal-integration-2026-10-28.json).
-Publication and the requested executable installation remain pending. Earlier
-owner evidence stays source-qualified; no real adoption or resource backend was
-started. Full Go suite and Linux rollout-runtime acceptance remain open.
+Main build and deployment pass on `6ff254f` (workflow `40827614694`). Serial
+`make install` succeeds; the installed carrier's four embedded payload streams
+verify and removal help/offline policy checks pass. Actual policy and managed
+instruction records remain byte-identical; adoption remains disabled. Carrier
+builds deliberately omit VCS stamps; source inputs and catalog/hash were verified
+separately. An initial verifier's incorrect VCS expectation remains a failed
+control, followed by successful corrected postflight without reinstalling.
+Earlier owner evidence stays source-qualified; no real adoption or resource
+backend was started. Full Go suite and Linux rollout-runtime acceptance remain
+open.
 
 ## Project-scoped gradual agent adoption — scoped milestone accepted
 

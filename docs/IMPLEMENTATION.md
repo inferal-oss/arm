@@ -31,8 +31,10 @@ The removal continuation is independently reviewed on source `95f16ed`.
 Onboarding prefers an active same-root replacement over an older removed fence;
 keeping its policy is a byte-preserving no-op, including retained revoked history.
 Core normal/race and affected CLI race, vet, native compilation and disposable
-terminal replay pass. Publication and executable installation are separate gates;
-see the [scoped record](validation/rollout-removal-integration-2026-10-28.json).
+terminal replay pass. Integrated/pushed main `6ff254f` passes build/deployment and
+the requested serial executable installation. Carrier payload streams and removal
+help verify; actual adoption policy and managed-instruction records remain
+unchanged. See the [scoped record](validation/rollout-removal-integration-2026-10-28.json).
 
 `arm rollout project onboard` uses Charm Bubble Tea/Bubbles/Lip Gloss for
 directory discovery/filtering, manual entry, scope, project naming, policy and
