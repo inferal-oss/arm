@@ -1,5 +1,19 @@
 # Validation record
 
+## Resident typed JSON aliases — correction proof
+
+The [correction record](validation/resident-worker-alias-refusal-2026-10-29.json) for `3992f88`
+preserves the original prototype receipts as earlier-source evidence. Permanent
+regressions fail against the original decoder: differently cased typed operation,
+key, nested identity and receipt fields overwrite their canonical counterparts.
+The corrected decoder refuses typed aliases, including Unicode folding, while
+preserving canonical requests, opaque bytes, distinct map keys and embedded/tag
+dominance. Ten unit and four real native roots pass in final normal (5.603s) and
+race (7.044s) cohorts with zero selected failures/skips;
+original worker/job cleanup is positively joined. Focused vet and Linux compile
+evidence remain separately scoped in the record. Independent correction review
+is required; no production activation or broader continuity is accepted.
+
 ## Resident worker boundary — scoped native prototype
 
 The [evidence record](validation/resident-worker-prototype-2026-10-29.json) binds
@@ -17,6 +31,10 @@ source states. No production startup, distinct-code version-pair, proxy/provider
 browser/mesh continuity, resident-core upgrade, physical suspend or uninterrupted
 connection acceptance is inferred. Raw process/session/state receipts remain
 private; only normalized source/test results are published.
+
+These original 12-root passes did not cover Go's case-insensitive typed-field
+matching. The alias finding and correction above supersede that refusal claim;
+the earlier tests and receipts remain evidence for their original source only.
 
 
 ## Resource help and tooltips — independent composed acceptance

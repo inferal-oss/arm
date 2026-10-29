@@ -19,6 +19,12 @@ ledger writer/lock, original children/waiters, clocks, output and provider/mesh
 custody resident. Bounded fixture IPC, fixed principal, epoch sealing and durable
 keyed mutation receipts are implemented without public startup/CLI/schema changes.
 Focused source/proof commit: `1a9b7ba`.
+Independent review found a typed JSON field-alias refusal gap in that cut.
+Focused correction source: `3992f88`.
+The [correction evidence](validation/resident-worker-alias-refusal-2026-10-29.json)
+separates the causal original-decoder failure from the corrected 14-root
+normal/race roster and canonical opaque/map preservation controls. Original
+source/evidence remain preserved; independent correction acceptance is pending.
 Focused normal/race native proof covers generic jobs through healthy retirement,
 IPC loss, abrupt owned-worker exit and replacement, plus no-worker expiry.
 The [scoped evidence](validation/resident-worker-prototype-2026-10-29.json)

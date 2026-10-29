@@ -16,6 +16,13 @@ principal translation, legacy proxy continuity or provider/transport acceptance.
 Only two same-binary fixture generations are supported per authority lifetime;
 journal continuation after registered workers is conservatively refused.
 
+The typed JSON alias follow-up `3992f88` requires canonical struct wire names before Go's
+case-insensitive field matching. Nested typed fields, map/slice values and saved
+receipts receive the same check. Opaque data and map keys are not case-folded;
+embedded/tagged field selection and valid canonical requests are preserved. The
+original duplicate check alone did not provide this guarantee. This correction
+changes only the private prototype decoder and tests, with no public API change.
+
 
 ## Resource help and tooltip composition
 

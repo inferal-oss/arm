@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "kind": "private typed-field alias refusal correction",
+  "base_commit": "80ca1ed9b5fce0a2cabf8f89e3cc0506156d1347",
+  "parent_commit": "aea83273e116cf09b24f04ca5439ff6eb10225f0",
+  "original_source_commit": "1a9b7ba419bf17125e171320225ff484d105993a",
+  "earlier_evidence": "resident-worker-prototype-2026-10-29.json",
+  "source_sha256": {
+    "internal/resident/authority.go": "b8def86a31d355f52e8e63c6a9cd1e5f9cc84062a4ff5012c8f29a31a09f4681",
+    "internal/resident/authority_test.go": "8500866c6fcd7dfcd67803c5c85f605a5f00caf51e9adca955859b6c930b57d0",
+    "internal/resident/journal.go": "50b0d787bd1fa045ce09cedd7df40a61c658b7b77ed297f923ade79c7f273d13",
+    "internal/resident/native_test.go": "9179c00c52c52203fe7c9d23cbad9d43521ebcc8a80a59785ab05682753b3dc6",
+    "internal/resident/protocol.go": "efe3c8b918c732b498ff84204a2d3a2df81ee56be3f76c96642464119c5c4b79",
+    "internal/resident/worker.go": "c4e4c34f42e064b992f3ec53057811816c82c9b971040145b8d49275cd7b2b2f"
+  },
+  "causal_before_control": {
+    "status": "expected failure",
+    "exit_code": 1,
+    "original_decoder_sha256": "6b4b7e2bad7390d424de73fe88136e0480bd05daa14874443cb524e290ee730d",
+    "failing_roots": [
+      "TestResidentTypedFieldAliasesRejected",
+      "TestResidentCanonicalTypedAndOpaqueKeys"
+    ],
+    "meaning": "Permanent refusal cases fail against the unchanged original decoder; failures are preserved and not relabeled as passing evidence."
+  },
+  "correction": {
+    "typed_struct_fields": "exact canonical wire names before Go case-insensitive matching",
+    "opaque_data": "RawMessage, interfaces and custom JSON representations remain opaque",
+    "maps": "case-sensitive keys preserved; typed values checked independently",
+    "field_resolution": "exported/promoted fields, depth and explicit-tag dominance, valid tag syntax",
+    "regressions": [
+      "reported operation/Operation and key/KEY ambiguities",
+      "alias order reversal and lone noncanonical fields",
+      "Unicode Kelvin-key fold alias",
+      "nested identity and saved-receipt aliases",
+      "typed map/slice value aliases",
+      "opaque bytes and distinct Key/key/KEY/Unicode keys preserved",
+      "distinct typed-map keys preserved",
+      "canonical embedded fields, shallow shadowing and explicit-tag dominance preserved",
+      "valid canonical dash wire tag preserved"
+    ]
+  },
+  "execution": {
+    "runner": "unchanged approved normal FIFO; sequential cohorts",
+    "gomaxprocs": 1,
+    "go_package_parallelism": 1,
+    "test_timeout_seconds": 90,
+    "native_platform": "darwin/arm64"
+  },
+  "cohorts": {
+    "normal": {
+      "status": "pass",
+      "selected_roots": [
+        "TestResidentEpochScopeAndReplay",
+        "TestResidentPendingAndJournalFaultNeverReplay",
+        "TestResidentCloseAndSealDoNotCancelAdmittedEffect",
+        "TestResidentJournalExclusiveIdentityAndConservativeRecovery",
+        "TestResidentFrameAndHTTPClaimBounds",
+        "TestResidentDispatchPanicRetainsUnknownOutcome",
+        "TestResidentJournalRejectsMalformedTerminalReceipt",
+        "TestResidentOutcomeOwnsDispatchBuffer",
+        "TestResidentTypedFieldAliasesRejected",
+        "TestResidentCanonicalTypedAndOpaqueKeys",
+        "TestResidentNativeHealthyReplacement",
+        "TestResidentNativeLostResponseReplacement",
+        "TestResidentNativeAbruptCrashReplacement",
+        "TestResidentNativeExpiryWhileWorkersUnavailable"
+      ],
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "test_elapsed_seconds": 5.603,
+      "worker_fixture_version": "resident-test-v1",
+      "worker_fixture_sha256": "61d40fff98f53f05fea82620d70e94bbfc8d30ee8894aea4d4670b9c205334bb",
+      "original_workers_positively_joined": 7,
+      "original_jobs_settled": 4,
+      "private_transport_joins": 7
+    },
+    "race": {
+      "status": "pass",
+      "selected_roots": [
+        "TestResidentEpochScopeAndReplay",
+        "TestResidentPendingAndJournalFaultNeverReplay",
+        "TestResidentCloseAndSealDoNotCancelAdmittedEffect",
+        "TestResidentJournalExclusiveIdentityAndConservativeRecovery",
+        "TestResidentFrameAndHTTPClaimBounds",
+        "TestResidentDispatchPanicRetainsUnknownOutcome",
+        "TestResidentJournalRejectsMalformedTerminalReceipt",
+        "TestResidentOutcomeOwnsDispatchBuffer",
+        "TestResidentTypedFieldAliasesRejected",
+        "TestResidentCanonicalTypedAndOpaqueKeys",
+        "TestResidentNativeHealthyReplacement",
+        "TestResidentNativeLostResponseReplacement",
+        "TestResidentNativeAbruptCrashReplacement",
+        "TestResidentNativeExpiryWhileWorkersUnavailable"
+      ],
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "test_elapsed_seconds": 7.044,
+      "worker_fixture_version": "resident-test-v1",
+      "worker_fixture_sha256": "b8ca316a8a440748b9995fd437acf1d3945b364a5fa49419b78899dc86a526e7",
+      "original_workers_positively_joined": 7,
+      "original_jobs_settled": 4,
+      "private_transport_joins": 7
+    }
+  },
+  "vet": {
+    "status": "pass",
+    "package": "./internal/resident"
+  },
+  "linux_compile": {
+    "status": "pass",
+    "platform": "linux/amd64",
+    "runtime_executed": false,
+    "artifact_sha256": "9294d5067f400a2e62f02fa078c472e9f818d3adf089aaf66147ea798b3de41b"
+  },
+  "protected_sources_unchanged": [
+    "internal/cli",
+    "internal/server",
+    "internal/manager",
+    "internal/model",
+    "internal/database",
+    "internal/mesh",
+    "go.mod",
+    "go.sum"
+  ],
+  "same_binary_fixture_only": true,
+  "independent_correction_review": "pending",
+  "limits": "Private unconnected prototype only; no production activation, proxy/provider/browser continuity, distinct-version acceptance, Linux execution or resident-core upgrade.",
+  "private_receipts": "Raw failed-before and final normal/race/native cleanup JSON/stdout/stderr remain private, outside version control. Native PIDs, lease IDs, wait statuses, local paths and session handles are omitted.",
+  "source_commit": "3992f8804b3d8ffc8a1b0daff3486d02f511829a"
+}
