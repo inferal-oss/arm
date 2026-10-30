@@ -10247,3 +10247,51 @@ No source implementation, test, build, dependency change or runtime occurred.
 The startup correction Pages workflow separately completed successfully;
 [the public CI run](https://github.com/inferal-oss/arm/actions/runs/41018815971)
 is scoped to that pushed composition, not the future resident architecture.
+
+
+## Shared terminal direct fixture — source review cut
+
+The [prepared plan](validation/ux-terminal-direct-fixture-plan-2026-10-30.json)
+binds the new test-only fixture hash and fourteen declaration anchors to
+source classification `c18e9c8`. All fifty classified source/test/tool/pin files
+remain byte-exact to accepted current source; the original classification
+record is unchanged. Static preparation includes reading audited original
+closures, formatting only the new test source, hash/anchor matching and
+privacy/diff review. Formatter parsing does not establish type correctness or
+runtime behavior. No compile, test execution, native app, backend, browser,
+PTY, install/setup or resource command has been performed.
+
+The proposed single invocation is recorded exactly with unchanged shared FIFO,
+local-only toolchain/modules, two-CPU/1536MiB targets, compile parallelism one,
+75s test timeout and 115s total original-command limit. This is a reviewable
+proposal, not an execution allocation or proof that compilation fits those
+limits. Existing output is refused, and failure must preserve its original
+command/log/source/partial frames before any replacement is considered.
+
+Prepared bounds are twelve leases, ten runs, eight-KiB log, two-KiB reason,
+256-byte other labels, 64KiB typed DTO, two-KiB read pages, at most 48 checkpoints
+and explicit read/call budgets. The scripted roster has fifteen checkpoints at
+each of 72×28, 100×35 and 160×50, plus one short-grid disconnected seed: 46 total.
+Temporary stale-mouse resize uses another of these same three grids. Original
+read methods/OnMouse closures feed original Update; source/message/command
+gates exclude native connection, arbitrary library commands, preferences and
+mutations before execution. Actual runtime counts and assertion outcomes do not
+exist yet.
+
+Model output, if later generated, will be unmodified View.Content and typed
+regions/read state, not an actual terminal byte stream, active alternate buffer
+or native cell/glyph/focus proof. ANSI cell-width metadata is not measured
+terminal paint. Record numeric-node checks preserve a known exact typed value
+without claiming every scalar glyph is visible. Held-receipt delivery is
+synchronous and does not establish an in-flight read cancellation race. Library
+commands are suppressed, so no real cursor/timer/event-loop behavior is tested.
+All inactive defaults remain true; historical reader/persistence workflows are
+not newly exercised.
+
+Future cleanup records original model retirement, owned context cancellation,
+fake Close and fresh-home pending-only entries; partial output remains private
+outside the checkout. These return/model facts cannot prove goroutine/process/
+PTY cleanup or production Run startup/authentication/unresolved-receipt cleanup.
+Full transitive Go package initialization/compilation has not been audited or
+executed by this source cut. Independent code review, explicit direct-frame
+execution and later terminal/PTY/replay acceptance remain separate gates.

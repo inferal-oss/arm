@@ -2882,3 +2882,27 @@ preference write is allocated. Preserve and report any original failure before
 replacement. Direct View.Content snapshots cannot establish actual terminal
 cell/glyph/focus/loop or process cleanup. PTY/replay and UX remediation remain
 next gates after concrete results.
+
+
+## Shared terminal direct fixture — source prepared, execution gated
+
+The terminal owner continues on `codex/ux-terminal-direct-fixture`, preserving
+accepted source classification `c18e9c8`. Its fifty pinned input files remain
+byte-exact to accepted current source. A new package-local opt-in fixture and
+[invocation/effect plan](validation/ux-terminal-direct-fixture-plan-2026-10-30.json)
+are prepared for review. There is no production Go, existing-test, capture-helper
+or dependency change.
+
+The script proposes 46 direct-model checkpoints across 72×28, 100×35 and
+160×50, capped at 48. It retains original construction, Update/View/viewport and
+mouse methods, with a strict inspect/runs/run_output fake and explicit command
+gates. Library commands are recorded but not invoked; production Init/native
+connect/reconnect/program/PTY paths remain outside the first fixture. A future
+fresh private home would contain disclosed constructor pending-file effects.
+
+Source formatting and static source/hash/privacy review only are complete. The
+fixture is not compiled or run, and its assertions are not validation evidence.
+Independent fixture-code review and a separately allocated bounded compile/
+direct-frame command are the next gates. Actual terminal loop/PTY/replay and UX
+inventory/remediation remain the objective after those gates; this source
+preparation does not complete terminal or overall UX acceptance.

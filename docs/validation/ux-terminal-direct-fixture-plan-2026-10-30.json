@@ -1,0 +1,219 @@
+{
+  "schema": 1,
+  "status": "SOURCE PREPARATION ONLY; opt-in fixture not compiled or executed. Independent code review and separate bounded execution allocation required.",
+  "branch": "codex/ux-terminal-direct-fixture",
+  "parentSourceClassificationCommit": "c18e9c84d1b34b508d6e0bddafe4f409135da0af",
+  "classifiedProductBase": "9760ef3ad071b72b026ab3126ea183538daf0bce",
+  "currentSourceComparison": "b774269",
+  "classificationRecordSHA256": "574c62ed1e2d66828082880beeaa4d706b7690cf4f38b1ff3a229aa1165cae5d",
+  "fixtureSource": {
+    "file": "internal/tui/ux_terminal_direct_fixture_test.go",
+    "sha256": "ef37d0bdf89bce2dcd68ae7b2de2961f046c57f868edcb9d2e8ccc5952e37420",
+    "bytes": 31594,
+    "lines": 841,
+    "anchors": [
+      {
+        "symbol": "func directFixtureClone",
+        "line": 31
+      },
+      {
+        "symbol": "func newDirectFixtureData",
+        "line": 51
+      },
+      {
+        "symbol": "func (s *directFixtureTransport) Call(",
+        "line": 117
+      },
+      {
+        "symbol": "func (f *directFixture) command(",
+        "line": 235
+      },
+      {
+        "symbol": "func (f *directFixture) invariant(",
+        "line": 268
+      },
+      {
+        "symbol": "func (f *directFixture) update(",
+        "line": 278
+      },
+      {
+        "symbol": "func (f *directFixture) keyPolicy(",
+        "line": 351
+      },
+      {
+        "symbol": "func (f *directFixture) recordPath(",
+        "line": 425
+      },
+      {
+        "symbol": "func (f *directFixture) mouse(",
+        "line": 461
+      },
+      {
+        "symbol": "func (f *directFixture) capture(",
+        "line": 543
+      },
+      {
+        "symbol": "func (f *directFixture) close(",
+        "line": 598
+      },
+      {
+        "symbol": "func prepareDirectFixture(",
+        "line": 617
+      },
+      {
+        "symbol": "func runDirectGeometry(",
+        "line": 652
+      },
+      {
+        "symbol": "func TestUXTerminalDirectFixture(",
+        "line": 773
+      }
+    ]
+  },
+  "all50ClassifiedFilesRemainByteExact": true,
+  "sourcePreparationVerification": [
+    "Compared all50 classified file bytes with accepted current source and their frozen hashes",
+    "Read the original read/Update/mouse/constructor/cleanup implementations and statically reviewed the fixture callsites",
+    "Formatted only the new test source; formatter parsing is not compilation or runtime validation",
+    "Documentation privacy and diff checks; no fixture/test/native/browser/PTY execution"
+  ],
+  "preserved": [
+    "Original newDashboard/Update/View/shared viewport, table/list/detail/record/fullscreen/mouse methods",
+    "Original exact IDs, read-cursor/generation/session/retirement semantics and inactive defaults",
+    "All production Go code, old tests, capture.py/render.mjs/geometry helpers, module/pin files and previous source/evidence branches"
+  ],
+  "sourceOnlyChanges": [
+    "One opt-in package-local _test.go fixture",
+    "This source/invocation/effect/cleanup plan and four project documentation appends"
+  ],
+  "entry": {
+    "test": "TestUXTerminalDirectFixture",
+    "environment": "ARM_TUI_DIRECT_FIXTURE_DIR",
+    "whenUnset": "Test skips without fixture construction. Existing Go package initialization/compilation would still be part of any later go test command.",
+    "whenSet": "Requires a new absolute resolved-parent output directory outside the checkout; existing output is refused. Each exact grid creates a new0700 directory and synthetic-home. No default/shared ARM home or process state.",
+    "programAdapter": "None in this first cut: no tea.Model adapter, tea.NewProgram, production Run or Init. Direct calls only; any later loop/PTY adapter remains separately reviewed/allocated.",
+    "sourceGate": "Before fixture construction, exact frozen classification hash and all50 current file hashes must match; source/plan hashes are retained in the private report. This is a focused set, not full transitive Go/pkg-init coverage."
+  },
+  "proposedInvocation": {
+    "authorization": "NOT TO RUN NOW. Requires successful code review and an explicit original-command resource window.",
+    "cwd": "repository root",
+    "command": "env SEMBLANCE_RUN_LIMIT=115 GOMAXPROCS=2 GOMEMLIMIT=1536MiB GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off ARM_TUI_DIRECT_FIXTURE_DIR=\"$NEW_ABSOLUTE_PRIVATE_OUTPUT\" \"$SHARED_FIFO\" go test -p 1 -count=1 -run '^TestUXTerminalDirectFixture$' -timeout=75s ./internal/tui",
+    "variables": {
+      "NEW_ABSOLUTE_PRIVATE_OUTPUT": "A reviewed, fresh, resolved, absolute output directory outside the source checkout; test creates it0700 and refuses reuse.",
+      "SHARED_FIFO": "The already configured unchanged shared FIFO; no slots/worker/capacity override."
+    },
+    "networkAndToolchain": "GOTOOLCHAIN=local/GOPROXY=off/GOSUMDB=off prevents automatic toolchain/module download; missing local prerequisites must be reported, not installed. No backend/browser/PTy is included.",
+    "limits": "Proposed115s total original command including compilation/collection/cleanup, Go test75s after startup, CPU2/memory target1536MiB, compile parallelism1. These are a proposal and cooperative targets, not a granted lease/hard enforcement or proof compilation fits.",
+    "onFailure": "Preserve original exit/log/source/partial output; do not rerun or replace without reporting centrally."
+  },
+  "plannedBounds": {
+    "grids": [
+      [
+        72,
+        28
+      ],
+      [
+        100,
+        35
+      ],
+      [
+        160,
+        50
+      ]
+    ],
+    "leases": 12,
+    "runs": 10,
+    "logBytes": 8192,
+    "perReadPageBytes": 2048,
+    "reasonBytes": 2048,
+    "otherLabelBytes": 256,
+    "typedDTOBytes": 65536,
+    "maximumCheckpoints": 48,
+    "scriptedCheckpoints": 46,
+    "readClosuresPerGridMaximum": 32,
+    "fakeCallsPerGridMaximum": 64,
+    "singleFrameBytesMaximum": 65536,
+    "scope": "All bounds are checked by prepared source but unexecuted. Temporary resize uses another of the same three reviewed grids, never a fourth grid."
+  },
+  "plannedRoster": {
+    "perGrid": [
+      "leases-default",
+      "lease-detail-first",
+      "lease-detail-middle",
+      "lease-detail-tail",
+      "lease-record",
+      "lease-record-exact-number",
+      "release-review-draft",
+      "filter-draft",
+      "leases-filter-empty",
+      "runs-default",
+      "run-start-page",
+      "run-next-page",
+      "run-paused-reader",
+      "run-folded",
+      "run-fullscreen"
+    ],
+    "shortGridOnly": [
+      "leases-disconnected-seed"
+    ],
+    "scriptedTransitions": [
+      "Actual original row OnMouse then typed dashboardMouseMsg through Update opens exact synthetic inspect/run",
+      "Original record key traversal expands request/resources and selects memory_bytes=9007199254740993 as an underlying typed exact value; no full glyph proof",
+      "Release review is created by original x path and declined through original n region; y/confirm is refused",
+      "Original bounded filter paste/apply; focus/cursor Cmd, if returned, is suppressed and counted",
+      "Captured native callback becomes stale across another reviewed grid before typed delivery; original Update must reject it",
+      "Original runs/run_output closures drain bounded pages synchronously, preserving exact byte cursor; no generic Cmd/Batch execution",
+      "Pause/start/next/follow/scroll/fold/fullscreen and exit restoration retain same original reader/buffer/offset",
+      "A genuine original read receipt is computed synchronously, held in memory, then delivered after navigation/retirement; it must not resurrect selection. This is not an in-flight blocking read/cancellation proof",
+      "Disconnected state is an explicit cached-model seed; no stream/disconnect/reconnect command or native-session behavior is exercised"
+    ]
+  },
+  "effectRoster": {
+    "constructor": "Original newDashboard reads preferences and creates/syncs pending directory and empty lock under the fresh synthetic home. This is local filesystem mutation, explicitly disclosed; source does not call production Init.",
+    "transport": "Only inspect/runs/run_output, exact owned IDs/cursors and expected typed argument/result shapes. Every result is cloned into typed Go structures with no untyped float64 number conversion. No native client object, endpoint/token lookup, fallback, subscription, agent/message/job/resource command. Stream interface methods refuse/count if reached.",
+    "approvedClosureCallsites": [
+      "directFixture.command: invokes only closures returned by audited original loadDetail/readRunPage/key paths and original same-reader acceptRunsRead continuation, with result type/owner/budget checks",
+      "directFixture.mouse: invokes only original View.OnMouse closure returning dashboardMouseMsg, then original Update with state-aware effect policy",
+      "runDirectGeometry stale callback: original OnMouse typed event closure only",
+      "runDirectGeometry held receipt: original readRuns(true) closure only, synchronous result retained then delivered after retire"
+    ],
+    "commandGate": "Closed input/message set; no tick/stream/connected/reconnect or mutation receipts. State-aware keys and current mouse regions are validated before Update; no roster h, Name/Recovery/check-in/message/pool/mesh, confirmation, native-session or arbitrary input. Non-read return must be nil or explicitly suppressed unexecuted library Cmd. Never invoke tea.Batch/opaque children/timers/cursor/viewport Cmds.",
+    "libraryCommands": "Input focus/paste and viewport key return commands are recorded by source origin and left uninvoked. Their runtime absence does not qualify a native event loop, blink/focus behavior or timer cleanup. No claim their implementation was exhaustively audited.",
+    "directFrameEffects": "Private output directory, exact View.Content frame files, JSON metadata and constructor home bookkeeping only. Generated frames are not written to a terminal and do not activate terminal-control sequences.",
+    "forbidden": "Any unknown operation/message/key/region/shape/owner or changed source stops and preserves failure. A strict fake backend does not itself authorize arbitrary Cmd; source has separate command/local-effect gates."
+  },
+  "plannedOutputs": {
+    "rawFrames": "Up to48 named .view.ansi files containing unmodified original View.Content; private0600 files under output0700. AltScreen flag is metadata only, not actual alternate-buffer/PTY output.",
+    "report": "direct-fixture.json with source/data/frame hashes, original view sizes and ANSI cell counts, typed regions, selected IDs/default/filter/feed/viewport state, exact record node, reader buffer/cursor/generation/fold/follow metadata, audited calls and suppressed commands.",
+    "privacy": "Static synthetic IDs/names/paths/commands and inert controls only; no real ARM state, credentials, local host/user/session/agent/contact data. Runtime output stays outside version control and requires normalization before publication.",
+    "notProduced": "No browser raster, emulator screen, real tty transcript, installed binary, live session or application mutation."
+  },
+  "cleanupPlan": {
+    "perGrid": [
+      "stopPeerReads and retireRuns on original model",
+      "Cancel owned fixture context and close only strict fake transport once",
+      "Require no active fake Call, held receipt, busy/cancel reader or peer cancel; forbidden list must be empty",
+      "Inspect only fresh synthetic home: expected dashboard-pending directory and empty regular .lock; no preferences file or extra entry allowed",
+      "Retain raw frames/report and private constructor bookkeeping; do not delete prior/shared evidence or caches"
+    ],
+    "failure": "Cleanup is registered before scripted updates; context cleanup and final report are registered too. Partial output remains; Complete must be assessed together with original Go test exit code, not trusted alone.",
+    "limits": "All reads/OnMouse closures are synchronous in this first fixture. No event loop/stream/background worker is started. Cancellation/Close returns and model retirement are not goroutine/process/PTY/OS cleanup evidence. Production Run session/report cleanup is unexercised."
+  },
+  "remainingGates": [
+    "Independent source review of fixture and exact invocation/effects",
+    "Separate bounded compile/direct-fixture execution allocation; no runtime results exist yet",
+    "If a direct-frame case fails, report its concrete code/oracle/capability failure before replacement",
+    "After successful model inventory, separately reviewed Bubble Tea adapter/exact-grid terminal-only replay and PTY/browser resource window may be needed",
+    "Actual terminal cell/glyph/hit/scroll/focus/resize/loop/lifecycle evidence and any product remediation remain pending; the overall UX task continues"
+  ],
+  "validationResults": {
+    "compiled": false,
+    "fixtureExecuted": false,
+    "testsRun": false,
+    "nativeProgramRun": false,
+    "ptyOrBrowser": false,
+    "productChanged": false,
+    "runtimePassedAssertions": null,
+    "meaning": "Prepared assertions and planned counters are not passing evidence."
+  }
+}

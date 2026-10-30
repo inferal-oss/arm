@@ -591,3 +591,20 @@ The coordinator reviewed these possible seams; no fixture or execution window
 is allocated yet. Accepted inactive/default/run-reader behavior and all prior
 Screen/terminal evidence remain preserved. Narrow/short native PTY replay,
 actual cells/hits/scroll/focus and read/lifecycle observations are still pending.
+
+
+## Shared terminal — first direct fixture source prepared
+
+The [test-only source plan](validation/ux-terminal-direct-fixture-plan-2026-10-30.json)
+prepares the first bounded model-frame inventory at 72×28, 100×35 and 160×50.
+It preserves the original model/render/viewport/mouse paths and accepted
+inactive/default/run-reader source. Strict fake reads, state-aware input gates
+and disclosed private constructor bookkeeping separate proposed fixture effects
+from native startup and mutation authority. No product correction is included.
+
+The fixture remains uncompiled and unexecuted pending independent code review
+and a bounded command allocation. Direct frames would qualify model rendering
+only. Actual terminal cells/hits/scroll/focus/resize/loop/PTY and later
+remediation remain the continuing goal; source scaffolding is not terminal or
+overall UX acceptance. No old capture or prepared assertion is promoted to
+current runtime evidence.
