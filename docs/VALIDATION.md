@@ -20,6 +20,18 @@ source hashes, 36 local links / 29 source-line anchors, added-line privacy and
 whitespace checks pass. The dependency/export shape is proposed source design;
 no compile or runtime acceptance is inferred from these document checks.
 
+Independent current-main composition rechecks all 70 inputs and the exact reused
+inventory digest, five owner documentation paths, 36 local links / 29 anchors,
+privacy and whitespace. Inspection confirms the current Serve/Manager close,
+borrowed-flock and partial-owner gaps and accepts the proposed acyclic nested
+issuer/view direction without compiling or activating it. The additional presence
+core input shows why nil Publication.Close and repeated Directory.Close cannot
+be promoted to original cleanup proof. This is a source-contract qualification,
+not a new presence runtime result; the
+[review record](validation/resident-lifetime-binding-composed-2026-10-29.json)
+retains the extra source hash. No blocking documentation issue remains, while
+positive adapters/diagnosis/format/bootstrap and `arm start`/A-to-B gates stay open.
+
 ## Shared dialogs — independent composition
 
 Inventory `be9af44` and four focused corrections through `8625002` compose on

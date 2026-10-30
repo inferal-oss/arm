@@ -44,6 +44,16 @@ some error cleanup closes and discards objects without returning closure evidenc
 A new bound opener must retain its pending owner **before those effects**. It
 cannot wrap the current nil/error result in a fabricated no-borrower certificate.
 
+Presence needs inspection below its Server wrapper too.
+[Publication.Close](../../internal/presence/presence.go#L327) currently returns
+nil on any announcement-read error, so a nil result alone cannot prove that the
+original record was withdrawn. Directory Close retires its descriptor before
+returning a native close error; a later nil Close cannot erase that first result.
+Future concrete receipts must retain these original outcomes and partial
+constructor/publication effects, not merely collect the Server's formerly ignored
+errors or reinterpret nil as cleanup. This review qualification adds no change
+to presence publication, discovery, locking or cleanup behavior.
+
 ## Issuer, non-retiring views and package direction
 
 Keep a private `residentServeOwner` in the worker-capable Serve root, separate

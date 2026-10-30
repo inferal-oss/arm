@@ -31,7 +31,7 @@ sequential original-FIFO cohorts stay within 120s/two CPU/two GiB with positive
 original cleanup. No owner asset/Go build, backend/schema/module/CLI/install,
 environment, new task or subagent is allocated; current-main assets are central.
 
-## Resident borrower binding/closure — documentation proposal pending review
+## Resident borrower binding/closure — reviewed source contract
 
 Owner: `codex/resident-lifetime-binding-contract`, from accepted
 `5066fe9df90e0b8adf58bf9ac1b959842bdd3ba6`. The
@@ -46,6 +46,30 @@ prepared home/lock and format-policy approval, reachable retained/error mode and
 first/repeated `arm start` flow remain implementation gates. Core crash/exit cannot
 preserve original Go/native custody by assertion. Accepted resource/API/assets
 contracts and mandatory real A-to-B API/UI active-job proof remain separate.
+
+Independent composition on `33dd4a3` verifies all 70 referenced source hashes,
+the reused inventory and 36 links / 29 anchors. Source review accepts the proposed
+nested issuer/view direction and sole trusted-root retirement callsite as a
+contract, not an implemented boundary. An additional presence-core inspection
+qualifies nil Close and discarded partial errors as insufficient cleanup proof;
+see the [review record](validation/resident-lifetime-binding-composed-2026-10-29.json).
+Pending-holder adapters, diagnosis/core-exit policy and positive factories remain
+unimplemented; no code export, runtime or installed change follows.
+
+Next existing-owner source cut is private pure candidate-package metadata only,
+independent of native borrower activation. Add a bounded closed manifest parser
+and deterministic canonical encoding/commitment in `internal/workerpackage`,
+with no production callers, filesystem/network/archive/build-info I/O, approval,
+staging, compatibility/admission or execution authority. Enforce a 64KiB input
+before whole-input work, 128 files, 1024-byte canonical relative paths under the
+fixed executable `arm` or `assets/`, and at most 512MiB declared total bytes.
+Reject duplicate/unknown/aliased fields, invalid UTF-8, noncanonical integers,
+path traversal/aliases/prefix conflicts, duplicate case-fold paths and overflow.
+All declarations remain untrusted; parsed data cannot mint a reviewed source or
+relax mesh artifact/runtime validation. Focused roundtrip/negative/boundary tests
+and source guards run in separate original-FIFO normal/race/vet cohorts within
+120s/two CPU/two GiB. No native factory/borrower, Manager/Server/CLI/schema/module,
+package creation/read/download, install or default/shared-state change allocated.
 
 ## Shared dialogs — independently reviewed composition
 
