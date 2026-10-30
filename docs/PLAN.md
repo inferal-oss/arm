@@ -1,5 +1,19 @@
 # ARM delivery plan
 
+## Next resident bootstrap cut — source contract awaiting decisions
+
+Owner: `codex/resident-bootstrap-cut-contract`, based on accepted `4328297`.
+The [next product cut](design/resident-start-bootstrap-cut.md) connects actual
+public start, one original launch attempt, retained resident/SQL/Manager/Server/
+image construction and honest pending readiness before the dependent real worker
+API/UI allocation. It identifies exact callsites and proposed defaults for driver
+delivery, infrastructure custody, conditional fresh exhaustion, pre-SQL fence,
+core handoff and legacy entry. Private role/encoding/file choices remain routine.
+Stable resident proxy reporting preserves empty-data `run_append` heartbeat and
+cursor/ACK semantics so API/UI replacement cannot cancel the CLI-owned child.
+This source-only review cut activates nothing; final public A-to-B acceptance
+must include both resident-supervised `arm run` and actual CLI-owned `arm proxy`.
+
 ## Start authority validation — final scoped checks pass; review pending
 
 Owner: `codex/resident-start-identity`, based on `3064be2`. The real `arm start`
@@ -2835,3 +2849,19 @@ finished in 32.256s with unchanged source and empty fixture temporary storage.
 No installed executable, live backend or real child process changed.
 Actual resident ownership, worker replacement and distinct-version API/UI job
 survival remain required; the existing upgrade task prepares the next cut.
+
+
+## Resident bootstrap contract — coordinator review
+
+Owner source-only contract `60b4499` is composed as `538b376`. Independent
+checks verify nineteen unchanged product inputs, four frozen document hashes,
+twenty commit-tree links and publication privacy. No runtime validation was
+needed for this documentation cut. Fresh-only entry, idle-only legacy rollout,
+original-channel handoff and explicit standing service custody are selected
+source-interface directions; finite bootstrap abort stays off. Numeric grants,
+dependency delivery and live activation remain unselected. The existing upgrade
+task prepares the actual additive retained-driver and public launch source
+candidates for review, preserving legacy behavior and original child ownership.
+
+Startup correction main `4328297` passed its push-triggered Pages workflow;
+that CI result does not establish resident/worker or job-survival acceptance.

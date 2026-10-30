@@ -1,5 +1,18 @@
 # Validation record
 
+## Resident bootstrap allocation contract — source review only
+
+The [next cut](design/resident-start-bootstrap-cut.md) inspects accepted `4328297`
+at actual CLI/Server/Manager/database/image and proxy reporter callsites. It
+separates missing dependency/policy/native handoff choices from routine private
+implementation. Proxy continuity follows actual `run_append` cursor/ACK and
+empty-data heartbeat through appender cancellation to the original CLI child
+waiter; no new heartbeat operation is proposed. End-to-end acceptance explicitly
+includes leased and CLI-owned producers, genuine stop/expiry/cancellation and
+the reporting-route omission control. Source inventory, links, privacy and
+whitespace are checked separately; no new build/test/native/proof/browser run,
+installation, dependency change, format change or job-survival evidence follows.
+
 ## Start authority correction — final source scoped checks
 
 On the unchanged original function from `3064be2`, one focused expected-red
@@ -10222,3 +10235,15 @@ linking passes against current embedded assets. Total active check time is
 race/vet receipt hashes were independently checked; no redundant race replay
 was needed for identical Go inputs. No binary invocation/installation, default
 state, Linux/full-suite or actual job-preserving upgrade acceptance follows.
+
+
+## Resident bootstrap contract — independent static review
+
+Reviewed owner `60b4499` against accepted `4328297`: nineteen source hashes,
+four frozen documents and twenty links resolve in the committed tree. The
+contract preserves exact proxy append/empty-heartbeat/finish behavior and
+keeps real child survival as the final gate. Privacy and whitespace checks pass.
+No source implementation, test, build, dependency change or runtime occurred.
+The startup correction Pages workflow separately completed successfully;
+[the public CI run](https://github.com/inferal-oss/arm/actions/runs/41018815971)
+is scoped to that pushed composition, not the future resident architecture.
