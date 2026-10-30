@@ -4195,3 +4195,66 @@ interactions must be explicit before implementation. Actual offline operator
 issuance and bounded measurement provenance are in source preparation. Evidence
 digests are data, not grants or proof of future resource bounds. Public startup,
 worker activation and original run/proxy child survival remain incomplete.
+
+
+## Terminal Monitor picker focus — ordinary test source prepared
+
+The same isolated owner branch adds only the reviewed two-root/22-case ordinary
+model test proposal, documented in [the source handoff](UX-TERMINAL-MONITOR-REVIEW.md).
+Central review authorized preparation after the source inventory, while product
+edits and Go metadata/compiler/test/native/browser execution remain unallocated.
+The 19-case follow-up remains separate. Final source/private FIFO wrapper review
+and a specific bounded allocation precede execution; no red result is claimed.
+
+
+## Terminal Monitor ordinary allocation — failed; source correction prepared
+
+The one allocated `74513de` invocation failed collection 125 during scratch
+enumeration. Incomplete raw output and cancelled Go/failed EOF leave M1/M2
+unaccepted. Original source/artifacts remain immutable; scratch is retained.
+Only fixture constructor-bookkeeping validation and a conservative temporary
+sampler source proposal are prepared in the existing branch. See the
+[revision record](validation/ux-terminal-monitor-focus-proposal-v2-2026-10-30.json).
+Product edits, a retry/green run, follow-up 19 and native/browser work remain
+unallocated. Independent review and new exact pins/window are required.
+
+
+## Terminal Monitor M1/M2 diagnosis accepted; green gate pending
+
+Complete V3 ordinary red evidence on `82dd627` independently accepts the bounded
+missing-focus and resize-visibility defects. V1/V2 failures remain failures. A
+24-line presentation-only correction in picker/mouse/update paths is prepared,
+with exact red and existing tests unchanged. The
+[green proposal](validation/ux-terminal-monitor-focus-green-proposal-2026-10-30.json)
+contains only two 22-case roots plus five existing I/O roots; source/pin review
+and a new single-run allocation precede execution. No green acceptance,
+inventory/reorder 19 follow-up or native/browser work is claimed.
+
+
+## Terminal Monitor M1/M2 owner green complete — integration gate open
+
+Exact `efc342e` passes the separately allocated seven-root/33-node ordinary
+green contract with unchanged red/legacy tests, 66 original observations and 22
+positive cleanups, normal original 0 joins/EOF and stable final storage checks.
+The [scoped result](validation/ux-terminal-monitor-focus-green-2026-10-30.json)
+records immutable evidence and qualifications. No additional workload was run.
+Central composed review/landing remains; no native/fullUX or inventory/reorder 19
+acceptance is implied. Owner evidence-only successor leaves all Go bytes exact.
+
+
+## Coordinator acceptance — focused terminal Monitor M1/M2 fix
+
+Owner commits `74513de`, `82dd627`, `efc342e` and evidence-only `5899f67`
+compose as `4fb29b0`, `3ef96f0`, `8d6d6c1` and `3c46858`. Independent review
+checked the actual three-file product diff, immutable red/green tests, original
+raw roster, all 66 observations, 22 cleanups and complete process/output/storage
+gates. All tracked non-documentation files equal the green-tested owner tree;
+only preserved coordinator documentation differs. The selected normal evidence
+therefore applies to this exact product composition without a duplicate run.
+
+Missing-option actions now choose a deterministic visible valid row, and resize
+reveals the surviving focus. Chart scope, stale-click and return-scroll tests
+pass. Broader inventory/reorder, density/reading/hit, native/physical terminal
+and full-UX acceptance remain outside this completed cut. The next bounded
+existing-task step may prepare the four inventory-transition cases and policy
+proposal as source only, with no execution or product changes implied.

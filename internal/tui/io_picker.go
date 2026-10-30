@@ -94,12 +94,15 @@ func (m *dashboardModel) pickerKey(key string) tea.Cmd {
 		m.viewport.SetYOffset(offset)
 	case "a":
 		*selection = ioSelection{All: true}
+		m.keepPickerVisible(index)
 	case "n":
 		*selection = ioSelection{IDs: map[string]bool{}}
+		m.keepPickerVisible(index)
 	case "enter", " ", "space":
 		if len(options) > 0 {
 			selection.toggle(options[index].id, m.ioItems(m.ioPicker.disk))
 		}
+		m.keepPickerVisible(index)
 	case "up", "k":
 		if len(options) > 0 {
 			index = max(0, index-1)
@@ -122,6 +125,23 @@ func (m *dashboardModel) pickerKey(key string) tea.Cmd {
 	return nil
 }
 func (m *dashboardModel) keepPickerVisible(index int) {
+	options := m.ioOptions()
+	if len(options) == 0 {
+		m.ioPicker.selectedID = ""
+		m.syncViewport()
+		m.viewport.GotoTop()
+		return
+	}
+	// Keep an exact surviving ID; a vanished row falls back to the nearest
+	// remaining index. Reveal only on navigation, selection actions or resize.
+	for i, option := range options {
+		if option.id == m.ioPicker.selectedID {
+			index = i
+			break
+		}
+	}
+	index = max(0, min(index, len(options)-1))
+	m.ioPicker.selectedID = options[index].id
 	m.syncViewport()
 	row := 3 + 2*index
 	if row < m.viewport.YOffset() {

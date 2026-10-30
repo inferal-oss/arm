@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "status": "Small M1/M2 source correction prepared only; green execution unallocated",
+  "red_source_commit": "82dd62799e99d01f69aa156bb74d44dbaeac4749",
+  "red_result": "ux-terminal-monitor-focus-red-2026-10-30.json",
+  "unchanged_test": {
+    "path": "internal/tui/monitor_picker_focus_test.go",
+    "bytes": 16345,
+    "sha256": "76b62701d9578acaf97dd83f53788fe31bf576f0e5897fc19cb8e86e553f2d7d"
+  },
+  "unchanged_legacy_test": {
+    "path": "internal/tui/io_picker_test.go",
+    "bytes": 6207,
+    "sha256": "0e5179ee8b4e51069d3f2bb58cf14c44ee726733a51e34bf1b7edb4a7bbd8228"
+  },
+  "product_diff": [
+    {
+      "path": "internal/tui/io_picker.go",
+      "prior_sha256": "0ddd018875c4590df859c876801282b955c32a35eef8e92454820c61f47e8df4",
+      "proposed_sha256": "f049eaac6565406740de5a7867afcbe1bd0e1884a3c03d88e9b6797c6a2ee052",
+      "bytes": 7177
+    },
+    {
+      "path": "internal/tui/mouse.go",
+      "prior_sha256": "9a75ed40429cf6966e5ecd9002debd53168d92775e8470f9f7349efc39721211",
+      "proposed_sha256": "f10e8870116c36b5caf3d47e296214a9d65910715e5e22e2e585f845dc88a036",
+      "bytes": 15684
+    },
+    {
+      "path": "internal/tui/tui.go",
+      "prior_sha256": "b5a86e52d9226475732f4cd4f51db455a8b9871bbaf65bc84758d1ef7863a255",
+      "proposed_sha256": "13311ea228316a13d384d05ef5851f67974d933d556be21213c5cd41d031fa45",
+      "bytes": 25704
+    }
+  ],
+  "product_change_lines": 24,
+  "behavior": [
+    "Keep exact surviving selectedID; if absent, clamp the prior option index to a deterministic remaining row, or clear focus/show empty state when none remain.",
+    "Reconcile/reveal after All/None/toggle and already validated checkbox actions; original arrow behavior retained.",
+    "On original WindowSizeMsg, reveal picker focus after viewport synchronization. No clock/render/inventory-only/wheel/page auto-reveal.",
+    "Do not alter chart selection semantics, exact IDs, return offset, stale mouse-frame validation, metrics/accounting/backend/protocol."
+  ],
+  "roots": [
+    "TestMonitorPickerMissingFocusRemainsVisible",
+    "TestMonitorPickerResizeKeepsFocusVisible",
+    "TestIOChecklistMouseKeyboardAllNoneAndNoBackendMutations",
+    "TestIOPickerKeepsMissingSelectionAndRejectsStaleCheckbox",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory",
+    "TestKnownIdleIOHistoryHasBaselineNotUnknownGap",
+    "TestClosingIOPickerRestoresMonitorScrollContext"
+  ],
+  "child_cases": [
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=true/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=true/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=true/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=false/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=false/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=false/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=true/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=true/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=true/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=false/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=false/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=false/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=true/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=true/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=true/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=false/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=false/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=false/a",
+    "TestMonitorPickerResizeKeepsFocusVisible/72x28-to-45x14/disk=true",
+    "TestMonitorPickerResizeKeepsFocusVisible/72x28-to-45x14/disk=false",
+    "TestMonitorPickerResizeKeepsFocusVisible/100x35-to-45x14/disk=true",
+    "TestMonitorPickerResizeKeepsFocusVisible/100x35-to-45x14/disk=false",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory/[160_46]",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory/[110_32]",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory/[70_24]",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory/[45_14]"
+  ],
+  "observation_cases": [
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=true/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=true/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=true/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=false/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=false/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=false/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=true/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=true/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=true/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=false/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=false/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=false/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=true/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=true/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=true/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=false/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=false/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=false/a",
+    "TestMonitorPickerResizeKeepsFocusVisible/72x28-to-45x14/disk=true",
+    "TestMonitorPickerResizeKeepsFocusVisible/72x28-to-45x14/disk=false",
+    "TestMonitorPickerResizeKeepsFocusVisible/100x35-to-45x14/disk=true",
+    "TestMonitorPickerResizeKeepsFocusVisible/100x35-to-45x14/disk=false"
+  ],
+  "expected_named_test_nodes": 33,
+  "expected_positive_observations": 66,
+  "expected_strict_cleanups": 22,
+  "command": [
+    "GO",
+    "test",
+    "-mod=readonly",
+    "-p",
+    "1",
+    "-count=1",
+    "-timeout=15s",
+    "-json",
+    "-run",
+    "^(TestMonitorPickerMissingFocusRemainsVisible|TestMonitorPickerResizeKeepsFocusVisible|TestIOChecklistMouseKeyboardAllNoneAndNoBackendMutations|TestIOPickerKeepsMissingSelectionAndRejectsStaleCheckbox|TestIOChecklistResponsiveScrollingAndEmptyInventory|TestKnownIdleIOHistoryHasBaselineNotUnknownGap|TestClosingIOPickerRestoresMonitorScrollContext)$",
+    "./internal/tui"
+  ],
+  "budgets": {
+    "cpu_cooperative": 2,
+    "memory_cooperative_bytes": 2147483648,
+    "GOMAXPROCS": "2",
+    "GOMEMLIMIT": "1536MiB",
+    "fifo_seconds": 45,
+    "test_timeout_seconds": 15,
+    "phase_supervision_seconds": 40,
+    "helper_cancel_grace_seconds": 3,
+    "whole_wrapper_seconds": 65,
+    "fresh_scratch_bytes": 1073741824,
+    "sampled_margin_bytes": 33554432,
+    "per_file_bytes": 268435456,
+    "raw_output_bytes": 8388608
+  },
+  "green_gate": "One separately reviewed normal offline FIFO invocation; original Go/helper/FIFO0 and outputEOF, all33 exact named nodes pass once/packagepass, no fail/skip, all66 original observations and22 strict cleanups, source/tool/history guards, final complete enumeration and empty temporary trees. Any failure retains original evidence and forbids automatic retry.",
+  "preservation": "Keep exact82dd/76b tests and complete V3 red root immutable, alongside failedV1/V2 and all prior source/runtime evidence. New product bytes require independent source/cache/tool pins and fresh green root.",
+  "limits": [
+    "No green execution, product acceptance or feature completion yet.",
+    "No19-case inventory/reorder follow-up, broad package/native/browser campaign or live transport.",
+    "No dedicated disappearing-checkbox test added; code path is reviewed, existing mouse/stale-click tests are included in the proposed seven roots.",
+    "Source formatting/parser/hash checks do not establish typecheck or green behavior."
+  ]
+}

@@ -391,6 +391,7 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg, frame string) tea.Cm
 		if r.row >= 0 && r.row < len(options) {
 			m.ioPicker.selectedID = options[r.row].id
 			m.ioSelection(m.ioPicker.disk).toggle(options[r.row].id, m.ioItems(m.ioPicker.disk))
+			m.keepPickerVisible(r.row)
 		}
 		return nil
 	}

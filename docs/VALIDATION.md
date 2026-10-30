@@ -11742,3 +11742,94 @@ addressed without suppressing the projection error or admitting partial totals.
 The genuine-issuer cleanup regression and V1-order omission control are proposed
 only. No compiler, test, positive charge, live core or child-continuity evidence
 is supplied by this source review.
+
+
+## Terminal Monitor picker focus — 22 cases prepared, unexecuted
+
+The [focused source proposal](validation/ux-terminal-monitor-focus-proposal-2026-10-30.json)
+records exact two-root/22-child names, 18 unchanged inspected source bindings and
+new test bytes. It proposes one offline normal-FIFO Go invocation with explicit
+source/tool/cache/environment pins, CPU 2/memory 2GiB, 45s FIFO, 15s test timeout,
+40s phase and 65s whole-wrapper limits, 1GiB owned scratch and 8MiB original output.
+Complete original observations precede assertions and remain retained on failure.
+No Go metadata, compiler, test, Program/PTY, browser, real transport or collector
+ran. Candidate reproduction, product fixes, execution and composition remain
+open gates; no 19-case follow-up is included.
+
+
+## Terminal Monitor ordinary failed collection and source-only revision
+
+The [failed receipt summary](validation/ux-terminal-monitor-focus-failed-2026-10-30.json)
+records one invocation, wrapper/FIFO 125, reaped cancelled Go -15, helper KILL
+PermissionError, missing EOF and incomplete 65,617-byte output. Two run nodes and
+one complete original pre-removal observation do not accept either focus
+candidate; no terminal test/cleanup records were retained. All original 67-member
+hashes/path set and 20 historical sets were reverified. Retained scratch was not
+reclaimed. Zero narrow process matches is only an absence observation.
+
+The [fixture/sampler source revision](validation/ux-terminal-monitor-focus-proposal-v2-2026-10-30.json)
+recognizes the constructor lock, positively checks its exact identity/type/mode/
+empty-content roster and retains the strict no-call/nil-command policy. A bounded
+no-follow sampler permits only temporary ENOENT measurement restarts, retains
+all observed charges and fails other uncertainty/bounds. Only source formatting/
+parsing and documentation/hash review have run for the revision. No fresh
+compiler/test/metadata/native/browser execution or product correction is accepted.
+
+
+## Monitor focus complete ordinary red; correction remains unexecuted
+
+The [V3 red record](validation/ux-terminal-monitor-focus-red-2026-10-30.json)
+retains normal original Go/helper/FIFO 1/EOF, 24 exact named failures, 66 complete
+positive bookkeeping observations, 22 strict cleanups and only 80 expected focus
+assertions. The complete 26-member manifest was reverified, as were source/tools
+and 24 protected sets. Two intermediate samples were explicitly unknown/deferred
+with no charge release; a complete final post-join/EOF enumeration and empty
+temporary trees passed. This accepts the independently reviewed ordinary M1/M2
+diagnosis only; earlier failed collections and native/fullUX limits remain.
+
+The small product correction is source-only. Exact test SHA `76b62701…` and the
+existing I/O test file remain unchanged. The
+[green contract](validation/ux-terminal-monitor-focus-green-proposal-2026-10-30.json)
+limits execution to seven roots/33 named nodes, all expected to pass, with the
+original 66 observations/22 cleanups and all process/storage/preservation gates.
+No green compiler/test execution, product acceptance or broader coverage follows
+from formatting/parser/source checks.
+
+
+## Monitor focus owner green — seven roots/33 named passes
+
+The [green record](validation/ux-terminal-monitor-focus-green-2026-10-30.json)
+binds exact `efc342e`/unchanged `76b62701…` tests. Original Go/helper/FIFO 0
+joined normally with EOF; all 33 named nodes/package pass, 66 observations and 22
+strict cleanups are complete, with no fail/skip or unknown/forced/truncated
+lifecycle. All 22 original initial observations equal red; all 66 green IDs/row
+pairs are canonical/visible and four resize scope/ID traces equal red.
+
+A final complete post-join/EOF enumeration, empty temporary trees, 7,027 source/
+tool pins and 26 protected sets passed. Intermediate unknown samples retain all
+charges; no reclamation claim is made. Original26-member manifest and all bytes
+were reverified and retained. This does not promote prior failed V1/V2 artifacts
+or establish composed/native/race/full-package/fullUX acceptance. Final owner
+evidence changes are documentation only; no later Go tree is claimed as run.
+
+
+## Coordinator acceptance — exact Monitor focus composition
+
+Owner `5899f67` is composed through `3c46858`, including runtime source
+`efc342e` as `8d6d6c1`. Independent checks verified the actual product diff,
+all 26 green artifacts and exact path set, all 33 named starts/passes once,
+66 positive observations and 22 strict cleanups. Every original initial green
+observation equals its red counterpart; all 66 green viewport/full-frame pairs
+show the canonical selected ID and preserve the other chart. Original normal
+Go/FIFO exit 0 joins, full EOF, final stable enumeration, empty temporary trees
+and source/tool/history guards are positive. Earlier two failed collections
+remain failed and preserved.
+
+The composed tracked non-documentation tree is byte-for-byte identical to the
+qualified owner tree. Source-bound selected normal evidence applies unchanged;
+no additional compiler or runtime invocation was performed for documentation-only
+composition differences. The normalized green record's SHA-256 is
+`c7d87baa0b09dc11840adfd2ea81d13e190f9627909469c7ee3425c9c4924e2f`.
+New files parse and the focused diff passes whitespace/privacy review. No race,
+full package, native Program/PTY/browser, physical-terminal/Unicode or full-UX
+claim is added. The untracked dependency symlink was preserved and unused.

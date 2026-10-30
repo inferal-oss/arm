@@ -5481,3 +5481,59 @@ also addresses the early queue-error return before ending-resource settlement.
 It retains separate nonlease accounting, and has no production caller or runtime
 acceptance. Actual operator issuance, root handoff, worker routing and child
 continuity remain implementation and validation gates.
+
+
+## Terminal Monitor picker focus test source
+
+A new ordinary-model test file prepares 18 missing-option transition cases and 4
+resize cases with a strict no-call fake, owned temporary homes and full original
+state/text observations. See the [proposal](validation/ux-terminal-monitor-focus-proposal-2026-10-30.json).
+No product code or historical test/fixture/driver changed. Formatting/parser
+checks do not establish typechecking, candidate reproduction or a correction.
+
+
+## Monitor focus fixture constructor bookkeeping correction — source only
+
+The constructor intentionally creates a private pending-directory lock. The
+original test empty-home assertion was invalid. The revised fixture validates
+only that exact directory/zero-byte single-link lock roster, immutable identities,
+private modes/ownership and no extra intent/preferences, through read-only
+no-follow probes before/after local actions. Strict fake, nil commands, scope and
+all 22 cases stay unchanged. No product source changed or corrected fixture ran.
+A separate bounded sampler source proposal retains observed charges across
+normal temporary disappearance; it has not been invoked.
+
+
+## Terminal I/O picker focus reconciliation — green validation pending
+
+Prepared M1/M2 presentation correction preserves a surviving exact focus ID or
+chooses a deterministic clamped remaining row when it vanishes. Relevant local
+selection/validated-click actions and original resize reveal that row; clock,
+render, wheel and page reading do not force it. Empty inventories clear focus
+and retain their empty state. Selection scopes, return offset and stale mouse
+validation remain unchanged. No metrics/accounting/transport/protocol changed.
+Tests are immutable and the seven-root green proposal awaits review/allocation.
+
+
+## Terminal I/O focus correction — owner ordinary validation complete
+
+Exact `efc342e` validates the 24-line local focus correction under the reviewed
+seven-root ordinary contract: 33 named passes/packagepass, 66 original focus
+observations and 22 strict cleanups. Initial arrangements match the immutable
+red baseline; canonical visible replacement and resize reveal pass while IDs,
+other-chart scopes, stale-click and return-scroll regressions remain intact.
+The [result](validation/ux-terminal-monitor-focus-green-2026-10-30.json) is
+owner-source evidence; central composition/landing and broader UI/transport/
+native coverage remain separate. No further product source changed.
+
+
+## Coordinator acceptance — local Monitor focus behavior
+
+The reviewed terminal picker correction is composed with unchanged qualified
+tests: removing a focused missing row selects a deterministic visible replacement,
+and original resize reveals valid focus. Selection actions and validated clicks
+reveal their target; ordinary clock/render/wheel/page reading remains unchanged.
+All tracked product inputs equal the seven-root green-tested owner source.
+Documentation conflicts were append-only and both histories were retained.
+This accepts the focused ordinary-model behavior, not broader Monitor/native
+paint, live transport, race or full-UX coverage.
