@@ -3262,3 +3262,20 @@ must distinguish that method's completion sentinel without hiding other errors
 or changing returned driver behavior. Frozen inputs remain preserved. First
 normal validation awaits corrected source, offline prerequisites and reviewed
 bounds; race, overlays, delivery and actual resident assembly are separate gates.
+
+
+## Native lease reading fixture — source reviewed, compile-only allocation
+
+Focused owner source `9b6b560` prepares 21 detail/record/review-decline/filter
+frames across three grids. Independent review verifies its source hashes, typed
+decimal-string transport, original-model/Cmd/input restrictions, exact reading
+roster, inherited process/PTY/browser cleanup and preserved evidence boundaries.
+All 50 classified inputs still equal current main; Python AST, Node syntax and
+diff checks pass. This establishes source review, not rendered acceptance.
+
+One next unchanged normal-FIFO compile-only attempt is allocated: 115 seconds
+including cleanup, at most two CPU/two GiB cooperative targets, offline readonly
+local Go, one fresh test binary, exact 62-input before/after receipt, one GiB
+owned output/temp bound and no retries. No test binary invocation, PTY or browser.
+Capture/replay remains separately gated on the original build/cleanup evidence.
+The retained-driver prerequisite phase remains unallocated source preparation.
