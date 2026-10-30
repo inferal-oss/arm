@@ -690,3 +690,19 @@ byte budget; original compiled/capture lineage stays distinct from new replay
 source. No corrected browser run, replacement render or native acceptance is
 implied. Independent review and separate replay-only allocation are pending;
 visible log markers and remaining frame/glyph checks remain open.
+
+
+## Corrected replay coverage and remaining glyph seam
+
+One corrected replay-only attempt passed all 36 synthetic emulator cases and
+visible first/middle/tail markers with original cleanup/write-return gates.
+The [inventory](validation/ux-terminal-corrected-replay-inventory-2026-10-30.json)
+keeps this result separate from the unchanged first oracle failure and from
+original captured native-input/model facts. No new Program/PTY capture ran.
+
+Narrow/wide tail/fullscreen PNG review also found clipped emoji paint with a
+sampled width1 cell for 🙂; CJK 界 occupied width2. Row equality does not accept
+that glyph seam. Emulator/font/Unicode attribution and physical-terminal UX
+remain unverified; no ARM product defect is established by this evidence.
+Independent review and any separately authorized next step remain gates.
+Overall full-UX acceptance is open; no further execution window is implied.

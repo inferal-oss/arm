@@ -4515,3 +4515,28 @@ This is source preparation only, described by the
 [plan](validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json).
 The original compiled Go fixture/binary, Python capture, source plan and first
 failure stay exact. No compiler, capture, corrected browser or replay ran.
+
+
+## Corrected replay original result
+
+Frozen `13ab228` replay consumed the existing `8d1039a` capture without copying
+or changing its receipts/streams/checkpoints. Its one allocated invocation
+passed all 36 cases and required first/middle/final marker gates. The raw row
+arrays retain 312 trailing-ASCII-space-only differences across 1,356 matching
+normalized rows. Exact-grid alternate buffers, byte-prefix hashes, resize
+timelines, saved PNGs and separate source lineage remain recorded in the
+[normalized inventory](validation/ux-terminal-corrected-replay-inventory-2026-10-30.json).
+Original End empty-read, reader/cursor/buffer and mouse/stale-resize facts are
+reused from accepted capture; they were not executed again.
+
+Original terminal/page/context/connection/BrowserServer close APIs returned;
+the original browser exit event reported code zero/no signal. No forced or
+pending teardown occurred; the digest-bound write-return marker confirms the
+original receipt write. These scoped observations do not prove universal
+descendant/framework cleanup or native production startup behavior.
+
+Visual inspection exposed a separate glyph seam: 🙂 appears clipped and has
+sampled cell width1; 界 has width2/continuation. Original row text still matches.
+This qualifies emulator/font/Unicode paint compatibility, not an established
+ARM product defect or physical-terminal result. No provider/font/source change,
+rerender, build or PTY recapture occurred.

@@ -3096,3 +3096,26 @@ replay self-digest are distinct stages; the old build receipt is never changed.
 No new Go build or PTY capture is proposed. All previous byte/resize/marker/
 cleanup/time gates remain. Source review is pending before any separately
 allocated replay-only attempt; no corrected replay/browser has run.
+
+
+## Corrected replay — scoped pass, glyph paint remains open
+
+One separately allocated replay-only attempt at frozen `13ab228` consumed the
+original capture read-only. All 36 exact-grid cases and 1,356 rows passed the
+reviewed symmetric trailing-ASCII-space rule; all required first/middle/final
+log markers were visible in actual emulator rows. Original browser API/process
+exit, digest-bound receipt-write marker and no-deadline gates passed. No build,
+test executable, Program or PTY capture ran again.
+
+The [corrected inventory](validation/ux-terminal-corrected-replay-inventory-2026-10-30.json)
+keeps this pass separate from the frozen first failure. Narrow/wide PNG review
+found clipped emoji paint with sampled xterm width1 for 🙂, versus width2 for
+界. Text equality therefore does not accept glyph rendering. Emulator/font/
+Unicode attribution and broader physical-terminal UX remain open. No product
+fix or further execution is authorized by the result.
+
+All original inputs/artifacts and both source stages remain exact. Original
+plus new evidence containers total 6,868,809 bytes, including new wrapper logs/
+receipts and empty browser temporary state, below the existing 16MiB cap.
+Independent normalized evidence/glyph review remains before integration or
+overall acceptance; no further execution window is implied.

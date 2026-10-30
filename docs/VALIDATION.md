@@ -10547,3 +10547,38 @@ cleanup before browser and recheck inputs afterward. No old57-source receipt
 is updated to claim the new JS; original56 other inputs/binary,111 direct,64
 build and29 runtime artifacts are unchanged. Independent source review and a
 separate replay-only allocation remain prerequisites.
+
+
+## Corrected replay-only attempt — assertion pass with glyph qualification
+
+The [corrected inventory](validation/ux-terminal-corrected-replay-inventory-2026-10-30.json)
+records one frozen `13ab228` invocation: original FIFO exit0 in 6.209 seconds,
+Node exit0 and original replay elapsed 5.446 seconds. All 36 cases/1,356 rows
+passed the reviewed ASCII U+0020-only normalization; all 312 raw differences
+were trailing spaces only. Actual LOG FINAL appeared in all 12 required
+inline/full tail cases, LOG FIRST in all three full-first cases and LOG MIDDLE
+in all three full-middle-resize cases. Six original narrow/wide PNGs were
+visually inspected. No renderer replacement or second capture was used.
+
+Scoped cleanup passed: all original terminal/page/context/connection/server
+close APIs returned without timeout; the retained original browser exit event
+reported code0/no signal at 5.441 seconds. No pending/forced cleanup, page
+network/native path request or deadline receipt was present. Original
+digest-bound write-return marker complete=true was observed. Original29 plus
+new47-entry containers retained 6,868,809 bytes, below16MiB; browser/tool temp
+leftovers were empty. Additional owned preparation metadata is separately
+counted in the inventory and also remains below the same cap.
+
+Cell/text acceptance remains distinct from glyph paint: inspected glyph lines
+show a clipped 🙂, and saved xterm cells report width1 at column33 while 界
+occupies width2 plus its continuation. Text rows match despite that paint/cell
+observation. No emulator Unicode/font/root-cause attribution or ARM product
+defect is established. Glyph and broader physical terminal acceptance remain
+open; no remedial source change or extra rendering occurred.
+
+Original57 frozen source copies,56 other current inputs, corrected JS/plan,
+111 direct/64 build/29 first-runtime artifacts and the original failed PNG/
+receipts remain exact. Five selected package/source pins and all installed
+regular package members matched locked offline cache content before/after.
+Separate original8d and corrected13ab source stages are retained. No compiler,
+test binary, Program, native client/backend or PTY ran in this window.
