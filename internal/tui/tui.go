@@ -218,7 +218,17 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// this clock behind a receipt either. Freshness guards still reject genuinely
 	// negative ages and expire held observations at their original deadlines.
 	m.timeNow = time.Now()
-	defer m.syncViewport()
+	defer func() {
+		m.syncViewport()
+		// Wheel scrolling may expose filter help. Starting or resuming editing
+		// brings the focused field back into view after content/size updates.
+		if m.inputMode == "filter" && m.input.Focused() {
+			switch msg.(type) {
+			case tea.KeyPressMsg, tea.PasteMsg, tea.WindowSizeMsg:
+				m.viewport.GotoTop()
+			}
+		}
+	}()
 	defer m.retirePeerIfHidden()
 	defer m.retireRunsIfHidden()
 	var cmd tea.Cmd
