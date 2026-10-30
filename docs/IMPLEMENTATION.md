@@ -4642,3 +4642,19 @@ before JSON transport, with a separate visible-digit check planned for replay.
 Final key navigation acknowledges the actual selected row. Independent source
 review finds no blocker; no product code, backend, protocol or renderer changes.
 A compile-only allocation does not establish native input or layout acceptance.
+
+
+## Retained-driver EOF correction and validation wrapper disposition
+
+The unintegrated v3 candidate distinguishes only normal exact `Rows.Next` EOF
+from a surfaced failure. Independent source review verifies empty/nonempty
+same-connection iteration followed by substantive-error regressions and the
+method-specific abnormal controls. A separate revised overlay cut preserves
+needed imports/locals while disabling the intended guards; all twelve control
+maps/source hashes match, with no executed outcome claimed.
+
+The reviewed private acquisition wrapper protects every started Go command
+through exception-safe original-handle teardown/join and bounded metadata
+handoff. Acquisition is confined to exact module metadata/archives/checksums in
+private scratch. It executes no candidate code, changes no ARM dependency or live
+process, and cannot authorize the later normal/race/control or resident phases.

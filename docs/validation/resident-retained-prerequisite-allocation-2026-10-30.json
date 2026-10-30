@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "scope": "source-reviewed correction and dependency acquisition allocation only",
+  "candidate_manifest_sha256": "6d5951477495218c1ba90a332304a57a591a16ce662f543b97da3068ac6a518e",
+  "verified_candidate_files": 1902,
+  "EOF_source_finding": "corrected and source-reviewed; runtime gate pending",
+  "corrected_overlay_manifest_sha256": "1963139631ced648bca5d23dfb576b7f8ccd318ce525ff484e2ad51ef9e5da9a",
+  "verified_corrected_overlay_cases": 12,
+  "overlay_compile_or_execution": false,
+  "wrapper_manifest_sha256": "1d2268dd9a358e2dc871660e8a15d7b99ac7c834513ae28951bb5c9985067d2d",
+  "acquisition_plan_sha256": "4bcb8aae2643723291bfcde96e7f1f6c033e9ad2268fc6c1c1636b254ae5e0a4",
+  "allocation": {
+    "phase": "exact dependency metadata/archive/checksum acquisition only",
+    "queue": "one unchanged normal FIFO attempt",
+    "watchdog_seconds": 100,
+    "existing_grace_seconds": 5,
+    "total_active_target_seconds": 115,
+    "cooperative_cpu_target": 2,
+    "cooperative_memory_target_bytes": 2147483648,
+    "private_scratch_cap_bytes": 1073741824,
+    "sampled_stop_bytes": 671088640,
+    "per_file_limit_bytes": 134217728,
+    "output_cap_bytes": 16777216,
+    "retry": false
+  },
+  "must_stop": [
+    "graph selection differs",
+    "checksum/input changes",
+    "time/storage/cleanup uncertainty"
+  ],
+  "execution_outcome": "not yet reported",
+  "compile_tests_source_execution_authorized": false,
+  "arm_dependency_or_shared_cache_change": false,
+  "live_backend_or_job_change": false,
+  "normal_gate": "separate allocation after exact acquisition/cleanup evidence and full 1902-file candidate guard"
+}
