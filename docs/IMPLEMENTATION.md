@@ -5194,3 +5194,13 @@ preparation records above are historical; the completed outcome is the new
 normalized result. This closes the selected ordinary remediation gate only.
 Native45 Program/PTY/rendering/physical cursor/font and full-UX gates remain open;
 accepted historical72 evidence and selectors/plans/classifier are not relabelled.
+
+## Shell/filter remediation — composed review accepted
+
+The focused source and ordinary validation are accepted for integration. The
+composed checkout matches all 870 project input hashes from the passed run and
+has no Go or module differences from the reviewed owner cut. Independent final
+diff and receipt review found no remaining blocking finding in this scope.
+The 102 passing model/render/input outcomes are source-equivalent evidence,
+not a new native terminal execution. Fresh 45-column native validation and the
+broader UX review remain open.
