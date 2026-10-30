@@ -10247,3 +10247,120 @@ No source implementation, test, build, dependency change or runtime occurred.
 The startup correction Pages workflow separately completed successfully;
 [the public CI run](https://github.com/inferal-oss/arm/actions/runs/41018815971)
 is scoped to that pushed composition, not the future resident architecture.
+
+
+## Shared terminal direct fixture — source review cut
+
+The [prepared plan](validation/ux-terminal-direct-fixture-plan-2026-10-30.json)
+binds the new test-only fixture hash and fourteen declaration anchors to
+source classification `c18e9c8`. All fifty classified source/test/tool/pin files
+remain byte-exact to accepted current source; the original classification
+record is unchanged. Static preparation includes reading audited original
+closures, formatting only the new test source, hash/anchor matching and
+privacy/diff review. Formatter parsing does not establish type correctness or
+runtime behavior. No compile, test execution, native app, backend, browser,
+PTY, install/setup or resource command has been performed.
+
+The proposed single invocation is recorded exactly with unchanged shared FIFO,
+local-only toolchain/modules, two-CPU/1536MiB targets, compile parallelism one,
+75s test timeout and 115s total original-command limit. This is a reviewable
+proposal, not an execution allocation or proof that compilation fits those
+limits. Existing output is refused, and failure must preserve its original
+command/log/source/partial frames before any replacement is considered.
+
+Prepared bounds are twelve leases, ten runs, eight-KiB log, two-KiB reason,
+256-byte other labels, 64KiB typed DTO, two-KiB read pages, at most 48 checkpoints
+and explicit read/call budgets. The scripted roster has fifteen checkpoints at
+each of 72×28, 100×35 and 160×50, plus one short-grid disconnected seed: 46 total.
+Temporary stale-mouse resize uses another of these same three grids. Original
+read methods/OnMouse closures feed original Update; source/message/command
+gates exclude native connection, arbitrary library commands, preferences and
+mutations before execution. Actual runtime counts and assertion outcomes do not
+exist yet.
+
+Model output, if later generated, will be unmodified View.Content and typed
+regions/read state, not an actual terminal byte stream, active alternate buffer
+or native cell/glyph/focus proof. ANSI cell-width metadata is not measured
+terminal paint. Record numeric-node checks preserve a known exact typed value
+without claiming every scalar glyph is visible. Held-receipt delivery is
+synchronous and does not establish an in-flight read cancellation race. Library
+commands are suppressed, so no real cursor/timer/event-loop behavior is tested.
+All inactive defaults remain true; historical reader/persistence workflows are
+not newly exercised.
+
+Future cleanup records original model retirement, owned context cancellation,
+fake Close and fresh-home pending-only entries; partial output remains private
+outside the checkout. These return/model facts cannot prove goroutine/process/
+PTY cleanup or production Run startup/authentication/unresolved-receipt cleanup.
+Full transitive Go package initialization/compilation has not been audited or
+executed by this source cut. Independent code review, explicit direct-frame
+execution and later terminal/PTY/replay acceptance remain separate gates.
+
+
+## Shared terminal direct fixture — one original passed attempt
+
+The [execution record](validation/ux-terminal-direct-inventory-2026-10-30.json)
+binds the exact reviewed source `a79462d` to one shared-FIFO command using the
+exact TestUXTerminalDirectFixture selector. It exits zero; Go reports 0.628s
+package execution and the wrapper records 10.936s from input freezing through
+Go subprocess return. Final source verification/receipt serialization follows;
+the original wrapper/FIFO completed normally within its 115s limit. This is one
+selected test with 46 checkpoints, not 46 passing tests or a broad suite.
+
+The command uses offline/local toolchain settings, GOENV off/empty GOFLAGS,
+compile parallelism one, GOMAXPROCS two and a 1536MiB memory target. No download,
+install, cache deletion, real backend/client, production Init/Run, Bubble Tea
+program, browser or PTY was used. Cooperative limits are not hard OS resource
+measurements or an ARM grant. All fifty classified inputs and all 53 frozen
+attempt inputs remain exact; fixture/plan/classification source is unchanged.
+
+All 46 model frames have exact requested row counts and ANSI.StringWidth per
+line. Default lists show eight nonterminal leases and six current/uncertain
+runs, with both inactive flags true. Each grid executes ten audited read
+closures and five original OnMouse event closures: one inspect, seven runs and
+seven run_output calls, zero refused operations. Two library commands per grid
+(filter focus/paste) are recorded and uninvoked. Original model identity, exact
+record node/decimal 9007199254740993, cursor, fold/fullscreen return and stale
+mouse/late-receipt checks passed within this fixture.
+
+Saved lease-detail offsets cover 33/33, 29/29 and 27/27 reported viewport-row
+indices. Narrow/medium first frames contain the whole reason character sequence
+only under whitespace normalization after removing the main-window borders;
+this is not exact spacing/native glyph proof. The helper then fails its
+whole-line border assumption at the wide side feed. That failed helper and
+partial output remain frozen without replacement, and wide full-reason
+sequence verification remains qualified. The original Go fixture still passed.
+
+All 3,165 log bytes and exact final cursor/done state are present in memory,
+but no saved frame contains LOG FINAL. Recorded log views are at offset zero;
+first/middle/final log reach is not established. This is a fixture coverage gap,
+not a product defect. Narrow action-chip omissions are source-consistent
+presentation observations, not defects from width policy alone. No native
+cell/glyph/focus/all-area or actual terminal loop acceptance follows.
+
+Each original model retires reader/peer state, cancels its context and closes
+its fake session, with no active/held calls and run selection cleared. Fresh
+homes contain only private pending directories and empty private locks; no
+preference file. These synchronous model/API facts do not prove goroutine,
+process, PTY or production Run cleanup. The private manifest has 111 entries
+and retains 1,453,854 bytes including manifest, below 16MiB; no binary is retained
+in that artifact root. Original Go/cache use is outside that private byte count.
+
+No replacement fixture/helper or product fix followed the inspection failure.
+The next source-only proposal must target actual visible log tail in inline and
+fullscreen through original loop/scroll paths, preserve buffer/cursor and count
+any empty End read. Original owned Program/PTy/read/cancel/Close outcomes and
+pinned terminal-only replay require separate review and execution allocation.
+
+
+## Shared terminal direct inventory — independent composition
+
+The [composed review](validation/ux-terminal-direct-composed-2026-10-30.json)
+independently verifies all 111 private artifact hashes, 53 input hashes and
+46 saved frame hashes for original source `a79462d`/evidence `60c65a3`.
+Requested model dimensions, eight/six default roster counts, original
+report/receipts and three synchronous cleanup records agree. Fixture inputs
+remain byte-exact in composition; production code is unchanged. No duplicate
+fixture run was performed. The original helper failure and absent visible log
+tail remain qualified. Actual native loop, cells/glyphs, PTY and UX remediation
+are separate remaining gates.

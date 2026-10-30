@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "scope": "Independent acceptance of the bounded direct-model fixture and original evidence, not terminal visual acceptance",
+  "ownerSourceCommit": "a79462d478b6c81057977d69c9d5e782e6b6c70b",
+  "ownerEvidenceCommit": "60c65a3f66bfd21a973b48712fdf4abf17d4a4fe",
+  "composedSourceCommit": "c07798d",
+  "composedEvidenceCommit": "03ab751",
+  "independentChecks": {
+    "artifactHashes": 111,
+    "exactInputHashes": 53,
+    "frameHashes": 46,
+    "synchronousCleanupRecords": 3,
+    "modelDimensionsAndDefaultCounts": true,
+    "originalReportAndReceipts": true,
+    "fixtureAndProductInputsUnchanged": true,
+    "productionCodeChanged": false,
+    "privacyAndWhitespaceReviewed": true
+  },
+  "originalRun": {
+    "exit": 0,
+    "packageSeconds": 0.628,
+    "wrapperSecondsThroughGoReturn": 10.936,
+    "checkpoints": 46,
+    "grids": [
+      [
+        72,
+        28
+      ],
+      [
+        100,
+        35
+      ],
+      [
+        160,
+        50
+      ]
+    ]
+  },
+  "evidenceSha256": "02998735605eff0567fdeab39d7cece06759ea50bdbf68c1570182cac8a23940",
+  "remaining": [
+    "Visible log tail: absent from the saved offset-zero frames despite complete byte buffer.",
+    "Wide full-reason helper oracle failed at the side feed; no replacement fills its gap.",
+    "Native cells, glyphs, event loop, PTY input/resize and actual process cleanup.",
+    "Concrete UX remediation after actual terminal findings."
+  ],
+  "noDuplicateRuntimePerformed": true
+}

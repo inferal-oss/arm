@@ -2882,3 +2882,63 @@ preference write is allocated. Preserve and report any original failure before
 replacement. Direct View.Content snapshots cannot establish actual terminal
 cell/glyph/focus/loop or process cleanup. PTY/replay and UX remediation remain
 next gates after concrete results.
+
+
+## Shared terminal direct fixture — source prepared, execution gated
+
+The terminal owner continues on `codex/ux-terminal-direct-fixture`, preserving
+accepted source classification `c18e9c8`. Its fifty pinned input files remain
+byte-exact to accepted current source. A new package-local opt-in fixture and
+[invocation/effect plan](validation/ux-terminal-direct-fixture-plan-2026-10-30.json)
+are prepared for review. There is no production Go, existing-test, capture-helper
+or dependency change.
+
+The script proposes 46 direct-model checkpoints across 72×28, 100×35 and
+160×50, capped at 48. It retains original construction, Update/View/viewport and
+mouse methods, with a strict inspect/runs/run_output fake and explicit command
+gates. Library commands are recorded but not invoked; production Init/native
+connect/reconnect/program/PTY paths remain outside the first fixture. A future
+fresh private home would contain disclosed constructor pending-file effects.
+
+Source formatting and static source/hash/privacy review only are complete. The
+fixture is not compiled or run, and its assertions are not validation evidence.
+Independent fixture-code review and a separately allocated bounded compile/
+direct-frame command are the next gates. Actual terminal loop/PTY/replay and UX
+inventory/remediation remain the objective after those gates; this source
+preparation does not complete terminal or overall UX acceptance.
+
+
+## Shared terminal direct fixture — original execution frozen
+
+The reviewed source `a79462d` completed its one allocated compile/direct-frame
+command with exit zero: 46 checkpoints at the three proposed grids, fifty
+classified inputs and all 53 attempt inputs unchanged. The
+[immutable execution record](validation/ux-terminal-direct-inventory-2026-10-30.json)
+retains the original receipts, model observations and limits. No fixture source
+was corrected or repeated.
+
+The run-log buffer/cursor has all 3,165 bytes, but no saved frame shows LOG FINAL;
+recorded log offsets remain zero. This is a fixture reach gap, not a demonstrated
+product defect. A read-only text helper also stopped at its invalid wide-layout
+whole-line border assumption; partial narrow/medium matches and failure remain
+frozen without replacement. Direct model/ANSI dimensions do not accept native
+terminal cells, focus, loop or PTY cleanup.
+
+The continuing next step is source preparation/review of the smallest test-only
+Bubble Tea wrapper and terminal-only replay plan, using actual owned PTY output,
+strict fake/audited commands and exact grids. It must replace a redundant
+checkpoint with real inline/fullscreen log-tail reach while preserving the
+existing bounds. No further compile/runtime/browser/PTY is allocated. Product
+remediation still awaits concrete terminal findings.
+
+
+## Shared terminal direct inventory — coordinator acceptance
+
+Reviewed focused source `a79462d` and evidence `60c65a3` are composed as
+`c07798d`/`03ab751`. Independent checks verify 111 private artifact hashes,
+53 exact inputs, 46 frame hashes, model dimensions/default counts and all three
+synchronous cleanup records. No product code changed; duplicate runtime was
+unnecessary for identical fixture inputs. This accepts direct-model evidence
+only. Saved log-tail reach and wide text-oracle gaps remain open; no native
+terminal/cell/glyph/PTY or overall UX acceptance follows. The same owner prepares
+the smallest bounded original-model loop/PTY/replay source candidate.

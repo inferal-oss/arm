@@ -4355,3 +4355,59 @@ The focused startup correction is independently accepted on current composition.
 Failed endpoint inspection remains uncertain and post-launch readiness uses the
 same identity checks as reuse. It does not create resident/worker roles, replace
 a running backend or establish child-process survival during an upgrade.
+
+
+## Shared terminal direct fixture — prepared source only
+
+`internal/tui/ux_terminal_direct_fixture_test.go` adds the opt-in
+`TestUXTerminalDirectFixture` source. It is skipped without its explicit output
+environment variable. If execution is later allocated, it requires a fresh
+absolute resolved-parent output directory outside the checkout and a new
+0700 synthetic home per reviewed grid. Original newDashboard performs its
+existing private pending-directory/lock creation and sync there; this is a
+local filesystem effect, not read-only construction. No default/shared home or
+existing pending obligations are involved.
+
+The prepared fake accepts only inspect/runs/run_output with exact synthetic
+IDs, typed argument/results and byte cursors. Typed clone/decode preserves
+integer fields without an untyped floating-number roundtrip. Key/message/
+region gates precede original Update; audited read and original OnMouse
+closures are the only executed-command paths in the proposed script. No
+Init/connected/reconnect/tick/stream/mutation message, arbitrary Cmd/Batch
+executor, confirmation or preference toggle is allowed. Returned unclassified
+input/cursor/viewport commands are counted and left uninvoked. This first cut
+contains no Bubble Tea adapter/program or terminal-only browser replay.
+
+Planned output preserves exact original View.Content plus source/data/frame
+hashes and separate allocation/region/default/selection/record/reader metadata.
+The same original run reader handles bounded paging, pause/fold/fullscreen and
+restoration. One held original receipt is computed synchronously then delivered
+after retirement; it is not a pending background-read test. Disconnected state
+is explicitly seeded without a stream/reconnect command. Cleanup calls original
+peer/run retirement, cancels the owned context and closes only the fake
+transport, recording zero-work/file-boundary expectations without claiming
+native Run, goroutine/process or PTY cleanup. These are prepared paths and
+checks; no fixture has been compiled or executed.
+
+
+## Shared terminal direct fixture — observed execution boundary
+
+The original opt-in fixture `a79462d` compiled and passed once. Its prepared
+source and historical source-only plan remain unchanged; the
+[execution record](validation/ux-terminal-direct-inventory-2026-10-30.json)
+separately records actual results. The original model/read/OnMouse paths
+produced 46 saved View.Content frames with requested model dimensions, default
+visibility, exact record decimal, read cursors and reader retirement/restoration
+checks. Strict fake calls remain inspect/runs/run_output only; no confirmation
+or preference/native-client path was exercised. Constructor-created private
+pending directory/empty lock are disclosed fixture effects.
+
+All 3,165 log bytes were drained into the original reader, yet the selected
+normal/fullscreen snapshots remain at offset zero. No saved LOG FINAL is visible.
+This qualifies buffer evidence only; Home/paused append/PgUp does not establish
+visible tail reach. The separate whole-line text-inspection helper failed at
+the 160-column side feed and was preserved without correction or replacement.
+No product behavior changed and no defect follows from these fixture/oracle
+gaps. The next reviewed source proposal must use a wrapper that returns itself
+after Update and actual owned Program/PTY bytes for terminal-only replay,
+retaining the original model, data, readers and command gates.
