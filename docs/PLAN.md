@@ -4205,3 +4205,15 @@ Central review authorized preparation after the source inventory, while product
 edits and Go metadata/compiler/test/native/browser execution remain unallocated.
 The 19-case follow-up remains separate. Final source/private FIFO wrapper review
 and a specific bounded allocation precede execution; no red result is claimed.
+
+
+## Terminal Monitor ordinary allocation — failed; source correction prepared
+
+The one allocated `74513de` invocation failed collection 125 during scratch
+enumeration. Incomplete raw output and cancelled Go/failed EOF leave M1/M2
+unaccepted. Original source/artifacts remain immutable; scratch is retained.
+Only fixture constructor-bookkeeping validation and a conservative temporary
+sampler source proposal are prepared in the existing branch. See the
+[revision record](validation/ux-terminal-monitor-focus-proposal-v2-2026-10-30.json).
+Product edits, a retry/green run, follow-up 19 and native/browser work remain
+unallocated. Independent review and new exact pins/window are required.

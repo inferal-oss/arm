@@ -5490,3 +5490,15 @@ resize cases with a strict no-call fake, owned temporary homes and full original
 state/text observations. See the [proposal](validation/ux-terminal-monitor-focus-proposal-2026-10-30.json).
 No product code or historical test/fixture/driver changed. Formatting/parser
 checks do not establish typechecking, candidate reproduction or a correction.
+
+
+## Monitor focus fixture constructor bookkeeping correction — source only
+
+The constructor intentionally creates a private pending-directory lock. The
+original test empty-home assertion was invalid. The revised fixture validates
+only that exact directory/zero-byte single-link lock roster, immutable identities,
+private modes/ownership and no extra intent/preferences, through read-only
+no-follow probes before/after local actions. Strict fake, nil commands, scope and
+all 22 cases stay unchanged. No product source changed or corrected fixture ran.
+A separate bounded sampler source proposal retains observed charges across
+normal temporary disappearance; it has not been invoked.

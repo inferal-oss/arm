@@ -229,3 +229,50 @@ Source formatting/parsing and documentation checks are not typechecking or test
 evidence. Execution remains unallocated. No product correction or 19-case
 follow-up is included. Wheel/page reading and all prior native evidence remain
 unchanged.
+
+
+## First ordinary allocation failed; fixture/sampler revision is source-only
+
+The [normalized failed result](validation/ux-terminal-monitor-focus-failed-2026-10-30.json)
+records the one original invocation on `74513de`. Scratch enumeration encountered
+a disappearing test-owned temporary directory, so the wrapper cancelled and
+returned 125. The original FIFO joined 125 and original Go handle was reaped at -15
+after termination; the helper also reported KILL PermissionError. EOF was not
+observed. The retained 65,617-byte raw prefix has two run nodes, no terminal test
+statuses, one complete pre-removal observation and one partial observation, with
+no cleanup lines. No candidate reproduction or ordinary/native acceptance follows.
+
+The original 67-member manifest/path set and all source/tool/history guards were
+reverified. Retained scratch remains charged and untouched. A subsequent narrowly
+scoped process read found zero exact owned-executable/helper matches, which is
+only an absence observation, not a retained descendant join or cleanup proof.
+No signal by discovered PID, cleanup, repair or retry occurred.
+
+A source review also found an independent fixture error: `newDashboard` calls
+`refreshPending/loadPending/openPending`, which intentionally creates private
+`dashboard-pending/.lock`. The original empty-home cleanup assertion was wrong.
+The [new source proposal](validation/ux-terminal-monitor-focus-proposal-v2-2026-10-30.json)
+corrects only the fixture: snapshot and compare exact home/directory/lock
+identities, modes, same-user ownership, zero-byte content and single-link regular
+lock type, with read-only no-follow lock probes and positive handle closes.
+Exact rosters reject any preference, intent or extra entry. Every observation and
+final fake/context cleanup validates the constructor snapshot; normal TempDir
+cleanup retains removal ownership. The private lock is not an application request.
+The original test source/proposal/failure records remain immutable history.
+
+The revised sampler proposal is source-only. Retained no-follow directory
+descriptors and identity checks prevent symlink following. Only ENOENT in owned
+tmp/gotmp can restart the measurement, at most three passes; incomplete passes
+are not positive readings. Bounded records retain races. Each observed file and
+directory identity's logical/allocated high-water charge remains for the entire
+run, even after disappearance; nothing is subtracted as reclamation credit.
+The cumulative charge plus unchanged 32MiB reserve must fit 1GiB. There are 32-race
+and 4096-identity ceilings; permissions, unexpected types, symlinks, out-of-scope
+ENOENT, persistent churn and bounds failures still refuse acceptance. Sampling
+never establishes atomic snapshots or unseen intermediate peaks/physical reclaim.
+
+Both revisions are formatting/parser/source review only, with no new compiler,
+metadata query, test, sampler/wrapper execution, product correction or 19-case
+follow-up. The same two roots/22 cases await independent source/private-packet
+review and a new allocation before any fresh invocation. Prior offline tool/cache,
+output/cleanup and resource ceilings remain explicit; no retry is implied.

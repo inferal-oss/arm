@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "status": "Failed ordinary collection; no candidate/test or cleanup acceptance",
+  "source_commit": "74513de769f4e3350ec6102b39f55bbe8c04d9c4",
+  "test_source_sha256": "f87b9a227f3e373850d84f8c33ffd9d594efea5bb717482301d332fd8aa4c706",
+  "allocated_launches": 1,
+  "launches_performed": 1,
+  "wrapper_exit_code": 125,
+  "failure": "Scratch enumeration encountered a disappearing test-owned temporary directory; the wrapper cancelled and refused acceptance. Original temporary files remain retained.",
+  "original_manifest": {
+    "entries": 67,
+    "sha256": "235773879dfb84b032d178936438afaf7d2ab23c0b9dc7460cb9e59204fec518"
+  },
+  "original_receipt_sha256": "79fcb7bd517936a83b8bbd394255cf5c3f0d2b2774199f93a1f04e61d1b63b23",
+  "original_raw_output": {
+    "bytes": 65617,
+    "sha256": "d7f634cb9ac8e61a03bd9fa7c352e01e0cc65472afc6b1c9a47cbe7934376a1e",
+    "EOF_observed": false,
+    "qualification": "Retained prefix only; final output is incomplete, not recovered or synthesized."
+  },
+  "helper_receipt_sha256": "d8d98259f9f59e4c7c681d438c59c9d2390c89415f626d0f92eb2a278ba8811f",
+  "lifecycle": {
+    "original_FIFO_handle_joined": true,
+    "original_FIFO_exit": 125,
+    "original_Go_handle_reaped": true,
+    "original_Go_exit": -15,
+    "termination_requested": true,
+    "KILL_error": "PermissionError",
+    "normal_cleanup_accepted": false,
+    "descendant_join_established": false
+  },
+  "roster": {
+    "JSON_events": 273,
+    "start_events": 1,
+    "run_nodes": 2,
+    "output_events": 270,
+    "terminal_test_events": 0,
+    "complete_observations": 1,
+    "partial_observation_markers": 1,
+    "cleanup_records": 0,
+    "reached": "First M1 disk/Space case at45x14; only the complete pre-removal observation is usable as an original observation, not candidate reproduction."
+  },
+  "retained_scratch": {
+    "regular_files_including_manifest": 68,
+    "logical_bytes": 103437975,
+    "allocated_bytes": 103550976,
+    "gotmp_regular_files": 45,
+    "gotmp_logical_bytes": 100812866,
+    "tmp_regular_files": 0,
+    "qualification": "Retained and charged, not reclaimed or repaired. Constructor private lock is bookkeeping, not a request."
+  },
+  "timing": {
+    "phase_ms": 10016,
+    "whole_ms": 14128
+  },
+  "guards": {
+    "source7023_unchanged": true,
+    "compiler_tools_unchanged": true,
+    "historical_artifact_sets_unchanged": 20,
+    "original67_member_manifest_and_roster_reverified": true
+  },
+  "process_observation": {
+    "exact_owned_executable_helper_matches": 0,
+    "qualification": "Read-only absence observation only; no retained descendant handle join, universal cleanup or deletion authority."
+  },
+  "product_correction": false,
+  "retry_performed": false,
+  "acceptance": false
+}

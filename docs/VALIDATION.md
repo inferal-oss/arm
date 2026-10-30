@@ -11755,3 +11755,22 @@ Complete original observations precede assertions and remain retained on failure
 No Go metadata, compiler, test, Program/PTY, browser, real transport or collector
 ran. Candidate reproduction, product fixes, execution and composition remain
 open gates; no 19-case follow-up is included.
+
+
+## Terminal Monitor ordinary failed collection and source-only revision
+
+The [failed receipt summary](validation/ux-terminal-monitor-focus-failed-2026-10-30.json)
+records one invocation, wrapper/FIFO 125, reaped cancelled Go -15, helper KILL
+PermissionError, missing EOF and incomplete 65,617-byte output. Two run nodes and
+one complete original pre-removal observation do not accept either focus
+candidate; no terminal test/cleanup records were retained. All original 67-member
+hashes/path set and 20 historical sets were reverified. Retained scratch was not
+reclaimed. Zero narrow process matches is only an absence observation.
+
+The [fixture/sampler source revision](validation/ux-terminal-monitor-focus-proposal-v2-2026-10-30.json)
+recognizes the constructor lock, positively checks its exact identity/type/mode/
+empty-content roster and retains the strict no-call/nil-command policy. A bounded
+no-follow sampler permits only temporary ENOENT measurement restarts, retains
+all observed charges and fails other uncertainty/bounds. Only source formatting/
+parsing and documentation/hash review have run for the revision. No fresh
+compiler/test/metadata/native/browser execution or product correction is accepted.
