@@ -2166,3 +2166,20 @@ Two final four-case synthetic browser cohorts and strict read-only argument
 checks cover dense and degraded read/lifecycle states. Exact-source independent
 review and any scoped correction remain open. No broad suite, asset/native
 build, installation, runtime activation or full Nodes/Kubernetes UX acceptance.
+
+
+## Nodes and Kubernetes owner correction
+
+Owner branch `codex/ux-node-layout` depends on frozen inventory `ac3230c`.
+Focused product commits `ffe8b6e6448d6664b812214c88fc0cf101855c6a` (Nodes) and
+`79e4e7c87e9ae2400f1a4056220dc1d30d03800f` (Kubernetes) address N1/N2/K1/K2
+within existing noninteractive containers and app-owned native part rules.
+The [final-source owner record](validation/ux-node-layout-2026-10-29.json) binds
+eight positive browser cases, four isolated declaration omissions, 27 native and
+23 module regressions to the final source.
+
+Native Grid parameters, Dialog/close policies and effect/control source remain
+unchanged. Final review removed shadowed grid overrides and an unused hook.
+Independent current-main composition, visual/source review and central asset/Go
+build against newer backend code remain open. No owner merge/push, build/install,
+runtime activation or full UX acceptance is implied.

@@ -3919,3 +3919,27 @@ admitted by the actual UI validator, with no unsafe cast or fake validation.
 Go/wire/cluster validation is outside this browser fixture. The
 [normalized inventory](validation/ux-node-inventory-2026-10-29.json) proposes
 app-owned layout boundaries; this step implements no production correction.
+
+
+## Nodes and Kubernetes app-owned reading allocation
+
+Existing roster Cards/Grid, Node inner/outer body and trust/grant/foot containers,
+Kubernetes inventory/Cards and technical DescriptionList carry noninteractive
+app-owned scopes. Full titles, facts, prose and raw identifiers wrap within their
+allocation. Technical descriptions stack at compact/medium widths; native Grid
+columns and minimum-width parameters remain exact after removing shadowed rules.
+No wrapper or interactive subtype is introduced.
+
+The existing native Node Dialog is addressed only through its unique body marker.
+Its panel width is bounded by 72rem and existing viewport gutters. The header
+reserves the native close button's unchanged negative margins; title/body/footer
+allocation stays bounded. Native close size/margin/behavior, Dialog height,
+overflow, anchor and animation rules remain unchanged. Generic modal/row/grant
+helpers and all other workflow surfaces remain exact.
+
+The [source guard](validation/ux-node-layout-2026-10-29.json) restores the entire
+mesh source byte-for-byte to the inventory base after removing only scoped type
+hooks and equivalent construction-variable changes. Callbacks, request/unit
+arguments, IDs, selection/cardByUID, stale-context, pending, disposal and focus
+logic are unchanged. Raw quantity strings, BigInt display, 64-field quantity
+summary/omission notice and exact JSON cap/truncation remain intact.

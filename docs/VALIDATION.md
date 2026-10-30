@@ -9395,3 +9395,45 @@ prior correction, 164 shared-dialog inventory, 256 shared-dialog correction and
 four recovered-audit artifacts rehash unchanged. No cleanup credit transfers
 from later fixtures to earlier failures. Real auth/transport/discovery/cluster,
 operator actions, maximum cases, other themes/locales and full UX/TUI remain open.
+
+
+## Nodes and Kubernetes correction evidence
+
+The [final-source record](validation/ux-node-layout-2026-10-29.json) binds identical
+source hashes to two four-case cohorts (desktop, both phone heights and selected
+text-token 2x tablet). Original FIFO runner intervals are about 44 and 62 seconds,
+including Vite transforms, collection and original awaited API closes; initial
+static imports/source hashing and FIFO wait are outside those intervals. No
+overrides, broad suite, setup, owner asset/Go build, install or activation. CPU
+and memory are not measured or kernel-enforced by this fixture.
+
+Complete titles/trust/prose/description text fit their own allocation and true
+clips; scoped audits show no horizontal overflow or text overlap, and native
+controls are individually reachable. Native grid creation arguments and factory
+source remain exact. All four Node header/close allocations include the native
+negative margins with unchanged close declarations and native overlay hash.
+
+Exact reader first/middle/final text ranges are verified through actual native
+scrollers and keys, with screenshots and exact text hashes. Dialog End can move
+past a reader and alone proves no unreachable tail. The original observation
+and inventory remain frozen; tall content is allowed to scroll vertically.
+Four isolated declaration omissions retain every schema and unrelated rule and
+reproduce their intended N1/N2/K1/K2 observations. The technical omission also
+exposes intrinsic descendant overflow in card audits; no zero cross-observation
+claim is made.
+
+Twenty-seven real native RDF/DOM/EventBus and 23 module request-boundary tests
+pass on final source. Connected refresh/focus and normal/degraded Escape, late
+reply/reconnect and exact context/namespace/UID/local selection checks remain
+positive. Disconnected Escape closes but does not focus its disabled opener,
+matching the frozen inventory in all four cases; focus policy is unchanged. Every final
+original browser cohort captures zero active/pending reads and forbidden calls
+and awaits its original context/browser/server close promises. This is API
+completion evidence, not OS process-group exit/reap proof. Earlier header audit,
+Linkedom select setup failures and shadowed-rule candidates remain distinct.
+
+All prior 142/505/164/256/four-audit/138 inventory artifacts rehash unchanged.
+Native input/select painted glyph and popup bounds, universal zoom, other themes
+and maximum cases, real auth/transport/discovery/cluster and broader UX/TUI remain
+open. Independent current-main review/composition and central rebuild against
+newer Go remain required.

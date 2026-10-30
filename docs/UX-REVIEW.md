@@ -343,3 +343,20 @@ labels/identities/units, summary caps/omission notes, host/context/UID bindings,
 focus/refresh/cancellation and every permission/operator-action boundary. This
 inventory changes no production file and activates only bounded read paths and
 local selection. Review/fixes and broader UX acceptance remain separate gates.
+
+
+## Nodes and Kubernetes owner correction boundary
+
+The [owner correction record](validation/ux-node-layout-2026-10-29.json) addresses
+N1/N2/K1/K2 on the allocated native surfaces: complete card titles/actions, Node
+modal header/trust/grants/facts/metadata/foot, and Kubernetes card/technical
+label/value allocation. The native Node close's negative margins are reserved
+inside the scoped header; its declarations and native Dialog policies stay exact.
+Native Grid parameters stay unchanged. Exact record ranges are read through their
+actual scrollers; an End key alone is not a reachability oracle.
+
+Eight final positive cases, four isolated omissions, 27 native and 23 module tests
+support this owner handoff. Prior inventory and failed candidates are preserved.
+Selected text scaling, native glyphs, individual scrolling and original API
+cleanup are explicitly qualified. Independent source/visual acceptance, current
+composition and central rebuild remain gates; no full UX or installed/live claim.
