@@ -4217,3 +4217,15 @@ sampler source proposal are prepared in the existing branch. See the
 [revision record](validation/ux-terminal-monitor-focus-proposal-v2-2026-10-30.json).
 Product edits, a retry/green run, follow-up 19 and native/browser work remain
 unallocated. Independent review and new exact pins/window are required.
+
+
+## Terminal Monitor M1/M2 diagnosis accepted; green gate pending
+
+Complete V3 ordinary red evidence on `82dd627` independently accepts the bounded
+missing-focus and resize-visibility defects. V1/V2 failures remain failures. A
+24-line presentation-only correction in picker/mouse/update paths is prepared,
+with exact red and existing tests unchanged. The
+[green proposal](validation/ux-terminal-monitor-focus-green-proposal-2026-10-30.json)
+contains only two 22-case roots plus five existing I/O roots; source/pin review
+and a new single-run allocation precede execution. No green acceptance,
+inventory/reorder 19 follow-up or native/browser work is claimed.

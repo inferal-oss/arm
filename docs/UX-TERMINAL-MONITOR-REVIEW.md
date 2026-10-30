@@ -276,3 +276,39 @@ metadata query, test, sampler/wrapper execution, product correction or 19-case
 follow-up. The same two roots/22 cases await independent source/private-packet
 review and a new allocation before any fresh invocation. Prior offline tool/cache,
 output/cleanup and resource ceilings remain explicit; no retry is implied.
+
+
+## Complete V3 ordinary red baseline; small M1/M2 correction prepared
+
+The [reviewed red result](validation/ux-terminal-monitor-focus-red-2026-10-30.json)
+binds original `82dd627` and unchanged test SHA `76b62701…`. One V3 invocation
+returned normal matched Go/helper/FIFO 1, with EOF, no forced/truncated/cancelled
+cleanup and a complete stable final enumeration. All 24 named nodes failed once
+(two roots/22 children), with 66 complete positive bookkeeping observations and
+22 strict cleanups. Original source assertion messages are exactly 36 orphaned-ID
+and 44 invisible-row failures, with no unrelated source assertion messages.
+Independent review accepted the scoped M1/M2 diagnosis. Earlier failed V1/V2
+collections remain failed and immutable; V3 does not repair their missing EOF.
+
+The proposed correction adds 24 lines in `io_picker.go`, `mouse.go` and `tui.go`.
+A surviving exact focus ID remains unchanged. A vanished row falls back to its
+clamped prior index; an empty inventory clears focus and shows the empty state.
+All/None/toggle and validated checkbox actions reconcile/reveal; original arrows
+retain their behavior. An original WindowSizeMsg reveals focus after viewport
+synchronization. There is no reveal on every clock/render, telemetry-only
+refresh, wheel or page reading. Chart scopes, return offset, IDs and stale-frame
+validation remain unchanged. No metric/accounting/backend/protocol change occurs.
+
+The exact 22-case red tests and existing I/O test file are byte-identical. The
+[green proposal](validation/ux-terminal-monitor-focus-green-proposal-2026-10-30.json)
+adds only the five existing I/O picker roots to those two: seven roots/26 child
+cases, 33 named test nodes,66 original observations and 22 strict cleanups. It
+requires all 33 nodes and the package to pass once, plus original normal 0 joins/
+EOF, unchanged source/tool/history guards, empty temporary trees and a complete
+final scan under the reviewed deferred-unknown sampler. The seven-root selector
+is anchored; no other package/native/browser campaign is proposed. No dedicated
+missing-checkbox disappearance case or inventory/reorder 19 follow-up was added.
+
+Product formatting/parser and source review are preparation only. No new Go
+metadata/compiler/test or green run occurred. Independent exact diff/pin/private
+proposal review and a new allocation remain gates before any green execution.

@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "scope": "Independent reviewed ordinary-model M1/M2 red baseline only",
+  "source_commit": "82dd62799e99d01f69aa156bb74d44dbaeac4749",
+  "test_sha256": "76b62701d9578acaf97dd83f53788fe31bf576f0e5897fc19cb8e86e553f2d7d",
+  "original_Go_FIFO_exit": 1,
+  "collection_complete": true,
+  "original_handle_joins": {
+    "FIFO": true,
+    "Go": true,
+    "normal": true,
+    "outputEOF": true,
+    "forced": false,
+    "truncated": false,
+    "failures": []
+  },
+  "roster": {
+    "roots": 2,
+    "children": 22,
+    "all_named_starts_and_failures_once": 24,
+    "package_failures": 1,
+    "observations": 66,
+    "strict_positive_cleanups": 22,
+    "bookkeeping_snapshots_positive": 66,
+    "orphan_assertions": 36,
+    "invisible_focus_assertions": 44,
+    "other_source_assertion_messages": 0
+  },
+  "artifacts": {
+    "manifest_members": 26,
+    "manifest_sha256": "ac1eb8246734ae8bf1e09e9f34001996f974770129c60e919d8afd7594ce784d",
+    "receipt_sha256": "ef656010cea2d5e7edc0d657b81a1bbb2491bcb3a99cd54de8bf63812a8da484",
+    "raw_bytes": 3264938,
+    "raw_sha256": "c7d384c4180c44cf24c0c0577d50b2680e1e42e4520ecd3a13fec627606166ca",
+    "observations_sha256": "19c39b960aa54926f580640e2d94d2f09a4336636e1898fed6748c97af216fcb",
+    "helper_sha256": "2a96343221f45d2fa7e65156a5e0b252f129bd477c4f121701f167a9c3522ea4",
+    "all_members_and_path_set_reverified": true
+  },
+  "sampler": {
+    "deferred_unknown_intermediate_samples": 2,
+    "temporary_ENOENT_records": 6,
+    "final_stable_enumeration_after_normal_joins_EOF": true,
+    "monotonic_charged_identities": 891,
+    "charged_logical_bytes": 57404898,
+    "charged_allocated_bytes": 58302464,
+    "reclamation_credit": false,
+    "temporary_entries_remaining": 0
+  },
+  "retained_root": {
+    "regular_files_including_manifest": 27,
+    "logical_bytes": 6760393,
+    "allocated_bytes": 7729152
+  },
+  "timing_ms": {
+    "phase": 5061,
+    "whole": 7841
+  },
+  "guards": {
+    "source_inputs_unchanged": 7025,
+    "compiler_tools_unchanged": true,
+    "preserved_sets_unchanged": 24
+  },
+  "accepted_diagnosis": [
+    "Removing a focused missing option leaves an orphaned ID and an invisible index0 fallback; the next local toggle changes that unseen row.",
+    "Original resize retains canonical focused ID but leaves its row outside the shorter viewport."
+  ],
+  "limits": [
+    "Acceptance is scoped original ordinary-model diagnosis after independent review, not a green correction.",
+    "Earlier V1/V2 failed collections remain failed, unchanged and outside red acceptance.",
+    "No native/physical terminal/font/transport/broader route/fullUX acceptance.",
+    "Sampled/non-atomic/shared-cache/SDK/dependency qualifications and original process-handle scope remain."
+  ]
+}

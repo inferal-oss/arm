@@ -5502,3 +5502,14 @@ no-follow probes before/after local actions. Strict fake, nil commands, scope an
 all 22 cases stay unchanged. No product source changed or corrected fixture ran.
 A separate bounded sampler source proposal retains observed charges across
 normal temporary disappearance; it has not been invoked.
+
+
+## Terminal I/O picker focus reconciliation — green validation pending
+
+Prepared M1/M2 presentation correction preserves a surviving exact focus ID or
+chooses a deterministic clamped remaining row when it vanishes. Relevant local
+selection/validated-click actions and original resize reveal that row; clock,
+render, wheel and page reading do not force it. Empty inventories clear focus
+and retain their empty state. Selection scopes, return offset and stale mouse
+validation remain unchanged. No metrics/accounting/transport/protocol changed.
+Tests are immutable and the seven-root green proposal awaits review/allocation.

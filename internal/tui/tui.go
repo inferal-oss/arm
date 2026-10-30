@@ -220,6 +220,9 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.timeNow = time.Now()
 	defer func() {
 		m.syncViewport()
+		if _, resized := msg.(tea.WindowSizeMsg); resized && m.ioPicker != nil {
+			m.keepPickerVisible(m.pickerIndex())
+		}
 		// Wheel scrolling may expose filter help. Starting or resuming editing
 		// brings the focused field back into view after content/size updates.
 		if m.inputMode == "filter" && m.input.Focused() {

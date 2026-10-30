@@ -11774,3 +11774,23 @@ no-follow sampler permits only temporary ENOENT measurement restarts, retains
 all observed charges and fails other uncertainty/bounds. Only source formatting/
 parsing and documentation/hash review have run for the revision. No fresh
 compiler/test/metadata/native/browser execution or product correction is accepted.
+
+
+## Monitor focus complete ordinary red; correction remains unexecuted
+
+The [V3 red record](validation/ux-terminal-monitor-focus-red-2026-10-30.json)
+retains normal original Go/helper/FIFO 1/EOF, 24 exact named failures, 66 complete
+positive bookkeeping observations, 22 strict cleanups and only 80 expected focus
+assertions. The complete 26-member manifest was reverified, as were source/tools
+and 24 protected sets. Two intermediate samples were explicitly unknown/deferred
+with no charge release; a complete final post-join/EOF enumeration and empty
+temporary trees passed. This accepts the independently reviewed ordinary M1/M2
+diagnosis only; earlier failed collections and native/fullUX limits remain.
+
+The small product correction is source-only. Exact test SHA `76b62701…` and the
+existing I/O test file remain unchanged. The
+[green contract](validation/ux-terminal-monitor-focus-green-proposal-2026-10-30.json)
+limits execution to seven roots/33 named nodes, all expected to pass, with the
+original 66 observations/22 cleanups and all process/storage/preservation gates.
+No green compiler/test execution, product acceptance or broader coverage follows
+from formatting/parser/source checks.

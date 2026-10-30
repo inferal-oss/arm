@@ -1269,3 +1269,16 @@ does not misclassify those as absent tests.
 A first two-root/22-case ordinary-model proposal awaits central source review
 and a separate allocation. No product/test/harness edits or Go metadata, compile,
 test, PTY/browser or real transport execution occurred. Full UX remains open.
+
+
+## Terminal Monitor M1/M2 ordinary diagnosis; correction pending green
+
+A complete reviewed V3 ordinary-model baseline accepts scoped orphaned focus
+after missing-row removal and invisible focus after resize. All 66 original
+observations/22 strict cleanups and normal original 1 joins/EOF passed collection
+gates; the 80 focus assertions are expected red evidence. V1/V2 stay failed.
+The 24-line local presentation correction and seven-root green proposal are
+prepared; exact red/existing tests are unchanged and green execution is not yet
+allocated. Broad Monitor density/inventory/reorder, physical terminal and full UX
+acceptance remain open. See the
+[bounded review](UX-TERMINAL-MONITOR-REVIEW.md).
