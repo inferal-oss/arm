@@ -4258,3 +4258,21 @@ pass. Broader inventory/reorder, density/reading/hit, native/physical terminal
 and full-UX acceptance remain outside this completed cut. The next bounded
 existing-task step may prepare the four inventory-transition cases and policy
 proposal as source only, with no execution or product changes implied.
+
+
+## Resident offline authorization — source reviewed; reporting correction required
+
+The existing upgrade owner returned an unactivated offline plan/apply issuer
+proposal against `c1173f8`. Source review covers exact private input/native
+identity and byte commitments, bounded raw evidence, explicit review/apply,
+original lock/append/fsync custody and completed-command reference closure.
+No real profile, measurement, grant or native capability was created.
+
+Review found that mutation-time cancellation or a lost result can still become
+generic CLI interruption, discarding exact key/home recovery guidance. A focused
+typed-outcome/shared-handler correction is required before qualification. The
+original source and unsubmitted qualification proposal remain preserved. The
+proposed data/negative gate is distinct from real issuer/partial-write acceptance,
+positive same-issuer handoff/accounting, the thirteen-descriptor composed root,
+public startup and genuine worker replacement with original-child continuity.
+No build, test, operator action or execution allocation follows from this review.

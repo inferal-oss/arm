@@ -11833,3 +11833,28 @@ composition differences. The normalized green record's SHA-256 is
 New files parse and the focused diff passes whitespace/privacy review. No race,
 full package, native Program/PTY/browser, physical-terminal/Unicode or full-UX
 claim is added. The untracked dependency symlink was preserved and unused.
+
+
+## Resident operator issuer V3 — source-only review and held qualification
+
+Manifest SHA-256
+`e6f16b5e440f75f8cba836ce706f9946cf6364c1933f4aa2f27cc8889216e7d0`
+and all 19 members were independently checked. Review covered original operator
+plan/apply/read/reference handling, bounded evidence/schema tests, intent
+commitments and CLI dispatch/help/output/cancellation integration. Artifact
+hashes and declared coverage remain data checks; neither independently proves
+measurement truth, future resource bounds, native closure or operator approval.
+
+The CLI currently returns raw apply/output/close errors. Its shared cancellation
+reporter can discard mutation-time uncertainty as generic interruption. Typed
+exact-key/home recovery reporting and terminal/JSON/wrapped-error regressions
+are required. Pre-effect refusal must remain distinct, and recovery must not
+blindly repeat or change the original request key.
+
+A frozen, unsubmitted qualification proposal materializes the actual old base
+plus this operator/custody source and the separately reviewed accounting V2.
+Its 13-root/51-named data/negative roster is unrun. The explicit CGO-disabled
+source gate cannot establish composed-main, later-binary, measured-profile or
+native C-runtime equivalence. No Go metadata, compiler, test or actual operator
+plan/apply ran. Positive real-issuer, partial-write/ACK and original root/worker/
+job-continuity validation remain open, and installed/live ARM is unchanged.
