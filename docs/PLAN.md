@@ -1,5 +1,19 @@
 # ARM delivery plan
 
+## Next resident bootstrap cut — source contract awaiting decisions
+
+Owner: `codex/resident-bootstrap-cut-contract`, based on accepted `4328297`.
+The [next product cut](design/resident-start-bootstrap-cut.md) connects actual
+public start, one original launch attempt, retained resident/SQL/Manager/Server/
+image construction and honest pending readiness before the dependent real worker
+API/UI allocation. It identifies exact callsites and proposed defaults for driver
+delivery, infrastructure custody, conditional fresh exhaustion, pre-SQL fence,
+core handoff and legacy entry. Private role/encoding/file choices remain routine.
+Stable resident proxy reporting preserves empty-data `run_append` heartbeat and
+cursor/ACK semantics so API/UI replacement cannot cancel the CLI-owned child.
+This source-only review cut activates nothing; final public A-to-B acceptance
+must include both resident-supervised `arm run` and actual CLI-owned `arm proxy`.
+
 ## Start authority validation — final scoped checks pass; review pending
 
 Owner: `codex/resident-start-identity`, based on `3064be2`. The real `arm start`

@@ -1,5 +1,18 @@
 # Validation record
 
+## Resident bootstrap allocation contract — source review only
+
+The [next cut](design/resident-start-bootstrap-cut.md) inspects accepted `4328297`
+at actual CLI/Server/Manager/database/image and proxy reporter callsites. It
+separates missing dependency/policy/native handoff choices from routine private
+implementation. Proxy continuity follows actual `run_append` cursor/ACK and
+empty-data heartbeat through appender cancellation to the original CLI child
+waiter; no new heartbeat operation is proposed. End-to-end acceptance explicitly
+includes leased and CLI-owned producers, genuine stop/expiry/cancellation and
+the reporting-route omission control. Source inventory, links, privacy and
+whitespace are checked separately; no new build/test/native/proof/browser run,
+installation, dependency change, format change or job-survival evidence follows.
+
 ## Start authority correction — final source scoped checks
 
 On the unchanged original function from `3064be2`, one focused expected-red

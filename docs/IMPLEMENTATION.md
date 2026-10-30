@@ -1,5 +1,14 @@
 # Backend and CLI implementation
 
+## Next resident product allocation — contract only
+
+The [bootstrap cut](design/resident-start-bootstrap-cut.md) proposes the actual
+public start-to-retained-root edits and their blocked dependencies, followed by
+package/controller/API/UI attachment to the same root. It adds no production
+constructor, role, dependency, format, policy or runtime activation. Stable
+resident `run_create`/`run_append`/`run_finish` routing must preserve current proxy
+child supervision; its heartbeat is an empty-data append, not a new operation.
+
 ## Start inspection and post-launch authority checks
 
 `existingStartupContext` returns absence only after a failed-ENOENT read and a
