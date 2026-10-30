@@ -2616,7 +2616,7 @@ protected inputs match current main. Actual native
 parent/viewer/private-input/clipboard paths were inspected. No visual defect or
 product correction follows yet. Two normal-FIFO browser cohorts now cover the
 four established geometries, each <=115s including collection/original cleanup,
-CPU<=2/memory target<=2GiB. Only actual viewer loadRFB/navigator dependencies
+CPU <=2/memory target<=2GiB. Only actual viewer loadRFB/navigator dependencies
 may be replaced by strict inert synthetic facades, keeping original
 parent/references/API. Nonsecret separate-account seeds and bounded clipboard
 sentinels<=4KiB are allowed; populated auth submission and all real
@@ -2664,7 +2664,7 @@ distinct from unknown read/status outcomes; post-launch readiness must verify
 the actual selected home/owner/directory/generation. Cancellation after Start
 keeps typed startup uncertainty and exit130, while pre-launch interruption stays
 ordinary. One expected-red focused cohort and one final focused normal/race/vet/
-native-build cohort use the unchanged FIFO<=115s, CPU<=2/memory target<=2GiB.
+native-build cohort use the unchanged FIFO<=115s, CPU <=2/memory target<=2GiB.
 Task-owned loopback fixtures only, no detached/default/installed daemon or jobs.
 No first-launch serialization/native handoff/worker readiness or resident
 activation is claimed. Dependency retention API, funding/exhaustion and ledger
@@ -2744,3 +2744,26 @@ original failed bytes/receipts and inverse remain preserved. One replacement
 normal cohort is allocated, followed only on success/join by the unused scoped
 race/vet/native-build phases within a separate cumulative 115s FIFO envelope.
 No red replay, retry after failure, detached/default daemon or broader test scope.
+
+
+## Startup inspection — final source-review correction
+
+The earlier corrected normal and cold race cohorts passed on their frozen
+source. Race consumed 113.747s active, so unused vet/build correctly did not run
+inside that exhausted cumulative 115s budget. Those passes are historical source
+evidence and do not qualify the next narrow correction.
+
+Failed endpoint reads with ENOENT now also require leaf Lstat absence before
+returning absent: a dangling/present/uncertain endpoint name remains unknown.
+This observation is not an atomic first-launch or namespace capability. Only
+that production branch, its dangling-name regression and owned-lock protection
+for negative public-start fixtures are newly allocated. No private-home guard
+or daemon lifecycle change is permitted. Preserve earlier tests/receipts.
+
+One new final-source normal/race/vet/native-build sequence is allocated as
+separate sequential normal-FIFO phases, each <=115s and cumulative active <=115s
+excluding waiting, CPU <=2/memory target<=2GiB. Existing owned cache/tmp remains
+<=2GiB and artifacts<=128MiB, without clearing/widening or downloads. Stop on
+first failure/budget/cache/cleanup uncertainty; no retry or red replay. CLI build
+is not installed/invoked. Resident API/UI/ownership/funding/layout and overall
+upgrade completion remain unimplemented gates.
