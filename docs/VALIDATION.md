@@ -11387,3 +11387,20 @@ diff and receipt review found no remaining blocking finding in this scope.
 The 102 passing model/render/input outcomes are source-equivalent evidence,
 not a new native terminal execution. Fresh 45-column native validation and the
 broader UX review remain open.
+
+## Official-driver database owner — independent composition review
+
+The focused owner cut is accepted as an unconnected library layer. Independent
+review verified its source hashes, actual normal and race test streams, all three
+owned-wrapper positive controls, the exact causal failures and the maintained
+portable harness correspondence. No SQLite driver, module or import namespace
+changes are present. The composed checkout differs from the tested owner only
+in four terminal UI source paths, which are absent from the actual database test
+dependency graph; this is source-equivalence evidence, not a new test run.
+
+The subsequent Manager assembly's affected-package vet passed on the same
+database bytes. Its genuine native-claim fixtures passed normal and race checks;
+those results qualify that isolated assembly and do not activate production.
+Linux cross-compilation is recorded separately. Original Server/root integration,
+partial initialization, funding, public startup and preservation of existing
+run/proxy children across worker replacement remain open.
