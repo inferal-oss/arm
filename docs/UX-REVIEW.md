@@ -326,3 +326,20 @@ current-main composition, central builds and fresh positive/isolated controls
 are accepted in the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
 No product install, owner asset build or runtime activation occurs. Maximum
 cases, universal zoom and full UX/TUI/live transport acceptance remain open.
+
+
+## Nodes and Kubernetes read-only inventory boundary
+
+The [owner inventory](validation/ux-node-inventory-2026-10-29.json) finds four
+P2s in actual native surfaces: long narrow Node card labels; Node detail header,
+trust/grant/body and exact metadata allocation; Kubernetes card/grid overflow;
+and technical labels/values at selected larger text. Native captions, exact
+Kubernetes record bytes/final ranges and local selection have separate positive
+measurements; complete tall readers are expected to scroll vertically.
+
+Proposed corrections stay on existing app-owned roster/detail/inventory/technical
+graph containers and their style allocations. Preserve native components, exact
+labels/identities/units, summary caps/omission notes, host/context/UID bindings,
+focus/refresh/cancellation and every permission/operator-action boundary. This
+inventory changes no production file and activates only bounded read paths and
+local selection. Review/fixes and broader UX acceptance remain separate gates.

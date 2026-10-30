@@ -9362,3 +9362,36 @@ universal zoom, and fixed native fonts are recorded. Tall forms require scrollin
 all controls are not claimed simultaneously visible. Maximum-entry performance,
 every theme/language/viewport, real auth/transport and broader UX/TUI remain open.
 Independent current composition and central rebuilding are recorded above.
+
+
+## Nodes and Kubernetes owner inventory evidence
+
+The [source-bound record](validation/ux-node-inventory-2026-10-29.json) binds
+two final four-case cohorts to identical fixture/product hashes: desktop, two
+phone heights and selected-token 2x tablet. Original FIFO runner intervals are
+about 38 seconds for Nodes and 51 seconds for Kubernetes, including Vite/browser
+collection and awaited original API closes. Static Node import/source hashing
+and FIFO wait are outside those recorded intervals; CPU/memory are not measured
+or kernel-enforced by the fixture. No allocation override or broad suite/build.
+
+Four captured sessions per final cohort have zero active/pending reads, forbidden
+calls, external requests, real sockets, page errors and clipboard attempts. Each
+original cohort records actual read capture/release and awaited context/browser/
+server closure; flags are not unconditional cleanup assignments. They establish
+API promise completion, not stronger OS process-group exit/reap facts.
+
+Dense/empty, pending/read-error, stale/unverified/unavailable and disconnected
+Node states; unchanged roster/detail refresh; Escape/focus restoration and late
+reply closure; Kubernetes contexts/queries/namespace changes, disabled selection
+conditions, exact records, stale request rejection and pending-context closure
+are scoped observations. Native field captions and physical select cancel keys
+are measured separately from unavailable native glyph/popup bounds. Selected
+text tokens are not universal zoom. Tall exact JSON requiring vertical scroll
+is not itself a failure. Four layout P2s and any independent acceptance stay open.
+
+Earlier locator-failed and weaker global-End measurement candidates remain
+preserved with hash-matched frozen inputs. All 142 Activity/Host inventory, 505
+prior correction, 164 shared-dialog inventory, 256 shared-dialog correction and
+four recovered-audit artifacts rehash unchanged. No cleanup credit transfers
+from later fixtures to earlier failures. Real auth/transport/discovery/cluster,
+operator actions, maximum cases, other themes/locales and full UX/TUI remain open.

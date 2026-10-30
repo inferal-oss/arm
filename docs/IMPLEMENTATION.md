@@ -3903,3 +3903,19 @@ failed candidates and source-bound evidence. Independent current-main review,
 central deterministic assets/native build and fresh browser controls are in the
 [composed record](validation/ux-shared-dialog-composed-2026-10-29.json). Broader UX
 and installed/live-runtime acceptance remain open.
+
+
+## Nodes and Kubernetes inventory fixture boundary
+
+The new fixture pair loads the actual main/graph/native ontology and substitutes
+only a strict synthetic Backend import. It refuses unexpected operations and
+argument keys. View node and current-declaration reads bind exact known hosts;
+Kubernetes reads bind known contexts, namespace/query/limit and distinct stable
+namespace UIDs. Select this Node remains local and issues no backend call.
+
+Source-reviewed DTOs preserve int64 metadata/event values through BigInt and
+exact quantity strings. The healthy availability revision is a safe integer
+admitted by the actual UI validator, with no unsafe cast or fake validation.
+Go/wire/cluster validation is outside this browser fixture. The
+[normalized inventory](validation/ux-node-inventory-2026-10-29.json) proposes
+app-owned layout boundaries; this step implements no production correction.

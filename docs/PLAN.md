@@ -2149,3 +2149,20 @@ case gains retention or new authority. Changed snapshots keep existing fresh
 selection behavior. Naming mutations/CAS/persistence/replay remain byte-exact.
 Independent current-source composition and central asset/native builds are
 recorded above. No owner build/install/push/activation or full UX acceptance.
+
+
+## Nodes and Kubernetes read-only UX inventory
+
+The inventory owner branch `codex/ux-node-inventory` depends on the accepted
+shared-dialog composition `99c4fc8a831f7dacc5ba55b35e80a853b49a17ef`.
+The [source-bound record](validation/ux-node-inventory-2026-10-29.json) records
+four P2 findings before correction: narrow Node roster card labels; Node detail
+modal title/trust/grants/exact-reader allocation; overflowing Kubernetes Node
+cards; and selected-scale Kubernetes technical label/value allocation. Proposed
+app-owned scopes attach to existing graph containers. Production, authority,
+models, backend, validation, operator actions and prior evidence are unchanged.
+
+Two final four-case synthetic browser cohorts and strict read-only argument
+checks cover dense and degraded read/lifecycle states. Exact-source independent
+review and any scoped correction remain open. No broad suite, asset/native
+build, installation, runtime activation or full Nodes/Kubernetes UX acceptance.
