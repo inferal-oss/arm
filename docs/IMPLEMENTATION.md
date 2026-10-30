@@ -4549,3 +4549,23 @@ reader identity with explicit command and local-effect gates. The replay-only
 ASCII-space comparison correction preserves raw rows and original failed
 evidence. Production UI, transport and dependency behavior are unchanged.
 Recorded marker/scroll checks pass; clipped-emoji paint remains unsupported.
+
+
+## Read-only width/provider diagnosis
+
+Pinned source explains a policy split without changing ARM output: the model
+uses ansi GraphemeWidth through displaywidth's Wide=2 table, while xterm6.0.0
+selects UnicodeV6 by default and returns1 for U+1F642. Both classify CJK 界 as2.
+The table derivation and source anchors are in the
+[proposal](validation/ux-terminal-glyph-reading-proposal-2026-10-30.json).
+Saved provider label/resolved font/metrics were not captured; source/default
+inference and observed cell width are distinct from actual pixel attribution.
+The requested font stack remains unchanged.
+
+A future diagnostic could retain the locked baseline source with MIT attribution
+and override only U+1F642 in a separately reviewed fixture provider, recording
+matched cell/paint/font facts through pinned public APIs. No modern addon is
+installed or assumed, no private-core rebinding is proposed, and no diagnostic
+module/provider or runtime was implemented here. The21-frame lease reading
+proposal reuses reviewed direct fake/data semantics and explicitly requires new
+closed native input/Cmd review; no production/model behavior changes.

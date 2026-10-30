@@ -1,0 +1,695 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "status": "READ-ONLY SOURCE DIAGNOSIS AND PROPOSALS ONLY. No runtime, implementation, provider/font/pin change, build or native capture allocated or performed in this step.",
+  "ownerBranch": "codex/ux-terminal-glyph-reading-proposal",
+  "baseEvidenceCommit": "d311cb183859c6507dee565bbc42d68e1bc545b7",
+  "currentMainConstraint": {
+    "commit": "ac1455a669c8efe0c23ddcd9835d4e7262770c4c",
+    "relevantSourceAndPlanFilesCompared": 56,
+    "allExact": true,
+    "rebasedOrMovedActiveWork": false
+  },
+  "acceptedScopePreserved": {
+    "correctedReplayEvidence": "docs/validation/ux-terminal-corrected-replay-inventory-2026-10-30.json",
+    "sha256": "2d1380ee64e946421c8ce6b1e0470713cb0b58cdbf540ba21173693fa27eece2",
+    "cases": 36,
+    "normalizedRows": 1356,
+    "rawTrailingASCIIDifferences": 312,
+    "requiredTailFinalCases": 12,
+    "firstMiddleCasesEach": 3,
+    "glyphAcceptance": false,
+    "firstFailureStillUnchanged": true,
+    "meaning": "Marker/row/owned cleanup pass stands. A separate glyph-policy/paint boundary remains open; no ARM product defect or universal terminal acceptance."
+  },
+  "sourceCatalog": {
+    "repo:internal/tui/tui.go": {
+      "sha256": "3c743dbcc4e0d391da3be321063ba3050fe1ad95437e4715b801470993ab70f1",
+      "bytes": 25255,
+      "anchors": {
+        "softWrap": 159,
+        "recordNavigation": 494,
+        "leaseDetail": 525,
+        "visibilityWritesPreferences": 640,
+        "openFilter": 664,
+        "acceptFilter": 753
+      }
+    },
+    "repo:internal/tui/layout.go": {
+      "sha256": "6b30cd2faf0ab7d80b18d1ec4f384d3d378eabf2871ef7582f11da4474bc96a4",
+      "bytes": 24499,
+      "anchors": {
+        "viewportContent": 60,
+        "modalWrap": 63,
+        "leaseDetail": 425,
+        "reviewText": 447
+      }
+    },
+    "repo:internal/tui/actions.go": {
+      "sha256": "e73c737dcdf105a8943040dc7728093927b97f9f2f0446896feeb5511db0bcc3",
+      "bytes": 9242,
+      "anchors": {
+        "startReview": 145,
+        "reviewKey": 214,
+        "mutationOnlyOnConfirmation": 240
+      }
+    },
+    "repo:internal/tui/record.go": {
+      "sha256": "4fa6a28fbd1d99d4676eac42f5fea310d8e8f10ed20eba03c7b807c51cecda3f",
+      "bytes": 3922,
+      "anchors": {
+        "exactJSONNumber": 39,
+        "recordText": 136
+      }
+    },
+    "repo:internal/tui/presentation.go": {
+      "sha256": "e14168185f6287522c3b34e62655669aa0cb506854b037417c5962643303c29d",
+      "bytes": 17258,
+      "anchors": {
+        "modalPredicate": 13,
+        "modalGeometry": 23,
+        "filterDisplay": 59
+      }
+    },
+    "repo:internal/tui/ux_terminal_direct_fixture_test.go": {
+      "sha256": "ef37d0bdf89bce2dcd68ae7b2de2961f046c57f868edcb9d2e8ccc5952e37420",
+      "bytes": 31594,
+      "anchors": {
+        "glyphFixture": 71,
+        "effectGate": 351,
+        "recordNavigation": 425,
+        "filterDraft": 451,
+        "leaseReading": 662
+      }
+    },
+    "repo:internal/tui/ux_terminal_loop_fixture_test.go": {
+      "sha256": "1dce0f1852791781f941eff7086c3cb6420c7d1305f87868182ae3f0a0ded168",
+      "bytes": 13349,
+      "anchors": {
+        "currentNarrowAllowlist": 54,
+        "preFrameworkFilter": 94
+      }
+    },
+    "repo:scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs": {
+      "sha256": "c0fce1a63511f464bee46f367ed11d006b2ddf6415e550a6d0044d29c66b82be",
+      "bytes": 21205,
+      "anchors": {
+        "requestedFont": 149,
+        "rawCells": 156,
+        "comparisonPolicy": 18
+      }
+    },
+    "npm:@xterm/xterm@6.0.0/src/common/services/UnicodeService.ts": {
+      "sha256": "77afcb70c5e5666f478ecdc51c70a7823b7bf8f30167139172addd5e1acc127e",
+      "bytes": 3803,
+      "anchors": {
+        "defaultProvider": 34,
+        "propertyEncoding": 29,
+        "providerDispatch": 109
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/common/input/UnicodeV6.ts": {
+      "sha256": "9ebb3df126129de4250ef5c1730493b7b3f62b3593273dac0bbbe15ee0cc890b",
+      "bytes": 5465,
+      "anchors": {
+        "version": 85,
+        "CJKWideTable": 102,
+        "wcwidth": 123,
+        "supplementaryWideOnly": 128,
+        "propertyMethod": 132
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/common/InputHandler.ts": {
+      "sha256": "b03afd5d38dd708440699e81135f1735626d55ffdf24621fbd54cfbc41320925",
+      "bytes": 148730,
+      "anchors": {
+        "providerToCellWidth": 544,
+        "widthRead": 545
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/common/public/UnicodeApi.ts": {
+      "sha256": "0fa372316e0144c27cf04c08109ea5bd8e25d93057b750f9435a1bd2bb18d463",
+      "bytes": 721,
+      "anchors": {
+        "register": 12,
+        "activeVersion": 20
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/browser/public/Terminal.ts": {
+      "sha256": "8a84fca4931f36414091e744189e7ccae667fae499e3d2c340e847f8c4114d29",
+      "bytes": 10339,
+      "anchors": {
+        "proposedAPIGate": 65,
+        "unicodePublicAPI": 91
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/common/services/OptionsService.ts": {
+      "sha256": "c4c1434da7fa5a63947f375b3864d5ecf5b3fee19270b7f8a09af851eac1b6bf",
+      "bytes": 6492,
+      "anchors": {
+        "defaultProposedAPI": 44,
+        "defaultRescale": 49,
+        "defaultFont": 24
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/browser/CoreBrowserTerminal.ts": {
+      "sha256": "15c1149d38db18e9aa2c4a896e6c69c5cc40fb73a3fa01bb0602828cae3210a1",
+      "bytes": 52916,
+      "anchors": {
+        "defaultDOMRenderer": 584
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/browser/renderer/dom/DomRendererRowFactory.ts": {
+      "sha256": "1976e53ad3aac9fcc234f9eafb4ed188ab939297fe457045b0372c53a93298cc",
+      "bytes": 19556,
+      "anchors": {
+        "cellWidth": 102,
+        "fontSpacing": 169,
+        "applySpacing": 465
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/browser/renderer/dom/DomRenderer.ts": {
+      "sha256": "4966d79e57629b5e31faf8b9fd64bd72f73c4170f9d913653b583c4ef7770869",
+      "bytes": 23684,
+      "anchors": {
+        "fontChoiceCSS": 170,
+        "fontWidthCache": 105
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/browser/renderer/dom/WidthCache.ts": {
+      "sha256": "ebb45867ee292f668964d1fd6cfd69998cd99e15e9973f6cd5e824dc2ce8ff51",
+      "bytes": 5586,
+      "anchors": {
+        "fontSetter": 105,
+        "actualMeasure": 46
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/src/browser/services/CharSizeService.ts": {
+      "sha256": "44c938433293f6e3f780da86834a9b43d54f4a33df133f587e13f3b4a4a50002",
+      "bytes": 4444,
+      "anchors": {
+        "measureFont": 122,
+        "measureW": 115
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:@xterm/xterm@6.0.0/typings/xterm.d.ts": {
+      "sha256": "99028aeff2d441798b242790750ee385ba621b460db5a7e2341ae1cab7f3e2af",
+      "bytes": 65031,
+      "anchors": {
+        "publicProvider": 1871,
+        "publicUnicodeAPI": 1887,
+        "rescaleDescription": 231
+      },
+      "package": "@xterm/xterm",
+      "version": "6.0.0"
+    },
+    "npm:playwright-core@1.64.1/types/protocol.d.ts": {
+      "sha256": "ccd722dea5eca655cf111348ec27a38a376d467407c4cc763d31514550d04d5d",
+      "bytes": 819286,
+      "anchors": {
+        "fontFields": 3143,
+        "actualFontQuery": 3841
+      },
+      "package": "playwright-core",
+      "version": "1.64.1"
+    },
+    "npm:playwright-core@1.64.1/types/types.d.ts": {
+      "sha256": "c458c9da21dde7732dd440f4f2f861ec66ef89813955a591157ec30e4a90186e",
+      "bytes": 1150893,
+      "anchors": {
+        "CDPSession": 10384,
+        "CDPSend": 18416
+      },
+      "package": "playwright-core",
+      "version": "1.64.1"
+    },
+    "go:github.com/charmbracelet/x/ansi@v0.11.9/width.go": {
+      "sha256": "10899a5bf5111170a4c816802e58c112ea6d7dd239b179412d12ae06127f7b6e",
+      "bytes": 3070,
+      "anchors": {
+        "graphemeWidthDefault": 66,
+        "clusterCall": 103
+      },
+      "package": "github.com/charmbracelet/x/ansi",
+      "version": "v0.11.9"
+    },
+    "go:github.com/charmbracelet/x/ansi@v0.11.9/method.go": {
+      "sha256": "f7344abda71dc3d9762da724ef0ee17c7a4c1f710209c760c50e1848077c6d4f",
+      "bytes": 8617,
+      "anchors": {
+        "displayOptions": 16,
+        "defaultEastAsian": 17
+      },
+      "package": "github.com/charmbracelet/x/ansi",
+      "version": "v0.11.9"
+    },
+    "go:github.com/charmbracelet/x/ansi@v0.11.9/parser_decode.go": {
+      "sha256": "5ce87b0333586453f158337e598614bc4e59f9d240d58cfa5691356ec76f18f8",
+      "bytes": 15611,
+      "anchors": {
+        "clusterFunction": 435,
+        "displaywidthCall": 442
+      },
+      "package": "github.com/charmbracelet/x/ansi",
+      "version": "v0.11.9"
+    },
+    "go:github.com/clipperhouse/displaywidth@v0.11.0/width.go": {
+      "sha256": "c3f63ee6329bbce2919b404a5c76e37f60b28b89055544451f6f739e663bcec2",
+      "bytes": 5940,
+      "anchors": {
+        "propertyLookup": 171,
+        "propertyWidths": 232,
+        "wideMeansTwo": 235
+      },
+      "package": "github.com/clipperhouse/displaywidth",
+      "version": "v0.11.0"
+    },
+    "go:github.com/clipperhouse/displaywidth@v0.11.0/trie.go": {
+      "sha256": "554562d3092a9e3f2b604b2dfd65f7d8c59eab15181eb0d008d41e483ecd856d",
+      "bytes": 100958,
+      "anchors": {
+        "wideProperty": 12,
+        "literalLookup": 20,
+        "wideValueForEmoji": 1441
+      },
+      "package": "github.com/clipperhouse/displaywidth",
+      "version": "v0.11.0"
+    },
+    "go:github.com/clipperhouse/displaywidth@v0.11.0/CHANGELOG.md": {
+      "sha256": "ff2bbf36826884a85e3cf74a4d8f1142b2cd807ce858afc57746b116526b34b4",
+      "bytes": 4045,
+      "anchors": {
+        "Unicode17": 34
+      },
+      "package": "github.com/clipperhouse/displaywidth",
+      "version": "v0.11.0"
+    },
+    "go:charm.land/lipgloss/v2@v2.0.6/size.go": {
+      "sha256": "3532f6064a72c7d5bea66ffd089d25704743450941150308bc92a796dfe329c5",
+      "bytes": 1118,
+      "anchors": {
+        "ansiWidth": 17
+      },
+      "package": "charm.land/lipgloss/v2",
+      "version": "v2.0.6"
+    },
+    "go:charm.land/bubbles/v2@v2.2.1/viewport/viewport.go": {
+      "sha256": "6d5d15d15d175464237df578efd2f9f3022e89874649454ee69c30b1a250dec7",
+      "bytes": 19988,
+      "anchors": {
+        "widthPolicy": 284,
+        "softWrappedCut": 431
+      },
+      "package": "charm.land/bubbles/v2",
+      "version": "v2.2.1"
+    },
+    "go:charm.land/bubbles/v2@v2.2.1/textinput/textinput.go": {
+      "sha256": "3f68ff94bfea12fb5ef2008ea2e9b85e9fdb3728b1cad7893030fecad01a930a",
+      "bytes": 25364,
+      "anchors": {
+        "focus": 268,
+        "paste": 654
+      },
+      "package": "charm.land/bubbles/v2",
+      "version": "v2.2.1"
+    }
+  },
+  "widthBoundary": {
+    "fixture": "Exact original U+1F642 and U+754C bytes are in the reviewed synthetic log; no substitutions or ARM-output changes.",
+    "modelPolicy": {
+      "chain": [
+        "dashboard viewport.SoftWrap=true",
+        "Bubbles viewport uses ansi.StringWidth/ansi.Cut",
+        "Lip Gloss width uses ansi.StringWidth",
+        "ansi default GraphemeWidth calls FirstGraphemeCluster",
+        "displaywidth v0.11.0 grapheme property lookup/_Wide width2"
+      ],
+      "tableDerivation": [
+        {
+          "glyph": "🙂",
+          "UTF8": [
+            "0xf0",
+            "0x9f",
+            "0x99",
+            "0x82"
+          ],
+          "indexTableTrace": [
+            {
+              "index": "0xf0",
+              "value": "0x17"
+            },
+            {
+              "index": "0x65f",
+              "value": "0x15"
+            },
+            {
+              "index": "0x5d9",
+              "value": "0xea"
+            }
+          ],
+          "valueIndex": "0x3b02",
+          "property": 2,
+          "propertyName": "_Wide",
+          "sourceDerivedModelWidth": 2
+        },
+        {
+          "glyph": "界",
+          "UTF8": [
+            "0xe7",
+            "0x95",
+            "0x8c"
+          ],
+          "indexTableTrace": [
+            {
+              "index": "0xe7",
+              "value": "0x6"
+            },
+            {
+              "index": "0x215",
+              "value": "0x39"
+            }
+          ],
+          "valueIndex": "0xecc",
+          "property": 2,
+          "propertyName": "_Wide",
+          "sourceDerivedModelWidth": 2
+        }
+      ],
+      "qualification": "Static literal-table/callsite derivation only; no Go/runtime width probe. The dependency changelog records Unicode17 width data; do not conflate that with every cluster/grapheme behavior."
+    },
+    "emulatorPolicy": {
+      "defaultProviderFromPinnedSource": "UnicodeService constructor registers and selects UnicodeV6.version6; corrected replay loads no Unicode addon/provider.",
+      "runtimeActiveProviderLabelRecorded": false,
+      "sourceRuleForEmoji": "U+1F642 is non-BMP, outside HIGH_COMBINING and below the only supplementary-wide ranges0x20000..0x2fffd/0x30000..0x3fffd; wcwidth returns1. charProperties encodes that width; InputHandler extracts it into cells.",
+      "sourceRuleForCJK": "U+754C lies in BMP table.fill2 for0x2e80..0xa4d0 and outside combining exclusions, hence2.",
+      "savedCellObservations": {
+        "U+1F642": {
+          "column": 33,
+          "width": 1
+        },
+        "U+754C": {
+          "column": 30,
+          "width": 2,
+          "continuationColumn": 31,
+          "continuationWidth": 0
+        }
+      },
+      "conclusion": "Saved one-cell emoji is explained by the emulator width-table/default-provider source policy, separate from the model two-cell policy. This does not alone attribute every painted pixel."
+    },
+    "fontAndPaint": {
+      "requestedFontFamily": "\"DejaVu Sans Mono\", monospace",
+      "requestedFontSize": 14,
+      "resolvedGlyphFallbackFontRecorded": false,
+      "fontAvailabilityOrPixelMetricsRecorded": false,
+      "savedObservation": "Emoji paint is visibly clipped in accepted saved full-first/full-middle PNGs while raw row strings agree.",
+      "sourceMechanism": "Default DOM renderer derives spacing from cellWidth * providerWidth minus measured glyph width, with the requested family/size passed into WidthCache. Actual fallback face/metrics and exact clipping mechanism were not saved.",
+      "unsupportedInferences": [
+        "Cannot infer installed DejaVu availability or actual emoji font from requested CSS/computed family alone",
+        "Cannot identify physical terminal font/Unicode policy from this emulator",
+        "Cannot turn normalized text equality into cell-width/paint acceptance"
+      ],
+      "rescaleOption": "Pinned defaults set rescaleOverlappingGlyphs=false; typings say rescaling excludes emoji and is unsupported in DOM renderer. No option/font/pin change is proposed as a masking fix."
+    }
+  },
+  "minimalGlyphDiagnosticProposal": {
+    "authorization": "NOT IMPLEMENTED OR RUN. Requires separate complete derived-source review and explicit replay-only allocation. No Go build/PTY/test binary needed.",
+    "reason": "A matched provider-only A/B can test whether the known one-cell policy causes the visible clipping while actual font metrics/fallback remain fixed and observed.",
+    "cases": 4,
+    "inputs": [
+      {
+        "grid": "72x28",
+        "capturedCase": "full-first",
+        "prefixBytes": 54295,
+        "prefixSHA256": "896b72f52f09075e129df5780636f6328a413ea11a852d716b0cd669c11b6312",
+        "acceptedBaselinePNGSHA256": "6da0c1fa5997e31d73ff1be69aa854cba17d18e4bfb34528ff4a715396d416d2"
+      },
+      {
+        "grid": "160x50",
+        "capturedCase": "full-first",
+        "prefixBytes": 163729,
+        "prefixSHA256": "f350dd5bf04712bdef2e8817aad961c0252730624bab03dffd811e682b7c84e3",
+        "acceptedBaselinePNGSHA256": "5f22dad14b630d33ac9ea2bf6b30c0c24024f8c7ec1da2b62dc31899e13dffae"
+      }
+    ],
+    "matrix": "For each of two exact grids: instrumented unchanged Unicode6 baseline, then fixture-only U+1F642-width2 provider. Same original prefix/hash and frame, fresh Terminal per case, same font/options/browser context. Existing saved baseline remains immutable and is not relabeled.",
+    "availableProvenance": {
+      "baselineSource": "npm:@xterm/xterm@6.0.0/src/common/input/UnicodeV6.ts",
+      "baselineSHA256": "9ebb3df126129de4250ef5c1730493b7b3f62b3593273dac0bbbe15ee0cc890b",
+      "propertyEncodingHelpers": "npm:@xterm/xterm@6.0.0/src/common/services/UnicodeService.ts",
+      "license": "Retain original MIT copyright/license and source hash in any diagnostic-only derived module.",
+      "noBundledModernProvider": "Installed locked xterm package exposes Unicode6 source only; public IUnicodeHandling has register/versions/activeVersion but no provider getter. Do not invent an installed Unicode11 addon, reach into private _core to rebind providers, download an addon or change package pins."
+    },
+    "exactProviderDeltaProposal": "// PROPOSAL ONLY; PinnedUnicodeV6 must be a separately reviewed, MIT-attributed\n// JS derivation of the exact locked source below. Not an installed addon.\nclass FixtureEmojiWidth2 extends PinnedUnicodeV6 {\n  version = 'fixture-only-U1F642-width2';\n  wcwidth(codepoint) {\n    return codepoint === 0x1f642 ? 2 : super.wcwidth(codepoint);\n  }\n}\n// A fresh Terminal uses the unchanged font/options plus explicitly reviewed\n// allowProposedApi:true. Register/activate before writing any original bytes.\nterminal.unicode.register(new FixtureEmojiWidth2());\nterminal.unicode.activeVersion = 'fixture-only-U1F642-width2';",
+    "derivationGate": "A standalone JS baseline derivation (tables/bisearch/wcwidth/charProperties plus pure bit-pack helpers unchanged) and full bounded diagnostic wrapper must be prepared/reviewed before use. This document is a source design/provenance cut, not an executable diagnostic implementation.",
+    "explicitNewAPIGates": [
+      "allowProposedApi:true is required to register/query public terminal.unicode; original accepted renderer stays unchanged",
+      "wcwidth override is U+1F642 only; inherited charProperties dispatches this.wcwidth; preserve all other Unicode6 behavior",
+      "Version label is fixture-only, never claimed Unicode11/17 or production fix",
+      "Private CDP read-only font probe is a separately reviewed control API; no page/native-app network or endpoint logging"
+    ],
+    "fontProbeProposal": "// PROPOSAL ONLY: select the original painted emoji span; do not substitute\n// DOM text as terminal data or alter its font/text/style. Id is probe metadata.\nconst glyphStyle = await page.evaluate(() => {\n  const row = document.querySelector('.xterm-rows')?.children[2];\n  const span = [...(row?.querySelectorAll('span') ?? [])]\n    .find(node => node.textContent?.includes('🙂'));\n  if (!span) throw Error('Original glyph span unavailable');\n  span.id = 'diagnostic-emoji-font-probe';\n  const css = getComputedStyle(span);\n  return { text: span.textContent, font: css.font, family: css.fontFamily,\n    size: css.fontSize, weight: css.fontWeight, style: css.fontStyle,\n    letterSpacing: css.letterSpacing, box: span.getBoundingClientRect().toJSON() };\n});\nconst cdp = await context.newCDPSession(page);\nawait cdp.send('DOM.enable');\nawait cdp.send('CSS.enable');\nconst { root } = await cdp.send('DOM.getDocument', { depth: 0 });\nconst { nodeId } = await cdp.send('DOM.querySelector', {\n  nodeId: root.nodeId, selector: '#diagnostic-emoji-font-probe'\n});\nconst { fonts } = await cdp.send('CSS.getPlatformFontsForNode', { nodeId });\n// Platform family/PostScript names stay private. Mixed text/font usage must\n// stay qualified: do not assign a particular face to emoji without evidence.\nawait cdp.detach();",
+    "fontEvidence": [
+      "Keep requested/computed font CSS separate from actual font attribution",
+      "Record actual glyph-span computed family/size/style/weight/spacing/bounds, and W/界/🙂 canvas advances/bounding boxes under that exact computed font. Missing/unsupported metrics remain unknown; a synthetic span with only requested CSS is insufficient.",
+      "Use pinned CSS.getPlatformFontsForNode on the actual glyph-rendering span. If it contains mixed glyphs/families, preserve ambiguity rather than asserting a specific emoji face. Platform labels stay private; no font installation, scanning or external loading.",
+      "document.fonts.check alone is not proof of resolved fallback; no font installation or external loading"
+    ],
+    "beforeAfterChecks": [
+      "Original bytes/hash/resize sequence, raw rows, ASCII comparison rule and LOG FIRST remain identical",
+      "Baseline 🙂 width1; diagnostic 🙂 width2 plus width0 continuation at next cell; 界2/continuation0 and ASCII1 unchanged",
+      "Record complete glyph-region cells and visible PNG paint separately; inspect whether clipping changes without rewriting output",
+      "Require requested/computed font family/size/style/weight and actual platform font evidence stable across A/B, or qualify attribution unknown. Record expected provider-driven letter-spacing/cell-bound changes separately; do not mistake them for a font change.",
+      "Preserve first failure/unknown state and stop; successful width/paint probe is not universal Unicode or native-terminal acceptance"
+    ],
+    "cleanupBudget": "Keep existing20swork/30stotal/115s outer only if separately allocated; new CDP session send/detach must have bounded original API outcome records. Same BrowserServer/process/forced-unknown/write-marker gates,<=48case cap and<=16MiB original retained inputs plus new output/wrapper/temp leftovers. Fresh disjoint output, no old receipt mutation."
+  },
+  "nextNativeReadingInventoryProposal": {
+    "authorization": "DESIGN ONLY. Existing compiled loop admits runs-only paths and cannot be used for this new lease inventory. New test-only wrapper/capture source, closed filter/Cmd audit, exact source receipt and separate build/PTY/browser windows are prerequisites. No product fix/new task allocated.",
+    "basis": "Reviewed frozen direct fixture/data/strict fake and captured detail/record/review/filter scope; current main relevant source bytes exact. Do not repeat the completed run-log36 cases.",
+    "existingDirectFootprints": {
+      "72x28": {
+        "lease-detail-first": {
+          "height": 18,
+          "offset": 0,
+          "totalLines": 33,
+          "width": 68
+        },
+        "lease-detail-middle": {
+          "height": 18,
+          "offset": 15,
+          "totalLines": 33,
+          "width": 68
+        },
+        "lease-detail-tail": {
+          "height": 18,
+          "offset": 15,
+          "totalLines": 33,
+          "width": 68
+        },
+        "release-review-draft": {
+          "height": 18,
+          "offset": 0,
+          "totalLines": 24,
+          "width": 68
+        },
+        "lease-record-exact-number": {
+          "height": 18,
+          "offset": 2,
+          "totalLines": 22,
+          "width": 68
+        },
+        "filter-draft": {
+          "height": 7,
+          "offset": 0,
+          "totalLines": 7,
+          "width": 68
+        },
+        "leases-filter-empty": {
+          "height": 18,
+          "offset": 0,
+          "totalLines": 6,
+          "width": 68
+        }
+      },
+      "100x35": {
+        "lease-detail-first": {
+          "height": 25,
+          "offset": 0,
+          "totalLines": 29,
+          "width": 96
+        },
+        "lease-detail-middle": {
+          "height": 25,
+          "offset": 4,
+          "totalLines": 29,
+          "width": 96
+        },
+        "lease-detail-tail": {
+          "height": 25,
+          "offset": 4,
+          "totalLines": 29,
+          "width": 96
+        },
+        "release-review-draft": {
+          "height": 21,
+          "offset": 0,
+          "totalLines": 21,
+          "width": 84
+        },
+        "lease-record-exact-number": {
+          "height": 25,
+          "offset": 0,
+          "totalLines": 22,
+          "width": 96
+        },
+        "filter-draft": {
+          "height": 7,
+          "offset": 0,
+          "totalLines": 7,
+          "width": 84
+        },
+        "leases-filter-empty": {
+          "height": 25,
+          "offset": 0,
+          "totalLines": 6,
+          "width": 96
+        }
+      },
+      "160x50": {
+        "lease-detail-first": {
+          "height": 40,
+          "offset": 0,
+          "totalLines": 27,
+          "width": 121
+        },
+        "lease-detail-middle": {
+          "height": 40,
+          "offset": 0,
+          "totalLines": 27,
+          "width": 121
+        },
+        "lease-detail-tail": {
+          "height": 40,
+          "offset": 0,
+          "totalLines": 27,
+          "width": 121
+        },
+        "release-review-draft": {
+          "height": 21,
+          "offset": 0,
+          "totalLines": 21,
+          "width": 84
+        },
+        "lease-record-exact-number": {
+          "height": 40,
+          "offset": 0,
+          "totalLines": 22,
+          "width": 121
+        },
+        "filter-draft": {
+          "height": 7,
+          "offset": 0,
+          "totalLines": 7,
+          "width": 84
+        },
+        "leases-filter-empty": {
+          "height": 40,
+          "offset": 0,
+          "totalLines": 6,
+          "width": 121
+        }
+      }
+    },
+    "plannedMaximumFrames": 21,
+    "globalExistingCap": 48,
+    "byGrid": {
+      "72x28": [
+        "lease-detail-first",
+        "lease-detail-tail",
+        "lease-record-exact-number",
+        "release-review-first",
+        "release-review-tail",
+        "filter-draft",
+        "leases-filter-empty",
+        "leases-restored"
+      ],
+      "100x35": [
+        "lease-detail-first",
+        "lease-detail-tail",
+        "lease-record-exact-number",
+        "release-review-fit",
+        "filter-draft",
+        "leases-filter-empty",
+        "leases-restored"
+      ],
+      "160x50": [
+        "lease-detail-fit",
+        "lease-record-exact-number",
+        "release-review-fit",
+        "filter-draft",
+        "leases-filter-empty",
+        "leases-restored"
+      ]
+    },
+    "minimality": "Detail33rows/18high and29/25 need first+tail, not duplicate middle/tail snapshots; wide27/40 fits once. Review24/18 needs first+tail only at72; medium/wide21/21 fit once. Record opening/expansion uses metadata until exact-number checkpoint; no redundant initial record image. Final restored list verifies exits. Unexpected geometry/coverage fails review rather than silently adding frames.",
+    "navigation": [
+      "Original SGR click on exact first lease row; one audited fake inspect closure, same model/ID/revision",
+      "Genuine reviewed PgDown/End only where content overflows; save offsets and viewport logical-row coverage",
+      "Original i opens record panel (record is not modal() in this source); bounded actual Down/Enter expansion of request/resources/memory_bytes, at most64 navigation keys per grid; no host SetYOffset/selection assignment",
+      "Save both typed original json.Number string and actual visible decimal9007199254740993; never route it through JavaScript Number",
+      "Esc closes record and resets detail viewport top per original code; do not assert a false tail-offset restoration guarantee",
+      "Original detail x opens local review draft; only scroll, n/Esc or exact original Keep lease mouse region allowed; confirmation key/cell/receipt is refused before Update",
+      "After decline/Esc, original slash opens filter; send exact<=256B ASCII bracketed paste. Only its exact bounded PasteMsg content may reach the model while filter is active; any parser framing messages must stay dropped/audited. Original Enter applies local no-match query.",
+      "Esc restores empty filter/default lease list and verifies inactive flags/visible8 IDs/modal/input state; do not toggle persistent h preference"
+    ],
+    "newAllowlistReview": [
+      "Pre-framework filter admits only phase-scoped lease keys, exact filter PasteMsg, exact reviewed mouse cells and existing fixed startup/window/armed-quit messages. Consume the original exact detail receipt only inside the audited synchronous directInspect helper; do not broaden framework receipt admission. Keep Raw/exec/clipboard/Batch/native Init/timer/stream paths unreachable.",
+      "Route original audited inspect synchronously through unchanged frozen direct helper; library viewport/focus/cursor Batch commands stay counted and uninvoked",
+      "Model Focus sets input state synchronously; cursor blink/live focus is not thereby accepted; bracketed paste is own PTY bytes, not native clipboard",
+      "No y/confirm click, h/preferences, e/TTL, c/cancel, r/refresh, run navigation/native transport or unreviewed Cmd allowed",
+      "Strict fake must see exactly one inspect per grid and zero mutation/lease_action/name/backend/clipboard calls; pending/unknown outcomes remain empty"
+    ],
+    "observations": [
+      "Original full model rows versus actual byte-replayed rows/PNGs/cells, marker/token reading across recorded wraps, feed panel and modal geometry intact",
+      "Cover all detail logical rows from genuine offset windows; use source-derived viewport bounds, not the failed old whole-line-border text assumption",
+      "Exact ID/revision, original model/record pointer semantics, same selected lease and saved default flags",
+      "Safe review copy/Keep control and filter draft/applied-empty/restored state readable; no product findings inferred from direct/model success",
+      "Original Program/Popen wait/termios/slave-close/EOF/FD/fake/context/home cleanup with no force/unknown",
+      "Glyph acceptance remains separately qualified until boundary diagnosed; do not replace emoji/output or add fonts/pins to force matching"
+    ],
+    "resourceAndPrivacyConstraints": "Same exact3grids, existing data/DTO/reason/label limits and strict fake,<=48frames and bounded read/key/byte/time accounting,<=16MiB reviewed original inputs plus new evidence, owned private temp/fresh output/normal shared FIFO only when allocated. Source/receipts/raw paths/control handles stay private; publish normalized project facts. Preserve111/64/29/47 artifacts and every successful/failed scope."
+  },
+  "validationPerformed": [
+    "Read selected pinned installed sources and saved artifacts only; original model table entries inspected as numeric literals without Go/Node/library execution",
+    "Compared56 relevant repository source/plan files to currentmain ac1455a exactly, without rebasing active work",
+    "New JSON/proposal/privacy/source/hash checks only; no provider/font/output/package/source runtime changes"
+  ],
+  "remainingGates": [
+    "Independent source diagnosis/proposal review, especially fixture-only derived provider provenance and private CDP font instrumentation",
+    "Separate complete source preparation/review before any diagnostic replay allocation; no new runtime now",
+    "Separate bounded test-only native lease reading implementation/compile/PTY/browser review, using21-frame inventory and strict no-mutation gate",
+    "Actual glyph/physical terminal/full-UX remediation only after concrete attributed findings; accepted marker pass preserved"
+  ]
+}

@@ -10600,3 +10600,28 @@ scoped synthetic input/read/scroll/cleanup evidence, not glyph paint, physical
 terminal behavior, production startup/auth or full UX. Composition source/syntax/
 privacy/whitespace checks pass; exact unchanged inputs required no duplicate
 fixture/browser execution.
+
+
+## Glyph and remaining native reading — source diagnosis only
+
+Read-only analysis of locked xterm sources finds default UnicodeV6 and its
+supplementary-plane width1 fallback for U+1F642; saved cells corroborate width1.
+Literal inspection of the model's pinned displaywidth trie yields Wide=2 for
+both 🙂 and 界. No Go/Node/library width probe ran. Requested font family/size
+and renderer spacing code are available, but actual resolved glyph fonts and
+pixel metrics are absent from saved artifacts; clipping attribution remains
+qualified. All accepted markers/rows/cleanup remain supported independently.
+
+The [source proposal](validation/ux-terminal-glyph-reading-proposal-2026-10-30.json)
+contains exact hashes/anchors, a fixture-only provider delta and matched four-
+case font/cell/paint checks requiring separate source review and allocation.
+It adds no dependency/font/package pin or executable source. Platform font
+labels from any future probe must remain private. No arbitrary whitespace
+normalization, emoji replacement or output rewriting is proposed.
+
+Existing direct footprints support21 next native reading frames without duplicate
+wide/middle images. That roster preserves exact-number semantics, review decline
+and local filter behavior, excludes persistent h/confirmation/native backend
+paths, and requires new audited test-only source plus distinct execution windows.
+Relevant source/plan bytes compare exactly to current main `ac1455a` without
+rebasing. All111/64/29/47 raw artifact scopes and prior inventories remain exact.
