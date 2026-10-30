@@ -1,5 +1,27 @@
 # Validation record
 
+## Local package contract — source/document checks only
+
+The [contract](design/resident-local-package.md) and
+[inventory](validation/resident-local-package-contract-2026-10-29.json) inspect
+accepted `4cd024c0b53b3fbb42104bb4e8b5742a37684002`. Reuse the manifest evidence
+and its protected inventory chain by exact revision/digest: 74 unchanged source
+inputs including the private codec/reference, plus 11 newly inspected storage
+inputs. Native identity/copy/cleanup limitations and actual CLI/start callsites
+are source findings, not new execution results. Existing unit/native evidence
+retains its earlier scope and is not duplicated as local-package acceptance.
+
+This five-document cut runs only inventory/link/anchor/privacy/whitespace checks.
+All 85 source hashes match the accepted base; 36 added local links and 26 relevant
+source-line anchors resolve, 11 prior owner branches remain unchanged, and
+added-line privacy/whitespace checks pass. Independent contract review is pending.
+No build, Go suite, native fixture/process/admission, browser, staging, installation,
+backend, format or environment change occurs. Operator binding, real held-byte
+verification/publication/retention, resource/cancellation/recovery, original child
+image and first/repeated `arm start`/distinct-version active-job behavior require
+the proposed meaningful causal/native tests on the exact future composed source.
+No implementation or overall feature completion follows from document checks.
+
 ## Pure package manifest — focused unit qualification
 
 The [evidence](validation/resident-worker-package-manifest-2026-10-29.json)

@@ -1,5 +1,23 @@
 # Backend and CLI implementation
 
+## Local package approval/staging — contract only, not implemented
+
+The [concrete contract](design/resident-local-package.md) connects untrusted
+manifest data to a proposed original Manager preparation/approval/publication
+transaction. Approval binds an admitted, independently verified private snapshot,
+not future input-directory contents; exact membership, original native custody,
+first close errors and counted image/UI pins remain distinct from hashes and
+pathnames. It inventories current storage/export/sync/format/start seams without
+reusing their workload-specific capabilities or relaxing mesh version validation.
+
+No positive API, native operation, source export, schema writer, CLI or production
+caller is added. Combined bootstrap/binding/admission and original child-image
+evidence, measured resource profiles, worker/controller/API/assets, first and
+repeated `arm start` and real distinct-version job-preserving replacement remain
+unimplemented. The selected initial flow keeps a bounded control-only bootstrap
+pending until the actual supervised API/UI worker is active; a status response
+or helper milestone cannot establish product readiness.
+
 ## Private untrusted package declarations — pure codec only
 
 The [unexported codec](../internal/workerpackage/README.md) accepts private v1
