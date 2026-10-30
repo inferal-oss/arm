@@ -4846,3 +4846,20 @@ readable, but the modal compositor/shadow containment is a separate P2 product
 layout finding. A later product fix requires focused source/regression review and
 new source/validation bindings; it cannot inherit this capture's acceptance.
 No new runtime or corrective run is authorized by this evidence record.
+
+
+## Retained driver candidate — initial validation boundary
+
+The source candidate retains the exact upstream module and additive changes in
+a separate private tree; no project replacement, fork, vendoring or installation
+is activated by its first passing cohort. Acquisition uses a private module
+cache and official proxy/checksum verification. The observed dependency graph
+retains all existing versions. The original 24 expected checksum pairs remain
+checked, with two additional transitive modules authenticated by ordinary signed
+checksum-database verification. All 26 archive/source pairs were then verified
+against the actual graph.
+
+A successful 34-root normal cohort exercises the retained connection, child
+lifetimes, abnormal completion, long-lived bounded records, terminal errors and
+legacy connector/column behavior. It does not establish full database/native
+closure, service ownership, worker replacement or live-job continuity.
