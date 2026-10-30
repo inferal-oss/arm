@@ -4569,3 +4569,20 @@ installed or assumed, no private-core rebinding is proposed, and no diagnostic
 module/provider or runtime was implemented here. The21-frame lease reading
 proposal reuses reviewed direct fake/data semantics and explicitly requires new
 closed native input/Cmd review; no production/model behavior changes.
+
+
+## Provider-only glyph diagnostic — complete source prepared
+
+The [source plan](validation/ux-terminal-glyph-diagnostic-plan-2026-10-30.json)
+now includes the complete MIT-attributed UnicodeV6 baseline, unchanged tables/
+logic, one-codepoint diagnostic override and a bounded four-case replay wrapper.
+Built-in baseline and fixture-only width2 variant use the exact original72/160
+full-first prefixes, unchanged fonts/options and fresh Terminals. Active provider,
+complete glyph-region cells/continuation, raw rows, marker, CSS observation and
+PNG pairs are recorded. CDP/platform-font probing is deferred and absent.
+
+Source syntax/derivation/license/hash review only; no helper/browser/runtime
+invocation or glyph acceptance. All existing sources/inputs/failures stay exact.
+Independent source review and separate replay-only allocation remain gates.
+The21-frame native lease reading source continuation remains a separate step;
+no production/output/font/pin changes or new execution window are implied.

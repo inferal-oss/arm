@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "status": "COMPLETE SOURCE PREPARATION ONLY; no diagnostic/helper/Browser invocation. Independent source review and explicit runtime allocation required.",
+  "branch": "codex/ux-terminal-glyph-diagnostic-source",
+  "parentProposalCommit": "b0f28730acbf593cd80c4b9bbf94e9501f9041e0",
+  "sourceFiles": {
+    "scripts/dashboard-screenshots/ux-terminal-unicode6.js": {
+      "sha256": "853a96b38b0c4680fe12e7f3007d8e67de0767ddd90f02c574f52a408b045d3a",
+      "bytes": 6269
+    },
+    "scripts/dashboard-screenshots/ux-terminal-unicode6.LICENSE": {
+      "sha256": "b569f629d00f2626a8100df2a1798210535621e42164dfd426a6fe5aac7b0ccd",
+      "bytes": 1261
+    },
+    "scripts/dashboard-screenshots/ux-terminal-glyph-diagnostic.mjs": {
+      "sha256": "38611a03a88209df1faa9bbd96589fa45fbf5177aac82b06e4f5a319a73ecea9",
+      "bytes": 25290
+    }
+  },
+  "originalSources": {
+    "src/common/input/UnicodeV6.ts": {
+      "package": "@xterm/xterm",
+      "version": "6.0.0",
+      "sha256": "9ebb3df126129de4250ef5c1730493b7b3f62b3593273dac0bbbe15ee0cc890b",
+      "bytes": 5465
+    },
+    "src/common/services/UnicodeService.ts": {
+      "package": "@xterm/xterm",
+      "version": "6.0.0",
+      "sha256": "77afcb70c5e5666f478ecdc51c70a7823b7bf8f30167139172addd5e1acc127e",
+      "bytes": 3803
+    },
+    "LICENSE": {
+      "package": "@xterm/xterm",
+      "version": "6.0.0",
+      "sha256": "b569f629d00f2626a8100df2a1798210535621e42164dfd426a6fe5aac7b0ccd",
+      "bytes": 1261
+    }
+  },
+  "derivation": {
+    "baseline": "Complete UnicodeV6 tables/bisearch/constructor/wcwidth/charProperties copied from pinned source; remove two imports and TypeScript annotations/casts/visibility/export only. UnicodeService.extractWidth/createPropertyValue reproduced as private pure bit helpers with identical bit operations. IIFE prevents global lexical redeclaration on fresh per-case script injection.",
+    "delta": "FixtureEmojiWidth2 extends the exact derived baseline; only wcwidth(0x1F642) returns2 instead of inherited1, plus honest fixture-only version label. Inherited charProperties dispatches this.wcwidth; every other codepoint/table/combining rule unchanged.",
+    "license": "Original copyright/MIT header retained; entire upstream LICENSE byte-exact in adjacent sidecar. No installed module/pin change.",
+    "exposure": "IIFE exports only owned global ARMUnicode6Diagnostic; no xterm private_core access/import, addon, service registration or baseline active-provider mutation."
+  },
+  "wrapper": {
+    "base": "Reviewed13ab replay source lifecycle, disjoint output, byte/resize/raw-row/marker gates, own20swork/30stotal and original BrowserServer/process/API/write-marker cleanup retained in a separate diagnostic file. Original renderer stays unchanged.",
+    "matrix": [
+      {
+        "grid": "72x28",
+        "sourceCase": "full-first",
+        "prefixBytes": 54295,
+        "prefixSHA256": "896b72f52f09075e129df5780636f6328a413ea11a852d716b0cd669c11b6312",
+        "providers": [
+          "builtin-6",
+          "fixture-width2"
+        ]
+      },
+      {
+        "grid": "160x50",
+        "sourceCase": "full-first",
+        "prefixBytes": 163729,
+        "prefixSHA256": "f350dd5bf04712bdef2e8817aad961c0252730624bab03dffd811e682b7c84e3",
+        "providers": [
+          "builtin-6",
+          "fixture-width2"
+        ]
+      }
+    ],
+    "count": 4,
+    "terminal": "Fresh Terminal per case, original font/size/options except explicitly test-only allowProposedApi:true. Baseline uses builtin default; variant registers derived override before any byte write. Actual activeVersion/before/versions captured.",
+    "observations": "Raw expected/actual rows and per-row ASCII-space match, exact source prefix/resize timeline, LOG FIRST, PNG, complete row2 columns28..38 glyph-region cells and continuation, requested/computed font CSS. CSS is observation only; no resolved font or paint assertion. Paint acceptance remains null for independent PNG review.",
+    "assertions": [
+      "All original row/dimension/alternate-buffer/marker/native-page refusal gates",
+      "Baseline active6/emoji width1; variant activefixture label/emoji width2+width0 continuation",
+      "CJK col30 width2/col31 width0 and full11-cell region recorded; all raw chars preserved",
+      "Paired identical input prefix, normalized row text, requested font and computed family/size/weight/style; letter-spacing retained as observation",
+      "All four cases and two pairs complete; stop first failure, retain partial PNG/item, no replacement"
+    ],
+    "CDP": "DEFERRED: no CDP/platform-font/font scanning API or helper. No font installation or option that masks clipping."
+  },
+  "CLI": "node scripts/dashboard-screenshots/ux-terminal-glyph-diagnostic.mjs \"$ORIGINAL_CAPTURE_INPUT\" --output \"$FRESH_DIAGNOSTIC_OUTPUT\" --retained-input-root \"$ORIGINAL_ATTEMPT\" --also-retained-input-root \"$ACCEPTED_CORRECTED_REPLAY_ATTEMPT\"",
+  "budget": "Both canonical private immutable input containers must be disjoint from each other and fresh output; capture input within first. All original29+accepted47 retained data plus new diagnostic evidence/wrapper/temp leftovers share16MiB; each source prefix<=4MiB. No new compiler/PTY/binary invocation. Normal unchangedFIFO115s only if separately allocated. Fresh owned browser temp/profile; loopbackCONTROL only, no endpoint logged.",
+  "lineage": "Keep original8d57-source build/capture receipt and13ab accepted replay untouched. Diagnostic self/source/provider/license/accepted receipt digests are a separate stage; never forge old build receipt. Future original-wrapper pre/post verifies111/64/29/47 artifacts, original57 copies/current56 inputs, frozen13ab and new source/plan hashes; source pins/lock integrity and positive capture cleanup required before browser.",
+  "cleanup": "Retained original BrowserServer/process immediate exit/already-exited observation, original promise returned/rejected/pending versus bounded wait, forced/unknown failure, own deadline/failure exit, digest-bound receipt-write-return marker, tool exit0 and absence of deadline receipt unchanged. No universal OS reap or glyph acceptance claim.",
+  "validation": [
+    "node --check only for new helper/wrapper; no helper execution",
+    "Static derivation body compared to exact specified transform and license bytes to pinned original",
+    "Original runtime source/plans/inventories and111/64/29/47 artifacts unchanged",
+    "JSON/diff/privacy/source hashes reviewed only"
+  ],
+  "remainingGates": [
+    "Independent full derived baseline/helper/license/override/wrapper review",
+    "Explicit four-case replay-only allocation; none exists now",
+    "Independent before/after PNG paint review after any future run; no resolved-font claim",
+    "Proceed with separately reviewed21-frame native lease reading source; no duplicate36run capture or product change"
+  ]
+}
