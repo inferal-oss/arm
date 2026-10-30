@@ -3135,3 +3135,40 @@ clipped despite matching row text. The same owner continues read-only pinned
 width/font diagnosis and the remaining lease-detail/modal/filter inventory
 proposal. Overall UX and physical-terminal acceptance remain open; no new
 runtime window is allocated.
+
+
+## Glyph source boundary and next native reading proposal
+
+Reviewed marker/row/cleanup evidence remains accepted on main `ac1455a`; active
+work was not rebased. Read-only pinned-source diagnosis now separates the
+model's grapheme-wide emoji policy from xterm's default Unicode6 width1 for
+U+1F642. The saved cell agrees with that default; actual fallback font/pixel
+metrics were not recorded, so paint attribution and glyph acceptance stay open.
+The [proposal](validation/ux-terminal-glyph-reading-proposal-2026-10-30.json)
+records exact source hashes/anchors and an unimplemented four-case matched
+provider/font diagnostic, preserving all existing successes and failures.
+
+After that boundary, the smallest proposed native lease reading roster is21
+frames:8 narrow,7 medium,6 wide. It covers detail first/tail only where needed,
+exact-number record reading, safe review draft/decline, filter draft/empty and
+restored defaults. Persistent h preferences and every confirmation/mutation
+remain forbidden. Existing runs-only binary cannot supply this inventory;
+separate test-only source/Cmd/filter review and build/PTY/browser windows are
+required. No executable/provider/font/pin/product change or runtime occurred.
+
+
+## Terminal width/reading proposal — coordinator disposition
+
+Owner `b0f2873`, composed as `e935195`, passes independent static review of
+31 exact pinned source hashes and 80 anchor locations. Literal model-table
+traces and pinned emulator rules explain the observed two-versus-one cell
+allocation; actual font/fallback and full paint attribution remain qualified.
+No provider/font/product/dependency or runtime change is accepted here.
+
+The same owner prepares concrete source for a four-case provider-only replay
+probe, using original bytes and an attributed unchanged baseline with a single
+fixture-only codepoint override. CDP/platform-font instrumentation is deferred
+unless that result requires it. It also prepares the minimal 21-frame native
+lease-detail/record/review-decline/filter continuation, preserving strict
+no-mutation and original-model boundaries. Source review must precede any new
+build/replay/PTY/browser allocation; no new task or runtime is opened.

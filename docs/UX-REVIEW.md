@@ -706,3 +706,18 @@ that glyph seam. Emulator/font/Unicode attribution and physical-terminal UX
 remain unverified; no ARM product defect is established by this evidence.
 Independent review and any separately authorized next step remain gates.
 Overall full-UX acceptance is open; no further execution window is implied.
+
+
+## Glyph policy attribution and smallest remaining reading scope
+
+The [read-only proposal](validation/ux-terminal-glyph-reading-proposal-2026-10-30.json)
+identifies model width2 versus the emulator's default width1 for 🙂; saved
+clipped paint is still a separate font/renderer attribution question. Marker/
+row/owned-cleanup acceptance stands, while glyph/physical-terminal/full-UX
+acceptance stays open. No output/font/provider/package change was made.
+
+A source-reviewed diagnostic is proposed before any new runtime. The next
+lease detail/record/review/filter reading inventory is21 targeted frames, with
+no review confirmation, preference save or live backend access. It requires
+separate implementation/source/build/runtime review; no new task, product fix
+or execution window is created by this proposal.
