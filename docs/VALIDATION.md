@@ -11707,3 +11707,38 @@ primitives, not completed funding or startup. Actual issuer/profile evidence,
 root/image/descriptor handoff, same-issuer positive qualification, consumer UI
 and original run/proxy continuity remain unverified. No Go metadata, compiler,
 tests, native execution or live upgrade was allocated for this proposal.
+
+
+## Monitor focus — complete original failure collection
+
+Frozen owner source `82dd627` and test SHA-256
+`76b62701d9578acaf97dd83f53788fe31bf576f0e5897fc19cb8e86e553f2d7d`
+completed one separately reviewed V3 allocation after two preserved failed
+collections. The original Go and FIFO both exited 1 normally, with full output
+EOF and no termination, forced cleanup, truncation or supervision failure.
+Independent checks verified all 26 artifact members and the exact roster,
+24 named run/fail nodes (two roots/22 cases), all 66 complete observations and
+22 positive strict-fake/context/constructor-bookkeeping cleanup records.
+The final stable scratch enumeration followed original process joins; two
+intermediate deferred scans remained explicitly unknown with retained charges.
+Temporary directories are empty, and source/tool/24 preserved-set guards pass.
+
+All 22 original traces show initially visible valid focus followed by the
+respective orphaned or invisible focus. The 80 assertion messages are confined
+to those focus failures; chart scope and constructor bookkeeping checks report
+no other defect. This accepts the ordinary reproduction, not corrected behavior
+or native rendering. Phase elapsed time was 5.061 seconds, whole envelope 7.841
+seconds. Prior incomplete/cancelled collections remain failed; no retrospective
+cleanup or physical resource-reclamation claim is made.
+
+## Resident accounting V2 — source correction, runtime pending
+
+Manifest SHA-256
+`10b2893429648c576527bc95ed82bca9aa953554e5f742765ee0ae18f8cd7745`
+and all 16 members were independently checked. The only changed Go members from
+the preserved V1 proposal are Manager ending-settlement ordering and resident
+queue wording. Source review confirms the specific early-return finding is
+addressed without suppressing the projection error or admitting partial totals.
+The genuine-issuer cleanup regression and V1-order omission control are proposed
+only. No compiler, test, positive charge, live core or child-continuity evidence
+is supplied by this source review.

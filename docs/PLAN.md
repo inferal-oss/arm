@@ -4162,3 +4162,36 @@ operator/profile issuance, immutable image custody, the composed fixed descripto
 layout, authenticated root acknowledgment/reference handoff, positive same-issuer
 fixtures, consumer presentation and original-child continuity remain open gates.
 No execution allocation or production grant follows from source review.
+
+
+## Terminal Monitor focus — ordinary defects reproduced; correction in preparation
+
+Owner source `82dd627` completed the two-root/22-case ordinary-model collection:
+66 original observations, 22 strict cleanup records and normal matched Go/FIFO
+exit 1 with output EOF. Independent review verified every trace and the exact
+roster. The focused failures reproduce orphaned focus after removing a missing
+option and invisible focus after resize. Earlier two collection failures remain
+failed, preserved and separate. No native paint or full-UX acceptance is inferred.
+
+The existing owner may prepare a small selection/resize presentation correction
+and a fresh green proposal covering these cases plus the five existing picker
+test roots. Deliberate wheel/page reading, exact chart identity, independent
+selection, stale-click checks and return offset remain required. The additional
+19 inventory/reading/hit cases are outside this cut; no green execution is yet
+allocated and no unreviewed product correction is integrated.
+
+## Resident standing accounting — focused V2 source correction reviewed
+
+The separate V2 proposal moves resident ending-resource settlement before queue
+projection and names the standing charge accurately in queue blockers. Its
+16-member source packet is independently checked and the focused source finding
+is addressed; it remains uncompiled, unrun and unintegrated. A causal fixture
+with the actual issuer and original native/Manager/DB ownership remains required.
+Bounded data/negative qualification may be proposed separately.
+
+The composed birth contract retains immutable A image custody and one fixed
+inherited layout; all original reference owners and fresh-fence inventory
+interactions must be explicit before implementation. Actual offline operator
+issuance and bounded measurement provenance are in source preparation. Evidence
+digests are data, not grants or proof of future resource bounds. Public startup,
+worker activation and original run/proxy child survival remain incomplete.

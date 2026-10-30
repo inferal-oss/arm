@@ -5470,3 +5470,14 @@ properties: queue-reporting errors currently bypass later ending-resource
 settlement, and a focused correction is required before acceptance. The private
 custody primitive also remains incomplete. No proposal source is activated in
 production, and no new service authorization or upgrade support is claimed.
+
+
+## Monitor focus and resident accounting — review progress only
+
+The ordinary Monitor reproduction now completes and identifies two focus defects;
+a product correction is being prepared separately. No Monitor behavior change
+is integrated by this review record. The resident accounting V2 source proposal
+also addresses the early queue-error return before ending-resource settlement.
+It retains separate nonlease accounting, and has no production caller or runtime
+acceptance. Actual operator issuance, root handoff, worker routing and child
+continuity remain implementation and validation gates.
