@@ -436,3 +436,29 @@ long reason without shrinking/hiding content or changing dialog policy. Exact
 request/private token, authority and historical stop/recovery behavior stay
 intact. Tests, exact builds, four browser geometries and two isolated controls
 pass; full live/terminal/dense-prose and universal font/zoom coverage remain open.
+
+
+## Destination inventory findings
+
+The [native destination inventory](validation/ux-destination-inventory-2026-10-29.json)
+records four review candidates with unchanged product source:
+
+- D1: long valid destination names paint beyond the banner on phones and the
+  sampled enlarged-text geometry. Existing banner text/heading scope is the
+  proposed containment boundary.
+- D2: long scoped resource names and custom-unit summaries extend beyond phone
+  viewports. Existing resource Card/header/body scopes are candidates; numeric
+  amount-selector metrics are explicitly excluded.
+- D3: long lease Card names/reason controls extend beyond phone viewports. Keep
+  the native Button and exact ID/observation-scope callbacks when reviewing a
+  Card containment correction.
+- D4: long detail titles push the native close control beyond the initial panel
+  clip at every sampled geometry. An existing noninteractive detail-body marker
+  could scope app-owned panel/header containment while preserving native Dialog,
+  close dimensions/margins and keyboard/ownership behavior.
+
+All exact JSON first/middle/final ranges remain reachable through native scroll,
+and Escape/opener focus work. Width cap alone does not establish a defect. No
+remediation or new authority is implemented, and failed/oracle-limited evidence
+remains qualified. Independent review, any separately allocated correction and
+full UX/TUI/live acceptance remain open.

@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "scope": "Independent current-main composition of read-only destination inventory; no product correction",
+  "ownerCommit": "7d9717bb8aa91abdaa8365e2cf147ea9ce1e2fc0",
+  "compositionBase": "db5fec2f1befec39b4c5c5d43df7c5afd947fd49",
+  "composedInventoryCommit": "6642a6da5dc2421b9dbb552f7ad886edaa7730ce",
+  "ownerRecordSHA256": "1d54ba5e0e872bea01958f6696baf2644105bd8bf40a3d977b0ced1041f1ad6b",
+  "all37InputHashesMatch": true,
+  "all34ProtectedInputsMatchCurrentMain": true,
+  "protectedInputSHA256": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/remote.mjs": "a05a7a9e33eadea97cdd90009cbc106a9e432a6e9ba68f5ac03f0940c8f92d42",
+    "internal/server/web/semblance/app.ttl": "91e1f056b550a7541b963dcb8029b2ed9fdd30ad84211ffd9399f880c8dec0b6",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/graph-ownership.mjs": "1180044fee6dc020b054a2ee263d4b05796a266ae5f6c022dd8e25b1e9b91edc",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/web/remote-node.mjs": "56799e2050582760214992b5160fe37e75654d3921d27141e2d4b80797075950",
+    "internal/server/web/node-window.mjs": "6bf5edc83c9533f25b562067124ab9ca5c6eafd594c46ddaa611937cd8423e8b",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "internal/server/web/mesh-model.mjs": "adae955089af54733dc4e2e639f2a2a99f6681bcd906f43d522d2234e79b67a6",
+    "internal/server/web/lease-state.mjs": "66459a9d20e2a26d628556dea74de120708bf97ed2760f7df66ab436abf09bad",
+    "internal/server/node_gateway.go": "e5f2b802ca5b0fcc303253bcc9178c3f23d20e366acae9f33b65092f69e1ea6c",
+    "internal/server/node_sessions.go": "fd17df0611c5fe4f20f6edba37b2a5324dab428a0c05c19fefcdb4d5b600f957",
+    "internal/server/native_node_context.go": "0328344946e60b62b49e1412f27d09a026cb54feb03a1890e410c54766ad598d",
+    "internal/server/mesh.go": "a1d90883c177d6aaff31343b8e40ec9e630dc6eb5ff94cae7b3894cfc83837b9",
+    "internal/server/cpu.go": "1244f40e6b48a49299667ffe7478e84a392aee1a3bfb6d5deadb4f17292f9321",
+    "internal/server/disk.go": "fa2a2572fc4497e0a623f8abee46b9a0fc682b330d59c57049e7d2e522aa4f86",
+    "internal/server/named_views.go": "a9452987a249df10e53b66b85ab552b20dad727acf5b7219885aaa76f1ffbc21",
+    "internal/server/custom_name_remote_views.go": "5e95bb4aefb03e6ac838288385dd8b5b4e7ec2118be37a161cd2bbc02acddedf",
+    "internal/model/node_context.go": "8b7ec172aae8154699838c67c8454100b0f1847520093860d55885ff9e21b9f3",
+    "internal/model/node_registry.go": "41da35e98ac72453c53a0d27b1276af375c592826c8c493d19569a5b89d5666b",
+    "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+    "internal/model/node_metadata.go": "37f47880669571a310d5e0a84df56097c60c7e8fcfb94b7a234769872f526441",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/components/controls.ttl": "b1cbc7649bb46988b4ed633f8e1df338465e05e78b281f7070db6c496ef3f2f4",
+    "web/third_party/semblance/ontology/components/layout.ttl": "8b828351304d6bcada709fc1753b45d9f63e46fe9ed7a359c26c048b28ebdcc4",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/theme/data.ttl": "5dfefcfb38b77459150851b67a386faf419f9c4f0eb26cb681b5997007fbaeff",
+    "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71"
+  },
+  "fixtureInputSHA256": {
+    "scripts/dashboard-screenshots/ux-destination-inventory.mjs": "5a5b4f9dbfb25557ce757400e525fd5dc6e2bb67609444e50ad8f22c0fcec846",
+    "scripts/dashboard-screenshots/ux-destination-inventory-backend.mjs": "84fca7763f9228b3cdcc564988710dea2d007c904ce6c1ae82b485abdd4d7506",
+    "scripts/dashboard-screenshots/ux-destination-inventory-host.mjs": "2e7d750001ea539e01fe99ee8d31d503da1647dc0b2ff8335668bfabac78353f"
+  },
+  "privateArtifactAudit": {
+    "files": 192,
+    "allHashesMatch": true,
+    "manifestSHA256": "9a7ca53e674e6de12b403d1e80d1b27feaed794a2e962a4706148cc88b1dcdbc",
+    "capturedContextValuesFoundInNormalizedRecord": 0
+  },
+  "review": {
+    "actualFixturesAndFactoryParentRead": true,
+    "narrowDialogImageInspected": true,
+    "acceptedInventoryFindings": [
+      "D1",
+      "D2",
+      "D3",
+      "D4"
+    ],
+    "newProductChanges": false,
+    "currentPlanEntriesPreserved": true
+  },
+  "runtimeEvidence": {
+    "source": "Owner final B and allocated replacement A; independently inspected original reports and rehashed artifacts",
+    "completedCases": 4,
+    "elapsedMS": [
+      30990,
+      31664
+    ],
+    "failedInitialA": {
+      "completedCases": 0,
+      "elapsedMS": 2069,
+      "exitCode": 1,
+      "qualifiesAcceptance": false
+    },
+    "activeOrPendingReadsAtCapture": 0,
+    "forbiddenEffectsOrPageErrors": 0,
+    "originalReadReleaseAndContextBrowserServerAPICleanup": true,
+    "osGroupOrReapProof": false
+  },
+  "limitations": [
+    "No new browser, suite, build or native execution was needed for this fixtures/documentation-only composition.",
+    "Amount and focus-held amount selectors sampled nested headings; these fields remain excluded from acceptance.",
+    "Source-only backend trust, permission and transport boundaries are not live authority acceptance.",
+    "JSON first/middle/final ranges remain reachable; findings concern measured banner/card/title/close allocation, not unreachable records.",
+    "Public local component disposal does not establish private authentication-slot or host-bridge reset.",
+    "No remediation, live remote operation, TUI/Linux/upgrade or full UX acceptance."
+  ]
+}
