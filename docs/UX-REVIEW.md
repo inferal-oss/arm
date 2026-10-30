@@ -1167,3 +1167,49 @@ cumulative eight-runtime-container16MiB accounting are required. Source design,
 additive implementation, fresh compile binding and runtime/browser allocation
 remain separate review gates. No new executable source, native entry, PTY,
 browser, resource window, native45 acceptance or full-UX completion occurred.
+
+
+## Native45 filter lifecycle — additive source implementation prepared
+
+The [native45 binding](validation/ux-terminal-filter-shell-proposal-2026-10-30.json)
+now describes three additive implemented source files: a separate fixed45x14
+Program adapter, a capture driver and a replay driver. The 65 pre-existing
+member hashes and exact69member path set are explicit; a private review packet
+contains actual digests for all69members. No accepted72helper, entry, selector,
+classifier or historical native plan is edited. The original45source design
+record above is historical; no compile or native result is implied by source
+implementation.
+
+The new adapter keeps one original dashboard pointer and wrapper, suppresses
+production Init, forwards original typed q Text, admits only the bounded filter
+lifecycle and exact native wheel/footer callbacks, and returns the original
+named Quit command from the final footer. It observes actual original output
+writes/descriptors/ranges without substituting model text as terminal input.
+Capture retains eight real PTY prefixes and original action/write returns,
+requires actual help-row coverage, and retains the original child handle under
+cleanup before launch. Normal finish sends no q/Ctrl+C fallback. Source/input
+postchecks run even after failure; forced, truncated or unknown cleanup fails.
+
+Replay uses those original prefixes in pinned xterm, preserves original cells
+and eight PNGs before semantic assertions, requires all112row comparisons and
+actual field/help/footer geometry, and retains the reviewed original browser
+promise/process cleanup pattern. Both drivers account for the entire explicit
+fresh runtime budget directory plus all eight immutable historical runtime
+containers. No wrapper/tool temporary is hidden in the metadata reserve.
+
+Formatting, Python AST without import and JavaScript syntax-only checks are
+source checks, not typechecking, compilation or execution of the fixture/driver.
+Independent final source/binding review, a fresh separately allocated compile
+receipt/binary, reviewed runtime wrapper and Program/PTY/browser allocation,
+original lifecycle cleanup and inspection of all eight PNGs remain required.
+No native45 or full-UX acceptance is claimed.
+
+
+Native45 source review follow-up tightened the original-handle failure path and
+positive receipt gates before compilation: failed kill requests no longer skip
+the final retained child wait; compile0 is typed; actual binary/source paths are
+regular nonsymlink files; every descriptor observation must exist and be true;
+all three typed mouse frames are recorded; and replay checks exact action order
+and monotonic source-prefix offsets. These changes affect only the additive
+native45 fixture/drivers/binding. The existing product and accepted72 sources
+remain byte-exact. No compile/native or browser execution has occurred.

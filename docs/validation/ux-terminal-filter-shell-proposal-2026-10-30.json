@@ -1,4 +1,9 @@
 {
+  "acceptedDesign": {
+    "commit": "b56eef14e8ec556395fe592e5f382ba7f6bb6a73",
+    "scope": "Accepted for additive source implementation only; no compile/native/window acceptance.",
+    "sha256": "9c7d9c31780c12ac2970de27401633888370a4bc1efccb5e42d256c4f90f1476"
+  },
   "captureContract": {
     "checkpointCount": 8,
     "checkpoints": [
@@ -78,7 +83,7 @@
       "captureSeconds": 70,
       "childTestSeconds": 35,
       "diagnosticBytes": 16384,
-      "diagnosticRecords": 64,
+      "diagnosticRecords": 48,
       "parentActionBytes": 8192,
       "parentActionRecords": 24,
       "perStreamBytes": 4194304
@@ -216,14 +221,60 @@
     "originalClassifiedEntries": 50,
     "qualification": "Current existing project/helper/driver source hashes, not a compiler/SDK/generated-file closure. The historical native entries still reject incompatible current source as designed."
   },
+  "implementationNotes": {
+    "acceptanceStillPending": [
+      "independent final source/actual69-binding review",
+      "fresh separately allocated compile-only receipt/binary",
+      "reviewed original capture/replay outer plan",
+      "separate Program/PTY/browser windows and112rows/eightPNG inspection"
+    ],
+    "compileReceiptSchema": {
+      "originalCompileExitCode": 0,
+      "requiredFields": [
+        "sourceCommit",
+        "testSelector",
+        "sourceSHA256",
+        "binarySHA256"
+      ],
+      "requiredTrue": [
+        "complete",
+        "originalCompileHandleJoined",
+        "sourceUnchanged",
+        "preservedUnchanged",
+        "TMPAndGOTMPEmpty"
+      ],
+      "schema": 1
+    },
+    "currentSourceOnly": true,
+    "parentBudgetRoot": "Both capture and replay require explicit canonical private --budget-root containing all fresh outer metadata/tool temporaries/capture/replay files; historical inputs are disjoint. No parent file is hidden in metadata reserve.",
+    "startupFingerprint": "Stable original grid/default-selection/ID/footer geometry fingerprint, not moving clock labels. Actual full typed mouse frames are separately validated at delivery. Original complete returned renderer write still requires mode/footer/control tokens and physical descriptors/size.",
+    "wrapperBounds": {
+      "inputs": 64,
+      "progressBytes": 32768,
+      "readinessBytes": 16384,
+      "readinessRecords": 48,
+      "viewRevisions": 128
+    }
+  },
+  "implementationReviewFixes": {
+    "findingsAndFixes": [
+      "Fallback child.kill errors are retained without skipping the final original-handle wait. Forced/unknown cleanup still fails.",
+      "Compile receipt exit code must be an integer0, not a boolean; native binary and69active member paths must be regular nonsymlink files.",
+      "All seven original descriptor observations must exist and be exactlytrue; an empty object cannot satisfy readiness.",
+      "Record and require all three exact typed-frame checks alongside original callback/command/delivery observations.",
+      "Replay requires original action-prefix lengths in monotonic order and the exact Down/slash/paste/wheel/q/apply/cancel/footer sequence, in addition to counts and byte hashes."
+    ],
+    "qualification": "Source review fixes only; no compile, test-list, fixture entry, PTY, browser or new resource window has executed.",
+    "scope": "Native45 additive observer/capture/replay source only; product and accepted72source are unchanged."
+  },
   "implementationStatus": {
     "ProgramOrPTYOrBrowserExecuted": false,
     "freshNativeBinaryProduced": false,
-    "meaning": "This binds existing reviewed source and specifies the exact additive implementation/capture contract for design review. It is not an executable69-member binding, a build receipt or a runnable outer wrapper.",
+    "meaning": "Three additive source files are implemented for review. A private actual69hash map and a future original compile receipt bind their concrete bytes; no compile/native execution has occurred.",
     "nativeEntryExecuted": false,
-    "newCaptureDriverImplemented": false,
-    "newFixtureImplemented": false,
-    "newReplayDriverImplemented": false,
+    "newCaptureDriverImplemented": true,
+    "newFixtureImplemented": true,
+    "newReplayDriverImplemented": true,
     "resourceWindowStarted": false
   },
   "knownFrozenHelperBoundaries": [
@@ -232,20 +283,20 @@
     "Existing PTY Session init/resize/keys bind the historical selector/grids, and finish may send q. The new capture needs its own init/grid/key/normal-quit/cleanup paths; do not monkey-patch shared globals or use q as post-failure exit input."
   ],
   "limitations": [
-    "This is a design/binding/capture proposal, not implementation or an executable native harness.",
+    "This is implemented source only, not a built or executed native harness. All source/build/native gates remain open.",
     "No Go metadata/build/test-list/native selector, Program/PTY/browser/install/download or resource window was run.",
     "Current ordinary green and historical72 native evidence do not establish45native rendering or full UX acceptance.",
     "Broader routes, states, production startup/auth/backend and physical terminals/fonts/Unicode remain separate scopes."
   ],
   "newFixtureContract": {
-    "arrangement": "Fresh owned0700grid/home, original newDashboard constructor, canonical synthetic data and strict fake transport; disclose pending-only home bookkeeping. Build a separate45adapter/arrangement without calling the frozen grid-gated prepare/update paths. No live transport or production Init.",
+    "arrangement": "Fresh owned0700grid/home, original newDashboard constructor, canonical synthetic data and strict fake transport; disclose pending-only home bookkeeping. Build a separate45adapter/arrangement without calling the frozen grid-gated prepare/update paths. No live transport or production Init. The child performs one disclosed original WindowSize Update for fixture arrangement before Program, then separately requires actual native WindowSize messages and original PTY descriptor geometry.",
     "commands": "Observe/suppress known textinput focus/cursor commands without scheduling them; reject unknown effectful commands, streams/timers/Batch/Raw/exec/clipboard. Zero fake calls/reads throughout. The sole allowed returned command is the exact original named tea.Quit from validated footer dispatch.",
     "finalCleanup": "Original Program returns normally, no forced outcome; own fake closes once, context cancels, pending-only home effects exact, no active/forbidden calls or pending command. A failed/unknown observation remains failure with partial artifacts retained.",
     "inputPolicy": "Closed native parsed message set: exact WindowSize, harmless profile/env, bounded Down/slash/q/Enter/Escape, two exact bracketed pastes, two wheel-down body events, one final footer press and only original decorated dashboardMouseMsg commands. Forward original KeyPressMsg including Text; never rewrite typed q through mouseKey/f.key.",
     "mouseAndQuit": "Decorate only original View.OnMouse; retain actual produced typed command once and frame/region. Two wheel commands use original mouseScrollFrame; footer uses original mouseFrame/key ctrl+c. Return exact original named Quit command to Program, observe original QuitMsg in the filter, then require original Run nil and same wrapper/model. Do not substitute keyboard Ctrl+C/q or manufacture QuitMsg to make the case pass.",
     "originalModelAndProgram": "One original dashboardModel pointer behind one stable tea.Model wrapper. Wrapper Init returns nil. Actual Program uses original PTY stdin/stdout, original WindowSize45x14 and native parsed keys/pastes/mouse; no synthetic direct model updates/callback substitutions in the parent.",
     "originalOutputObserver": "New bounded passive term.File-preserving wrapper calls the original Write exactly once and returns original n/error/panic unchanged; serialize original write order, retain actual offsets/return/hash and descriptors. Observation failure stays unknown and cannot replace input/output outcomes. No model text is emitted as PTY screen data.",
-    "progress": "Passive View metadata: revision/grid/original viewContent as comparator only, inputMode/value/focus/applied filter, selection, viewport offset/height/total and visible draft, original regions/frame, wrapper/command counters and zero fake calls. Actual stream bytes come only from the PTY.",
+    "progress": "Passive View metadata: revision/grid/original viewContent as comparator only, inputMode/value/focus/applied filter, selection, viewport offset/height/total and visible draft, original regions/frame, wrapper/command counters and zero fake calls. Actual stream bytes come only from the PTY. Bounded32KiB progress records and16KiB/48record passive readiness metadata use atomic original file writes.",
     "startupBarrier": "Before first input require an original complete returned renderer write/prefix with alternate-screen and1002/1006modes plus actual readable q Exit/Inspect footer/control text; verify original FD/terminal/size and captured range hash. Keep capability-query-only and quiet-read observations insufficient."
   },
   "ordinaryEvidence": {
@@ -443,5 +494,81 @@
   },
   "schema": 1,
   "sourceBaseCommit": "342d28b572dc5608d28dc18c31428970e5964720",
-  "status": "source-bound-design-proposal-only-no-native45-implementation-or-execution"
+  "sourceBinding": {
+    "hashing": "This contract pins65existing member hashes and69exact member paths. Fresh compile receipt binds every actual69member digest including this manifest and three additive files; no circular self-hash.",
+    "members": [
+      "docs/validation/ux-shell-filter-focus-green-2026-10-30.json",
+      "docs/validation/ux-terminal-direct-fixture-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-filter-shell-proposal-2026-10-30.json",
+      "docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-loop-fixture-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json",
+      "docs/validation/ux-terminal-source-classification-2026-10-29.json",
+      "go.mod",
+      "go.sum",
+      "internal/cli/dashboard.go",
+      "internal/client/client.go",
+      "internal/client/session.go",
+      "internal/local/local.go",
+      "internal/local/statefence.go",
+      "internal/model/model.go",
+      "internal/model/operator.go",
+      "internal/model/reviews.go",
+      "internal/model/runs.go",
+      "internal/server/runs.go",
+      "internal/tui/actions.go",
+      "internal/tui/active_defaults_test.go",
+      "internal/tui/custom_names.go",
+      "internal/tui/dashboard_test.go",
+      "internal/tui/format.go",
+      "internal/tui/layout.go",
+      "internal/tui/lease_checkins.go",
+      "internal/tui/lease_table.go",
+      "internal/tui/lease_table_test.go",
+      "internal/tui/mouse.go",
+      "internal/tui/mouse_test.go",
+      "internal/tui/naming_observations.go",
+      "internal/tui/network.go",
+      "internal/tui/peers.go",
+      "internal/tui/pending_store.go",
+      "internal/tui/pending_store_test.go",
+      "internal/tui/polish.go",
+      "internal/tui/polish_test.go",
+      "internal/tui/preferences.go",
+      "internal/tui/presentation.go",
+      "internal/tui/readable_names.go",
+      "internal/tui/record.go",
+      "internal/tui/record_test.go",
+      "internal/tui/recovery.go",
+      "internal/tui/run_detail_presentation_test.go",
+      "internal/tui/run_list.go",
+      "internal/tui/run_list_test.go",
+      "internal/tui/runs.go",
+      "internal/tui/runs_test.go",
+      "internal/tui/shell_filter_test.go",
+      "internal/tui/theme.go",
+      "internal/tui/tui.go",
+      "internal/tui/ux_terminal_direct_fixture_test.go",
+      "internal/tui/ux_terminal_filter_shell_fixture_test.go",
+      "internal/tui/ux_terminal_lease_reading_fixture_test.go",
+      "internal/tui/ux_terminal_loop_fixture_test.go",
+      "internal/tui/visual_test.go",
+      "scripts/dashboard-screenshots/capture.py",
+      "scripts/dashboard-screenshots/geometry.json",
+      "scripts/dashboard-screenshots/geometry.mjs",
+      "scripts/dashboard-screenshots/package-lock.json",
+      "scripts/dashboard-screenshots/package.json",
+      "scripts/dashboard-screenshots/render.mjs",
+      "scripts/dashboard-screenshots/ux-terminal-filter-shell-capture.py",
+      "scripts/dashboard-screenshots/ux-terminal-filter-shell-replay.mjs",
+      "scripts/dashboard-screenshots/ux-terminal-lease-capture.py",
+      "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs",
+      "scripts/dashboard-screenshots/ux-terminal-loop-capture.py",
+      "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs"
+    ],
+    "requiredEntries": 69,
+    "testSelector": "^TestUXTerminalFilterShellFixture$"
+  },
+  "status": "source-implemented-unbuilt-unrun-pending-independent-source-and-binding-review"
 }
