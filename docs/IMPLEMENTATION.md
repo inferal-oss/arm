@@ -1,5 +1,15 @@
 # Backend and CLI implementation
 
+## Native lifetime — reviewed unbound primitive
+
+Private native construction/validation/retirement plus the separate pre-normalization
+path-bound correction are independently composed and validated on current main.
+There are no exported factory/type/validation/retirement APIs, production callers
+or borrowers. The [composed record](validation/resident-native-lifetime-composed-2026-10-29.json)
+distinguishes actual FD/lock closure from any future Manager/Server/task/resource
+join. Concrete borrower/retirement and local stop binding remain a source-contract
+gate; this primitive does not implement worker startup or live upgrades.
+
 ## Native path-bound review correction
 
 The private lifetime constructor rejects byte excess before filepath normalization

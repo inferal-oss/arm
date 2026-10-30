@@ -17,6 +17,7 @@ control wrapper matches the assertion heading separately from its rendered diff;
 its first failed qualification is retained. No blocking product finding remains;
 see the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
 No install, real transport, universal zoom, maximum density or full UX claim.
+Integration `99c4fc8` passes its [public source workflow](https://github.com/inferal-oss/arm/actions/runs/40974056506).
 
 Next bounded continuation reuses the full-UX owner for read-only Nodes roster /
 View node and Kubernetes context/node inventory only. Return source-bound dense,
@@ -43,7 +44,7 @@ qualifies exact corrected source. All 42 protected baseline inputs stay unchange
 No ownership/borrower/bootstrap/worker/startup integration is added; `arm start`
 and actual A-to-B API/UI job preservation remain mandatory completion gates.
 
-## Private unbound native lifetime — source pending independent review
+## Private unbound native lifetime — independently reviewed composition
 
 Owner: `codex/resident-native-lifetime`, from accepted
 `b065f222a387b2b1f43cc94fd5be398eccc72319`. The private
@@ -58,6 +59,29 @@ The [focused evidence](validation/resident-native-lifetime-2026-10-29.json)
 qualifies synthetic real-native fixtures only. Actual Manager/Server binding,
 local stop revision/bootstrap, borrowed-lifetime closure/admission, `arm start`
 and real A-to-B API/UI job preservation remain unimplemented completion gates.
+
+Original `222155b` plus separate correction `de743a7` compose on `99c4fc8`, with
+all 42 protected and two corrected hashes verified and accepted UI bytes retained.
+Independent normal/race each pass seven roots / 39 nodes, including 26 native and
+two fixture closure receipts with no unknowns. Vet and Linux compilation pass;
+both single-predicate controls reproduce real oversized acquisition and positive
+cleanup. No blocking source finding remains; see the
+[composed record](validation/resident-native-lifetime-composed-2026-10-29.json).
+
+Next existing-owner scope is a narrow source-only binding/closure contract before
+exporting the primitive or adding callers. Trace actual Serve directory/lock
+ownership, Manager open/Close, original Server joins and every partial-failure
+return. Specify who alone owns retirement, what non-retiring views borrowers
+receive, and how actual original completion or retained uncertainty prevents
+premature lock release. Current unconditional unlock/close defers and a returned
+Close error are not automatically a future borrowed-lifetime join proof. Define
+exact issuer/callsite/signature and mesh-independent local stop-revision origin;
+reject arbitrary supplied FDs, callbacks, booleans or reconstructed identities.
+Keep initial prepared-home/format approval and legacy idle adoption explicit.
+Reference accepted transaction/resource/API/assets and `arm start` completion
+gates without repeating the broad architecture. Only focused design/evidence/
+PLAN/IMPLEMENTATION/VALIDATION docs are allocated; no code/API export, source
+caller/refactor, test/build/native launch, migration, install or shared state.
 
 ## Reserved worker refusal guards — independently reviewed source
 

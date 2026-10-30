@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "status": "Independently validated private unbound native primitive; no production binding or worker activation",
+  "owner_commits": [
+    "222155b18147284497ea6ff7c9f1f7cbe970b66d",
+    "de743a7d5d52cd9e78413b56b39c6a48c9a291bf"
+  ],
+  "composed_on": "99c4fc8a831f7dacc5ba55b35e80a853b49a17ef",
+  "tested_review_commit": "67e90f01dddb2646d80c4b002c0500249e0ad6a7",
+  "owner_record": "docs/validation/resident-native-path-bounds-2026-10-29.json",
+  "owner_record_sha256": "49e4cd8f25a6b45d67817fa2400002f168e377d5661ff41f164e5be043c27ef2",
+  "corrected_source_sha256": {
+    "internal/authoritylifetime/lifetime.go": "f4ea2af1666d5d3f846e093b76c5108f62ef758e54641e8a41d69620803e3cfe",
+    "internal/authoritylifetime/lifetime_test.go": "37d79c6a90745420842c5c8e40dfe75e4659889072fccacd92d3d9e042591472"
+  },
+  "protected_input_count": 42,
+  "protected_input_inventory": "Owner record; every hash verified against current composition",
+  "review": "No blocking finding in original receiver/account/path/type/link/lock/slot/sticky-failure or native-close ownership; byte limit precedes whole-input work",
+  "source_api": "Private constructor/type/validation/retirement; only standard Error/Unwrap methods on private error; no production imports or initializer",
+  "normal_race_roots": 7,
+  "normal_race_nodes": 39,
+  "roster_match": "Exact owner test-name set, no failures/skips",
+  "cohorts": [
+    {
+      "phase": "normal",
+      "exit": 0,
+      "seconds": 0.683
+    },
+    {
+      "phase": "race",
+      "exit": 0,
+      "seconds": 1.731
+    },
+    {
+      "phase": "vet",
+      "exit": 0,
+      "seconds": 0.216
+    },
+    {
+      "phase": "linux-compile",
+      "exit": 0,
+      "seconds": 0.548,
+      "compile_only_artifact_sha256": "83925ab2c83724fa747581863c26f421d833264eb3d9fb31023480ece08f3b4a"
+    },
+    {
+      "phase": "control-byte",
+      "exit": 1,
+      "seconds": 0.589,
+      "effective_source_sha256": "c42f26b4c24052f4e1cad96d36af75801d074b7a8dc2d4bcbf3fe0bbdf76174b",
+      "expected_failure": "policy cap did not refuse before native ownership"
+    },
+    {
+      "phase": "control-parts",
+      "exit": 1,
+      "seconds": 0.713,
+      "effective_source_sha256": "46aa1cca13bc3614cc1e518ca23048b8d6e872d3c0dbeb999d8f3f967482c423",
+      "expected_failure": "policy cap did not refuse before native ownership"
+    }
+  ],
+  "cleanup": {
+    "normal": {
+      "native_receipts": 26,
+      "fixture_receipts": 2,
+      "opened_equal_closed": true,
+      "unknowns": 0,
+      "fixture_removal": "Reached post-removal receipt with passing cleanup checks"
+    },
+    "race": {
+      "native_receipts": 26,
+      "fixture_receipts": 2,
+      "opened_equal_closed": true,
+      "unknowns": 0,
+      "fixture_removal": "Reached post-removal receipt with passing cleanup checks"
+    },
+    "control-byte": {
+      "native_receipts": 2,
+      "fixture_receipts": 1,
+      "opened_equal_closed": true,
+      "unknowns": 0,
+      "fixture_removal": "Reached post-removal receipt with passing cleanup checks"
+    },
+    "control-parts": {
+      "native_receipts": 2,
+      "fixture_receipts": 1,
+      "opened_equal_closed": true,
+      "unknowns": 0,
+      "fixture_removal": "Reached post-removal receipt with passing cleanup checks"
+    }
+  },
+  "causal_controls": "Each independently removes and canonically formats one predicate; bytes match captured hashes, tests observe actual excess-path acquisition and positively retire it before fixture removal",
+  "initial_reviewer_attempt": {
+    "scope": "Control reconstruction hash mismatch from noncanonical whitespace before any test/native fixture started",
+    "retained_privately": true,
+    "correction": "gofmt yields exact source-qualified overlay hash; no worktree change"
+  },
+  "limits": [
+    "Actual existing byte witness exceeds4096 bytes with22 total parts; component witness has65 parts with short legal components and remains below4096 bytes. Both execute without skip on the qualified host.",
+    "The byte fixture reports unsupported native creation/open as a platform limit, not successful proof; no assumption of cross-platform runtime support.",
+    "Policy correction tests retain unexpected returned original handles through positive retirement; uncertain retirement preserves the owned fixture rather than deleting it.",
+    "No benchmark, huge input allocation, platform Close-error injection or privilege-dependent foreign-owner fixture added. Those native fault/account limitations remain unchanged.",
+    "No production caller, borrower/Manager/Server bootstrap/stop binding, worker/staging/controller/schema/module/install/default state or arm start scope.",
+    "arm start initial/repeated wiring and actual A-to-B API/UI active-job preservation remain incomplete.",
+    "Current accepted UI/assets remain exact during composition; documentation conflicts retain both records",
+    "Native closure is not a borrowed Manager/Server/task/resource join witness; no production caller or API export",
+    "No full-Go, actual Linux/native worker or installed-runtime acceptance"
+  ],
+  "method": {
+    "queue": "Original shared FIFO defaults and sequential original exits",
+    "active_limit_seconds": 115,
+    "cpu_allocation_ceiling": 2,
+    "memory_allocation_ceiling": "2GiB; GOMEMLIMIT1536MiB target is not hard RSS proof",
+    "arm_lease_or_grant": false
+  },
+  "remaining_gates": [
+    "Actual original Manager/Server borrower and closure binding/local stop revision",
+    "Reviewed format/bootstrap/prepared-home and dedicated reservation/intent/lifetime",
+    "Admitted staging/runtime profiles, native worker/controller and stop activation",
+    "arm start initial/repeated integration and actual compatible distinct-version API/UI replacement preserving jobs"
+  ]
+}

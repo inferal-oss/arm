@@ -35,6 +35,7 @@ are not universal zoom; native fixed fonts and tall-form scrolling are qualified
 See the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
 Private native build is not installed/executed. No maximum-density/every-theme/
 language, full-Go/Linux runtime, real auth/transport, TUI or complete UX claim.
+Integration `99c4fc8` passes its [public source workflow](https://github.com/inferal-oss/arm/actions/runs/40974056506).
 
 ## Native path bounds — meaningful correction qualification
 
@@ -54,6 +55,32 @@ all 42 protected unchanged inputs are recorded. Original/earlier receipts remain
 private and preserved. No huge-allocation benchmark or native Close-error/account
 fault fixture is added; Linux remains compile-only. No production/borrower/
 bootstrap/worker or `arm start`/A-to-B completion follows.
+
+Independent composition of `222155b` / `de743a7` on `99c4fc8` preserves all 42
+protected inputs and verifies the two corrected files. Additive documentation
+conflicts retain accepted UI and native records. Review finds no blocking issue
+in private original receivers, account/path/type/link checks, exclusive-lock
+custody, four-slot accounting, sticky failure or successful-close-only retirement.
+The byte cap precedes normalization; meaningful native fixtures isolate both caps.
+
+Fresh sequential original-FIFO normal/race each pass seven roots / 39 nodes,
+zero failures/skips, in 0.683 s / 1.731 s. Each has 26 complete native closure and
+two complete fixture cleanup receipts, opened equals closed and zero unknowns.
+Package vet passes in 0.216 s; Linux amd64 test compilation in 0.548 s, unexecuted.
+Hash-matched byte-only/component-only overlays each reproduce the intended failed
+test after actual acquisition in 0.589 s / 0.713 s, then retire both originals and
+remove their fixtures positively. The first reviewer overlay reconstruction lacks
+canonical whitespace and fails its hash check before any test; retained privately,
+then corrected with gofmt to the exact independently verified overlay bytes.
+No worktree source changes during validation.
+
+The [composed record](validation/resident-native-lifetime-composed-2026-10-29.json)
+qualifies these queued commands, not ARM grants. There is no production factory/
+caller/borrower or initializer; private error Error/Unwrap methods expose no native
+authority. Foreign-owner/native-close faults remain source-reviewed, Linux runtime
+unverified, and filesystem calls have no claimed deadline or RSS guarantee.
+No worker/bootstrap/format activation, installed change, `arm start` integration
+or actual API/UI replacement is accepted from this primitive.
 
 ## Private native lifetime — focused synthetic native qualification
 
