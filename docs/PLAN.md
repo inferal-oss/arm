@@ -2865,3 +2865,20 @@ candidates for review, preserving legacy behavior and original child ownership.
 
 Startup correction main `4328297` passed its push-triggered Pages workflow;
 that CI result does not establish resident/worker or job-survival acceptance.
+
+
+## Shared terminal direct fixture — reviewed execution allocation
+
+Owner `codex/ux-terminal-direct-fixture` source `a79462d` passed independent
+review of its model/read/mouse/command/local-effect boundaries. All fifty
+classified input hashes still match accepted main; the new fixture and plan
+hashes agree with the handoff. No product change or rendered-terminal result
+is accepted yet. The owner receives one normal-FIFO compile/direct-model run,
+115s total with a 75s test timeout, at most two CPU targets and a 2 GiB memory
+target. It uses fresh private synthetic homes and retained bounded outputs,
+strict inspect/runs/run_output replies and audited synchronous closures only.
+No native session/backend, Init/Run/program, browser/PTY, confirmation or
+preference write is allocated. Preserve and report any original failure before
+replacement. Direct View.Content snapshots cannot establish actual terminal
+cell/glyph/focus/loop or process cleanup. PTY/replay and UX remediation remain
+next gates after concrete results.
