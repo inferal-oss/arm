@@ -1145,3 +1145,111 @@ preparation records above are historical; the completed outcome is the new
 normalized result. This closes the selected ordinary remediation gate only.
 Native45 Program/PTY/rendering/physical cursor/font and full-UX gates remain open;
 accepted historical72 evidence and selectors/plans/classifier are not relabelled.
+
+
+## Native45 filter lifecycle — source-bound design proposal
+
+The [native45 proposal](validation/ux-terminal-filter-shell-proposal-2026-10-30.json)
+pins 65 existing reviewed source members and specifies an eventual additive
+69-member cut: a new fixture entry, capture driver, replay driver and proposal.
+Those three native45 implementation files do not yet exist; no runnable binding,
+compile or native result is claimed. The current strict helper rejects45/wheel
+and the accepted72 observer/driver has different workflow assumptions, so its
+entry/guards/classifier/plans remain unedited.
+
+The proposed fixed45x14 case has eight actual PTY-prefix checkpoints: carried
+list scroll, focused filter, readable help, q text/edit visibility, apply,
+discard draft, cancel and reopened footer-ready filter. The final original
+footer press must produce the exact original Quit command/message and normal
+Program return. Actual model/input/callback identity, complete row comparison
+(112rows/eight inspected PNGs), original child/termios/EOF/browser cleanup and
+cumulative eight-runtime-container16MiB accounting are required. Source design,
+additive implementation, fresh compile binding and runtime/browser allocation
+remain separate review gates. No new executable source, native entry, PTY,
+browser, resource window, native45 acceptance or full-UX completion occurred.
+
+
+## Native45 filter lifecycle — additive source implementation prepared
+
+The [native45 binding](validation/ux-terminal-filter-shell-proposal-2026-10-30.json)
+now describes three additive implemented source files: a separate fixed45x14
+Program adapter, a capture driver and a replay driver. The 65 pre-existing
+member hashes and exact69member path set are explicit; a private review packet
+contains actual digests for all69members. No accepted72helper, entry, selector,
+classifier or historical native plan is edited. The original45source design
+record above is historical; no compile or native result is implied by source
+implementation.
+
+The new adapter keeps one original dashboard pointer and wrapper, suppresses
+production Init, forwards original typed q Text, admits only the bounded filter
+lifecycle and exact native wheel/footer callbacks, and returns the original
+named Quit command from the final footer. It observes actual original output
+writes/descriptors/ranges without substituting model text as terminal input.
+Capture retains eight real PTY prefixes and original action/write returns,
+requires actual help-row coverage, and retains the original child handle under
+cleanup before launch. Normal finish sends no q/Ctrl+C fallback. Source/input
+postchecks run even after failure; forced, truncated or unknown cleanup fails.
+
+Replay uses those original prefixes in pinned xterm, preserves original cells
+and eight PNGs before semantic assertions, requires all112row comparisons and
+actual field/help/footer geometry, and retains the reviewed original browser
+promise/process cleanup pattern. Both drivers account for the entire explicit
+fresh runtime budget directory plus all eight immutable historical runtime
+containers. No wrapper/tool temporary is hidden in the metadata reserve.
+
+Formatting, Python AST without import and JavaScript syntax-only checks are
+source checks, not typechecking, compilation or execution of the fixture/driver.
+Independent final source/binding review, a fresh separately allocated compile
+receipt/binary, reviewed runtime wrapper and Program/PTY/browser allocation,
+original lifecycle cleanup and inspection of all eight PNGs remain required.
+No native45 or full-UX acceptance is claimed.
+
+
+Native45 source review follow-up tightened the original-handle failure path and
+positive receipt gates before compilation: failed kill requests no longer skip
+the final retained child wait; compile0 is typed; actual binary/source paths are
+regular nonsymlink files; every descriptor observation must exist and be true;
+all three typed mouse frames are recorded; and replay checks exact action order
+and monotonic source-prefix offsets. These changes affect only the additive
+native45 fixture/drivers/binding. The existing product and accepted72 sources
+remain byte-exact. No compile/native or browser execution has occurred.
+
+
+## Native45 filter lifecycle — actual compile, runtime and paint accepted
+
+The [normalized native45 result](validation/ux-terminal-filter-shell-native-2026-10-30.json)
+binds exact owner source `5f8dbb353c364f66cdb245c8a712e55f8776e370`, the
+69-member native binding and a fresh original binary (`d306abd5…`). One
+compile-only command returned0 with normal original compiler/helper/FIFO joins;
+no test or native entry ran in that compilation window. The subsequent separately
+allocated original native45 capture and conditional replay both returned0.
+
+All eight actual PTY prefixes and112emulator rows passed. All eight original
+410x256PNGs were inspected at original resolution, and independent review
+accepted the selected paint scope. The carried list offset4 becomes filter
+field offset0; wheel offset4 exposes all8form rows across the two reading
+prefixes; typing q restores the visible field as probe-draftq. Apply, discarded
+draft, cancel-retained filter and reopen behavior are visible. The actual
+ctrl+c Exit footer is readable and its single original press returns the
+original named Quit, observed QuitMsg and normal Program result.
+
+Original Program/child/inside/FIFO and browser process handles joined normally;
+no forced, cancelled, truncated, pending or unknown cleanup was accepted.
+Original terminal mode restoration, slave/master closure and actual final EOF
+were positive; fake calls/reads/active/forbidden operations stayed zero and
+owned fake/context cleanup completed. All18prior artifact sets, source69 plus
+preparation guards, metadata/telemetry and package/tool bindings remained exact;
+tool/capture temporaries are empty. Outer time was12564ms. Eight historical
+runtime containers plus the whole new runtime output total14324481bytes;
+with6793bytes of paint-review metadata and131072reserve the combined14462346
+remains below16MiB. The window is released and original50manifest artifacts
+remain immutable. Earlier959/973failed scopes and accepted72native evidence
+remain unchanged and source-scoped.
+
+This evidence establishes the exact owner revision and selected fixed45filter
+lifecycle. It does not assert that every owner dependency matches a later
+integration revision; composed-source dependency review and appropriate
+validation remain separate. Physical terminal/font/cursor/platform/Unicode,
+production startup/auth/backend, broader routes/states and full UX acceptance
+are not implied. Source-only records above describe preparation history; the
+new normalized record is the completed outcome for this bounded scope.
