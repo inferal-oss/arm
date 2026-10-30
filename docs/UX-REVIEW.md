@@ -513,3 +513,25 @@ Coordinator review must approve the concrete no-effect dependency seam and
 viewport/state window before fixture or runtime work. No width-cap-only defect,
 private cleanup rewrite, real screen/credentials/clipboard, new task/subagent,
 peer monitoring, merge/push or live/full UX acceptance is included.
+
+
+## Screen inventory candidate S1: dialogs and full view
+
+The [synthetic native UI inventory](validation/ux-screen-inventory-2026-10-29.json)
+continues this review's existing Screen coverage. The accepted stacked private
+fields/native footer remain unchanged. Mode/account, empty auth prompts, viewer/
+fullViewport and clipboard-control states are sampled at four geometries with
+strict no-effect dependencies; no real Screen Sharing sign-in occurs.
+
+Candidate S1: native Clipboard dialogs at all four geometries and the desktop
+empty-auth dialog have fitting boxes but failed sampled control-center hits
+while the viewer's stock fullViewport popover is active. Screenshots support
+obscuration; inline counterparts hit correctly. Escape dismisses the dialog
+first, then exits full view. Exact winning elements and exhaustive paint/focus
+coverage are unknown. This is separate from a field/footer layout regression.
+
+The smallest proposed review boundary is existing Screen dialog-open/fullView
+presentation arbitration. No product, engine, GraphUI/main, private-input/auth
+lifecycle or remediation change is implemented. Top-layer sticky-clip inference
+and native caption/value-glyph limits are explicitly excluded from conclusions.
+Independent review and a separate correction/live acceptance window remain open.

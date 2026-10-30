@@ -2622,3 +2622,50 @@ parent/references/API. Nonsecret separate-account seeds and bounded clipboard
 sentinels<=4KiB are allowed; populated auth submission and all real
 screen/clipboard/network/input/native effects are forbidden. Product
 source/build/setup and further execution remain unallocated.
+
+
+## Screen Sharing synthetic inventory owner handoff
+
+The existing `codex/ux-screen-inventory` branch preserves source-only commit
+`f0f0922d7f81b89b20f623e4fb874944e25bdc99` and continues with the explicitly
+approved loader/navigator fixture seam. The
+[native UI inventory](validation/ux-screen-inventory-2026-10-29.json) records
+two original cohorts/four geometries with 42 matching inputs and 39 prior inputs
+byte-exact to the selected product base. No product or accepted private-field/
+footer change occurs. All completed branches/evidence remain frozen.
+
+Candidate S1 concerns native auth/Clipboard dialogs opened while Screen's stock
+fullViewport popover is active: fitting allocations but failed modal control
+center hits and sampled screenshots support obscuration. Exact hit winners,
+complete focus/pixel coverage and real client behavior remain unknown. Existing
+app dialog-open/fullView presentation arbitration is the smallest proposed review
+boundary; no correction or new runtime window is assigned. Central composition/
+review and any separately allocated remediation/live acceptance remain open.
+
+
+## Screen inventory — independent review accepted
+
+Owner `e27b7c7` passes [composition
+review](validation/ux-screen-inventory-composed-2026-10-29.json): all 42
+inputs/current 39 prior inputs and 127 private artifacts match, actual
+fixtures/parents/effect boundaries and three contrasting rasters inspected. S1
+is accepted for the sampled fullViewport/Clipboard and desktop auth
+intersections. Top-layer sticky-bar clip metrics and uncollected hit/focus/glyph
+facts remain excluded. Product source is unchanged; remediation is still
+pending.
+
+
+## Upgrade first production correction — assigned
+
+The upgrade owner continues on `codex/resident-start-identity` from `3064be2`.
+Only the real CLI existing-endpoint/startup authority checks and post-Start
+polling/cancellation reporting are allocated. Explicit endpoint absence stays
+distinct from unknown read/status outcomes; post-launch readiness must verify
+the actual selected home/owner/directory/generation. Cancellation after Start
+keeps typed startup uncertainty and exit130, while pre-launch interruption stays
+ordinary. One expected-red focused cohort and one final focused normal/race/vet/
+native-build cohort use the unchanged FIFO<=115s, CPU<=2/memory target<=2GiB.
+Task-owned loopback fixtures only, no detached/default/installed daemon or jobs.
+No first-launch serialization/native handoff/worker readiness or resident
+activation is claimed. Dependency retention API, funding/exhaustion and ledger
+layout remain proposals; no module/fork/binding/schema/bootstrap policy change.
