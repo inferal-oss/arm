@@ -1,5 +1,37 @@
 # Validation record
 
+## Lifetime binding contract — source inspection/documentation only
+
+The [contract](design/resident-lifetime-binding.md) and
+[reference inventory](validation/resident-lifetime-binding-contract-2026-10-29.json)
+trace accepted `5066fe9df90e0b8adf58bf9ac1b959842bdd3ba6`. The prior correction
+inventory is reused by exact file/revision/hash for its 44 unchanged source inputs;
+additional inspected startup/close/protocol sources are hashed separately. No raw
+execution/cleanup receipt payload is duplicated. Existing native evidence remains
+unbound-only; source descriptions and resolving links add no runtime proof.
+
+No Go/source/API export/refactor/schema/module change, build/test/browser/native
+operation/admission/install/environment/default/shared-state work or new window
+occurs. Proposed borrower positive factories, complete closure/error retention,
+local revision/bootstrap and `arm start`/real A-to-B completion still need source
+review and separately allocated implementation/validation.
+The five-document scope, reused 44 protected hashes plus 26 additional inspected
+source hashes, 36 local links / 29 source-line anchors, added-line privacy and
+whitespace checks pass. The dependency/export shape is proposed source design;
+no compile or runtime acceptance is inferred from these document checks.
+
+Independent current-main composition rechecks all 70 inputs and the exact reused
+inventory digest, five owner documentation paths, 36 local links / 29 anchors,
+privacy and whitespace. Inspection confirms the current Serve/Manager close,
+borrowed-flock and partial-owner gaps and accepts the proposed acyclic nested
+issuer/view direction without compiling or activating it. The additional presence
+core input shows why nil Publication.Close and repeated Directory.Close cannot
+be promoted to original cleanup proof. This is a source-contract qualification,
+not a new presence runtime result; the
+[review record](validation/resident-lifetime-binding-composed-2026-10-29.json)
+retains the extra source hash. No blocking documentation issue remains, while
+positive adapters/diagnosis/format/bootstrap and `arm start`/A-to-B gates stay open.
+
 ## Shared dialogs — independent composition
 
 Inventory `be9af44` and four focused corrections through `8625002` compose on

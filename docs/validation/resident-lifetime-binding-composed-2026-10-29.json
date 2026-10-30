@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "status": "Independently reviewed documentation contract; no native borrower implementation",
+  "owner_commit": "b9ad962fcead72d3550ad2100542dddc4fe60494",
+  "composed_on": "33dd4a31f0fe97309bab382c5d503afb6ac75883",
+  "owner_inventory": "docs/validation/resident-lifetime-binding-contract-2026-10-29.json",
+  "owner_inventory_sha256": "e8e4b46d64b787940fa870c9bd180319cc43a8bb65ade96dc803d63ac9473249",
+  "verified_owner_sources": 70,
+  "reused_sources": 44,
+  "owner_added_local_links": 36,
+  "owner_line_anchors": 29,
+  "additional_inspected_source_sha256": {
+    "internal/presence/presence.go": "9780c6aca670bebd7c98806707b6b8dc2e8e2251fd8cbaef904af58ea868c61b"
+  },
+  "contract_sha256": "1f2ab6b820265cee6882108db3d7536f67ce2181b59005e91ea0ced94a4d1b5d",
+  "review": "No blocking contract issue; nested issuer/view direction and sole trusted-root retirement callsite accepted as proposed design only",
+  "qualification": "Publication.Close returns nil on announcement-read errors; Directory.Close can retire its descriptor before reporting a native error. Future receipts must preserve original outcomes/partial effects; nil or repeated Close is not cleanup proof.",
+  "production_source_changed": false,
+  "runtime_evidence_added": false,
+  "remaining_gates": [
+    "Actual pending Manager/Server/image holders and positive original closure adapters",
+    "Mesh-independent revision, retained pre-publication diagnosis and core-exit policy",
+    "Prepared-home and format approval plus native/resource/artifact bootstrap",
+    "arm start initial/repeated wiring and real compatible distinct-version API/UI active-job preservation"
+  ],
+  "next_scope": "Private pure untrusted candidate manifest parsing/canonical commitment; no filesystem/approval/admission/staging or production caller",
+  "limitations": [
+    "Source inspection, links and privacy checks only; no compile/native test or active binding proof",
+    "Native process-local custody cannot survive external core kill/crash by assertion",
+    "No lifecycle export/refactor, package operation, install or shared state is authorized by this record"
+  ]
+}

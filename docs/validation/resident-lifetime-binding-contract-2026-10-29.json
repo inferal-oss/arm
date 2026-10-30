@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "status": "Incremental lifetime binding/closure source contract; review pending, no runtime evidence",
+  "baseline_commit": "5066fe9df90e0b8adf58bf9ac1b959842bdd3ba6",
+  "reused_protected_inventory": {
+    "path": "docs/validation/resident-native-path-bounds-2026-10-29.json",
+    "revision": "5066fe9df90e0b8adf58bf9ac1b959842bdd3ba6",
+    "sha256": "49e4cd8f25a6b45d67817fa2400002f168e377d5661ff41f164e5be043c27ef2",
+    "source_fields": [
+      "protected_baseline_sha256",
+      "corrected_source_sha256"
+    ],
+    "verified_unchanged_sources": 44
+  },
+  "additional_inspected_source_sha256": {
+    "internal/cli/startup_inspect.go": "7076fa72445d9edcca3381ef87e2437f40b7b850784c1d319728b595751ec728",
+    "internal/local/local.go": "cad921688f833ed4f57adecdf01e02dac467327078ac985e2ef49283d12eeebe",
+    "internal/manager/daemon_config.go": "19fae06c4ab8cca98cf1ac4e023d3f669ee12fcc781214078633aac0c2487f94",
+    "internal/manager/forward_listener.go": "66c3dbef87c55d8cb1b76a2420279dcac0ff702fb1b6d07a3e86da04b9f114a8",
+    "internal/manager/relay_transit.go": "4e0b0133cbc21ee8250b4a56df1c11b3e04403ed1543ad3d93af8822e1de765c",
+    "internal/manager/workspace_lifecycle.go": "6ca92089d275963f69d1dd486e23380c50735aed08edb3acaac2006b4df7e368",
+    "internal/meshops/service.go": "a072a8525dddc8e2f0ddc3b6d1a0b5927ad32b0c62cc7ca30039530a5ef6f051",
+    "internal/server/browser.go": "41ff1f15529800531972e9a9a2ee6ccec7b6b35137cda218154a6df7c9c4a62a",
+    "internal/server/mesh.go": "a1d90883c177d6aaff31343b8e40ec9e630dc6eb5ff94cae7b3894cfc83837b9",
+    "internal/server/mesh_availability.go": "e51d456a2953ca25d0970600feadf711e510ab164dd1bf0886aafbe99646f482",
+    "internal/server/mesh_close.go": "eaab5a4e529a34ca82353c3adeaea26f75ba8cc2d0ac549e895439f65f51d70c",
+    "internal/server/mesh_forward_source.go": "12d90ba20cc860e684ff3dc1b91d408d5f36e9b7150080d894c93e48d6d64dac",
+    "internal/server/mesh_operator.go": "323537ddf9589c0ba4a4e4d5fe078815c1e6809e80a92bbb3108c092168d2a6c",
+    "internal/server/mesh_ssh_route.go": "2c67166b0a1d0fb617bb7f99b5374ff5f88aa6522acfc6e0d07bc20cf1e00a4c",
+    "internal/server/node_stop_availability.go": "3af413d8ffca3cb2ba86195ce8a6a1d8950df1212dd4b4da5e6ffb6936b2c641",
+    "internal/server/node_stop_marker.go": "e372557ec0b0b1a58a99b65173e4377f0fc4a2ee4de168671017e5b64f354a3f",
+    "internal/server/node_stop_startup.go": "eb1b3af1983e5296caeab6c6f0589b03b5084086ca8735cf04839c70116a8c73",
+    "internal/server/presence.go": "9273bdf42e5a4039a54fd3613f6f68b577289785b49d51e422b742b3c3f3b4b9",
+    "internal/server/screen.go": "17c87b12fe077980293c252195b58c9fab0deb4f2763177b410b32ed37962488",
+    "internal/server/screen_resources.go": "105771e584613021940df67251e51514a681499f30fdb60b16893ef87c22bad9",
+    "internal/server/workspace_graph_cache.go": "13c5790ccf138f75c93747fa971c6f151e36ff1d93dc2c5862facb6bd7e8c026",
+    "internal/server/workspace_lifecycle.go": "2531dd0981dfc0efe6465a1d6efa95ac27f9ebffde0cb5abbb345893aa70498c",
+    "internal/server/workspace_route_transport.go": "8c8278ac0855ca3581e275ac90fa8f0aa5e3c7ade6cb5eecb5e22219b3ad8ea0",
+    "internal/server/workspace_transport.go": "fd4e406f0acc2b8dcd4afbd8eff2c68c2ab17ce07000c0e4a78f33a6dc6082f1",
+    "internal/workspaceroute/carrier.go": "407fe4d7e8151b11e5b23cc514061c91a71e56ffce25a325f08b2ed2d437773d",
+    "internal/workspacetransport/stream.go": "22ff7d77a51e46ad952ac2361c10b3c06f1e8b3108de7468b797efc7b7ce300f"
+  },
+  "total_verified_source_count": 70,
+  "actual_source_gaps": [
+    "Serve unconditionally unlocks/closes native handles after collected teardown errors.",
+    "Current Manager.Close can return debt/errors after closing SQLite; nil/error Manager open can discard partial objects; repeating Close is not a join protocol.",
+    "Presence native close errors are ignored; void closes and generic HTTP timeout/Close do not provide all original borrower facts.",
+    "Existing StartupRead.checkLock reasserts flock on a raw borrowed os.File; a non-retiring bound adapter cannot simply wrap it unchanged.",
+    "Node-stop boundary can be absent without mesh; a local revision cannot be inferred from that absence.",
+    "Current CLI start reuses monolithic backend or releases the spawned backend process handle; no bound worker-capable start/retained outcome flow exists."
+  ],
+  "proposed_boundary": "Private Serve root retains sole issuer/retirement authority; nested server/internal/nativeowner plus public leaf view aliases prevent Manager/database from importing the issuer without a package cycle. Borrowers get registered non-retiring views, no original FD/Close or arbitrary proof callback.",
+  "typed_factories_missing": [
+    "original pending Manager/Server/image holders before effects",
+    "actual private original domain closure records and root retirement permit",
+    "distinct never-admitted startup abort and explicit unissued-role proof",
+    "concrete mesh-independent desired revision atomically bound to bootstrap/policy and both original role views",
+    "bounded reachable retained/error mode and diagnosis before publication",
+    "reviewed prepared existing home/lock creation, format4 bound-writer approval and first/repeated arm start wiring"
+  ],
+  "closure_policy": "Begin cancellation in all original borrowers before joining; join Server transports/workflows before Manager DB closure, preserve native/ledger settlement debt and original helper image until consumers complete. Never translate Close error, timeout, nil holder, record disappearance or serialized flag into retirement authority. Retain reachable original owner and lock on uncertainty while process lives.",
+  "core_exit_limit": "External kill/crash/power loss can destroy process-local handles/release flock without borrower completion; no reconstructed waiters or seamless core-exit upgrade. Durable unknowns refuse automatic adoption.",
+  "references_existing_gates": [
+    "resident-worker-transaction.md",
+    "resident-worker-owner.md"
+  ],
+  "runtime_evidence_added": false,
+  "scope": "Only design/evidence and PLAN/IMPLEMENTATION/VALIDATION documentation; no source/export/refactor/schema/module/build/test/native/browser/admission/install/environment/default/shared state or new window.",
+  "documentation_checks": {
+    "changed_documentation_paths": 5,
+    "reused_protected_source_hashes": 44,
+    "additional_source_hashes": 26,
+    "total_verified_source_hashes": 70,
+    "local_links_checked": 36,
+    "source_line_anchors_checked": 29,
+    "privacy_added_lines": "pass",
+    "whitespace": "pass",
+    "source_runtime_changes": false,
+    "builds_tests_native_runs": false
+  }
+}
