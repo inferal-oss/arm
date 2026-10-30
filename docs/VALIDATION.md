@@ -1,5 +1,70 @@
 # Validation record
 
+## Start authority correction — final source scoped checks
+
+On the unchanged original function from `3064be2`, one focused expected-red
+cohort reproduced all three erroneous absent/nil results: malformed endpoint,
+unreadable endpoint and failed status. It called the inspection function only;
+no default or unknown daemon was launched. The original command exited with the
+expected test failure in 64.670 seconds including cold compilation. This is a
+component-level causal witness, not a public end-to-end launch reproduction.
+
+The first fixed-source normal cohort failed in 22.610 seconds, with 17 passing
+roots/35 named passes and no skips. New public-start/identity fixtures failed the
+existing private-directory guard before reaching intended assertions. Only their
+setup changed to create explicit private homes; production policy was unchanged.
+The corrected intermediate source then passed normal and race, each with 20
+roots/48 named tests. Its cold race used 113.747 active seconds, leaving too
+little of that allocation for vet/build, which were not submitted. These source
+snapshots and all original failed/red receipts remain separately preserved.
+
+Final source adds the reviewed failed-ENOENT leaf `Lstat` check, a dangling-name
+regression and an owned daemon lock in public negative startup fixtures. The
+latter prevents a detached test daemon even if inspection regresses. A new
+bounded allocation ran the following phases once each, sequentially through the
+existing FIFO, on unchanged final Go/module inputs:
+
+| Final phase | Result | Active elapsed upper bound | Wall including queue |
+| --- | --- | --- | --- |
+| Scoped CLI normal | 21 roots/49 named, no failures/skips | 24.401s | 24.507s |
+| Same scoped CLI race | 21 roots/49 named, no failures/skips | 25.993s | 26.098s |
+| Affected CLI vet | Pass, no diagnostics | 15.559s | 15.647s |
+| Native CLI compile/link | Pass, no diagnostics | 2.414s | 2.508s |
+
+Cumulative active upper bounds total 68.367s within 115s. Each original external
+command exited and was joined. Sampled owned cache plus temporary storage peaked
+at 1,999,044,608 bytes, below 2 GiB; final temporary directories are empty. Runs
+use one Go scheduler thread, one build worker and a 1536 MiB Go memory target;
+these settings are not hard OS CPU/memory limits or independent RSS measurements.
+The native build uses `CGO_ENABLED=0`, `-p=1`, `-ldflags=-w` and output to
+`/dev/null`: native linking is checked without retained executable bytes, binary
+invocation or installation. No default ARM state or actual job was changed.
+
+The scoped filter includes actual authority reuse/budgets, absence and dangling
+names, each identity field, endpoint replacement, post-launch status-only refusal,
+hard backend/stop/drain/config intent, whole/parent deadlines and typed startup
+uncertainty through wrapped/unwrapped human/JSON shared interruption output.
+Owned loopback handlers close and join before their temporary homes are removed.
+It also retains existing stopped-start/configuration, shared interruption and
+final-shutdown regressions. Formatting and diff whitespace checks pass.
+
+Final checked source SHA-256 manifest:
+
+| Input | SHA-256 |
+| --- | --- |
+| `internal/cli/cli.go` | `8f4e4db7456fbff71c9db5ece44399a0a1b8d3c34a48ffbdaec85e9bf27ee35a` |
+| `internal/cli/startup_inspect.go` | `a3b819176a1742d02613885cffb9accf39e2abd73e7483886a28bc555d997445` |
+| `internal/cli/startup_uncertainty_test.go` | `380a49d37ce2c3d64f2f47ab363a1a5a3eb09bf80590df9e587a0ae08556b7d5` |
+| `internal/cli/startup_readiness_test.go` | `f770c6c14c8f1081bcb2c2329b2a417550592c67204972e803960d974abcfb4a` |
+| `go.mod` | `0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7` |
+| `go.sum` | `e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6` |
+
+Independent integration review remains pending. Leaf-name observation is not an
+atomic absence/launch fence. No absent-launch serialization, worker readiness,
+native custody transfer, installation, broad-suite, Linux qualification or
+actual distinct-version API/UI active-job acceptance is inferred. Full public
+`arm start` orchestration and job-preserving worker replacement remain required.
+
 ## Local package contract — source/document checks only
 
 The [contract](design/resident-local-package.md) and
@@ -10145,3 +10210,15 @@ was executed. No source remediation or existing capture modification occurred.
 No old test/capture becomes current terminal acceptance. Model frames alone
 cannot prove actual loop/terminal paint or any goroutine/process/OS cleanup.
 Independent source review and future execution gates remain open.
+
+
+## Start authority correction — independent composition
+
+The [composed record](validation/start-authority-composed-2026-10-29.json) binds
+owner `8dae028` and composed `d0e950e`. All 1,761 Go/module inputs match the
+owner source; selected normal checks pass 21 roots/49 named tests and native
+linking passes against current embedded assets. Total active check time is
+32.256s. Source is unchanged and fixture temporary storage is empty. Owner final
+race/vet receipt hashes were independently checked; no redundant race replay
+was needed for identical Go inputs. No binary invocation/installation, default
+state, Linux/full-suite or actual job-preserving upgrade acceptance follows.

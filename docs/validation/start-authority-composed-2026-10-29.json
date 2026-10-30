@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "scope": "Independent composed startup correction review and selected normal tests/native linking",
+  "ownerCommit": "8dae028be20c61ea9dbac55492042c00251fcdb5",
+  "composedCommit": "d0e950ef4e0df6388716e044e497f465a0bad306",
+  "baseCommit": "b774269",
+  "allGoAndModuleInputsIdenticalToOwner": 1761,
+  "reviewedBehavior": [
+    "Endpoint read uncertainty, including dangling names, cannot authorize an implicit replacement.",
+    "Post-launch readiness checks original home, owner, native directory and endpoint generation.",
+    "Known identity/drain/refusal errors remain explicit; post-launch interruption preserves typed uncertainty.",
+    "Owned negative fixtures prevent detached test daemon launch even under regression."
+  ],
+  "checks": {
+    "selectedNormal": {
+      "roots": 21,
+      "namedPassed": 49,
+      "failures": 0,
+      "skips": 0,
+      "seconds": 29.68
+    },
+    "nativeLink": {
+      "exit": 0,
+      "seconds": 2.46,
+      "flags": [
+        "CGO_ENABLED=0",
+        "-p=1",
+        "-ldflags=-w",
+        "-o /dev/null"
+      ]
+    },
+    "totalSeconds": 32.256,
+    "sourceUnchanged": true,
+    "temporaryDirectoryEmpty": true,
+    "ownerFinalRaceAndVetReceiptsIndependentlyHashVerified": true,
+    "privacyAndWhitespaceReviewPassed": true
+  },
+  "privateReportSha256": "c0eb81ec0173fe1ed380cadab09c877fe1477db758f0c92813802a39634b603a",
+  "limits": [
+    "No executable installed or invoked and no live ARM backend or job changed.",
+    "Leaf absence is observational, not first-launch serialization.",
+    "No resident/worker activation, Linux runtime, full-suite or job-surviving upgrade acceptance."
+  ]
+}

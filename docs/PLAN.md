@@ -1,5 +1,30 @@
 # ARM delivery plan
 
+## Start authority validation — final scoped checks pass; review pending
+
+Owner: `codex/resident-start-identity`, based on `3064be2`. The real `arm start`
+path distinguishes an absent endpoint name from failed inspection, including a
+dangling endpoint symlink, and uses the same home/owner/directory/generation
+validation after launching as when reusing an authority. Post-launch timeout or
+cancellation retains typed startup uncertainty and the selected home's log hint;
+shared interruption output preserves it with exit 130. Known identity, backend
+refusal and drain errors stay explicit.
+
+The original function's three failed-inspection cases reproduced the erroneous
+absent/nil result before the fix. A first fixed-source cohort failed new fixture
+privacy checks; corrected intermediate normal/race results and their allocation
+stop remain separate from the final source. Final normal and race each pass 21
+roots/49 named tests without failures/skips; affected CLI vet and native compile/
+link also pass. Four sequential phases use 68.367 seconds of cumulative active
+elapsed upper bounds. Independent integration review remains pending; see the
+[scoped validation record](VALIDATION.md#start-authority-correction--final-source-scoped-checks).
+
+Stale endpoints now require inspection rather than an implicit replacement
+launch. Leaf-name observation does not serialize absent-first-launch races.
+Native launch handoff, worker readiness, resident bootstrap/funding/format and
+actual distinct-version API/UI job survival remain implementation gates. This
+correction does not complete them.
+
 ## Local worker package custody — concrete source contract pending review
 
 Owner: `codex/resident-local-package-contract`, from accepted
@@ -2798,3 +2823,15 @@ current composition; product code is unchanged. Geometry and command/effect
 boundaries are source observations only. The existing terminal UX task now
 prepares its bounded test-only fixture for source review; execution, PTY replay
 and remediation remain pending. No live backend or running child is affected.
+
+
+## Start authority correction — coordinator accepted
+
+Focused owner `8dae028` is composed as `d0e950e`. Independent source review,
+all 1,761 Go/module input comparisons, selected 21-root/49-test normal checks
+and native linking pass on current main composition. Owner final race/vet
+receipts and source hashes were independently rechecked. The composed checks
+finished in 32.256s with unchanged source and empty fixture temporary storage.
+No installed executable, live backend or real child process changed.
+Actual resident ownership, worker replacement and distinct-version API/UI job
+survival remain required; the existing upgrade task prepares the next cut.

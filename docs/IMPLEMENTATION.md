@@ -1,5 +1,32 @@
 # Backend and CLI implementation
 
+## Start inspection and post-launch authority checks
+
+`existingStartupContext` returns absence only after a failed-ENOENT read and a
+missing leaf-name observation. A dangling endpoint symlink remains uncertainty;
+this observation is not atomic first-launch serialization.
+Malformed/unreadable endpoint data and transport/read failures report
+`startup_outcome_unknown`; explicit backend refusals retain their original code.
+The actual post-Start branch calls `waitForStartup`, which requires the same
+selected home, effective owner, native directory and unchanged endpoint/generation
+checks as reuse, within a 15-second whole-wait context and the caller's deadline.
+Wrong identity and draining never become readiness or a reason to relaunch.
+
+After Start succeeds, cancellation stops the client's wait and retains the
+selected home/log recovery hint. The shared handler preserves this typed result,
+including wrapped errors and human/JSON output, with exit 130. Before launch,
+ordinary cancellation retains generic interruption handling. The existing
+daemon process lifecycle and release behavior are unchanged.
+
+Final scoped normal/race checks each pass 21 roots/49 named tests, with affected
+CLI vet and native compile/link passing; integration review remains pending.
+Public negative startup fixtures hold an owned daemon lock so a regression
+cannot launch a detached test executable. Earlier failed/corrected fixture
+results remain separately recorded. Missing endpoints can still coincide with
+an in-progress initial launch; no launch deduplication, resident custody or
+worker/API/UI readiness is implemented by this change. Ordinary stale-endpoint
+automatic restart is refused until the existing authority's outcome is inspected.
+
 ## Local package approval/staging — contract only, not implemented
 
 The [concrete contract](design/resident-local-package.md) connects untrusted
@@ -4311,3 +4338,11 @@ from production Run startup/authentication/unresolved-receipt cleanup. Existing
 pinned xterm assets could replay the actual bytes in a terminal-only fixture,
 with a new validator limited to the three exact proposed grids. All of this is
 a reviewed proposal, not implemented behavior or current terminal acceptance.
+
+
+## Start authority correction — composed review
+
+The focused startup correction is independently accepted on current composition.
+Failed endpoint inspection remains uncertain and post-launch readiness uses the
+same identity checks as reuse. It does not create resident/worker roles, replace
+a running backend or establish child-process survival during an upgrade.
