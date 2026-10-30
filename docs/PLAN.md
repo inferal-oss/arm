@@ -2401,11 +2401,17 @@ Captured request/private token and actual operation/lifecycle code stay intact.
 All 339 owner artifacts and earlier failed sources remain preserved/qualified.
 No real forwarding, Go/Linux/TUI/live installation or full UX claim.
 
-The upgrade owner is separately drafting private, uncompiled/unexecuted R/D
-SQLite proof sources/audit manifest in its preserved worktree. This allocates
-no tracked production/module/DDL/policy change, compile/native run, fault injection,
-forced teardown or startup allowance. Original process/TLS/task/ABI and bounded
-cleanup source must be reviewed before any proof execution.
+The upgrade owner's private R/D SQLite source draft is now reviewed far enough
+to allocate two separate compile-only normal-FIFO cohorts, each <=115s,
+CPU <=2 and memory target <=2GiB, using the existing offline toolchain and
+task-owned cache/temp/artifacts. Compilation remains pending and does not prove
+native ABI, SQLite closure or upgrade behavior. All twelve frozen draft inputs
+match their source manifest. No tracked production/module/DDL/policy change,
+native execution, fault injection, forced teardown or startup allowance is
+allocated. The existing process waiter can signal on cancellation or uncertain
+terminal-group state; the owner must propose a fixture-only no-signal original
+waiter and explain unresolved deadline custody before native execution review.
+No acknowledgment flag authorizes terminating an active child.
 
 
 ## Destination dashboard — next existing UX inventory scope
@@ -2429,3 +2435,13 @@ No production/module/model/Go/main/graph/pin change, build/setup/install, real
 backend/socket/clipboard/remote effect, broad suite or live/TUI/full-density
 acceptance. Return source-bound findings and existing-container scope proposals
 for review; raw identities/values/captures remain private.
+
+The first cohort failed on a fixture disclosure locator matching multiple
+resource cards; no completed geometry earns acceptance from that attempt.
+Its original API cleanup and failed source/receipts remain preserved. One
+replacement cohort with the same limits/geometries is allocated after scoping
+the fixture locator to the actual first card. The original second cohort remains
+separate. A fixture-only import wrapper may retain the actual remote dashboard's
+returned public API unchanged; it cannot replace methods, DOM, context, clocks,
+handlers or production lifecycle. Public component disposal is a local fixture
+scope, not proof of private main-slot or native host-bridge closure.
