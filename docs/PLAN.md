@@ -2372,3 +2372,37 @@ source identity and original TLS/statement lifetime must be qualified before
 granted proof execution. No standalone helper/contract milestone completes the
 required first/repeated `arm start` and compatible distinct-version API/UI job
 preservation. Prior branches/artifacts remain frozen.
+
+
+## Forwarding F1/F2 owner correction
+
+Owner branch `codex/ux-forwarding-review-fixes` starts from accepted inventory
+`c127f199b6b75710378ac105f322f8a827c3da76`. Focused commits
+`d646df4f1ee87888739044b3fe904f1a166a6ae9` (F1) and
+`8c8b2a18efdfe70823ffee275e078ec1be935cf0` (F2) distinguish disconnected reads
+and expose the complete captured prepared review. The
+[source-bound record](validation/ux-forwarding-review-2026-10-29.json) records
+four final positive geometries, isolated F1/F2 controls and one passing native/
+module cohort. Replacement windows were explicitly allocated after preserved
+harness failures. Independent current composition/rebuild/review remains open;
+no owner merge/push, install, real source effect or full UX acceptance.
+
+
+## Forwarding F1/F2 — independent composed acceptance
+
+Focused owner `d646df4`, `8c8b2a1` and `9ba0ced` pass independent source/evidence
+review and current-main composition. The
+[composed record](validation/ux-forwarding-review-composed-2026-10-29.json)
+binds 454 JS/52 native UI tests, deterministic assets/current CLI build, four
+positive browser cases and both isolated controls. Reviewer copy/layout fixes
+use singular minute and the existing Card's full reading width at all sizes;
+measured desktop canonical identities no longer fragment in a narrow track.
+Captured request/private token and actual operation/lifecycle code stay intact.
+All 339 owner artifacts and earlier failed sources remain preserved/qualified.
+No real forwarding, Go/Linux/TUI/live installation or full UX claim.
+
+The upgrade owner is separately drafting private, uncompiled/unexecuted R/D
+SQLite proof sources/audit manifest in its preserved worktree. This allocates
+no tracked production/module/DDL/policy change, compile/native run, fault injection,
+forced teardown or startup allowance. Original process/TLS/task/ABI and bounded
+cleanup source must be reviewed before any proof execution.

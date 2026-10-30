@@ -9606,3 +9606,65 @@ This independent audit adds no browser/native/unit/build/backend/effect run.
 Private leaf identity/clear observations and source no-output review do not
 export runtime RDF/LDES or prove memory wiping. Full dense prose ranges, universal
 zoom/native painted fields, real listeners and full UX remain open.
+
+
+## Forwarding F1/F2 correction evidence
+
+The [final-source record](validation/ux-forwarding-review-2026-10-29.json) binds
+four positive geometries and two isolated source controls to identical corrected
+fixture hashes. Complete captured fields match initial inputs after form edits;
+reason whitespace and first/middle/final ranges are checked through actual native
+scrollers. Labels, values and native control/caption allocations are separate
+checks. A tall desktop dt cell is 2652px while its painted label is 55px; actual
+Range scrolling reaches its label without live DOM/style mutation or overflow
+hiding. Tall reason content requires vertical scrolling, not all-at-once display.
+
+One original FIFO cohort passed four pinned GraphUI/EventBus/Islands native tests
+and 24 affected module tests. Unit-only mock starts receive the original exact
+request after edits; sent/uncertain cases retain token and guards, with no retry.
+Native graph scans exclude the token; explicit reprepare/dispose clears old DOM
+leaves and native interactive types remain intact. Product/native-test hashes
+stay unchanged through evidence-only fixture corrections.
+
+Final browser positives took about 26 seconds each; isolated F1/F2 controls took
+about 13 and 10 seconds. Intervals include transforms/collection/original API
+closes but exclude initial static imports/hash reads and FIFO wait. Each final
+cohort captures zero active/pending reads or forbidden effects and awaits its
+original context/browser/server close promises. This is not OS group/reap proof,
+CPU/RSS enforcement or an ARM lease claim. Browser start/stop/recover remain
+strictly refused and uninvoked; all mutation mocks are unit-only.
+
+The original label-centering failure, earlier-fixture F1 pass and F2 TDZ failure
+retain original source/media/first error/cleanup and earn no final control credit.
+Explicitly allocated replacements demonstrate the intended F1 guidance and F2
+missing reason/lifetime; schemas, other rules and effect boundaries remain exact.
+Earlier dense historical uncertainty prose stays separately qualified. Raw
+values/keys/tokens/images remain private; native glyph/selected-token-versus-zoom
+limits, independent current-main composition/rebuild and full UX/TUI/live gates
+remain open. All prior artifact sets rehash unchanged.
+
+
+## Forwarding F1/F2 — independent final composition
+
+The [composed record](validation/ux-forwarding-review-composed-2026-10-29.json)
+binds exact final working inputs to 454 JS and 52 native UI tests in ten files,
+zero failures/skips, two identical dashboard builds and a native CLI build.
+Core completed in 15.660s; the two positive browser cohorts in
+26.554s/25.809s and isolated F1/F2 controls in
+13.281s/9.895s. All six sessions have zero forbidden effects,
+active/pending reads, page errors, sockets, external or clipboard requests at
+capture and positive original API cleanup. Browser does not invoke mutations.
+
+Final source includes reviewer singular-minute and full-reading-width fixes.
+At the selected desktop geometry, canonical identity allocation grows from
+237.34px to 372px, painted height drops from 35.5px to 16px, and the same bounded
+reason height decreases from 2652px to 1989px. Full reason first/middle/final
+ranges, whitespace2/2, all eight snapshot values after edits, control/caption
+reach and private-leaf lifecycle pass. Prior narrow-column geometry passes and
+owner harness/oracle failures remain historical, not final-source acceptance.
+
+Mocks cover original exact start/sent/uncertain behavior; native OS forwarding
+was not run. Browser RDF export, memory wiping, universal zoom, native input
+painted glyphs, OS group/reaping and full dense historical prose are not proved.
+No ARM grant/hard RSS, installed backend, Go suite, Linux/new TUI/full UX or
+real upgrade acceptance is inferred.

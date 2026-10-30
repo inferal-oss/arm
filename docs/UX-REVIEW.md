@@ -77,7 +77,7 @@ states; no principal view is declared complete from source inspection.
 | Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Four-case exact metadata/line/scroll/freshness retention and scoped header/menu/tooltip checks pass independent composition | Real transport, broader states and full acceptance remain open |
 | Mesh | `mesh.mjs`; roster, node detail and separate operator workflows | Read-only roster/detail layout, exact metadata/grants/trust and degraded/pending lifecycle pass independent four-case composition | Connect/reconnect/install/stop/uninstall/handoff/recovery review, exact pins/revisions and broader workflow states remain open |
 | Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Four-case read-only inventory, primary/technical/exact-record reading, ordinary-label line boxes and local UID/context selection pass independent composition | Real transport/cluster validation, broader states/density/fonts and complete route acceptance; no cluster operations exercised |
-| Forwarding | `forward.mjs`; preparation/review, listener list and retained operations | Four-case read-only native inventory, private-leaf retention/clear, pending/error/disconnect and Stop/recovery warning reach independently audited | F1 reconnect guidance and F2 complete prepared snapshot corrections, dense-prose range reach, real effects and broader states remain open |
+| Forwarding | `forward.mjs`; prepared review, listener list and retained operations | Scoped F1 reconnect/F2 full captured review, native/private-leaf lifecycle, four browser cases and isolated controls independently composed; values use full Card width | Real forwarding/unknown execution, full historical dense-prose ranges, broader states, universal font/zoom and complete UX/TUI acceptance remain open |
 | Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | Source inventory only | Scope/staleness/unknown values, long records and unsupported mutation visibility |
 | Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Stacked private fields/native footer accepted in c830982 with synthetic desktop/narrow evidence | Remaining mode/view/clipboard states; no real VNC sign-in |
 | Resource naming | `resource-names.mjs`; exact reference/name editor/reservations | Scoped native naming body/caption/dirty-draft and palette focus/help corrections pass independent composition | Broader reservations/recorded-result/density/state/live mutation and complete route acceptance remain open |
@@ -409,3 +409,30 @@ information. A focused informational/guard correction is allocated, preserving
 all private token and uncertain-outcome boundaries. Sampled geometry alone found
 no clipping defect; tall dense content still scrolls. Correction/current-source
 composition, full dense-prose reach, actual effects and full UX remain open.
+
+
+## Forwarding prepared review correction boundary
+
+The [owner correction](validation/ux-forwarding-review-2026-10-29.json) addresses
+F1 reconnect guidance and F2 complete captured review information. Reason/lifetime
+remain exact after editable fields change, with concise snapshot guidance and
+no new retry instruction or authority. Existing private-leaf ownership and all
+sent/uncertain/reprepare/dispose guards remain intact. Layout is scoped only to
+the existing prepared Card and native description parts.
+
+Painted text Range reach is distinguished from tall grid-cell geometry; failed
+cell-centering and TDZ fixtures remain historical. Four final positive cases,
+two isolated source controls and passing native/module checks support owner
+handoff, not independent acceptance. No real forwarding mutation, build/install
+or global Dialog/grid/theme change occurs.
+
+
+## Forwarding F1/F2 independent acceptance
+
+The [composed review](validation/ux-forwarding-review-composed-2026-10-29.json)
+accepts distinct reconnect guidance and complete captured review information.
+Full-width value rows resolve desktop identity fragmentation and shorten the
+long reason without shrinking/hiding content or changing dialog policy. Exact
+request/private token, authority and historical stop/recovery behavior stay
+intact. Tests, exact builds, four browser geometries and two isolated controls
+pass; full live/terminal/dense-prose and universal font/zoom coverage remain open.

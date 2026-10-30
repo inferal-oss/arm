@@ -1,0 +1,250 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "status": "Independent scoped F1/F2 source, visual and composed acceptance; real forwarding and full UX remain open",
+  "focused_owner_commits": [
+    "d646df4f1ee87888739044b3fe904f1a166a6ae9",
+    "8c8b2a18efdfe70823ffee275e078ec1be935cf0",
+    "9ba0cedadd5a2d842cfab81f661a96d2e63f508c"
+  ],
+  "composed_on": "8989b2fe495efa3eb3a78550064cbeb5d7da66b8",
+  "head_before_review_commit": "251dfc2690fc75d66c96db45c61fe3096ff8575c",
+  "source_binding": "Validation uses the exact working-input hashes below, including reviewer corrections and rebuilt asset before acceptance commit; no clean-VCS binary attestation.",
+  "sourceSHA256": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "91e1f056b550a7541b963dcb8029b2ed9fdd30ad84211ffd9399f880c8dec0b6",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "web/test/forwarding-review.test.mjs": "f9ff27e49630f997b8480e535f63502c04260ff890d886e7b3d58f16b0ebdbc1",
+    "web/third_party/semblance/ontology/theme/data.ttl": "5dfefcfb38b77459150851b67a386faf419f9c4f0eb26cb681b5997007fbaeff",
+    "internal/server/web/semblance/mesh.mjs": "1b5faaeac90aa0b5f868f362310d7decf5537707fb0ff5bba93343a6ddf8f3bc",
+    "internal/server/web/semblance/forward.mjs": "04e63a7a026e2425d1b69591017b6e02f07547006ac62bb297b76b1846c01972",
+    "internal/server/web/semblance/ephemeral-inputs.mjs": "974ea80f617ed2281b52c85e69e7b8d1435192919d04ff658f562fd3388241ea",
+    "internal/server/web/mesh-forward-console.mjs": "65ae2e3fd9e55fc154a6d77efab272510aa998d83308c189be1ad3a186f330ef",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/mesh_forward_source.go": "12d90ba20cc860e684ff3dc1b91d408d5f36e9b7150080d894c93e48d6d64dac",
+    "internal/manager/forward_listener.go": "66c3dbef87c55d8cb1b76a2420279dcac0ff702fb1b6d07a3e86da04b9f114a8",
+    "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+    "internal/meshforward/grant.go": "70e5113e97b57bd4ff0ef133a24f18ebe24dda92d154a19c3fb8d03105d396a0",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/components/textfield.ttl": "884f18336b9f123868972937cae65fb73d0e5044b7c17ddd4c164c02a9e1f688",
+    "web/third_party/semblance/ontology/components/inputs.ttl": "e9ab0af176ef77101f4a6b35000990c5ec870cc4c0eff9c46192e589520f2b04",
+    "web/third_party/semblance/ontology/components/layout.ttl": "8b828351304d6bcada709fc1753b45d9f63e46fe9ed7a359c26c048b28ebdcc4",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+    "web/third_party/semblance/ontology/theme/inputs.ttl": "e6eb4ad06c5da458255969ef317d1fe7a9c0e45bf3851c4feea8e112cf9aa095",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "scripts/dashboard-screenshots/ux-forwarding-review.mjs": "199c7f77dc47851b02a2124101d337684ddd9d2f7f53e8611dda030ce24b01a2",
+    "scripts/dashboard-screenshots/ux-forwarding-inventory-backend.mjs": "02925df01a3301f66b893a4b95959f689a95a37e83ca861a8f181d35dbf0b658"
+  },
+  "owner_record": "docs/validation/ux-forwarding-review-2026-10-29.json",
+  "owner_record_sha256": "d7dc3f70e57cae86ab9b43c4cb5b25752c29652a0b8a226c89ca810c3255c57f",
+  "owner_protected_inputs_unchanged": 21,
+  "reviewer_corrections": {
+    "singular_minute": "Correct 1 minutes to 1 minute and update its existing native assertion; numerical request values unchanged.",
+    "full_width_review_values": "Use full existing Card reading width at all sizes, removing redundant media override; native Dialog/controls and all other layouts unchanged.",
+    "changed_owner_inputs": [
+      "internal/server/web/semblance/app.ttl",
+      "web/test/forwarding-review.test.mjs",
+      "internal/server/web/semblance/forward.mjs"
+    ]
+  },
+  "readability_metrics": {
+    "case": {
+      "width": 1440,
+      "height": 900,
+      "selected_text_scale": 1
+    },
+    "identity_values": [
+      {
+        "label": "Listener key",
+        "prior_allocated_width": 237.34375,
+        "final_allocated_width": 372,
+        "prior_painted_height": 35.5,
+        "final_painted_height": 16,
+        "font_size": 13
+      },
+      {
+        "label": "Workspace ID",
+        "prior_allocated_width": 237.34375,
+        "final_allocated_width": 372,
+        "prior_painted_height": 35.5,
+        "final_painted_height": 16,
+        "font_size": 13
+      },
+      {
+        "label": "Destination host ID",
+        "prior_allocated_width": 237.34375,
+        "final_allocated_width": 372,
+        "prior_painted_height": 35.5,
+        "final_painted_height": 16,
+        "font_size": 13
+      }
+    ],
+    "prior_reason_height": 2652,
+    "final_reason_height": 1989,
+    "qualification": "Source-bound before/after allocation and actual painted rectangles at this selected geometry, visually reviewed; generated identifiers differ but keep the same canonical length. No universal font/zoom or all-geometry single-line claim."
+  },
+  "source_review": {
+    "entire_forward_module_restores_inventory_after_only_F1_F2_presentation_inverse": true,
+    "prepare_start_private_leaf_prefix_and_historical_status_stop_recovery_code_unchanged": true,
+    "app_baseline_exact_prefix": true,
+    "noninteractive_card_marker_only": true,
+    "no_go_module_model_cli_policy_schema_main_graph_mesh_ephemeral_helper_pin_or_native_dialog_change": true,
+    "captured_request_and_private_token_guards_unchanged": true
+  },
+  "core": {
+    "seconds": 15.66,
+    "node_tests": 454,
+    "native_ui_tests": 52,
+    "native_ui_files": 10,
+    "failures_or_skips": 0,
+    "deterministic_dashboard_builds": 2,
+    "bundle_sha256": "7364f210c92facb1e7dd5c5af3b8e16192c460f8614554dc965de62a63136a89",
+    "native_cli_build": "pass only; binary not installed/executed",
+    "native_binary_sha256": "541e3751d4864e2d67237eb376588c7cc50808d5c402678ad015092e84c17454",
+    "unit_scope": "Actual pinned GraphUI/EventBus/Islands tests include original exact mock start after edits, sent/uncertain retention, native types and singular-minute presentation. Mock effects are not native listener/backend execution."
+  },
+  "cohorts": [
+    {
+      "phase": "a",
+      "command_seconds": 26.554,
+      "runner_elapsed_ms": 26143,
+      "cases": 2,
+      "sessions": 2,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "forbidden_calls": 0,
+      "active_reads_at_capture": 0,
+      "pending_reads_at_capture": 0,
+      "page_errors": 0,
+      "real_sockets": 0,
+      "external_requests": 0,
+      "clipboard_attempts": 0,
+      "geometries": [
+        {
+          "width": 1440,
+          "height": 900,
+          "selected_text_scale": 1
+        },
+        {
+          "width": 390,
+          "height": 900,
+          "selected_text_scale": 1
+        }
+      ],
+      "exact_snapshot_fields_per_case": 8,
+      "reason_utf16_units": 4096,
+      "reason_leading_and_trailing_spaces": [
+        2,
+        2
+      ],
+      "reason_first_middle_final_ranges_reachable": true,
+      "retained_snapshot_after_form_edit": true
+    },
+    {
+      "phase": "b",
+      "command_seconds": 25.809,
+      "runner_elapsed_ms": 25422,
+      "cases": 2,
+      "sessions": 2,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "forbidden_calls": 0,
+      "active_reads_at_capture": 0,
+      "pending_reads_at_capture": 0,
+      "page_errors": 0,
+      "real_sockets": 0,
+      "external_requests": 0,
+      "clipboard_attempts": 0,
+      "geometries": [
+        {
+          "width": 390,
+          "height": 320,
+          "selected_text_scale": 1
+        },
+        {
+          "width": 768,
+          "height": 600,
+          "selected_text_scale": 2
+        }
+      ],
+      "exact_snapshot_fields_per_case": 8,
+      "reason_utf16_units": 4096,
+      "reason_leading_and_trailing_spaces": [
+        2,
+        2
+      ],
+      "reason_first_middle_final_ranges_reachable": true,
+      "retained_snapshot_after_form_edit": true
+    },
+    {
+      "phase": "old-status-guard",
+      "command_seconds": 13.281,
+      "runner_elapsed_ms": 12877,
+      "cases": 1,
+      "sessions": 1,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "forbidden_calls": 0,
+      "active_reads_at_capture": 0,
+      "pending_reads_at_capture": 0,
+      "page_errors": 0,
+      "real_sockets": 0,
+      "external_requests": 0,
+      "clipboard_attempts": 0,
+      "expected_defect": "F1",
+      "effective_source_differs_only_in_forward_module": true
+    },
+    {
+      "phase": "without-snapshot",
+      "command_seconds": 9.895,
+      "runner_elapsed_ms": 9480,
+      "cases": 1,
+      "sessions": 1,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "forbidden_calls": 0,
+      "active_reads_at_capture": 0,
+      "pending_reads_at_capture": 0,
+      "page_errors": 0,
+      "real_sockets": 0,
+      "external_requests": 0,
+      "clipboard_attempts": 0,
+      "expected_defect": "F2",
+      "effective_source_differs_only_in_forward_module": true
+    }
+  ],
+  "preserved_owner_artifacts": {
+    "count": 339,
+    "manifest_sha256": "3f9d1f1ef09495d2a7780251b717d6dfcbc9289ade434bf472bba47afec82d0e"
+  },
+  "historical_review_receipts": "Initial independent narrow-column tests/browser cases/controls passed their geometry criteria but visual review found avoidable desktop identifier fragmentation. They remain prior-source evidence; final source above was rerun after correction. Owner oracle/TDZ failures and earlier control source are preserved and excluded from final acceptance.",
+  "runtime_privacy": "Raw tokens/keys/identities/values, screenshots and native/private receipts remain outside Git. Final generated identifiers were checked absent from added publication lines.",
+  "validation_method": "Separate original normal shared FIFO commands, <=115s including fixture API cleanup; direct queued evidence, no ARM enrollment/grant/backend or measured/kernel-enforced resource claim. Browser runner intervals exclude initial static imports/hash work and FIFO wait.",
+  "limits": [
+    "Browser strictly refuses and never invokes start/stop/recover. No actual listener, permission, backend/resource/host/cluster mutation, protocol/CAS/unknown execution acceptance.",
+    "All eight prepared settings are shown with complete reason/lifetime; bearer remains a separate private leaf. Browser RDF/LDES was not exported; native unit graph scans are scoped separate evidence, not memory/GC zeroization proof.",
+    "Native input/select painted glyphs and universal fonts/zoom remain unverified; selected token scaling and individual scroll reach are qualified.",
+    "Tall noninteractive cell allocation is distinct from painted label; native Range/ancestor scrollBy changes only actual scrollers, no live styles/DOM.",
+    "Original read capture/release and awaited context/browser/server APIs do not establish OS process-group exit/reaping.",
+    "Historical dense listener-uncertainty prose rendering was unchanged and full first/middle/final reach remains unaccepted.",
+    "No Go suite, Linux runtime, new TUI, install, real upgrade or full UX acceptance."
+  ]
+}
