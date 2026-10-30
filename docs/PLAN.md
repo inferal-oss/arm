@@ -3455,3 +3455,22 @@ source template requiring reviewed fresh source/build identities before any
 output/ticket/process. Nine original artifact sets/binaries and both failed
 attempts remain preserved. Independent review and separate execution allocations
 remain required; neither old mouse cause is established by this source change.
+
+
+## Native lease reading — coordinator runtime review and narrow-layout finding
+
+The readiness-observer source at `70c58fb` has passed its allocated isolated
+unit/build and native reading/replay checks. The composed fixture inputs match
+all 62 validated input files; unrelated accepted startup CLI changes remain
+outside the terminal package dependency boundary. Two unit roots with seven
+subcases passed, followed by a fresh native test build. One native run produced
+21 checkpoints and 769 matching replay rows across three terminal dimensions.
+
+Independent review of all 21 original images confirms the scoped detail, exact
+integer record, decline and filter targets. It also identifies a remaining
+narrow-modal layout defect: the shadow extends beyond the available pane and
+the final fitting step replaces the right frame edge with ellipses. The existing
+UX task owns a separate focused correction and regression. This successful
+interaction evidence remains bound to the earlier source; later layout source
+requires separate review and validation. The two earlier native failures remain
+failed, and their mouse timing causes are not established by this success.

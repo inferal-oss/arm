@@ -10914,3 +10914,25 @@ source template requiring reviewed fresh source/build identities before any
 output/ticket/process. Nine original artifact sets/binaries and both failed
 attempts remain preserved. Independent review and separate execution allocations
 remain required; neither old mouse cause is established by this source change.
+
+
+## Native lease reading — independent composed-source review
+
+Exact fixture source `70c58fb` passed two isolated unit roots and seven subcases
+(nine pass events, no failures or skips), then compiled a fresh native fixture
+binary with SHA-256
+`41f4b2b4770d1092e5f1b7186571c1f2e83e4b37779e56f19b10c74bed75c3de`.
+A single allocated native/replay attempt passed 21 checkpoints and 769 row
+comparisons. Its 62-artifact manifest SHA-256 is
+`fb8ee961d2618708c672bfeb7bb2c96feda582be72f4f2712325135390b13055`.
+All original program/browser handles completed, PTY restoration and closure
+checks passed, and no forced teardown was needed. Prior evidence was preserved.
+
+Independent visual inspection covered every original image, including the
+exact decimal `9007199254740993` at all three widths, detail/context/control
+reading, trusted decline controls, filter drafts, empty results and restored
+rosters. Narrow review/filter right borders still show clipping, which matches
+the model output and is a separate product finding. This is scoped terminal
+interaction/paint evidence, not full UX, physical-terminal, general Unicode,
+font-identity, full Go-suite or Linux acceptance. The successful observer run
+does not establish the causes of earlier failed native attempts.

@@ -4807,3 +4807,20 @@ source template requiring reviewed fresh source/build identities before any
 output/ticket/process. Nine original artifact sets/binaries and both failed
 attempts remain preserved. Independent review and separate execution allocations
 remain required; neither old mouse cause is established by this source change.
+
+
+## Native lease observer — reviewed implementation boundary
+
+The terminal reading fixture now waits for an observed complete original
+renderer write and its matching drained PTY bytes before one mouse press. Its
+passive diagnostics distinguish parsed input, callback execution, command
+completion and typed delivery. The observer preserves original I/O results and
+panics; it does not force a render, retry a click, change the production model
+or substitute a callback. Product code, dependency pins and terminal provider
+remain unchanged by this fixture cut.
+
+A separate narrow-modal issue remains in production presentation: a full-width
+dialog plus an offset shadow exceeds its pane before final clipping. The
+existing geometry tests bound final dimensions but do not ensure an intact right
+border. The correction must preserve trusted control and mouse geometry rather
+than merely accepting the clipped result.
