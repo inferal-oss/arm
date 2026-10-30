@@ -3228,3 +3228,19 @@ No CDP/fontscan/build/test binary/Program/PT Y/recapture occurred. Paused native
 Go source remained hash-exact and uncompiled during this run. Every old scope
 and first failure stays unchanged. No further execution window is implied;
 21-frame native reading source work resumes under separate review gates.
+
+
+## Terminal provider diagnostic — coordinator scoped acceptance
+
+Focused source `2fa74ee` and evidence `2f0920b` are composed as
+`c6f6ace`/`709ea66`. Independent hashes, license/derivation, syntax/privacy and
+all four original PNGs agree with the two matched comparisons. Builtin width
+one clips the smiley; the fixture-only width two renders it whole at both
+sizes, with raw rows and recorded font CSS unchanged. This accepts the
+controlled allocation/paint comparison only. No renderer default, font,
+dependency, ARM output or real process changes follow.
+
+This controlled emulator investigation needs no CDP/font expansion. Actual
+font identity, universal Unicode and physical terminals remain unsupported.
+The existing owner returns to the 21-frame native lease/detail/record/review-
+decline/filter source proposal; its build/runtime review gates remain closed.

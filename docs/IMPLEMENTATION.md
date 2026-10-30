@@ -4607,3 +4607,11 @@ No CDP/fontscan/build/test binary/Program/PT Y/recapture occurred. Paused native
 Go source remained hash-exact and uncompiled during this run. Every old scope
 and first failure stays unchanged. No further execution window is implied;
 21-frame native reading source work resumes under separate review gates.
+
+
+## Terminal provider diagnostic — composed boundary
+
+The test-only provider source and evidence are independently accepted for the
+controlled allocation comparison. The single-codepoint fixture override is not
+a production provider or renderer correction. ARM output/fonts/pins/defaults
+remain unchanged; the remaining native reading fixture is still source work.

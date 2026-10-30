@@ -10688,3 +10688,19 @@ No CDP/fontscan/build/test binary/Program/PT Y/recapture occurred. Paused native
 Go source remained hash-exact and uncompiled during this run. Every old scope
 and first failure stays unchanged. No further execution window is implied;
 21-frame native reading source work resumes under separate review gates.
+
+
+## Terminal provider diagnostic — independent composed review
+
+The [composed review](validation/ux-terminal-glyph-diagnostic-composed-2026-10-30.json)
+verifies source/license/plan and all original 111/64/29/47/15 artifact sets.
+Independent inspection of all four PNGs confirms clipped builtin versus whole
+fixture-width2 smiley at both grids. Four cases/156 rows and two raw-row/font-CSS
+pairs agree; CJK and sampled ASCII widths remain stable. Original process/API/
+write-marker gates and syntax/privacy/whitespace checks pass. No duplicate
+replay was performed for identical inputs.
+
+This accepts the exact controlled provider intervention, not resolved-font,
+universal Unicode, physical-terminal or whole-UX correctness. Original script
+paint flags remain null; external visual inspection is recorded separately.
+Production renderer/output/pins and live ARM jobs remain unchanged.

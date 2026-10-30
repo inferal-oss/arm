@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "scope": "Independent controlled provider-only diagnostic review; no production renderer change",
+  "ownerSourceCommit": "2fa74eebb3ccf0698fbeb78edc6dd90f8535265d",
+  "ownerEvidenceCommit": "2f0920bc02a4c5183943873bf8bdde85229e7f93",
+  "composedSourceCommit": "c6f6ace",
+  "composedEvidenceCommit": "709ea66",
+  "evidenceSHA256": "46c001f7625692c9d5f327ebd49257e159a87d8cf10e53ef7410461f3baf00d9",
+  "independentChecks": {
+    "allOriginalArtifactSets": [
+      111,
+      64,
+      29,
+      47,
+      15
+    ],
+    "sourceLicenseAndPlanHashes": true,
+    "exactDerivedBaselineAndMITLicense": true,
+    "fourOriginalPNGsViewed": true,
+    "pairs": 2,
+    "normalizedRows": 156,
+    "pairedRawRowsIdentical": true,
+    "requestedComputedFontCSSSame": true,
+    "smileyCellWidths": [
+      1,
+      2
+    ],
+    "overrideContinuationWidth": 0,
+    "CJKWidthsUnchanged": [
+      2,
+      0
+    ],
+    "sampledASCIIWidthUnchanged": 1,
+    "originalProcessExitZeroAndAPIWriteMarkerGates": true,
+    "composedSyntaxPrivacyWhitespace": true,
+    "duplicateRuntime": false
+  },
+  "observedPaintComparison": "Builtin Unicode6 clips the smiley; fixture-only width2 renders it whole at both inspected sizes.",
+  "controlledComparisonAccepted": true,
+  "generalGlyphAcceptance": false,
+  "qualification": [
+    "Only U+1F642 provider allocation changes in these exact unchanged-prefix/font-CSS frames.",
+    "Original script paintAccepted values stay null; independent PNG inspection is separate.",
+    "Actual fallback font identity, universal Unicode and physical terminal behavior are not established.",
+    "No ARM output, installed dependency, renderer default, backend or actual job changed."
+  ],
+  "nextStep": "Existing owner prepares the bounded 21-frame lease-detail/record/review-decline/filter source; no new runtime allocated."
+}
