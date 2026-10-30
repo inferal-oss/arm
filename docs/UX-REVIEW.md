@@ -1282,3 +1282,15 @@ prepared; exact red/existing tests are unchanged and green execution is not yet
 allocated. Broad Monitor density/inventory/reorder, physical terminal and full UX
 acceptance remain open. See the
 [bounded review](UX-TERMINAL-MONITOR-REVIEW.md).
+
+
+## Terminal Monitor M1/M2 owner correction — ordinary green complete
+
+The [scoped green evidence](validation/ux-terminal-monitor-focus-green-2026-10-30.json)
+records 33 named passes/packagepass on exact `efc342e`, with 66 actual observations,
+22 strict cleanups, normal original 0 joins/EOF and unchanged source/history.
+Exact red tests and initial arrangements are preserved; canonical row replacement
+after removal and focus reveal after resize now pass. Existing local mouse,
+stale-click, geometry/empty, idle and return-scroll regressions pass too.
+Central composition/landing remains open; broader Monitor density/state,
+inventory/reorder 19, native/physical terminal/font and full UX gates remain.

@@ -4229,3 +4229,14 @@ with exact red and existing tests unchanged. The
 contains only two 22-case roots plus five existing I/O roots; source/pin review
 and a new single-run allocation precede execution. No green acceptance,
 inventory/reorder 19 follow-up or native/browser work is claimed.
+
+
+## Terminal Monitor M1/M2 owner green complete — integration gate open
+
+Exact `efc342e` passes the separately allocated seven-root/33-node ordinary
+green contract with unchanged red/legacy tests, 66 original observations and 22
+positive cleanups, normal original 0 joins/EOF and stable final storage checks.
+The [scoped result](validation/ux-terminal-monitor-focus-green-2026-10-30.json)
+records immutable evidence and qualifications. No additional workload was run.
+Central composed review/landing remains; no native/fullUX or inventory/reorder 19
+acceptance is implied. Owner evidence-only successor leaves all Go bytes exact.

@@ -5513,3 +5513,15 @@ render, wheel and page reading do not force it. Empty inventories clear focus
 and retain their empty state. Selection scopes, return offset and stale mouse
 validation remain unchanged. No metrics/accounting/transport/protocol changed.
 Tests are immutable and the seven-root green proposal awaits review/allocation.
+
+
+## Terminal I/O focus correction — owner ordinary validation complete
+
+Exact `efc342e` validates the 24-line local focus correction under the reviewed
+seven-root ordinary contract: 33 named passes/packagepass, 66 original focus
+observations and 22 strict cleanups. Initial arrangements match the immutable
+red baseline; canonical visible replacement and resize reveal pass while IDs,
+other-chart scopes, stale-click and return-scroll regressions remain intact.
+The [result](validation/ux-terminal-monitor-focus-green-2026-10-30.json) is
+owner-source evidence; central composition/landing and broader UI/transport/
+native coverage remain separate. No further product source changed.

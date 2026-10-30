@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "scope": "Owner-source ordinary M1/M2 correction validation; central composition and landing remain separate",
+  "status": "Seven-root original ordinary green passed; integration review pending",
+  "source_commit": "efc342e9d6147597e718614088f2bab896a42bc6",
+  "red_source_commit": "82dd62799e99d01f69aa156bb74d44dbaeac4749",
+  "unchanged_focus_test": {
+    "path": "internal/tui/monitor_picker_focus_test.go",
+    "bytes": 16345,
+    "sha256": "76b62701d9578acaf97dd83f53788fe31bf576f0e5897fc19cb8e86e553f2d7d"
+  },
+  "unchanged_legacy_test": {
+    "path": "internal/tui/io_picker_test.go",
+    "bytes": 6207,
+    "sha256": "0e5179ee8b4e51069d3f2bb58cf14c44ee726733a51e34bf1b7edb4a7bbd8228"
+  },
+  "product_source": [
+    {
+      "path": "internal/tui/io_picker.go",
+      "prior_sha256": "0ddd018875c4590df859c876801282b955c32a35eef8e92454820c61f47e8df4",
+      "proposed_sha256": "f049eaac6565406740de5a7867afcbe1bd0e1884a3c03d88e9b6797c6a2ee052",
+      "bytes": 7177
+    },
+    {
+      "path": "internal/tui/mouse.go",
+      "prior_sha256": "9a75ed40429cf6966e5ecd9002debd53168d92775e8470f9f7349efc39721211",
+      "proposed_sha256": "f10e8870116c36b5caf3d47e296214a9d65910715e5e22e2e585f845dc88a036",
+      "bytes": 15684
+    },
+    {
+      "path": "internal/tui/tui.go",
+      "prior_sha256": "b5a86e52d9226475732f4cd4f51db455a8b9871bbaf65bc84758d1ef7863a255",
+      "proposed_sha256": "13311ea228316a13d384d05ef5851f67974d933d556be21213c5cd41d031fa45",
+      "bytes": 25704
+    }
+  ],
+  "roots": [
+    "TestMonitorPickerMissingFocusRemainsVisible",
+    "TestMonitorPickerResizeKeepsFocusVisible",
+    "TestIOChecklistMouseKeyboardAllNoneAndNoBackendMutations",
+    "TestIOPickerKeepsMissingSelectionAndRejectsStaleCheckbox",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory",
+    "TestKnownIdleIOHistoryHasBaselineNotUnknownGap",
+    "TestClosingIOPickerRestoresMonitorScrollContext"
+  ],
+  "child_cases": [
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=true/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=true/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=true/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=false/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=false/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/45x14/disk=false/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=true/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=true/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=true/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=false/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=false/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/72x28/disk=false/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=true/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=true/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=true/a",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=false/space",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=false/n",
+    "TestMonitorPickerMissingFocusRemainsVisible/100x35/disk=false/a",
+    "TestMonitorPickerResizeKeepsFocusVisible/72x28-to-45x14/disk=true",
+    "TestMonitorPickerResizeKeepsFocusVisible/72x28-to-45x14/disk=false",
+    "TestMonitorPickerResizeKeepsFocusVisible/100x35-to-45x14/disk=true",
+    "TestMonitorPickerResizeKeepsFocusVisible/100x35-to-45x14/disk=false",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory/[160_46]",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory/[110_32]",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory/[70_24]",
+    "TestIOChecklistResponsiveScrollingAndEmptyInventory/[45_14]"
+  ],
+  "results": {
+    "normal_original_Go_helper_FIFO_exit": 0,
+    "original_handles_joined": true,
+    "output_EOF": true,
+    "forced": false,
+    "truncated": false,
+    "supervision_failures": [],
+    "named_starts_once": 33,
+    "named_passes_once": 33,
+    "root_count": 7,
+    "child_count": 26,
+    "package_pass": true,
+    "fail": 0,
+    "skip": 0,
+    "complete_original_observations": 66,
+    "strict_positive_cleanups": 22,
+    "positive_constructor_snapshots": 66,
+    "unexpected_focus_source_messages": 0
+  },
+  "causal_comparison": {
+    "red_tests_byte_identical": true,
+    "full_initial_observations_equal_to_red": 22,
+    "canonical_focus_ID_and_visible_viewport_frame_pairs": 66,
+    "resize_cases_preserve_red_focus_ID_and_both_chart_scopes": 4,
+    "M1_cases_remove_orphan_and_reveal_next_local_target": 18,
+    "qualification": "Read-only comparison of original red/green observations and full text. No new workload or synthesized frame; only selected synthetic ordinary-model scope."
+  },
+  "artifacts": {
+    "manifest_members": 26,
+    "manifest_sha256": "95154b6a15ad8016c5659c97b9a0ed64c9624f1a3058fd7ff2c3a680e9f646ed",
+    "receipt_bytes": 12689,
+    "receipt_sha256": "58cade4f61843690e23047f99c1ed44b7ae47a46137ab20749a06868dcb5d313",
+    "raw_bytes": 3246797,
+    "raw_sha256": "f8a710486da1c3e7a5217aa7304915d71373e53655949a5ad46349f1bce368d5",
+    "observations_bytes": 901645,
+    "observations_sha256": "e0cffb96f21a16d27c5703ec67923282cbb46540037dfde7d3e0111a47177b92",
+    "helper_bytes": 712,
+    "helper_sha256": "e4a4bf99b296818d568506636675547eff5eaa5a2801cf355b35ece198d8a912",
+    "original_manifest_and_all_member_hashes_roster_reverified": true
+  },
+  "events": {
+    "total": 12593,
+    "start": 1,
+    "run": 33,
+    "output": 12525,
+    "pass": 34,
+    "fail": 0,
+    "skip": 0
+  },
+  "sampler": {
+    "intermediate_deferred_unknown_samples": 2,
+    "temporary_ENOENT_records": 6,
+    "final_complete_stable_enumeration_after_normal_joins_EOF": true,
+    "charged_observed_file_directory_identities": 903,
+    "charged_logical_bytes": 68885031,
+    "charged_allocated_bytes": 69816320,
+    "reclamation_credit": false,
+    "temporary_entries_remaining": 0,
+    "sampled_current_peak_logical_bytes": 67800357,
+    "sampled_current_peak_allocated_bytes": 67850240
+  },
+  "retained_root": {
+    "regular_files_including_manifest": 27,
+    "logical_bytes": 6746240,
+    "allocated_bytes": 7741440,
+    "qualification": "Independent retained evidence, not deleted or repaired; shared-cache growth is outside this owned-root total."
+  },
+  "timing_ms": {
+    "phase": 8950,
+    "whole": 12405
+  },
+  "preservation": {
+    "source_inputs_before_after_exact": 7027,
+    "compiler_tools_exact": true,
+    "protected_manifest_sets_exact": 26,
+    "original_red_and_failed_V1_V2_roots_and_source_packets_immutable": true
+  },
+  "limits": [
+    "Only owner-source efc342e and immutable selected tests; final evidence-only commit has no product changes.",
+    "No independent composed-source/integration acceptance is implied by owner green.",
+    "No race, full package, native Program/PTY/browser, physical terminal/font/Unicode, production transport/collector/auth or fullUX acceptance.",
+    "Inventory/reorder19 follow-up and maximum Monitor density/state reading remain outside this cut.",
+    "No dedicated disappearing-checkbox test was added; the validated source path and existing mouse/stale-click regressions are included.",
+    "Source inventory is conservative, not newly discovered actual dependency/generated/SDK/header/linker closure; sampled/non-atomic/storage/shared-cache/cooperative-limit and original-handle scope qualifications remain.",
+    "Earlier failedV1/V2 collections remain failed; only original complete V3 red supports this scoped causal comparison."
+  ]
+}

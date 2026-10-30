@@ -11794,3 +11794,20 @@ limits execution to seven roots/33 named nodes, all expected to pass, with the
 original 66 observations/22 cleanups and all process/storage/preservation gates.
 No green compiler/test execution, product acceptance or broader coverage follows
 from formatting/parser/source checks.
+
+
+## Monitor focus owner green — seven roots/33 named passes
+
+The [green record](validation/ux-terminal-monitor-focus-green-2026-10-30.json)
+binds exact `efc342e`/unchanged `76b62701…` tests. Original Go/helper/FIFO 0
+joined normally with EOF; all 33 named nodes/package pass, 66 observations and 22
+strict cleanups are complete, with no fail/skip or unknown/forced/truncated
+lifecycle. All 22 original initial observations equal red; all 66 green IDs/row
+pairs are canonical/visible and four resize scope/ID traces equal red.
+
+A final complete post-join/EOF enumeration, empty temporary trees, 7,027 source/
+tool pins and 26 protected sets passed. Intermediate unknown samples retain all
+charges; no reclamation claim is made. Original26-member manifest and all bytes
+were reverified and retained. This does not promote prior failed V1/V2 artifacts
+or establish composed/native/race/full-package/fullUX acceptance. Final owner
+evidence changes are documentation only; no later Go tree is claimed as run.

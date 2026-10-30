@@ -312,3 +312,39 @@ missing-checkbox disappearance case or inventory/reorder 19 follow-up was added.
 Product formatting/parser and source review are preparation only. No new Go
 metadata/compiler/test or green run occurred. Independent exact diff/pin/private
 proposal review and a new allocation remain gates before any green execution.
+
+
+## M1/M2 owner ordinary green complete; central composition remains
+
+The [normalized green result](validation/ux-terminal-monitor-focus-green-2026-10-30.json)
+binds exact product source `efc342e`, the same `76b62701…` red test bytes and
+unchanged existing I/O tests. One allocated normal offline FIFO invocation
+returned matched original Go/helper/FIFO 0, with EOF and no forced, cancelled,
+truncated or unknown cleanup. All seven roots/26 child cases (33 named nodes)
+and the package passed once, with zero failures/skips. All 66 original focus
+observations and 22 strict fake/context/constructor cleanups are positive.
+
+Read-only original evidence comparison verifies all 22 full initial observations
+equal the accepted red baseline. All 66 green focus IDs are canonical and their
+label/ID pairs are visible in both actual viewport text and full frames. The
+four resize cases retain the exact same IDs and both chart scopes as red; only
+visibility changes. No unexpected focus-source assertion messages remain.
+Validated mouse/stale-click, responsive/empty, idle and return-scroll legacy
+roots also pass. No new dedicated missing-checkbox test was added.
+
+Two intermediate scratch samples were explicitly unknown/deferred during six
+temporary ENOENTs. No positive/zero measurement or charge release was invented.
+After normal original joins/EOF, the final complete enumeration and empty TMP/
+GOTMP trees passed. 903 observed identities retain 68,885,031 logical/69,816,320
+allocated high-water charges. Final retained evidence is 6,746,240 logical/
+7,741,440 allocated bytes in 27 regular files including the 26-member manifest.
+Original phase time was 8,950ms and whole time 12,405ms. All 7,027 source pins,
+compiler/tool bindings and 26 protected sets remained exact before/after. The
+original green manifest, complete raw output and observations remain immutable.
+
+This closes the selected owner-source ordinary correction gate only. Central
+composed source review, any integration-boundary validation and landing remain
+separate. Race/full package/native/browser/physical terminal/font/transport/full
+UX and inventory/reorder 19 coverage are not established. The final evidence
+commit changes documentation only; it does not imply a later Go tree was run.
+The accepted red and both earlier failed collections keep their original scopes.
