@@ -1,0 +1,227 @@
+{
+  "schema": 1,
+  "scope": "Ordinary causal regression and affected cohort for modal shadow containment; native paint and full UX acceptance remain pending.",
+  "productSourceCommit": "bf43a876dcd21a7efdfa9297292d932ff8e981fa",
+  "preFixSourceCommit": "3fdbfac48116c8789565f0f717f712cd3a9e83bf",
+  "productAndRegressionSHA256": {
+    "internal/tui/presentation.go": "5c06dca64d42f7c8f27905fe2e4b7f2125671eabcc2dbf9a5c895c8697ccc466",
+    "internal/tui/polish_test.go": "04ff15993dbdac1a7d7866aaa429587df6f3364e5730e61d4c9374a204d90a34"
+  },
+  "control": {
+    "compilerOverlayOnly": "internal/tui/presentation.go",
+    "preFixSHA256": "e14168185f6287522c3b34e62655669aa0cb506854b037417c5962643303c29d",
+    "unchangedCurrentRegression": true,
+    "expectedExitCode": 1,
+    "root": "TestModalShadowPreservesBordersAndTrustedMouseGeometry",
+    "subcasesRun": 24,
+    "failedSubcases": [
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/110x35/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/110x35/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/110x35/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/45x14/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/45x14/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/45x14/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/70x24/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/70x24/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/70x24/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/72x28/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/72x28/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/72x28/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/88x28/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/88x28/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/88x28/review-tail"
+    ],
+    "acceptedAssertion": "modal border clipped at row",
+    "allFailuresOnlyAcceptedBorderAssertion": true,
+    "compileOrSetupFailure": false,
+    "skips": 0
+  },
+  "final": {
+    "exitCode": 0,
+    "roots": [
+      "TestFrameScrollPositionAndModalViewportRemainBounded",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry",
+      "TestMouseConfirmationDeclineInFlightAndStaleRender",
+      "TestMousePartiallyVisibleLeaseRowAndTrustedModalButtons",
+      "TestMouseScrollFeedResizeAndContentInvalidation"
+    ],
+    "passedTests": [
+      "TestMouseConfirmationDeclineInFlightAndStaleRender",
+      "TestMouseScrollFeedResizeAndContentInvalidation",
+      "TestMousePartiallyVisibleLeaseRowAndTrustedModalButtons",
+      "TestFrameScrollPositionAndModalViewportRemainBounded",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/45x14/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/45x14/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/45x14/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/70x24/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/70x24/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/70x24/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/72x28/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/72x28/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/72x28/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/88x28/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/88x28/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/88x28/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/89x28/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/89x28/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/89x28/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/100x35/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/100x35/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/100x35/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/110x35/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/110x35/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/110x35/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/160x50/review-first",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/160x50/review-tail",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry/160x50/filter",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry"
+    ],
+    "passedCount": 29,
+    "failures": 0,
+    "skips": 0,
+    "compilerOverlay": false
+  },
+  "execution": {
+    "attempts": 1,
+    "compilerFlags": [
+      "-mod=readonly",
+      "-p",
+      "1",
+      "-count=1",
+      "-timeout=45s",
+      "-json"
+    ],
+    "package": "./internal/tui",
+    "offlineLocalToolchain": true,
+    "sharedFIFOUnchanged": true,
+    "normalFixturesOnly": true,
+    "allARM_TUIEnvironmentRemoved": true,
+    "commands": [
+      {
+        "phase": "red-control",
+        "compilerExitCode": 1,
+        "FIFOExitCode": 1,
+        "FIFOWallMS": 5958,
+        "originalFIFOHandleJoined": true,
+        "originalCompilerHandleJoined": true,
+        "helperVerified": true,
+        "temporaryFilesEmpty": true
+      },
+      {
+        "phase": "final-cohort",
+        "compilerExitCode": 0,
+        "FIFOExitCode": 0,
+        "FIFOWallMS": 3518,
+        "originalFIFOHandleJoined": true,
+        "originalCompilerHandleJoined": true,
+        "helperVerified": true,
+        "temporaryFilesEmpty": true
+      }
+    ],
+    "cumulativeWallIncludingCleanupMS": 10004,
+    "wrapperElapsedMS": 10323,
+    "cooperativeCPU": 2,
+    "cooperativeMemoryBytes": 2147483648,
+    "ownedScratchLimitBytes": 1073741824,
+    "sampledMarginBytes": 33554432,
+    "perFileLimitBytes": 268435456,
+    "sampledPeaks": {
+      "logicalBytes": 61899790,
+      "allocatedBytes": 62095360,
+      "files": 92
+    },
+    "samplingQualification": "Owned filesystem bytes are sampled. CPU and memory are cooperative promises, not kernel limits or every-instant peaks.",
+    "forcedTermination": false,
+    "unknownOutcomes": false,
+    "resourceWindowReleased": true
+  },
+  "preservation": {
+    "sourceMembers": 62,
+    "sourceBeforeAfterControlAfterExact": true,
+    "sourceMapSHA256": "50ca4781d4c31eea1ab1c85554084eff2fa3bec6b3d973e0ad445b5bcc72cf49",
+    "originalOverlayExact": true,
+    "priorArtifactManifestCounts": [
+      111,
+      64,
+      29,
+      47,
+      15,
+      71,
+      23,
+      71,
+      22,
+      78,
+      62
+    ],
+    "priorRostersFilesBinariesExact": true,
+    "ownedTemporaryFilesEmpty": true
+  },
+  "opaqueEvidence": {
+    "validation-receipt.json": {
+      "bytes": 15965,
+      "sha256": "972c41c2878ad089c7e8b273399ee8b4a834cc7c70bd24b4c37005f5266bd14d"
+    },
+    "artifact-manifest.json": {
+      "bytes": 9307,
+      "sha256": "6842f86647115192626c5ef5f3d8b1189bfd688d1d4c27413896d2944a41245b"
+    },
+    "before-source.json": {
+      "bytes": 6860,
+      "sha256": "50ca4781d4c31eea1ab1c85554084eff2fa3bec6b3d973e0ad445b5bcc72cf49"
+    },
+    "after-control-source.json": {
+      "bytes": 6860,
+      "sha256": "50ca4781d4c31eea1ab1c85554084eff2fa3bec6b3d973e0ad445b5bcc72cf49"
+    },
+    "after-source.json": {
+      "bytes": 6860,
+      "sha256": "50ca4781d4c31eea1ab1c85554084eff2fa3bec6b3d973e0ad445b5bcc72cf49"
+    },
+    "preserved-before.json": {
+      "bytes": 2105,
+      "sha256": "21abc2f3b720d7ab1f36e6c9aea2d616fe1b7524db5e4be98a892ef642ff733e"
+    },
+    "after-preserved.json": {
+      "bytes": 2105,
+      "sha256": "21abc2f3b720d7ab1f36e6c9aea2d616fe1b7524db5e4be98a892ef642ff733e"
+    },
+    "overlay-receipt.json": {
+      "bytes": 339,
+      "sha256": "e9ce031dc850521d5fbdf8eeec3c120555fbe7c3caa498ceee14a31c7b6a3606"
+    },
+    "overlay.json": {
+      "bytes": 200,
+      "sha256": "c0af1c6c0c8ebdcc915c0650adf7dd6da83566cb2f20aaa71d95d04589ecc36a"
+    },
+    "red-gate.json": {
+      "bytes": 5006,
+      "sha256": "28c5d4c499e30529c82dc3f392cf6bbe8a18a627ee222b00a16f320bca639e56"
+    },
+    "green-gate.json": {
+      "bytes": 2696,
+      "sha256": "d3ff59caea93f2b1d28dd6e834cb5fb93bdd3c07285d25cbd61bb36a51d979f8"
+    },
+    "original-red-control.log": {
+      "bytes": 29731,
+      "sha256": "3fd3e7346f66a11e60da675e41b815ed604c1bb3b74a5cd1692f70c78daa4815"
+    },
+    "original-final-cohort.log": {
+      "bytes": 27913,
+      "sha256": "1cac1bff6dc35bcbe3f056f33aed0ee21c9c2f4a6af834dd2e7af9affe911f54"
+    },
+    "original-red-control-helper.json": {
+      "bytes": 471,
+      "sha256": "d3280e3d320281114ad3666de23dc95b4322fc0cdb9d32332326d37a391aa68b"
+    },
+    "original-final-cohort-helper.json": {
+      "bytes": 590,
+      "sha256": "04749cb919182c47139b8ff1e78861459f7bc427c84bc507d9ab82ad59d7d41d"
+    }
+  },
+  "limitations": [
+    "No native Program, PTY, browser, production startup or backend executed in this attempt.",
+    "Historical source70c native evidence and original failed captures remain unchanged; this later source cannot inherit their acceptance.",
+    "Fresh reviewed classification/helper/build/capture/replay bindings and separate allocations are required for fixed-source native paint.",
+    "This focused ordinary cohort does not establish full specification or universal terminal/font/Unicode support."
+  ]
+}

@@ -932,3 +932,23 @@ and polish_test.go intentionally differ from the original classifier/source map;
 old native fixture guards must continue to reject them. Separate source review,
 ordinary regression allocation and explicitly reviewed updated source/classifier/
 helper/build/capture bindings are required before any fixed-source native run.
+
+
+## P2 modal shadow containment — ordinary causal/final verification
+
+The [normalized regression result](validation/ux-terminal-modal-shadow-regression-2026-10-30.json)
+binds product commit `bf43a876dcd21a7efdfa9297292d932ff8e981fa`. One compiler
+overlay restored only pre-fix presentation.go while retaining the new regression:
+all24 subcases ran,15 failed only on actual clipped-border assertions, including
+all three72x28 cases. The final source then passed the exact five-root affected
+cohort and24 regression subcases:29 passes,0 failures/skips. Both original compiler
+and FIFO handles joined normally; source62, overlay, all11 historical artifact
+sets and binaries remained exact, and owned temporaries were empty. Cumulative
+execution through cleanup was10,004ms; the ordinary resource window is released.
+
+This supersedes the earlier unexecuted ordinary-test status only. Fixed-source
+native paint remains pending independent review of the minimal sibling binding,
+a fresh63-input compile receipt/binary and a separately allocated72x28 capture
+with eight interaction checkpoints and three modal images. Historical classifier,
+plan, positive70c evidence and failed captures remain unchanged; no new native
+Program/PTY/browser, production startup or full-UX acceptance is claimed.
