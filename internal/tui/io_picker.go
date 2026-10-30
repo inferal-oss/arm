@@ -124,16 +124,14 @@ func (m *dashboardModel) pickerKey(key string) tea.Cmd {
 	}
 	return nil
 }
-func (m *dashboardModel) keepPickerVisible(index int) {
+func (m *dashboardModel) reconcilePickerFocus(index int) int {
 	options := m.ioOptions()
 	if len(options) == 0 {
 		m.ioPicker.selectedID = ""
-		m.syncViewport()
-		m.viewport.GotoTop()
-		return
+		return -1
 	}
 	// Keep an exact surviving ID; a vanished row falls back to the nearest
-	// remaining index. Reveal only on navigation, selection actions or resize.
+	// remaining index. Identity repair alone must not change reading position.
 	for i, option := range options {
 		if option.id == m.ioPicker.selectedID {
 			index = i
@@ -142,7 +140,15 @@ func (m *dashboardModel) keepPickerVisible(index int) {
 	}
 	index = max(0, min(index, len(options)-1))
 	m.ioPicker.selectedID = options[index].id
+	return index
+}
+func (m *dashboardModel) keepPickerVisible(index int) {
+	index = m.reconcilePickerFocus(index)
 	m.syncViewport()
+	if index < 0 {
+		m.viewport.GotoTop()
+		return
+	}
 	row := 3 + 2*index
 	if row < m.viewport.YOffset() {
 		m.viewport.SetYOffset(row)

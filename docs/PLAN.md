@@ -4326,3 +4326,46 @@ across worker replacement remain gates. The separate external-measurement
 authority contract supplies direction only; its concrete supervisor and funded
 uncertainty-tail capability are still missing. No measurement interface or
 production grant is authorized by this qualification.
+
+
+## Terminal Monitor inventory follow-up — four source cases prepared
+
+The existing full-UX owner continues from accepted `0454567` on isolated branch
+`codex/ux-terminal-monitor-inventory-followup`, preserving the prior owner branch.
+Only disk/network × surviving-ID reorder and reported-ID disappearance in All
+mode are prepared. The [policy/proposal](UX-TERMINAL-MONITOR-INVENTORY.md) requires
+initially visible focus, inert snapshot delivery and exact membership semantics,
+while preserving deliberate off-focus reading. Accepted helpers/product bytes are
+unchanged. Source/policy/pin review and a separate allocation remain gates; the
+other 15 reading/hit cases and native/browser work are outside this cut.
+
+
+## Inventory focus red accepted; non-snapping correction source prepared
+
+The four-case ordinary reproduction is independently accepted on `2ecf0d0` with
+original tests/helpers unchanged. The source correction separates canonical
+identity repair from reveal and follows only previously visible moved focus.
+Six original-page-scroll off-focus/unchanged-poll guards are prepared; the
+[green proposal](validation/ux-terminal-monitor-inventory-green-proposal-2026-10-30.json)
+is nine roots/45 nodes, 86 observations/32 strict cleanups. Source/diff/pin review
+and a new single-run allocation remain gates; no product acceptance, execution,
+other 15 or native/browser scope follows.
+
+
+## Inventory focus/read-position owner green accepted — composition pending
+
+Exact `88132d6` passes the allocated nine-root/45-node ordinary contract with
+86 complete observations/32 strict cleanups, normal original 0 joins/EOF, stable
+final enumeration and exact guards. The six page-reading controls preserve
+offset 21, canonical identity and chart policies. The
+[scoped result](validation/ux-terminal-monitor-inventory-green-2026-10-30.json)
+records independent owner-green acceptance; central composition/landing remains.
+Active execution is returned, originals retained, and no further runtime or
+other 15/native/browser scope is implied. Evidence successor is documentation only.
+
+Coordinator composition accepted the focused sequence `2ecf0d0`, `88132d6`,
+`fed2ed8` as `2ffe728`, `f054c1f`, `0a0a87a`. Current onboarding work is preserved.
+The entire terminal-package tree equals the tested owner tree; the only other
+product differences are the independently accepted onboarding-name packages,
+outside the terminal dependency path. Documentation conflicts preserve both
+coordination and owner records. Broader UX/native gates remain open.

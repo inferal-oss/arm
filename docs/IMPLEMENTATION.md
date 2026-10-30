@@ -5583,3 +5583,42 @@ data and refusal tests with the official driver intact. These unpublished
 source packets have not been applied to the product tree. There is still no
 accepted externally funded measurement-root construction or positive production
 service grant/root handoff. Existing installed processes are unchanged.
+
+
+## Terminal Monitor inventory follow-up source only
+
+One new four-case ordinary test file reuses exact accepted helper `76b62701…`
+without edits. It arranges visible focus and directly applies synthetic reorder/
+All-mode removal snapshots; no transport/timer/collector or post-update repair
+helper executes. The [focus/reveal policy](UX-TERMINAL-MONITOR-INVENTORY.md) keeps
+exact surviving IDs and deterministic replacements while avoiding poll-driven
+scroll snaps during deliberate reading. Product implementation is not changed.
+
+
+## Inventory focus and deliberate reading — source correction pending green
+
+Prepared two-file correction captures prior canonical focus/full-row visibility
+before snapshot replacement, reconciles identity without scrolling, and reveals
+only previously visible moved/replaced focus. Unchanged/off-focus delivery
+preserves reading position apart from natural bounds; explicit actions/resize
+keep accepted behavior. Selection policies and backend/metrics are untouched.
+Accepted/red tests stay exact and one six-case page-reading guard root is added.
+The [bounded proposal](validation/ux-terminal-monitor-inventory-green-proposal-2026-10-30.json)
+is unexecuted; independent review/green/composition remain gates.
+
+
+## Inventory focus/read-position correction — owner ordinary green accepted
+
+Exact `88132d6` validates identity-only reconciliation and conditional follow of
+previously visible changed focus. Four visible inventory transitions now pass;
+six unchanged/reorder/disappearance off-focus controls retain exact reading
+offset 21 and chart policies, with canonical focus. All prior selected I/O roots
+pass. The [owner result](validation/ux-terminal-monitor-inventory-green-2026-10-30.json)
+is 45 named passes/86 observations/32 strict cleanups. No further product bytes
+changed; central composition and broader native/UI/transport gates remain.
+
+Coordinator review accepts the focused correction on the current composition.
+All terminal product/tests remain exactly the green-tested bytes. Visible focus
+follows its surviving ID or a clamped replacement, while unchanged polling and
+deliberate offscreen page reading retain their position. No chart-selection,
+transport or backend behavior changed.

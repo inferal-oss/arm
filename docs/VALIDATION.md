@@ -11926,3 +11926,58 @@ root, worker or workload. No race, later-main, native-C, measured-profile or
 original-child continuity acceptance follows. The external measurement owner
 and its actual containment/funded uncertainty tail remain a separate source
 and execution gate.
+
+
+## Monitor inventory follow-up — four unexecuted ordinary source cases
+
+The [source proposal](validation/ux-terminal-monitor-inventory-proposal-2026-10-30.json)
+binds four child names at 45x14, eight planned original observations/four strict
+cleanups, unchanged accepted helpers/product and the bounded single FIFO command.
+Source formatting/parser/hash checks only; no Go metadata/compiler/test, real
+transport/timer/collector, native or browser run occurred. Inventory focus issues
+remain candidates pending original execution/review. Existing M1/M2 evidence
+keeps its accepted scope; remaining 15 reading/hit cases are unassigned here.
+
+
+## Inventory four-case ordinary red; 45-node green source prepared
+
+The [accepted red record](validation/ux-terminal-monitor-inventory-red-2026-10-30.json)
+retains original normal1/EOF, 5 named failures, 8 full observations/four strict
+cleanups and exact 27-member manifest. All 7031 source/tool pins and 28 protected
+sets stayed exact; final scan/empty temporary trees passed. Focus failures are
+scoped; chart policies and the other inventory stayed unchanged.
+
+The unchanged accepted/red cases plus six new off-focus/unchanged-poll guards
+form the [nine-root/45-node proposal](validation/ux-terminal-monitor-inventory-green-proposal-2026-10-30.json):
+86 observations/32 strict cleanups, all expected pass, normal original0joins/EOF
+and all original final-scan/preservation/resource gates. Only source formatting/
+parser/hash checks ran for the correction/guards; no green/compiler/test/native/
+browser or other 15 execution is claimed.
+
+
+## Inventory green — 45 named passes/86 observations/32 cleanups
+
+The [normalized result](validation/ux-terminal-monitor-inventory-green-2026-10-30.json)
+binds exact `88132d6` and immutable accepted/red tests. Original Go/helper/FIFO 0
+joined normally with EOF; all 45 named nodes/packagepass, 86 full observations/32
+strict cleanups and constructor checks passed. All 26 initial full observations
+equal existing baselines. 74 row pairs remain visible and 12 deliberately hidden;
+six reading guards retain offset 21 with exact policies. No other source message,
+fail/skip or forced/unknown cleanup was accepted.
+
+Final stable enumeration/empty temporaries and 7,034 source/tool/30 preserved-set
+guards pass. Original 29-member manifest and all members/path set were reverified.
+Intermediate unknown samples retain charges; no reclamation credit is claimed.
+The active window is returned; final owner evidence commit is documentation only.
+Central composed source review/landing and other 15/native/browser/full UX remain
+separate; no additional execution or upgrade of prior failed scopes occurred.
+
+Coordinator review independently verified all 29 original artifact hashes,
+unique raw run/pass pairs for 45 named nodes, 86 original observations and 32
+strict cleanup/constructor checks. The current composed terminal-package tree
+equals tested `88132d6` exactly. The only non-documentation differences from the
+owner are eight onboarding-name files in separate CLI/discovery packages;
+import review places those changes outside this terminal test dependency path.
+No composed rerun or fresh dependency graph is claimed. This accepts the
+focused ordinary-model fix, with all native, reading/hit, rendering, full-suite
+and earlier failed-scope limitations unchanged.
