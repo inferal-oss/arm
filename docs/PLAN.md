@@ -3244,3 +3244,21 @@ This controlled emulator investigation needs no CDP/font expansion. Actual
 font identity, universal Unicode and physical terminals remain unsupported.
 The existing owner returns to the 21-frame native lease/detail/record/review-
 decline/filter source proposal; its build/runtime review gates remain closed.
+
+
+## Retained-driver v2 — independent source review, EOF finding returned
+
+The private additive candidate against SQLite v1.60.1 remains outside ARM's
+dependency graph. Independent review verifies its complete 1,902-file candidate
+manifest (nine changed upstream files and three additions), all eleven prepared
+overlay maps/source hashes, and preservation of the original candidate. The
+previous abnormal-return, record-retirement, optional-error and terminal-operation
+findings have concrete source corrections; no execution acceptance follows.
+
+A further P2 finding is returned: ordinary `Rows.Next` exhaustion reaches the
+generic sticky-error recorder, marking successful iteration failed and occupying
+the first-error slot before a later substantive failure. The next focused cut
+must distinguish that method's completion sentinel without hiding other errors
+or changing returned driver behavior. Frozen inputs remain preserved. First
+normal validation awaits corrected source, offline prerequisites and reviewed
+bounds; race, overlays, delivery and actual resident assembly are separate gates.
