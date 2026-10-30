@@ -1,5 +1,20 @@
 # Backend and CLI implementation
 
+## Private untrusted package declarations — pure codec only
+
+The [unexported codec](../internal/workerpackage/README.md) accepts private v1
+executable-plus-assets metadata, checking the raw cap before UTF-8/JSON work and
+bounded fields/files incrementally. Canonical encoding revalidates manual
+candidates, preserves input order, emits fixed fields/integers and sorted file
+paths, and hashes only these declaration bytes. Unknown/duplicate/aliased fields,
+invalid numeric/path/digest/count/total data and oversized output refuse.
+
+Successful parsing is untrusted declared data; it verifies no actual bytes,
+provenance, worker/native identity, compatibility or resource profile. No
+filesystem/staging/approval/admission/execution surface or existing production
+source/module/schema/CLI/native/mesh behavior changes. The overall `arm start`
+and distinct-version API/UI job-preservation objective remains incomplete.
+
 ## Borrower binding and closure — missing APIs/source contract only
 
 The [binding proposal](design/resident-lifetime-binding.md) adds no implementation.

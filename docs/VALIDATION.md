@@ -1,5 +1,22 @@
 # Validation record
 
+## Pure package manifest — focused unit qualification
+
+The [evidence](validation/resident-worker-package-manifest-2026-10-29.json)
+qualifies only the private pure codec on accepted
+`2eec7dd15a6c3ef8c75aed92ba2ec0d967f6dfcf`: normal/race each pass six roots / 101
+nodes with no failure/skip; package vet passes separately through the original
+shared FIFO. Original command exits and final source hashes are retained, with
+all 71 protected baseline sources unchanged via referenced inventory digests.
+Golden canonical bytes/hash, four declared platforms/empty asset, exact limits,
+key/type/numeric/UTF-8/path/set refusals, changed commitments, manual malformed/
+oversized candidates and concurrent input-preserving roundtrips are covered.
+
+This is queued-command evidence, not an ARM lease or native artifact/profile
+validation. No filesystem/native fixture, approval/staging/worker/bootstrap,
+production caller, broad suite/browser/install or `arm start`/A-to-B acceptance
+is implied; declarations and their hashes stay untrusted metadata.
+
 ## Lifetime binding contract — source inspection/documentation only
 
 The [contract](design/resident-lifetime-binding.md) and

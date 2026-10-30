@@ -1,5 +1,18 @@
 # ARM delivery plan
 
+## Private package manifest declarations — source pending review
+
+Owner: `codex/resident-package-manifest`, from accepted
+`2eec7dd15a6c3ef8c75aed92ba2ec0d967f6dfcf`. The private
+[pure manifest codec](design/resident-worker-package-manifest.md) incrementally
+parses exact bounded fields, rejects aliases/duplicates/noncanonical integers and
+conflicting asset paths, and commits fixed canonical sorted declaration bytes.
+It adds no production caller/export, native/filesystem/archive/provenance/approval/
+staging/admission/execution API or compatibility/resource grant. Parsing ceilings
+must not relax existing mesh validation. Native approval/ownership/binding,
+launch/controller/API/assets, first/repeated `arm start` and real A-to-B API/UI
+job preservation remain required before completion.
+
 ## Nodes/Kubernetes inventory — reviewed findings and bounded correction
 
 Read-only inventory `ac3230c` matches 28 unique source/contract hashes and 138
