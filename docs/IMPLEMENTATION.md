@@ -5458,3 +5458,15 @@ Two source-derived focus candidates await ordinary reproduction; compact dense
 reading is not an established defect. Metric, aggregation, accounting, backend
 and protocol behavior remain outside this cut. No Monitor runtime/paint or
 full-UX acceptance follows from source inventory.
+
+
+## Resident standing accounting — unintegrated source proposal
+
+A separate upgrade proposal adds the resident core's full standing promise to
+CPU, memory and default/shared-backing disk budgets without creating a lease.
+It preserves job-only CPU usage credit, exact byte quantities and existing
+reporting/settlement entry points. Source review does not establish those runtime
+properties: queue-reporting errors currently bypass later ending-resource
+settlement, and a focused correction is required before acceptance. The private
+custody primitive also remains incomplete. No proposal source is activated in
+production, and no new service authorization or upgrade support is claimed.

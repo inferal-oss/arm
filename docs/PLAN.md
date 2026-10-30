@@ -4143,3 +4143,22 @@ prepare a narrowly scoped bookkeeping assertion and sampler correction for
 review. Product edits, retries, the additional 19 cases and native/browser work
 remain unallocated. The original FIFO and Go handles were reaped; a later scoped
 process absence observation does not establish a retained descendant join.
+
+
+## Resident standing accounting — source reviewed; corrections required
+
+The existing upgrade owner returned a separate uncompiled accounting proposal
+against `c1173f8`, dependent on the incomplete standing-custody primitive. Its
+job-only budget inputs add the core promise once, retain job-only CPU credit,
+check resident job subtotals before addition, bind the same native home before
+database construction and expose an optional nonlease consumer. No product
+source from this proposal is integrated or activated.
+
+Independent review found that queue-projection accounting errors can return from
+`tick` through `reconcileQueued` before ending storage and port settlement. That
+ordering and resident-specific queue wording require focused corrections and a
+causal regression proposal. Original source versions remain preserved. Actual
+operator/profile issuance, immutable image custody, the composed fixed descriptor
+layout, authenticated root acknowledgment/reference handoff, positive same-issuer
+fixtures, consumer presentation and original-child continuity remain open gates.
+No execution allocation or production grant follows from source review.

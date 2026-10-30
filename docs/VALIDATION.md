@@ -11685,3 +11685,25 @@ incorrectly excluded the constructor-created private recovery lock. That fixture
 error and the sampler require focused source corrections before any new
 allocation. No retry, green result, product fix, native paint or full-UX acceptance
 is inferred. Live ARM state and jobs were outside this disposable ordinary test.
+
+
+## Resident standing accounting — source-only review, blocked on corrections
+
+Independent review checked the separate accounting manifest SHA-256
+`f916361974448768a0d943d37d70786a04bfdb4e4281c4366bdf84fdc6ea74f7`
+and all 15 members, its custody dependency manifest
+`ad3e7a074b65df5ad1b54cb9d05ac7385cb0ee591747b611ca565af8c404d4c9`
+and all nine members, plus the nine original baseline source hashes. The review
+covered the actual admission, status, renewal, queue and backing-alias seams.
+Four prepared tests cover arithmetic/data and negative authority cases only;
+none was compiled or run, and no positive service grant was fabricated.
+
+The checked job-subtotal change addresses positive signed-wrap risk before core
+addition, but source inspection found an earlier queue-projection error return
+that skips ending storage/port settlement. A focused ordering correction, causal
+regression and accurate resident queue wording remain required. The same-home
+binding and canonical detached process/direct-file-stdio checks are incomplete
+primitives, not completed funding or startup. Actual issuer/profile evidence,
+root/image/descriptor handoff, same-issuer positive qualification, consumer UI
+and original run/proxy continuity remain unverified. No Go metadata, compiler,
+tests, native execution or live upgrade was allocated for this proposal.
