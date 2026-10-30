@@ -23,7 +23,8 @@ export function createRemoteNodeDashboard({ui,root,feed,call,context,onError=()=
   let currentView='resources',snapshot=null,metadata=null,scope=null,stale=true,disposed=false;
   let generation=0,pending=null,statusReceived=0,metadataRequestedAt=null,lastMetadata=null,lastView='',held=false,detail=null;
   let resourceCards=[],leaseRows=[],freshnessMessage='';
-  const banner=ui.stack(),feedback=ui.text('',{role:'status'}),content=ui.stack(),detailSlot=ui.stack();
+  const scoped=(handle,name)=>{ui.put?.(handle.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type','https://arm.local/ui#'+name,true);return handle;};
+  const banner=scoped(ui.stack(),'DestinationBanner'),feedback=ui.text('',{role:'status'}),content=ui.stack(),detailSlot=ui.stack();
   ui.batch(()=>{root.replace(banner,feedback,content,detailSlot);feed?.replace();});
   content.on('focusout',()=>queueMicrotask(()=>{
     if(!disposed&&held&&!content.contains(ui.activeComponent)){render();}
@@ -87,8 +88,8 @@ export function createRemoteNodeDashboard({ui,root,feed,call,context,onError=()=
         const entries=(snapshot?.leases??[]).slice(0,200).map(lease=>{
           const button=ui.button(lease.request?.reason||'Lease',()=>inspect(lease,button),{disabled:!mayInspect(lease)});
           leaseRows.push({lease,button});
-          return ui.card(namedLabel(lease,lease.id),[ui.text('Lease ID '+lease.id),ui.badge(leaseStateLabel(lease)),button,ui.text(new Date(lease.expires_at).toLocaleString()),
-            ...(!full&&lease.request?.origin_peer!==context.source_host?[ui.text('Detail is unavailable under this source’s own-lease grant.')]:[])]);
+          return scoped(ui.card(namedLabel(lease,lease.id),[ui.text('Lease ID '+lease.id),ui.badge(leaseStateLabel(lease)),button,ui.text(new Date(lease.expires_at).toLocaleString()),
+            ...(!full&&lease.request?.origin_peer!==context.source_host?[ui.text('Detail is unavailable under this source’s own-lease grant.')]:[])]),'DestinationLeaseCard');
         });
         content.replace(ui.text(full?'Lease inventory includes the destination’s currently authorized full view. Detail reads follow that observation grant.':'Only leases attributed to this source node are visible when observe-own is granted; detail reads require the same source ownership.'),...entries,
           ...((snapshot?.leases?.length??0)>200?[ui.text('Showing the first 200 authorized leases. Use the CLI to inspect the complete destination inventory.')]:[]),
@@ -98,10 +99,10 @@ export function createRemoteNodeDashboard({ui,root,feed,call,context,onError=()=
         const amount=ui.heading(format(resource,resource.available),3),summary=ui.text(`Available · total ${format(resource,resource.budget_total)} · reserved ${format(resource,resource.reserved)}`),note=ui.text('');
         const budget=resource.kind==='cpu'?remoteCPUBudget(snapshot.cpu):resource.kind==='memory'?memoryBudget(snapshot.memory):resource.kind==='disk'?snapshot.disk:null;
         resourceCards.push({resource,budget,received:statusReceived,amount,summary,note});
-        return ui.card(remoteResourceLabel(resource),[ui.badge(resource.kind??'Resource'),amount,summary,note,
-          ui.disclosure('Scope and accounting details',[...(resource.id?[ui.text('Resource ID '+resource.id)]:[]),ui.json(nativeKinds.has(resource.kind)?{resource,budget:resource.kind==='cpu'?snapshot.cpu:resource.kind==='memory'?snapshot.memory:snapshot.disk}:resource,'Resource details')])]);
+        return scoped(ui.card(remoteResourceLabel(resource),[ui.badge(resource.kind??'Resource'),amount,summary,note,
+          ui.disclosure('Scope and accounting details',[...(resource.id?[ui.text('Resource ID '+resource.id)]:[]),ui.json(nativeKinds.has(resource.kind)?{resource,budget:resource.kind==='cpu'?snapshot.cpu:resource.kind==='memory'?snapshot.memory:snapshot.disk}:resource,'Resource details')])]),'DestinationResourceCard');
       });
-      content.replace(ui.stack(cards),
+      content.replace(scoped(ui.stack(cards),'DestinationResources'),
         ...(snapshot?.memory?[ui.json(snapshot.memory,'Memory budget and observation freshness')]:[]),
         ...(snapshot?.disk?[ui.json(snapshot.disk,'Disk budget and observation freshness')]:[]));
       updateFreshness();
@@ -110,7 +111,7 @@ export function createRemoteNodeDashboard({ui,root,feed,call,context,onError=()=
   async function inspect(lease,opener) {
     if(!mayInspect(lease))return;
     detail?.dialog.close();
-    const requestGeneration=generation,body=ui.stack([ui.text('Reading this exact destination lease…')]),close=ui.button('Close',()=>dialog.close()),dialog=ui.dialog('Remote lease',[body],[close]);
+    const requestGeneration=generation,body=scoped(ui.stack([ui.text('Reading this exact destination lease…')]),'DestinationLeaseDetailBody'),close=ui.button('Close',()=>dialog.close()),dialog=ui.dialog('Remote lease',[body],[close]);
     const record=detail={dialog,body};
     dialog.on('close',()=>{
       if(detail===record){detail=null;detailSlot.replace();if(opener?.isConnected)opener.focus();else banner.focus();}

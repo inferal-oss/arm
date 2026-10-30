@@ -856,3 +856,83 @@ arm:ForwardPreparedReview a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-f
               [ sty:property "max-width" ; sty:raw "100%" ],
               [ sty:property "white-space" ; sty:raw "break-spaces" ],
               [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+
+# Destination layout classes. Existing native handles only.
+arm:DestinationBanner a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-destination-banner" .
+arm:DestinationResources a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-destination-resources" .
+arm:DestinationResourceCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-destination-resource-card" .
+arm:DestinationLeaseCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-destination-lease-card" .
+arm:DestinationLeaseDetailBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-destination-lease-body" .
+
+# Destination banner/card containment rules (D1-D3).
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationBanner, arm:DestinationResources, arm:DestinationResourceCard, arm:DestinationLeaseCard ;
+ sty:declares [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationBanner ; sty:part "> *" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationResourceCard, arm:DestinationLeaseCard ; sty:part "> header, > .sem-card-body" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationResourceCard, arm:DestinationLeaseCard ; sty:part "> header h2" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationResourceCard, arm:DestinationLeaseCard ; sty:part "> .sem-card-body > [data-sem-c=\"stack\"]" ;
+ sty:declares [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationResourceCard, arm:DestinationLeaseCard ; sty:part "[data-sem-c=\"text\"], [data-sem-c=\"heading\"], [data-sem-c=\"accordion-item\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationLeaseCard ; sty:part "> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"button\"]" ;
+ sty:declares [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "white-space" ; sty:raw "break-spaces" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# Destination lease detail containment rules (D4).
+[] a sty:StyleRule ; sty:appliesTo c:Dialog ; sty:part "> .sem-panel:has([data-sem-c=\"arm-destination-lease-body\"])" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Dialog ; sty:part "> .sem-panel:has([data-sem-c=\"arm-destination-lease-body\"]) > .sem-head" ;
+ sty:declares [ sty:property "padding" ; sty:raw "4px 6px 0 0" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Dialog ; sty:part "> .sem-panel:has([data-sem-c=\"arm-destination-lease-body\"]) > .sem-head h2" ;
+ sty:declares [ sty:property "flex" ; sty:raw "1 1 0" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo c:Dialog ; sty:part "> .sem-panel:has([data-sem-c=\"arm-destination-lease-body\"]) > .sem-body" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationLeaseDetailBody ;
+ sty:declares [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationLeaseDetailBody ; sty:part "> *, [data-sem-c=\"stack\"], [data-sem-c=\"accordion-item\"], .sem-panel" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:DestinationLeaseDetailBody ; sty:part "[data-sem-c=\"code\"]" ;
+ sty:declares [ sty:property "display" ; sty:raw "block" ],
+              [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .

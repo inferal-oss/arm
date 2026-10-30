@@ -2521,3 +2521,34 @@ reply lifecycle require final-source checks. Old failed and oracle-limited
 inventory remains historical. No owner bundle/Go build, installation, live
 host/socket/credential/clipboard effect, new setup or additional window is
 allocated; independent composition, asset rebuild and acceptance remain central.
+
+
+## Destination D1–D4 owner correction
+
+Owner branch `codex/ux-destination-layout` starts at accepted inventory base
+`a355252c7b35ff58d292fd9b9b74d7de5c408986`. Product commit
+`25b2933a7bb1b49a89b6c1dc8b49c0823c4b77ea` adds five native noninteractive
+presentation hooks and app-owned containment for banner, resource/lease Cards
+and lease detail. The [source-bound evidence](validation/ux-destination-layout-2026-10-29.json)
+records complete module/prefix inverses, actual direct amount selection, four
+positive geometries and isolated D1–D3/D4 style controls.
+
+Original core/native and browser oracle failures remain historical. Original
+454 JS pass, 28/30 native result and separately allocated corrected three native
+cases are distinct receipts. B's earlier fixture hash remains explicit; its
+actual surviving-opener branch passes, and only the unused fallback capture was
+later tightened. Independent current composition/assets/builds/review remain
+required. No owner bundle, Go/native build, install, merge/push or live/full UX
+acceptance is included. All earlier branches and private evidence remain frozen.
+
+
+## Destination D1–D4 — independent composition accepted
+
+Owner `25b2933`/`49d4219` passes exact current-main composition, source
+inverse/privacy review and the [composed
+record](validation/ux-destination-layout-composed-2026-10-29.json). All 38 final
+inputs and 34 protected inputs match; all 362 private artifact hashes verify.
+Independent 454 JS/55 native UI tests, two identical dashboard builds and native
+CLI build pass. D1–D4 containment is accepted; original failed oracles and
+earlier B fixture remain separate. No installed/live/terminal/full-UX or upgrade
+acceptance follows.

@@ -1,0 +1,176 @@
+{
+  "schema": 1,
+  "scope": "Independent composed destination D1-D4 layout acceptance",
+  "ownerCommits": [
+    "25b2933a7bb1b49a89b6c1dc8b49c0823c4b77ea",
+    "49d42193a85a156860bf27f83728be951b441e61"
+  ],
+  "compositionBase": "21532fc",
+  "composedSourceCommit": "579fb9cf057b470623df00abce9a405641e60cd4",
+  "ownerRecordSHA256": "3481c9ec5f331e84d27db5446e6c5fd76302e31bf8d7b9fc9c3163870c77d7eb",
+  "inputSHA256": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/remote.mjs": "9975247ec8e7e46d7b3ee169db01c214cc42f48b5a61885e2c250d10d50d5933",
+    "internal/server/web/semblance/app.ttl": "4190a9426ee587a6528b3d924860b91e1fe490cb9660c6bf9f87046718986f71",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/graph-ownership.mjs": "1180044fee6dc020b054a2ee263d4b05796a266ae5f6c022dd8e25b1e9b91edc",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/web/remote-node.mjs": "56799e2050582760214992b5160fe37e75654d3921d27141e2d4b80797075950",
+    "internal/server/web/node-window.mjs": "6bf5edc83c9533f25b562067124ab9ca5c6eafd594c46ddaa611937cd8423e8b",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "internal/server/web/mesh-model.mjs": "adae955089af54733dc4e2e639f2a2a99f6681bcd906f43d522d2234e79b67a6",
+    "internal/server/web/lease-state.mjs": "66459a9d20e2a26d628556dea74de120708bf97ed2760f7df66ab436abf09bad",
+    "internal/server/node_gateway.go": "e5f2b802ca5b0fcc303253bcc9178c3f23d20e366acae9f33b65092f69e1ea6c",
+    "internal/server/node_sessions.go": "fd17df0611c5fe4f20f6edba37b2a5324dab428a0c05c19fefcdb4d5b600f957",
+    "internal/server/native_node_context.go": "0328344946e60b62b49e1412f27d09a026cb54feb03a1890e410c54766ad598d",
+    "internal/server/mesh.go": "a1d90883c177d6aaff31343b8e40ec9e630dc6eb5ff94cae7b3894cfc83837b9",
+    "internal/server/cpu.go": "1244f40e6b48a49299667ffe7478e84a392aee1a3bfb6d5deadb4f17292f9321",
+    "internal/server/disk.go": "fa2a2572fc4497e0a623f8abee46b9a0fc682b330d59c57049e7d2e522aa4f86",
+    "internal/server/named_views.go": "a9452987a249df10e53b66b85ab552b20dad727acf5b7219885aaa76f1ffbc21",
+    "internal/server/custom_name_remote_views.go": "5e95bb4aefb03e6ac838288385dd8b5b4e7ec2118be37a161cd2bbc02acddedf",
+    "internal/model/node_context.go": "8b7ec172aae8154699838c67c8454100b0f1847520093860d55885ff9e21b9f3",
+    "internal/model/node_registry.go": "41da35e98ac72453c53a0d27b1276af375c592826c8c493d19569a5b89d5666b",
+    "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+    "internal/model/node_metadata.go": "37f47880669571a310d5e0a84df56097c60c7e8fcfb94b7a234769872f526441",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/components/controls.ttl": "b1cbc7649bb46988b4ed633f8e1df338465e05e78b281f7070db6c496ef3f2f4",
+    "web/third_party/semblance/ontology/components/layout.ttl": "8b828351304d6bcada709fc1753b45d9f63e46fe9ed7a359c26c048b28ebdcc4",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/theme/data.ttl": "5dfefcfb38b77459150851b67a386faf419f9c4f0eb26cb681b5997007fbaeff",
+    "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "scripts/dashboard-screenshots/ux-destination-layout.mjs": "28c9bde3fac0d1bd8a2acecbc4e752ceb7fea6aa836421e270c16f236d275307",
+    "web/test/destination-layout.test.mjs": "c6f467f1951dd7ba622cb6ff8f5bd4272d1fcae36e7724498518bd0067f9b7c9",
+    "scripts/dashboard-screenshots/ux-destination-inventory-backend.mjs": "84fca7763f9228b3cdcc564988710dea2d007c904ce6c1ae82b485abdd4d7506",
+    "scripts/dashboard-screenshots/ux-destination-inventory-host.mjs": "2e7d750001ea539e01fe99ee8d31d503da1647dc0b2ff8335668bfabac78353f"
+  },
+  "sourceReview": {
+    "all5PresentationMarkersInverted": true,
+    "completeRemoteMatchesBase": true,
+    "appBasePrefixExact": true,
+    "rawSelectorsScanned": 28,
+    "rawSelectorsFound": 0,
+    "publicRecordSHA256": "3481c9ec5f331e84d27db5446e6c5fd76302e31bf8d7b9fc9c3163870c77d7eb",
+    "all38CurrentInputsMatchOwner": true,
+    "all34ProtectedInputsMatch": true,
+    "onlyRuntimeSourceChanges": [
+      "internal/server/web/semblance/remote.mjs",
+      "internal/server/web/semblance/app.ttl"
+    ],
+    "nativeCloseAndPanelPolicyUnchanged": true,
+    "BFixtureDifference": "Only one closeDetail line tightens the unused fallback capture; all actual B captured closes restore surviving opener",
+    "controlEffectiveCutsVerified": true,
+    "newProductFindings": []
+  },
+  "independentValidation": {
+    "normalSharedFIFO": true,
+    "ARMLeaseOrHardResourceEnforcement": false,
+    "complete": true,
+    "totalSeconds": 19.773,
+    "phases": [
+      {
+        "name": "web-build",
+        "exit": 0,
+        "seconds": 0.729
+      },
+      {
+        "name": "node",
+        "exit": 0,
+        "seconds": 6.468
+      },
+      {
+        "name": "native",
+        "exit": 0,
+        "seconds": 4.221
+      },
+      {
+        "name": "native-build",
+        "exit": 0,
+        "seconds": 7.508
+      },
+      {
+        "name": "web-rebuild",
+        "exit": 0,
+        "seconds": 0.678
+      }
+    ],
+    "JS": {
+      "passed": 454,
+      "failed": 0,
+      "skipped": 0
+    },
+    "nativeUI": {
+      "files": 11,
+      "passed": 55,
+      "failed": 0
+    },
+    "dashboardBuildsDeterministic": true,
+    "bundleSHA256": "bfd9c86c1158d37777843601e904dd997f1cf22534c2accb13ad776b411ce5be",
+    "nativeCLIBuildOnlySHA256": "49168fc46872ea66a08e1d9fc85634d8492ac6dbdb53e2ab3cd6046f11f8d8a4",
+    "CLIInstalledOrExecuted": false,
+    "buildIdentityQualification": "Build before the acceptance commit with regenerated assets modified; hashes bind actual inputs, not a clean VCS attestation",
+    "initialWrapperSetupFailure": {
+      "exit": 1,
+      "testsStarted": false,
+      "reason": "Python glob root_dir compatibility",
+      "preserved": true,
+      "excludedFromPass": true,
+      "correction": "Only native test file enumeration changed"
+    }
+  },
+  "browserEvidence": {
+    "source": "Independently audited owner final positive/control captures; no duplicate browser run required for unchanged input bytes",
+    "positiveCases": 4,
+    "positiveMilliseconds": [
+      32335,
+      32572
+    ],
+    "isolatedControlMilliseconds": [
+      10139,
+      10096
+    ],
+    "negativeFindings": [
+      [
+        "D1",
+        "D2",
+        "D3"
+      ],
+      [
+        "D4"
+      ]
+    ],
+    "actualRetiredOpenerBannerFallbacks": 1,
+    "headingFallback": "Source-qualified, not observed",
+    "nativeCloseSizePixels": [
+      30,
+      30
+    ],
+    "sourceCloseMargin": "-4px -6px 0 auto",
+    "resolvedLeftMargin": "0px or auto; source declaration retained",
+    "zeroForbiddenCallsPendingReadsPageErrorsExternalRequestsRealSocketsClipboard": true,
+    "originalReadReleaseAndContextBrowserServerAPICleanup": true,
+    "OSGroupOrReapProof": false
+  },
+  "artifactAudit": {
+    "ownerFiles": 362,
+    "allHashesMatch": true,
+    "manifestSHA256": "8578c5db298dd778ce1ae6bd44b0e44a7b5747ecdfedc52551cfb13d8ed0df99",
+    "visuallyReviewed": [
+      "narrow lease detail and native focused close",
+      "desktop resource cards",
+      "narrow lease cards"
+    ]
+  },
+  "qualifications": [
+    "Owner original454JS pass, original28of30native and corrected focused3 pass remain separate; the independent current-composition55native pass does not relabel that original run.",
+    "Failed original browser A retains its source/media/margin-oracle and unknown opener-retirement evidence; final replacement and distinct earlier B fixture remain separately bound.",
+    "Native Desktop retains closed Dialog/body/readers; no destruction, RDF/LDES cleanup, GC, memory wiping or authentication/host reset claim.",
+    "Full labels, identifiers, reasons, units and bounded records remain available through existing native wrapping/scroll; headers may leave view during tail reading and native focus restores close.",
+    "Synthetic strict reads and exact source inverse do not establish live transport/grant/certificate authority or real remote operation.",
+    "Selected text tokens are not universal zoom. No full200/max-cap, full Go suite, Linux/TUI/live installed backend or complete UX/upgrade acceptance."
+  ]
+}

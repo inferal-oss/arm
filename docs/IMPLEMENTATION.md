@@ -4126,3 +4126,44 @@ parent/factory API and substitute only strict synthetic reads plus transparent
 API retention; they establish presentation observations, not live remote
 permission, lifecycle or upgrade authority. Banner/Card/detail containment
 remediation remains pending.
+
+
+## Native destination containment
+
+Five app-owned noninteractive subtypes mark existing destination banner/resources
+Stacks, resource/lease Cards and the existing detail-body Stack. Full names, IDs,
+amounts, summaries and lease reasons wrap within their available native reading
+width. The lease Button keeps its native type and exact-ID callback. No additional
+DOM/window/reader or density cap is introduced.
+
+The detail-body marker alone selects native Dialog panel/header/title/body rules.
+Panel width, maximum height, padding and native auto-scrolling policy remain
+unchanged. Header padding reserves the existing negative close margins without
+changing native 30×30 dimensions or the margin declaration. Chromium may resolve
+its auto left margin to zero when the title consumes flex space. Native focus
+returns the close target into view after long reading; the header need not remain
+simultaneously visible with a record tail.
+
+The [whole-module inverse](validation/ux-destination-layout-2026-10-29.json)
+restores the inventory source after presentation hooks only. Request identity,
+permission/context/origin checks, mayInspect, generation/aging/focus-held reads,
+pending/disconnect/dispose and default filtering/admission stay unchanged. Existing
+desktop ownership retains closed Dialog/body/reader handles while their native
+projection closes/hides; no cleanup or RDF/GC/authentication reset behavior is
+changed or newly accepted. Main, GraphUI, bridge, backend, protocol, Go, models,
+formatters, pins and native theme/component sources remain unchanged.
+
+
+## Destination layout — composed behavior
+
+Five noninteractive hooks on original native Stack/Card handles contain
+destination names, resource/lease labels, full reason controls and lease-detail
+text. The marker-selected native dialog reserves close space and wraps its title
+while retaining panel sizing, close dimensions/margins and original scroll
+policy. Full records remain readable through native scrolling. The [composed
+record](validation/ux-destination-layout-composed-2026-10-29.json) accepts
+source-equivalent browser evidence and current regenerated assets/tests. Exact
+read IDs, context/origin validation, permissions, callbacks, held aging and
+pending/disconnect/disposal source remain unchanged. Closed native
+dialogs/readers retain their baseline Desktop ownership; no cleanup or live
+authority change is claimed.

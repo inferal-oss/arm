@@ -78,7 +78,7 @@ states; no principal view is declared complete from source inspection.
 | Mesh | `mesh.mjs`; roster, node detail and separate operator workflows | Read-only roster/detail layout, exact metadata/grants/trust and degraded/pending lifecycle pass independent four-case composition | Connect/reconnect/install/stop/uninstall/handoff/recovery review, exact pins/revisions and broader workflow states remain open |
 | Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Four-case read-only inventory, primary/technical/exact-record reading, ordinary-label line boxes and local UID/context selection pass independent composition | Real transport/cluster validation, broader states/density/fonts and complete route acceptance; no cluster operations exercised |
 | Forwarding | `forward.mjs`; prepared review, listener list and retained operations | Scoped F1 reconnect/F2 full captured review, native/private-leaf lifecycle, four browser cases and isolated controls independently composed; values use full Card width | Real forwarding/unknown execution, full historical dense-prose ranges, broader states, universal font/zoom and complete UX/TUI acceptance remain open |
-| Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | Source inventory only | Scope/staleness/unknown values, long records and unsupported mutation visibility |
+| Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | D1–D4 banner/Card/detail containment, four synthetic viewport cases, exact records/amounts, native close/focus and scoped read/lifecycle checks pass independent composition | Actual transport/authority, main auth/host reset, retained native dialog cleanup, max density and full route/TUI acceptance remain open |
 | Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Stacked private fields/native footer accepted in c830982 with synthetic desktop/narrow evidence | Remaining mode/view/clipboard states; no real VNC sign-in |
 | Resource naming | `resource-names.mjs`; exact reference/name editor/reservations | Scoped native naming body/caption/dirty-draft and palette focus/help corrections pass independent composition | Broader reservations/recorded-result/density/state/live mutation and complete route acceptance remain open |
 
@@ -462,3 +462,33 @@ and Escape/opener focus work. Width cap alone does not establish a defect. No
 remediation or new authority is implemented, and failed/oracle-limited evidence
 remains qualified. Independent review, any separately allocated correction and
 full UX/TUI/live acceptance remain open.
+
+
+## Destination layout owner handoff
+
+The [D1–D4 correction record](validation/ux-destination-layout-2026-10-29.json)
+shows full names and resource/lease allocations contained by existing native
+Stack/Card scopes. Detail title wrapping leaves the original native close target
+inside its panel; long bodies and reasons remain native scrolling content. The
+new direct amount oracle replaces the historical excluded inventory selector.
+
+Four positive geometries and isolated style omissions support owner handoff.
+Read/context/origin/scope and lifecycle behavior stay source-exact, including
+closed desktop retention, surviving-opener return and actual retired-opener
+banner fallback. Original failed/oracle-limited candidates remain qualified, and
+B's distinct fixture hash is explicit. No native/global theme change, effects,
+new window, default-filter change or independent full UX acceptance is implied.
+Central current-source review/composition/assets/builds remain required.
+
+
+## Destination D1–D4 — composed acceptance
+
+The [independent
+record](validation/ux-destination-layout-composed-2026-10-29.json) accepts the
+five native noninteractive hooks and contained labels/reasons/detail title with
+original close sizing and scrollers. Four owner browser geometries and isolated
+controls are source-bound; current 454 JS/55 native UI tests and regenerated
+assets pass. Failed native assertions/browser margin oracle, earlier B fixture
+and retained closed Desktop objects remain qualified. This closes the measured
+D1–D4 findings only; broader shell, terminal, transport and full UX coverage
+remain open.
