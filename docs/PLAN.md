@@ -3190,3 +3190,57 @@ recapture. Original process/API/write-marker, bytes, rows and marker gates stay
 mandatory; preserve the first failure before any correction. Paint needs
 independent before/after PNG review and is not granted by cell-width assertions.
 The remaining 21-frame reading fixture continues source preparation only.
+
+
+## Provider-only glyph diagnostic — complete source prepared
+
+The [source plan](validation/ux-terminal-glyph-diagnostic-plan-2026-10-30.json)
+now includes the complete MIT-attributed UnicodeV6 baseline, unchanged tables/
+logic, one-codepoint diagnostic override and a bounded four-case replay wrapper.
+Built-in baseline and fixture-only width2 variant use the exact original72/160
+full-first prefixes, unchanged fonts/options and fresh Terminals. Active provider,
+complete glyph-region cells/continuation, raw rows, marker, CSS observation and
+PNG pairs are recorded. CDP/platform-font probing is deferred and absent.
+
+Source syntax/derivation/license/hash review only; no helper/browser/runtime
+invocation or glyph acceptance. All existing sources/inputs/failures stay exact.
+Independent source review and separate replay-only allocation remain gates.
+The21-frame native lease reading source continuation remains a separate step;
+no production/output/font/pin changes or new execution window are implied.
+
+
+## Provider-only diagnostic result — scoped allocation attribution
+
+The [inventory](validation/ux-terminal-glyph-diagnostic-inventory-2026-10-30.json)
+records one frozen2fa74ee four-case attempt: FIFO/Node exit0, all paired raw
+rows/markers/input/font-CSS gates and original cleanup/write-marker outcomes
+passed. All four original PNGs were inspected. Builtin Unicode6 clips 🙂;
+fixture-only width2 displays its full glyph at72 and160. Emoji allocation
+changes1 to2 plus continuation0, while CJK2 and recorded ASCII1 remain stable.
+This supports the provider-width boundary for these exact captures; resolved
+font identity, general Unicode/native terminal and full-UX acceptance remain
+unclaimed. Original script paintAccepted=null is preserved separately.
+
+The unchanged original29+accepted47+new15 containers total7,462,220 bytes under
+16MiB, with owned preparation metadata separately counted. Original APIs/exit0
+and digest-bound marker passed without forced/pending cleanup or page requests.
+No CDP/fontscan/build/test binary/Program/PT Y/recapture occurred. Paused native
+Go source remained hash-exact and uncompiled during this run. Every old scope
+and first failure stays unchanged. No further execution window is implied;
+21-frame native reading source work resumes under separate review gates.
+
+
+## Terminal provider diagnostic — coordinator scoped acceptance
+
+Focused source `2fa74ee` and evidence `2f0920b` are composed as
+`c6f6ace`/`709ea66`. Independent hashes, license/derivation, syntax/privacy and
+all four original PNGs agree with the two matched comparisons. Builtin width
+one clips the smiley; the fixture-only width two renders it whole at both
+sizes, with raw rows and recorded font CSS unchanged. This accepts the
+controlled allocation/paint comparison only. No renderer default, font,
+dependency, ARM output or real process changes follow.
+
+This controlled emulator investigation needs no CDP/font expansion. Actual
+font identity, universal Unicode and physical terminals remain unsupported.
+The existing owner returns to the 21-frame native lease/detail/record/review-
+decline/filter source proposal; its build/runtime review gates remain closed.

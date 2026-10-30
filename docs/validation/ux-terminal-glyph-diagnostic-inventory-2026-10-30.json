@@ -1,0 +1,894 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "status": "ONE four-case provider-only diagnostic PASSED assertion/cleanup/write-marker gates. Owner inspection of all4 original PNGs finds clipped builtin emoji versus full two-cell override glyph in both exact frames; bounded allocation attribution, not product/universal glyph acceptance.",
+  "sourceCommit": "2fa74eebb3ccf0698fbeb78edc6dd90f8535265d",
+  "sourcePlan": "docs/validation/ux-terminal-glyph-diagnostic-plan-2026-10-30.json",
+  "sourcePlanSHA256": "214a0637113e7f6d3468f6161bd0b345153229d393b756ced2131cceaf7d3c66",
+  "sourceLineage": {
+    "originalCompiledCapture": {
+      "sourceCommit": "8d1039a71ffc401bca3405ee7b49228eea9012e9",
+      "sourceEntries": 57,
+      "binarySHA256": "956f8b767a4c728ed323363493239de3dd31f2c4fdf575594c7cd132f4b3bc60",
+      "buildReceiptSHA256": "b7ae0ac8ac02c17ade163bf1df4f58d7f5a86f3935da10153e03659463c86944",
+      "captureReceiptSHA256": "dc43ea6cf92e01a2c30a7753ff8667aca2b3f7e0c7c366e0052e4b1ae85a776f",
+      "checkpointsSHA256": "83383251937903bf4bcb102b9ca3319f63de43356c3836ae8b8e44c1ded67296",
+      "originalReplaySourceSHA256": "0a429ef2ecd1f230d75a04dee500827a42d5712e1e4e458b6f2bf98fccb32ee6"
+    },
+    "diagnostic": {
+      "sourceFile": "scripts/dashboard-screenshots/ux-terminal-glyph-diagnostic.mjs",
+      "sourceSHA256": "38611a03a88209df1faa9bbd96589fa45fbf5177aac82b06e4f5a319a73ecea9",
+      "providerSHA256": "853a96b38b0c4680fe12e7f3007d8e67de0767ddd90f02c574f52a408b045d3a",
+      "licenseSHA256": "b569f629d00f2626a8100df2a1798210535621e42164dfd426a6fe5aac7b0ccd",
+      "acceptedReplayReceiptSHA256": "01b55b612070920429eb8af6457df20e7e6a153c46e73db54b0387d0ecb217a6"
+    }
+  },
+  "scope": "Read-only original72/160full-first PTY prefixes. No Go/library probe/test binary/Program/PT Y/native backend or recapture. No CDP/font scan/install/addon/pin/ARM output change. No retry.",
+  "attempt": {
+    "FIFOExit": 0,
+    "FIFOWallMS": 1646,
+    "NodeExit": 0,
+    "NodeWallMS": 1147,
+    "replayElapsedMS": 961,
+    "writeMarkerElapsedMS": 964,
+    "wrapperThroughPostcheckMS": 1539,
+    "stagesAndPausedUncompiledSourceUnchanged": true,
+    "pinsAfterUnchanged": true
+  },
+  "cases": [
+    {
+      "grid": "72x28",
+      "provider": "builtin-6",
+      "activeProvider": {
+        "before": "6",
+        "active": "6",
+        "versions": [
+          "6"
+        ]
+      },
+      "prefixBytes": 54295,
+      "prefixSHA256": "896b72f52f09075e129df5780636f6328a413ea11a852d716b0cd669c11b6312",
+      "resizeTimeline": [],
+      "actualCols": 72,
+      "actualRows": 28,
+      "alternate": true,
+      "rawRowsSHA256": "0f2cdb7a6869f2c6e32b1a41c91da40c34f217cc97ea86498d86972593d1a5eb",
+      "rowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "modelRowsMatch": true,
+      "LOG_FIRST_visible": true,
+      "glyphRegion": {
+        "row": 2,
+        "start": 28,
+        "endExclusive": 39,
+        "cells": [
+          {
+            "col": 28,
+            "chars": "e",
+            "width": 1
+          },
+          {
+            "col": 29,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 30,
+            "chars": "界",
+            "width": 2
+          },
+          {
+            "col": 31,
+            "chars": "",
+            "width": 0
+          },
+          {
+            "col": 32,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 33,
+            "chars": "🙂",
+            "width": 1
+          },
+          {
+            "col": 34,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 35,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 36,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 37,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 38,
+            "chars": " ",
+            "width": 1
+          }
+        ]
+      },
+      "requestedFont": {
+        "family": "\"DejaVu Sans Mono\", monospace",
+        "size": 14
+      },
+      "computedCSS": {
+        "family": "\"DejaVu Sans Mono\", monospace",
+        "size": "14px",
+        "weight": "400",
+        "style": "normal",
+        "letterSpacing": "-9.59722px"
+      },
+      "PNGSHA256": "6da0c1fa5997e31d73ff1be69aa854cba17d18e4bfb34528ff4a715396d416d2",
+      "PNGBytes": 19202,
+      "originalPaintAcceptedField": null,
+      "ownerOriginalPNGInspection": {
+        "inspected": true,
+        "emojiClipped": true,
+        "fullEmojiVisible": false,
+        "scope": "These exact pixels/fixture/codepoint only; no resolved-font or universal Unicode claim."
+      }
+    },
+    {
+      "grid": "72x28",
+      "provider": "fixture-width2",
+      "activeProvider": {
+        "before": "6",
+        "active": "fixture-only-U1F642-width2",
+        "versions": [
+          "6",
+          "fixture-only-U1F642-width2"
+        ]
+      },
+      "prefixBytes": 54295,
+      "prefixSHA256": "896b72f52f09075e129df5780636f6328a413ea11a852d716b0cd669c11b6312",
+      "resizeTimeline": [],
+      "actualCols": 72,
+      "actualRows": 28,
+      "alternate": true,
+      "rawRowsSHA256": "0f2cdb7a6869f2c6e32b1a41c91da40c34f217cc97ea86498d86972593d1a5eb",
+      "rowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "modelRowsMatch": true,
+      "LOG_FIRST_visible": true,
+      "glyphRegion": {
+        "row": 2,
+        "start": 28,
+        "endExclusive": 39,
+        "cells": [
+          {
+            "col": 28,
+            "chars": "e",
+            "width": 1
+          },
+          {
+            "col": 29,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 30,
+            "chars": "界",
+            "width": 2
+          },
+          {
+            "col": 31,
+            "chars": "",
+            "width": 0
+          },
+          {
+            "col": 32,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 33,
+            "chars": "🙂",
+            "width": 2
+          },
+          {
+            "col": 34,
+            "chars": "",
+            "width": 0
+          },
+          {
+            "col": 35,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 36,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 37,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 38,
+            "chars": " ",
+            "width": 1
+          }
+        ]
+      },
+      "requestedFont": {
+        "family": "\"DejaVu Sans Mono\", monospace",
+        "size": 14
+      },
+      "computedCSS": {
+        "family": "\"DejaVu Sans Mono\", monospace",
+        "size": "14px",
+        "weight": "400",
+        "style": "normal",
+        "letterSpacing": "-1.19444px"
+      },
+      "PNGSHA256": "007ea792da05244d000d17dfb1f2bcee5a6dfbc26edd078feb2ba866724f0bba",
+      "PNGBytes": 19391,
+      "originalPaintAcceptedField": null,
+      "ownerOriginalPNGInspection": {
+        "inspected": true,
+        "emojiClipped": false,
+        "fullEmojiVisible": true,
+        "scope": "These exact pixels/fixture/codepoint only; no resolved-font or universal Unicode claim."
+      }
+    },
+    {
+      "grid": "160x50",
+      "provider": "builtin-6",
+      "activeProvider": {
+        "before": "6",
+        "active": "6",
+        "versions": [
+          "6"
+        ]
+      },
+      "prefixBytes": 163729,
+      "prefixSHA256": "f350dd5bf04712bdef2e8817aad961c0252730624bab03dffd811e682b7c84e3",
+      "resizeTimeline": [],
+      "actualCols": 160,
+      "actualRows": 50,
+      "alternate": true,
+      "rawRowsSHA256": "439564e9b7fe9d7a2504e8988f56902ee1697c8a39b386cfccbc076bf4e5d567",
+      "rowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "modelRowsMatch": true,
+      "LOG_FIRST_visible": true,
+      "glyphRegion": {
+        "row": 2,
+        "start": 28,
+        "endExclusive": 39,
+        "cells": [
+          {
+            "col": 28,
+            "chars": "e",
+            "width": 1
+          },
+          {
+            "col": 29,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 30,
+            "chars": "界",
+            "width": 2
+          },
+          {
+            "col": 31,
+            "chars": "",
+            "width": 0
+          },
+          {
+            "col": 32,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 33,
+            "chars": "🙂",
+            "width": 1
+          },
+          {
+            "col": 34,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 35,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 36,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 37,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 38,
+            "chars": " ",
+            "width": 1
+          }
+        ]
+      },
+      "requestedFont": {
+        "family": "\"DejaVu Sans Mono\", monospace",
+        "size": 14
+      },
+      "computedCSS": {
+        "family": "\"DejaVu Sans Mono\", monospace",
+        "size": "14px",
+        "weight": "400",
+        "style": "normal",
+        "letterSpacing": "-9.6px"
+      },
+      "PNGSHA256": "5f22dad14b630d33ac9ea2bf6b30c0c24024f8c7ec1da2b62dc31899e13dffae",
+      "PNGBytes": 206468,
+      "originalPaintAcceptedField": null,
+      "ownerOriginalPNGInspection": {
+        "inspected": true,
+        "emojiClipped": true,
+        "fullEmojiVisible": false,
+        "scope": "These exact pixels/fixture/codepoint only; no resolved-font or universal Unicode claim."
+      }
+    },
+    {
+      "grid": "160x50",
+      "provider": "fixture-width2",
+      "activeProvider": {
+        "before": "6",
+        "active": "fixture-only-U1F642-width2",
+        "versions": [
+          "6",
+          "fixture-only-U1F642-width2"
+        ]
+      },
+      "prefixBytes": 163729,
+      "prefixSHA256": "f350dd5bf04712bdef2e8817aad961c0252730624bab03dffd811e682b7c84e3",
+      "resizeTimeline": [],
+      "actualCols": 160,
+      "actualRows": 50,
+      "alternate": true,
+      "rawRowsSHA256": "439564e9b7fe9d7a2504e8988f56902ee1697c8a39b386cfccbc076bf4e5d567",
+      "rowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "modelRowsMatch": true,
+      "LOG_FIRST_visible": true,
+      "glyphRegion": {
+        "row": 2,
+        "start": 28,
+        "endExclusive": 39,
+        "cells": [
+          {
+            "col": 28,
+            "chars": "e",
+            "width": 1
+          },
+          {
+            "col": 29,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 30,
+            "chars": "界",
+            "width": 2
+          },
+          {
+            "col": 31,
+            "chars": "",
+            "width": 0
+          },
+          {
+            "col": 32,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 33,
+            "chars": "🙂",
+            "width": 2
+          },
+          {
+            "col": 34,
+            "chars": "",
+            "width": 0
+          },
+          {
+            "col": 35,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 36,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 37,
+            "chars": " ",
+            "width": 1
+          },
+          {
+            "col": 38,
+            "chars": " ",
+            "width": 1
+          }
+        ]
+      },
+      "requestedFont": {
+        "family": "\"DejaVu Sans Mono\", monospace",
+        "size": 14
+      },
+      "computedCSS": {
+        "family": "\"DejaVu Sans Mono\", monospace",
+        "size": "14px",
+        "weight": "400",
+        "style": "normal",
+        "letterSpacing": "-1.2px"
+      },
+      "PNGSHA256": "97a8dd11f89925505c2aa0b8e9e70803d76654255bbc60ba5b9abae1de59eec6",
+      "PNGBytes": 219345,
+      "originalPaintAcceptedField": null,
+      "ownerOriginalPNGInspection": {
+        "inspected": true,
+        "emojiClipped": false,
+        "fullEmojiVisible": true,
+        "scope": "These exact pixels/fixture/codepoint only; no resolved-font or universal Unicode claim."
+      }
+    }
+  ],
+  "pairs": [
+    {
+      "grid": "72x28",
+      "sameInputPrefix": true,
+      "rawRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "normalizedRowsMatch": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "requestedFontSame": true,
+      "computedFontCSSSame": true,
+      "paintAccepted": null,
+      "qualification": "Only provider allocation assertions passed; inspect both saved PNGs before paint attribution. CSS does not identify a resolved font."
+    },
+    {
+      "grid": "160x50",
+      "sameInputPrefix": true,
+      "rawRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "normalizedRowsMatch": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "requestedFontSame": true,
+      "computedFontCSSSame": true,
+      "paintAccepted": null,
+      "qualification": "Only provider allocation assertions passed; inspect both saved PNGs before paint attribution. CSS does not identify a resolved font."
+    }
+  ],
+  "conclusion": {
+    "providerAllocationChanges": "🙂 cell33 changes1->2, cell34 becomes width0 continuation; CJK30/31 remains2/0 and recorded ASCII28/29 remains1.",
+    "rawTextAndCSS": "Paired raw rows are identical; all156 rows match original model under unchanged ASCII comparison. Requested/computed family/size/weight/style identical; letter-spacing changes with provider cell allocation.",
+    "visual": "Both builtin baselines visibly clip the emoji; both fixture-width2 PNGs show the complete glyph. Original script paintAccepted fields remain null; this is a separate owner inspection.",
+    "attribution": "Within these unchanged-prefix/font-CSS captures, provider cell allocation explains the clipping/improvement. Resolved font identity and universal Unicode/native terminal behavior are not established.",
+    "productionFix": false,
+    "providerDefaultOrPinsChanged": false,
+    "fontProbeNeededNow": false,
+    "qualification": "Fixture-only one-codepoint provider remains diagnostic, not a general Unicode provider or ARM change. Broader glyph/physical-terminal acceptance remains open."
+  },
+  "cleanup": {
+    "originalOutcomes": {
+      "originalProcess": {
+        "handleRetained": true,
+        "exitObserved": true,
+        "observation": "original-exit-event",
+        "exitCode": 0,
+        "signalCode": null,
+        "observedMS": 957
+      },
+      "lastTerminalDisposeReturned": true,
+      "pageCloseReturned": true,
+      "contextCloseReturned": true,
+      "connectionCloseReturned": true,
+      "serverCloseReturned": true,
+      "pendingInitialization": [],
+      "pendingCleanup": [],
+      "accepted": true,
+      "ownExitRequested": false
+    },
+    "APIOutcomes": [
+      {
+        "name": "last terminal dispose",
+        "status": "returned",
+        "waitTimedOut": false
+      },
+      {
+        "name": "page close",
+        "status": "returned",
+        "waitTimedOut": false
+      },
+      {
+        "name": "context close",
+        "status": "returned",
+        "waitTimedOut": false
+      },
+      {
+        "name": "browser connection close",
+        "status": "returned",
+        "waitTimedOut": false
+      },
+      {
+        "name": "BrowserServer close",
+        "status": "returned",
+        "waitTimedOut": false
+      }
+    ],
+    "originalWriteReturned": true,
+    "markerComplete": true,
+    "receiptDigestMatched": true,
+    "deadlineReceiptAbsent": true,
+    "externalRequests": [],
+    "nativeRequestsEmpty": true,
+    "qualification": "Original API/process observations only; no blanket descendant/framework reap."
+  },
+  "budget": {
+    "original29AndAccepted47Bytes": 6868809,
+    "newEvidenceContainerBytes": 593411,
+    "combinedContainersBytes": 7462220,
+    "additionalOwnedPreparationMetadataBytes": 33712,
+    "combinedIncludingPreparationMetadataBytes": 7495932,
+    "retainedCap": 16777216,
+    "sourcePrefixCap": 4194304,
+    "cases": 4,
+    "pairs": 2,
+    "outerLimitSeconds": 115,
+    "workSeconds": 20,
+    "totalReplaySeconds": 30,
+    "tempLeftovers": 0,
+    "CPUtarget": 2,
+    "memoryTargetBytes": 2147483648,
+    "qualification": "Configured targets/observed bytes, not kernel CPU/memory limits."
+  },
+  "privateArtifacts": {
+    "manifestEntries": 15,
+    "manifestSHA256": "17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67",
+    "attemptReceiptSHA256": "58c5f7b30f15c86b0e87f906c0eb5af7fda3e3f4e5b98275beb93551d46a10c7",
+    "replayReceiptSHA256": "9f5676a0731f4250f8f4881c6302c6dbdf4e13655473a0142ef5442a4effc1db",
+    "markerSHA256": "617866f3858701e20055a92606989efde90a310c0c4fa2c8a6434f26b79dad0e",
+    "original111_64_29_47Unchanged": true,
+    "rawPathsReceiptsEnvironmentControlHandlesPublished": false
+  },
+  "remainingGates": [
+    "Independent normalized before/after diagnostic/paint evidence review",
+    "No further diagnostic/runtime window implied; CDP/font probing remains deferred",
+    "Continue separately reviewed21-frame native reading source; no duplicate36run cases",
+    "No production fix or general/native glyph acceptance without additional attributed findings"
+  ]
+}

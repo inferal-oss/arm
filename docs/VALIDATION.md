@@ -10650,3 +10650,57 @@ the accepted replay, with both immutable input containers counted. Prior
 111/64/29/47 artifact sets rehash unchanged. No changed-source runtime result
 is accepted by this source review; the separately allocated four-case probe
 must retain raw cells/rows and original process outcomes for independent review.
+
+
+## Provider-only glyph diagnostic — complete source prepared
+
+The [source plan](validation/ux-terminal-glyph-diagnostic-plan-2026-10-30.json)
+now includes the complete MIT-attributed UnicodeV6 baseline, unchanged tables/
+logic, one-codepoint diagnostic override and a bounded four-case replay wrapper.
+Built-in baseline and fixture-only width2 variant use the exact original72/160
+full-first prefixes, unchanged fonts/options and fresh Terminals. Active provider,
+complete glyph-region cells/continuation, raw rows, marker, CSS observation and
+PNG pairs are recorded. CDP/platform-font probing is deferred and absent.
+
+Source syntax/derivation/license/hash review only; no helper/browser/runtime
+invocation or glyph acceptance. All existing sources/inputs/failures stay exact.
+Independent source review and separate replay-only allocation remain gates.
+The21-frame native lease reading source continuation remains a separate step;
+no production/output/font/pin changes or new execution window are implied.
+
+
+## Provider-only diagnostic result — scoped allocation attribution
+
+The [inventory](validation/ux-terminal-glyph-diagnostic-inventory-2026-10-30.json)
+records one frozen2fa74ee four-case attempt: FIFO/Node exit0, all paired raw
+rows/markers/input/font-CSS gates and original cleanup/write-marker outcomes
+passed. All four original PNGs were inspected. Builtin Unicode6 clips 🙂;
+fixture-only width2 displays its full glyph at72 and160. Emoji allocation
+changes1 to2 plus continuation0, while CJK2 and recorded ASCII1 remain stable.
+This supports the provider-width boundary for these exact captures; resolved
+font identity, general Unicode/native terminal and full-UX acceptance remain
+unclaimed. Original script paintAccepted=null is preserved separately.
+
+The unchanged original29+accepted47+new15 containers total7,462,220 bytes under
+16MiB, with owned preparation metadata separately counted. Original APIs/exit0
+and digest-bound marker passed without forced/pending cleanup or page requests.
+No CDP/fontscan/build/test binary/Program/PT Y/recapture occurred. Paused native
+Go source remained hash-exact and uncompiled during this run. Every old scope
+and first failure stays unchanged. No further execution window is implied;
+21-frame native reading source work resumes under separate review gates.
+
+
+## Terminal provider diagnostic — independent composed review
+
+The [composed review](validation/ux-terminal-glyph-diagnostic-composed-2026-10-30.json)
+verifies source/license/plan and all original 111/64/29/47/15 artifact sets.
+Independent inspection of all four PNGs confirms clipped builtin versus whole
+fixture-width2 smiley at both grids. Four cases/156 rows and two raw-row/font-CSS
+pairs agree; CJK and sampled ASCII widths remain stable. Original process/API/
+write-marker gates and syntax/privacy/whitespace checks pass. No duplicate
+replay was performed for identical inputs.
+
+This accepts the exact controlled provider intervention, not resolved-font,
+universal Unicode, physical-terminal or whole-UX correctness. Original script
+paint flags remain null; external visual inspection is recorded separately.
+Production renderer/output/pins and live ARM jobs remain unchanged.
