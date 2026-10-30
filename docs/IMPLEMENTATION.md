@@ -4615,3 +4615,19 @@ The test-only provider source and evidence are independently accepted for the
 controlled allocation comparison. The single-codepoint fixture override is not
 a production provider or renderer correction. ARM output/fonts/pins/defaults
 remain unchanged; the remaining native reading fixture is still source work.
+
+
+## Retained-driver source review — ordinary row exhaustion
+
+Independent source inspection of the unintegrated v2 candidate finds that its
+`Rows.Next` interval forwards `io.EOF` to the generic first-task-error recorder.
+This is normal row completion, yet it sets the failure projection and prevents a
+later real failure from becoming the recorded first failure. A focused correction
+and same-original-connection regressions are required before validation.
+
+Other reviewed v2 changes retain abnormal intervals as uncertainty, retire only
+normal completed driver records into bounded summaries, preserve caller-held
+terminal results and reject conflicting transaction terminal operations. These
+are source observations only. No driver source, module selection, native engine,
+installed process or API/UI worker changes in ARM. Native closure, service custody
+and actual public-start job-preserving replacement remain open.

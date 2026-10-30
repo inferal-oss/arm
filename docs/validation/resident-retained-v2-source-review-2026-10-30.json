@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "scope": "independent source review of unintegrated opt-in retained driver",
+  "upstream": {
+    "module": "modernc.org/sqlite",
+    "version": "v1.60.1",
+    "commit": "b122d0417c01508beb55158faedeb64a0c5bfd8a"
+  },
+  "candidate_manifest_sha256": "f380a3330f87fea432ec6f73e731a9cf3de8716ad21736bba7e295b0a62d3750",
+  "source_inventory": {
+    "verified_files": 1902,
+    "upstream_changed": 9,
+    "new": 3,
+    "prepared_overlay_cases_verified": 11,
+    "original_candidate_manifest_and_patch_unchanged": true
+  },
+  "relevant_sources": {
+    "rows.go": "fdf9dbde4d01fccf99d17edcf7edeaf71d671e32640039c3a8a3134f2837c37b",
+    "retained_open.go": "00908af442f7b97227a91fddbe33d10d6ea0cfea1fd78c065bd7dbbc217057c4"
+  },
+  "finding": {
+    "priority": 2,
+    "kind": "normal EOF recorded as task failure",
+    "basis": "Rows.Next passes io.EOF from ordinary exhaustion into the generic sticky first-task-error recorder",
+    "effect": "successful iteration is marked failed; a later substantive failure cannot occupy the first-failure slot",
+    "status": "returned for focused correction",
+    "runtime_reproduction": false
+  },
+  "source_observations": [
+    "actual wrapper defers retain abnormal-return uncertainty",
+    "normal completed records retire with bounded summaries and caller-held terminal replay",
+    "optional returned errors are captured",
+    "terminal operations are distinguished before native consumption"
+  ],
+  "runtime_or_compile_performed": false,
+  "arm_dependency_graph_changed": false,
+  "remaining_gates": [
+    "focused EOF correction and same-connection regressions",
+    "exact offline dependency prerequisites and bounded first normal cohort",
+    "race, vet and selected causal controls",
+    "reviewed dependency delivery and ARM graph composition",
+    "actual retained resident bootstrap, service custody and public API/UI replacement preserving original jobs"
+  ]
+}

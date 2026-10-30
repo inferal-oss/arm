@@ -10704,3 +10704,19 @@ This accepts the exact controlled provider intervention, not resolved-font,
 universal Unicode, physical-terminal or whole-UX correctness. Original script
 paint flags remain null; external visual inspection is recorded separately.
 Production renderer/output/pins and live ARM jobs remain unchanged.
+
+
+## Retained-driver v2 independent source review — no runtime acceptance
+
+The [source review record](validation/resident-retained-v2-source-review-2026-10-30.json)
+binds the complete candidate manifest and relevant sources. All 1,902 candidate
+file hashes match; all eleven prepared overlay maps/source hashes match; the
+original candidate manifest/patch remain unchanged. Inspection checks direct
+normal/abnormal deferred intervals, bounded child retirement with held-handle
+replay, actual optional-error capture and terminal-operation identity.
+
+A source-only P2 finding identifies normal `Rows.Next` EOF being retained as a
+failed task and masking a later substantive first failure. No executed failure or
+pass is claimed. Corrected source, exact offline graph availability and a bounded
+first normal cohort precede runtime allocation. No compilation, test, dependency
+replacement, native proof replay or product activation occurred in this review.
