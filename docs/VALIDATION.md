@@ -11649,3 +11649,14 @@ compilation and native/browser/composition validation each retain their review
 and allocation gates. This review invoked no Go metadata/compiler/tests/native
 Program/PTY/browser/transport/collector. Existing 65/69 source bindings and all
 historical artifacts retain their original scopes and are unchanged.
+
+
+## Coordinator review of terminal Monitor/I/O inventory
+
+The documentation-only owner cut `9db221b` was inspected against the original
+picker, resize and existing test paths, then composed as `916ffe4`. Independent
+checks parsed the normalized record and verified all 18 file sizes, SHA-256
+hashes and exact accepted-base bytes. The composed diff contains only the six
+review documents. No test, compiler, native fixture or browser ran. The next
+bounded step is preparation and review of two ordinary-model roots/22 cases;
+no product correction or execution allocation follows from this source review.
