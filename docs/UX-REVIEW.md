@@ -79,7 +79,7 @@ states; no principal view is declared complete from source inspection.
 | Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Four-case read-only inventory, primary/technical/exact-record reading, ordinary-label line boxes and local UID/context selection pass independent composition | Real transport/cluster validation, broader states/density/fonts and complete route acceptance; no cluster operations exercised |
 | Forwarding | `forward.mjs`; prepared review, listener list and retained operations | Scoped F1 reconnect/F2 full captured review, native/private-leaf lifecycle, four browser cases and isolated controls independently composed; values use full Card width | Real forwarding/unknown execution, full historical dense-prose ranges, broader states, universal font/zoom and complete UX/TUI acceptance remain open |
 | Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | D1–D4 banner/Card/detail containment, four synthetic viewport cases, exact records/amounts, native close/focus and scoped read/lifecycle checks pass independent composition | Actual transport/authority, main auth/host reset, retained native dialog cleanup, max density and full route/TUI acceptance remain open |
-| Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Stacked private fields/native footer accepted in c830982 with synthetic desktop/narrow evidence | Remaining mode/view/clipboard states; no real VNC sign-in |
+| Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Accepted stacked fields/footer plus independently composed S1 modal/full-view correction with four inert-dependency geometries, source counterfactual, native ownership/client and keyboard/close checks | Real auth/OS clipboard/framebuffer/input/transport, broader density/fonts, full focus roster and full Screen acceptance remain open |
 | Resource naming | `resource-names.mjs`; exact reference/name editor/reservations | Scoped native naming body/caption/dirty-draft and palette focus/help corrections pass independent composition | Broader reservations/recorded-result/density/state/live mutation and complete route acceptance remain open |
 
 ## Terminal inventory
@@ -559,3 +559,14 @@ coverage. Original invalid top-layer sticky-clip metrics remain excluded.
 Owner implementation and allocated validation are complete; independent current
 composition and real Screen Sharing/full UX acceptance remain open. No live
 authentication, clipboard/network/protocol transfer or remote input was exercised.
+
+
+## Screen S1 — composition accepted
+
+The [current-composition
+record](validation/ux-screen-modal-layering-composed-2026-10-29.json) accepts
+modal visibility after leaving full view, with explicit user re-entry and
+unchanged original client/private lifecycle. Sampled positive/control imagery
+and hit checks agree with the exact source inverse; current tests/builds pass.
+This closes the measured S1 finding only. Original inventory clipping/hit/focus
+gaps and real Screen Sharing, terminal, shell and overall UX gates remain open.

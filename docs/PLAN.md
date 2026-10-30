@@ -2711,3 +2711,15 @@ inverse cohort pass their original cleanup/effect gates. The
 previous private evidence sets remain unchanged. Owner review and validation
 are complete for this cut; independent composition/rebuild and complete Screen
 Sharing/live UX acceptance remain open. No merge or push by this owner.
+
+
+## Screen S1 — independent composition accepted
+
+Owner `3e0cfcb`/`dd442e2` passes [independent
+composition](validation/ux-screen-modal-layering-composed-2026-10-29.json).
+Exact two-call source inverse, all 45 inputs/all 42 protected inputs and 203
+private artifacts verify. Current 454 JS/58 native UI tests, deterministic
+dashboard builds and native CLI build pass in 18.049s. Opening a modal leaves
+full view; close remains inline with explicit Fill window re-entry. Same
+client/fields/cache/lifecycle and genuine-effect refusals hold within scoped
+evidence. No live Screen/TUI/Linux/full UX or upgrade acceptance.

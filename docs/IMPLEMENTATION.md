@@ -4267,3 +4267,15 @@ The [owner validation record](validation/ux-screen-modal-layering-2026-10-29.jso
 separates sampled native pixels, hit centers, bounded ancestry, captions,
 control/value/scroll metrics and focus observations. It adds no real protocol,
 authentication, clipboard, remote input or complete Screen Sharing acceptance.
+
+
+## Screen modal visibility — accepted behavior
+
+The [composed S1
+fix](validation/ux-screen-modal-layering-composed-2026-10-29.json) uses existing
+fullView(false) before original native credentials/Clipboard construction, after
+existing stale/disposed/connected/duplicate guards. Close leaves the same viewer
+inline; Fill window is explicit re-entry. The current client/frame/private
+fields/callbacks/cache and Cancel/disconnect semantics remain unchanged. There
+is no engine, global layer/style, auth/protocol, ownership reparenting or
+automatic reconnect/transfer change.

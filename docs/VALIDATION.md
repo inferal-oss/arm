@@ -10046,3 +10046,21 @@ change or owner build/install/Go/native/PTY/Linux/full-suite run is claimed.
 Resource CPU/memory targets are cooperative, without hard enforcement or an
 ARM grant. Independent composition/rebuild and full live Screen acceptance
 remain separate gates.
+
+
+## Screen S1 — composed acceptance
+
+The [composed
+record](validation/ux-screen-modal-layering-composed-2026-10-29.json) binds
+current source/regenerated assets to 454 JS and 58 native UI tests in twelve
+files, zero failures/skips, two matching dashboard builds and native CLI build
+completed in 18.049s. All45 owner inputs/all 42 protected inputs and 203 private
+artifacts verify. Independent audit of original reports confirms 90 positive
+control-center hits versus 22 misses under the exact source counterfactual, with
+no genuine/forbidden/credential browser effects and original API cleanup. Source
+inverse removes only two calls; all other Screen code is base-exact. Narrow
+Clipboard/desktop empty auth/negative imagery was visually reviewed. Owner
+thirteen-test core and full unit mock-auth coverage remain distinct. No
+duplicate browser run was needed for identical runtime inputs; no real
+auth/clipboard/framebuffer, OS reap, universal glyph/zoom or complete UX
+acceptance follows.
