@@ -1,0 +1,343 @@
+{
+  "schema": 1,
+  "status": "scoped-fixed72-modal-paint-accepted",
+  "scope": "Current-source modal shadow containment at72x28 only: eight native interaction checkpoints and three original modal PNGs with84 emulator/model row matches.",
+  "source": {
+    "commit": "7e58c97d40081c1d89806779aac6937b51ab34b7",
+    "entries": 63,
+    "sourceBeforeAfterSHA256": "95fe7e4897ea4a2635cb723abdbb97ac84fdd00a5d647ba22f9a6658a95c6e58",
+    "bindingManifest": "docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json",
+    "bindingSHA256": "c6c6858e9b97dd4a71bc54f05ab1c22a1856b5ef730c3c92e7c51019965b532d",
+    "productSHA256": "5c06dca64d42f7c8f27905fe2e4b7f2125671eabcc2dbf9a5c895c8697ccc466",
+    "regressionSHA256": "04ff15993dbdac1a7d7866aaa429587df6f3364e5730e61d4c9374a204d90a34",
+    "binaryBytes": 68428098,
+    "binarySHA256": "97ea9d0015a6916dc6b967a94bf8acf94994ac0625f22d085fe2194b4a523fa0",
+    "buildReceiptSHA256": "01ed10d1532b1209df807b92cddcc1de00f7f943494e1408c53675ff53b9a982",
+    "buildManifestEntries": 76,
+    "buildManifestSHA256": "7751c640f86f54f783742c9fdda8adaf370880b882fb53bff176b855e59b82d6",
+    "nativeSelector": "^TestUXTerminalModalShadowFixture$"
+  },
+  "execution": {
+    "attempts": 1,
+    "grid": [
+      72,
+      28
+    ],
+    "ProgramChildren": 1,
+    "FIFOExitCode": 0,
+    "originalFIFOHandleJoined": true,
+    "originalInsideHandleJoined": true,
+    "originalInsideExitCode": 0,
+    "helperVerified": true,
+    "FIFOWallMS": 7350,
+    "outerReportedWallMS": 8089,
+    "insideElapsedMS": 7088,
+    "commands": [
+      {
+        "phase": "capture",
+        "originalExitCode": 0,
+        "originalHandleJoined": true,
+        "wallMS": 4409,
+        "logBytes": 0,
+        "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "replay",
+        "originalExitCode": 0,
+        "originalHandleJoined": true,
+        "wallMS": 1213,
+        "logBytes": 435,
+        "logSHA256": "86f2c3b715e3843db02333603f9c54f99d7d2ca328b0b77740227d39003b3881"
+      }
+    ],
+    "retryOrReplacementCapture": false,
+    "sourceOrFixtureRepair": false,
+    "compilerOrInstallOrBackend": false,
+    "forcedTermination": false,
+    "unknownOutcomes": false,
+    "resourceWindowReleased": true
+  },
+  "interaction": {
+    "checkpoints": [
+      "lease-detail-first",
+      "lease-detail-tail",
+      "lease-record-exact-number",
+      "release-review-first",
+      "release-review-tail",
+      "filter-draft",
+      "leases-filter-empty",
+      "leases-restored"
+    ],
+    "allEightStatesAndPrefixesVerified": true,
+    "exactTypedNumber": "9007199254740993",
+    "exactTypedNumberType": "json.Number",
+    "recordKeyCount": 20,
+    "newExactNumberPNG": false,
+    "readingCoverage": {
+      "detail": {
+        "totalLogicalRows": 33,
+        "coveredLogicalRows": 33
+      },
+      "review": {
+        "totalLogicalRows": 24,
+        "coveredLogicalRows": 24
+      }
+    },
+    "initSuppressed": true,
+    "sameOriginalModelAndWrapperReturned": true,
+    "inspectClosures": 1,
+    "inspectCalls": 1,
+    "affirmativeMutations": 0,
+    "forbiddenCalls": 0,
+    "activeFakeCalls": 0,
+    "mouseProduced": 2,
+    "mouseDelivered": 2,
+    "mouseActive": 0,
+    "filterPastes": 1,
+    "reviewDeclined": true,
+    "defaultsAndSelectionRestored": true,
+    "readiness": {
+      "descriptorChecksAllPassed": true,
+      "initialOriginalWriteRequested": 5902,
+      "initialOriginalWriteReturned": 5902,
+      "originalWriteRangeHashAndFingerprintAccepted": true,
+      "fourOriginalSGRPressReleaseWritesFull": true,
+      "counters": {
+        "callback-entry": 2,
+        "cmd-created": 2,
+        "cmd-produced": 2,
+        "cmd-start": 2,
+        "filter-admitted": 2,
+        "inspect-complete": 1,
+        "parsed-click": 2,
+        "parsed-release": 2,
+        "program-return": 1,
+        "startup-profile-env": 2,
+        "startup-size": 1,
+        "typed-delivery": 2,
+        "typed-frame": 2,
+        "update-click": 2
+      },
+      "diagnosticRecords": 29,
+      "diagnosticRetainedBytes": 4347,
+      "unknown": false,
+      "startupDrift": false,
+      "metadataFailed": false,
+      "programResult": "nil"
+    }
+  },
+  "captureCleanup": {
+    "childExitCode": 0,
+    "childWaited": true,
+    "termiosRestored": true,
+    "masterClosed": true,
+    "slaveClosed": true,
+    "ownedChildTerminationRequested": false,
+    "finalMasterEOFObserved": true,
+    "finalMasterEIOObserved": false,
+    "finalDrainTimedOut": false,
+    "finalDrainAfterChildJoin": true,
+    "cleanupErrors": []
+  },
+  "ProgramCleanup": {
+    "programReturned": true,
+    "quitRequested": true,
+    "contextCanceled": true,
+    "fakeClosed": true
+  },
+  "replay": {
+    "images": 3,
+    "rowsCompared": 84,
+    "frames": [
+      {
+        "grid": "72x28",
+        "name": "release-review-first",
+        "rowsCompared": 28,
+        "allModelRowsMatch": true,
+        "actualModalRect": {
+          "x": 0,
+          "y": 4,
+          "width": 72,
+          "height": 20
+        },
+        "actualBorderRowsAccepted": 20,
+        "actualCornerAndSideCellsAccepted": true,
+        "trustedModalControlKeys": [],
+        "filterDraftVisible": null,
+        "originalPNG": {
+          "file": "1-72x28-release-review-first.png",
+          "bytes": 73445,
+          "sha256": "37c7106d0f1c333ee46c841a71b873c208c4e5674badbcdb47b9f829feadbc15",
+          "inspectedAtOriginalResolution": true
+        },
+        "paintFinding": "Original-resolution image shows all four frame corners and complete top/side/bottom edges; right-edge clipping ellipses are absent. Review body and scroll marker are readable. Purpose-supplied action-like labels remain inert ordinary text; no modal-row hit regions are present while the genuine controls are offscreen."
+      },
+      {
+        "grid": "72x28",
+        "name": "release-review-tail",
+        "rowsCompared": 28,
+        "allModelRowsMatch": true,
+        "actualModalRect": {
+          "x": 0,
+          "y": 4,
+          "width": 72,
+          "height": 20
+        },
+        "actualBorderRowsAccepted": 20,
+        "actualCornerAndSideCellsAccepted": true,
+        "trustedModalControlKeys": [
+          "y",
+          "n"
+        ],
+        "filterDraftVisible": null,
+        "originalPNG": {
+          "file": "2-72x28-release-review-tail.png",
+          "bytes": 73004,
+          "sha256": "737d14a64ec7d4c0555f1da2f08d5e0b39c1bf94cfc307de0767f863b8df2f80",
+          "inspectedAtOriginalResolution": true
+        },
+        "paintFinding": "Original-resolution image shows complete modal borders without right-edge ellipses. The trusted Release lease and Keep lease controls are readable and contained inside the original frame/hit regions. The actual native interaction declined through the original Keep lease callback, with no affirmative action or mutation."
+      },
+      {
+        "grid": "72x28",
+        "name": "filter-draft",
+        "rowsCompared": 28,
+        "allModelRowsMatch": true,
+        "actualModalRect": {
+          "x": 0,
+          "y": 9,
+          "width": 72,
+          "height": 9
+        },
+        "actualBorderRowsAccepted": 9,
+        "actualCornerAndSideCellsAccepted": true,
+        "trustedModalControlKeys": [],
+        "filterDraftVisible": true,
+        "originalPNG": {
+          "file": "3-72x28-filter-draft.png",
+          "bytes": 67833,
+          "sha256": "f8cf38a3baf493b4deb82bae2e1722ccff804e42426c46ef7fa8b2c18b8fc2c5",
+          "inspectedAtOriginalResolution": true
+        },
+        "paintFinding": "Original-resolution image shows a complete centered filter frame including both right corners and vertical edge, exact no-synthetic-match draft, readable Apply filter and Back controls. Global enter/esc control regions are visible and align with the corresponding original controls."
+      }
+    ],
+    "elapsedMS": 924,
+    "browserOriginalExitObserved": true,
+    "browserOriginalExitCode": 0,
+    "browserOriginalExitMS": 920,
+    "allOriginalCleanupAPIsReturned": true,
+    "pendingInitialization": [],
+    "pendingCleanup": [],
+    "ownExitRequested": false,
+    "externalRequests": [],
+    "originalReceiptWriteReturned": true,
+    "receiptReturnMarkerElapsedMS": 929,
+    "receiptReturnMarkerHashMatched": true
+  },
+  "preservation": {
+    "source63Exact": true,
+    "priorArtifactSets": 13,
+    "allPriorManifestRostersFilesBinariesExact": true,
+    "packageArchiveInstalledAndSelectedSourcePinsExact": true,
+    "toolAndCaptureTemporaryFilesEmpty": true,
+    "newRuntimeManifestEntries": 37,
+    "newRuntimeManifestSHA256": "94e8289e127b2d147f40312ce5bbf2dad628f8a3e75261022a695478c1173a8d",
+    "currentArtifactsUnchangedAfterPNGInspection": true
+  },
+  "bounds": {
+    "CPUCooperative": 2,
+    "memoryCooperativeBytes": 2147483648,
+    "FIFOSeconds": 115,
+    "existingFIFOGraceSeconds": 5,
+    "insideTargetSeconds": 110,
+    "outerTotalTargetSeconds": 130,
+    "runtimeCapBytes": 16777216,
+    "historicalRuntimeRoots": 7,
+    "historicalRuntimeBytes": 12855111,
+    "freshRuntimeContainerBytes": 676244,
+    "sevenHistoricalPlusFreshWholeContainerBytes": 13531355,
+    "selectedFrozenAuxiliaryBytesExcludingPaintReview": 142801,
+    "paintReviewBytes": 6798,
+    "containersPlusSelectedAuxiliaryAndPaintReviewBytes": 13680954,
+    "metadataReserveBytes": 131072,
+    "totalIncludingReserveBytes": 13812026,
+    "buildAndTestStorageSeparate": true,
+    "qualification": "Runtime logical retained bytes include every one of the seven historical roots and fresh output. Selected frozen runtime sources/plans/reviews are additionally charged explicitly. CPU/memory promises are cooperative, not hard kernel/every-instant limits."
+  },
+  "opaqueEvidence": {
+    "artifact-manifest.json": {
+      "bytes": 3674,
+      "sha256": "94e8289e127b2d147f40312ce5bbf2dad628f8a3e75261022a695478c1173a8d"
+    },
+    "original-outcome.json": {
+      "bytes": 3602,
+      "sha256": "46b98d294295d52373f23833751891bc5e8253c331ee6684a6f4f27aa9abcfc5"
+    },
+    "attempt-receipt.json": {
+      "bytes": 4129,
+      "sha256": "f99c903ff07f06ab01e2cf82a87e8c8432f858889d4365496ed1756c38bf6b50"
+    },
+    "original-inside-helper.json": {
+      "bytes": 295,
+      "sha256": "f5de4c4242847be3b87950bb07773c8d847c630c6198035bd61df1b85900b338"
+    },
+    "capture/capture-receipt.json": {
+      "bytes": 4844,
+      "sha256": "4bc1270601aed5ed67695396244f5c76d311670e5e5e645b558614bfb4fb683e"
+    },
+    "capture/checkpoints.json": {
+      "bytes": 127667,
+      "sha256": "fc1dbdb55a6234dcbad745003a76b1ea5d6ef668db13945f775620ca4a8989fb"
+    },
+    "replay/replay-receipt.json": {
+      "bytes": 141233,
+      "sha256": "425545f0416ce62ec02b853df5e6ba7b1c6189a1d4c19183232c326d4c2ee7f8"
+    },
+    "replay/replay-receipt-written.json": {
+      "bytes": 146,
+      "sha256": "04bc7f66f75ce0f2a38ce0619d52295f78fdc631378ea4b4e7f2427a12f56018"
+    },
+    "outer-before-source.json": {
+      "bytes": 7178,
+      "sha256": "95fe7e4897ea4a2635cb723abdbb97ac84fdd00a5d647ba22f9a6658a95c6e58"
+    },
+    "outer-source-after.json": {
+      "bytes": 7178,
+      "sha256": "95fe7e4897ea4a2635cb723abdbb97ac84fdd00a5d647ba22f9a6658a95c6e58"
+    },
+    "outer-preserved-before.json": {
+      "bytes": 2467,
+      "sha256": "50bceadba7af031a3e1da43587cb87cd2358a34d84c4633e488b1354f746cd78"
+    },
+    "outer-preserved-after.json": {
+      "bytes": 2467,
+      "sha256": "50bceadba7af031a3e1da43587cb87cd2358a34d84c4633e488b1354f746cd78"
+    },
+    "pins-before.json": {
+      "bytes": 1736,
+      "sha256": "973131f826ad7bb2df65ac2e5d897789b42f6ef845452ac16a3a3ebe977c5db6"
+    },
+    "pins-before-browser.json": {
+      "bytes": 1736,
+      "sha256": "973131f826ad7bb2df65ac2e5d897789b42f6ef845452ac16a3a3ebe977c5db6"
+    },
+    "pins-after.json": {
+      "bytes": 1736,
+      "sha256": "973131f826ad7bb2df65ac2e5d897789b42f6ef845452ac16a3a3ebe977c5db6"
+    }
+  },
+  "privatePaintReview": {
+    "bytes": 6798,
+    "sha256": "e45887a8df16f3e6b816b09087007d26e00532b5e7979e6592cab4363e4397be"
+  },
+  "acceptance": "The P2 shadow-containment correction is accepted for these exact three72x28 modal prefixes, supported by the ordinary causal-red/final29 regression and current-source original native interaction/cells/PNGs.",
+  "remaining": [
+    "Full original web/TUI route/state/density/keyboard/focus/short-size coverage remains open.",
+    "No new100x35/160x50 or other terminal surfaces have current-source native paint acceptance from this run.",
+    "Only three modal targets have new actual emulator rows and PNGs; eight checkpoints have native interaction/state/prefix evidence.",
+    "No production startup/auth/backend/provider engine or affirmative mutation was exercised.",
+    "No every-terminal/font/platform/general Unicode or full-specification acceptance.",
+    "Historical positive70c and original failed captures remain immutable, source scoped and unrelabeled; old failure causes remain unproven."
+  ]
+}

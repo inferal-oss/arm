@@ -11143,3 +11143,36 @@ that the fixture omitted explicit private-leaf preparation. Cleaned paths were
 not remeasured or assigned an inferred numeric mode. The fixture-only correction
 requires new qualification; no full native closure, production startup, live
 upgrade or child-process survival result follows from these records.
+
+
+## P2 modal shadow containment — scoped native paint accepted
+
+The [normalized native and paint result](validation/ux-terminal-modal-shadow-native-2026-10-30.json)
+binds exact source `7e58c97d40081c1d89806779aac6937b51ab34b7`, the fresh
+63-input compile and original binary `97ea9d00…`. One72x28 native interaction
+retained all eight checkpoints, exact typed9007199254740993, full detail33/33
+and review24/24 logical-row coverage, original inspect/decline/filter/default
+restoration and read-only fake semantics. The conditional replay compared exactly
+three modal prefixes and84 rows, all matching. All three original PNGs were
+inspected at original resolution: complete frame corners/edges replace the
+clipping ellipses; trusted review-tail and filter controls remain readable and
+aligned. Independent review accepted this scoped P2 paint gate.
+
+Original FIFO/inside/capture/replay handles joined normally with exit0. Program,
+fake, context, PTY termios/descriptors/final EOF and browser process/API cleanup
+were positive, with the original receipt-write-return marker and no forced or
+pending outcome. Source63, all13 prior artifact sets/binaries and package pins
+remain exact, and tool/capture temporaries are empty. Reported outer time was
+8,089ms; the window is released. Seven historical runtime roots plus fresh whole
+output total13,531,355 bytes; selected frozen auxiliary sources/plans/reviews and
+paint review bring this to13,680,954 bytes, or13,812,026 with the131,072 reserve,
+below16MiB. Build/test storage is preserved separately.
+
+This closes the reproduced modal-shadow P2 only. No new100x35/160x50, other TUI
+routes, production startup/auth/backend, every terminal/font/Unicode or full-UX
+acceptance is implied. Historical positive70c and failed captures remain intact
+and source scoped. Remaining original coverage includes minimum/short shell
+geometry, broader terminal routes and states, and outstanding web route/state/
+density/focus/transport qualifications in the coverage matrix. A source-only
+review of the shared shell/action hints at45x14 is the next proposed bounded
+step; no implementation expansion or resource window is started by this record.
