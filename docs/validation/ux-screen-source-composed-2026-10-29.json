@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "scope": "Independent Screen Sharing source classification only",
+  "ownerCommit": "f0f0922d7f81b89b20f623e4fb874944e25bdc99",
+  "compositionBase": "77d52a1",
+  "sourceRecordSHA256": "91701ec37faf6ca66f8f01a6fe623cc50349c263021391913e2e83917fc30dc1",
+  "sourceSHA256": {
+    "internal/server/web/semblance/screen.mjs": "7160767e1d822292f58150ca3455afba18fb90c34eca497857a728f96a003b28",
+    "internal/server/web/semblance/ephemeral-inputs.mjs": "974ea80f617ed2281b52c85e69e7b8d1435192919d04ff658f562fd3388241ea",
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "4190a9426ee587a6528b3d924860b91e1fe490cb9660c6bf9f87046718986f71",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/graph-ownership.mjs": "1180044fee6dc020b054a2ee263d4b05796a266ae5f6c022dd8e25b1e9b91edc",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "internal/server/web/node-window.mjs": "6bf5edc83c9533f25b562067124ab9ca5c6eafd594c46ddaa611937cd8423e8b",
+    "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+    "internal/server/web/screen-mode.mjs": "60f551dddf45a7b6d2c9d2ad5dc05d22d6e93ac05928f6b6524e2cb356c39342",
+    "internal/server/web/screen-clipboard.mjs": "5322da07039c8b0c3e6170529cbae57464a73c4a027f075b5fffc8217997fc1e",
+    "internal/server/web/novnc/core/rfb.js": "c46dfefbf869eda0c6d06c5dd86c42e96fc8a77c125e91599a2cdf3841261564",
+    "internal/server/web/ard/ard-patch.js": "2562aa1714e5cb46a5e261d90915b86b37a7d6fad674fd09d54956c1a1a23911",
+    "internal/server/screen.go": "17c87b12fe077980293c252195b58c9fab0deb4f2763177b410b32ed37962488",
+    "internal/server/screen_resources.go": "105771e584613021940df67251e51514a681499f30fdb60b16893ef87c22bad9",
+    "internal/server/node_sessions.go": "fd17df0611c5fe4f20f6edba37b2a5324dab428a0c05c19fefcdb4d5b600f957",
+    "internal/server/web/semblance/screen.test.mjs": "d9ea0a072aac7cc78c6b73ca15d710f9a9427a9850a4cb35037be8daff7d21d5",
+    "internal/server/web/screen-clipboard.test.mjs": "38f9e2301a26eed1f5d8d9d21bad2491319f6d29d5bb3072d7bff8095759acef",
+    "web/third_party/semblance/src/foreign.ts": "66cd197132da9a7f3f031f856b584a6bec939eeb8e93fefd7fe530cdb8f508cb",
+    "web/third_party/semblance/src/fullscreen.ts": "dda78cc2da50ad593004e26b15416bec5b6ee0f39ca780d440abc01b549e44c8",
+    "web/third_party/semblance/src/layers/fullscreen.ts": "623a194baf42741e3d47a08acea027a378c95a8271fa62be8b8c4d7207f678d7",
+    "web/third_party/semblance/ontology/layers/foreign.ttl": "992bc44bf4ec2e322b7cbc539e5a93dac03db3feea2b70aedb4c050ee5db6c1c",
+    "web/third_party/semblance/ontology/layers/fullscreen.ttl": "d461a68950bb9353534e9b3b835047c4f61f7d864dfa42643a3a497c3b66f1c8",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6"
+  },
+  "all26CurrentInputsMatch": true,
+  "sourceReview": [
+    "Actual main native parent/route/auth lifecycle inspected",
+    "Actual createScreenViewer loadRFB/navigator injection points and returned API inspected",
+    "Credential private inputs, blank validation and prompt dismissal versus Cancel classified",
+    "Clipboard cap and asynchronous read/write/transfer effect boundaries classified",
+    "FullViewport is native popover behavior, not a real canvas/scaling proof"
+  ],
+  "productChanges": false,
+  "newScreenRuntimeOrVisualAcceptance": false,
+  "approvedNextInventoryScope": {
+    "factory": "Only main import substituted; actual viewer keeps original ui/root/token/context/location/window references and actual API; loadRFB and navigator intentionally substituted",
+    "syntheticValues": "Nonsecret separate-account seed and clipboard sentinel text up to4KiB only; populated authentication submission forbidden",
+    "effects": "In-memory inert fake client and clipboard facade only, global real network/clipboard/noVNC/ARD paths refused",
+    "cohorts": 2,
+    "geometries": [
+      [
+        1440,
+        900,
+        1
+      ],
+      [
+        390,
+        900,
+        1
+      ],
+      [
+        390,
+        320,
+        1
+      ],
+      [
+        768,
+        600,
+        2
+      ]
+    ],
+    "secondsPerOriginalCommand": 115,
+    "CPUAtMost": 2,
+    "memoryTargetGiB": 2,
+    "resourceHardEnforcementOrARMLeaseClaim": false,
+    "productRemediationBuildOrInstallation": false
+  },
+  "limits": [
+    "Source classification and approved dependency seam are not visual findings.",
+    "Real screen transport, credentials, OS clipboard, remote input/canvas/scaling and server authority are not exercised.",
+    "Private field clearing does not establish memory wipe, GC or exported RDF cleanup.",
+    "Any failed collection needs separate source/receipt qualification; no replacement beyond the two cohorts is allocated."
+  ]
+}

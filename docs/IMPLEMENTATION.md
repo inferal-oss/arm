@@ -4195,3 +4195,10 @@ public dispose have distinct root/widget responsibilities. These are unchanged
 source contracts, not new memory/RDF/GC or live cleanup acceptance. No product,
 authentication, protocol, native parent, private cleanup or accepted field/footer
 layout is edited in this cut.
+
+
+Screen Sharing's [source boundary](validation/ux-screen-source-composed-2026-10-29.json)
+is independently reviewed with production source unchanged. The existing viewer
+accepts loadRFB/navigator dependencies; a future inventory may substitute only
+those effect boundaries while preserving native parents/private inputs/API.
+This implements no new authentication, clipboard, connection or layout behavior.
