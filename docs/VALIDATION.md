@@ -11927,6 +11927,12 @@ original-child continuity acceptance follows. The external measurement owner
 and its actual containment/funded uncertainty tail remain a separate source
 and execution gate.
 
+The [normalized standing-source evidence](validation/resident-standing-data-negative-2026-10-30.json)
+publishes the 32 affected Go hashes and exact 18-root/99-case result roster.
+Coordinator review matched those hashes to the frozen candidate and every named
+result to the original qualified command outputs. This evidence publication
+does not integrate the candidate or close any positive production/runtime gate.
+
 
 ## Monitor inventory follow-up — four unexecuted ordinary source cases
 

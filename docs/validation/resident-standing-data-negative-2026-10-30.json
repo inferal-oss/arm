@@ -1,0 +1,557 @@
+{
+  "scope": "Reviewed unintegrated standing-custody/operator/accounting candidate; normal declarations/data/negative qualification only",
+  "status": "selected-normal-data-negative-pass-positive-authority-and-product-gates-open",
+  "source_base_commit": "c1173f85097adb98eb81e0e8933eef98e43fa0fa",
+  "project_source_closure": {
+    "files": 3155,
+    "Go_files": 1804,
+    "canonical_relative_file_hash_map_sha256": "6784ae798d39a1634ed91a16b2b0f2e082a318cf9d0626c3b3002e05fcc3aa65",
+    "later_composed_main_or_binary_equivalence": false
+  },
+  "source_sha256": {
+    "internal/cli/cli.go": "c96cacbf85201413d05bbbb12065cd6c6e10dfe6c1266798e0954fef1970c3bb",
+    "internal/cli/help.go": "ab7ec30986a13335e9dbe997531c3366c9835027a608d88fe24a130213e4c7a9",
+    "internal/cli/output.go": "86e8046ce6fe8020924a045c258cd3020eec0cfd34b528e85dab562c9799e50f",
+    "internal/cli/resident_authorize.go": "efae3da13c09354e3471b97ffacdb1a68fad797f8f54952c7b5525f05ac966e2",
+    "internal/cli/resident_authorize_recovery.go": "31e3b54752c306a390e3b8bfedaaebe011462b0b27ce991566de1f52a0cb7461",
+    "internal/cli/resident_authorize_recovery_test.go": "dfb40cb9d24abef819ad6b10685ac67e8f6d8a0cdae07046792f247f9b732bb0",
+    "internal/cli/resident_authorize_test.go": "06c1bf6e36e85612598bc89524e9f308ab2d72777b7611d71afd91dc063ce49e",
+    "internal/manager/cpu.go": "d7beb451a47eb64f7b23cf9f79610e0d4067b1619a68b1a2d97fedf1c2fb81b6",
+    "internal/manager/disk.go": "0d8237c766321962d83329b9c9bddf4076f8fa27607d6cf28410f4e8e8f34e4e",
+    "internal/manager/manager.go": "cef49f8928fcb3bb6a72d73a1b6eda435f02787138072bcca83001cc4a5deae9",
+    "internal/manager/memory.go": "6cc2fca310a7e4aa7ed1bd71719d012755f49b2a44ba5b734c8cdabc832ed842",
+    "internal/manager/resident_manager.go": "a8e497a24a9ab1060c2c1f6b434cac586ac59678a324b123866b3133f1a87eac",
+    "internal/manager/resident_service.go": "21960561bb56f9c252a044eea0d0d3e703bbb594f65c2238f5f1c991392e623f",
+    "internal/manager/resident_service_test.go": "66331f6ef027c760ab9244669cdb88395660d894b0ca3638668d089429ab2814",
+    "internal/manager/runs.go": "3ce2d1028f463b6bc0bd574215e06d371e52040178a306261ea3744107c7f1b9",
+    "internal/manager/scheduling.go": "306407f448586c67dc13b9db3ce6b87a946a86ee4dd18626674adbe160aec052",
+    "internal/manager/storage_pools.go": "13df94e538bdfebf00d4284545d8259f7214bbe3c52cc951afdcb1af0463ca4c",
+    "internal/model/model.go": "95349269fd1afd1ac465adc0c505571e2b78df02131f6e91e4e7a4532a381aa1",
+    "internal/server/internal/residentservice/frame.go": "3aa8b56a69291da3a8cc92a9244d719c79675e58f42a710973da3f44760f762e",
+    "internal/server/internal/residentservice/frame_test.go": "2739bb84c3971e3abc9c2a07e79aee3268dfa823eee0735bef476732df2513f9",
+    "internal/server/internal/residentservice/handoff.go": "a1d7708426e18b8f371bd5979483e05fe23ed85c776cfc531d77eeeb5f6a2dc9",
+    "internal/server/internal/residentservice/model.go": "77bb1c5655ee9018bd7e00494885d3bd085b736694894d55ce1b98b7d664d430",
+    "internal/server/internal/residentservice/native.go": "bf6f757bb87ac422f3c0dd1727f3a15b1fd7e27453169ffd2c4862291185cdde",
+    "internal/server/internal/residentservice/native_test.go": "a38ffb96271f1d93700730b0fd3d9b635250c65dd17975118bc57fad9283b1e2",
+    "internal/server/internal/residentservice/operator.go": "13b74df932226f39775d8d871c8bfa507fbfe77571a1a12db890ab9aa329cdbf",
+    "internal/server/internal/residentservice/operator_evidence.go": "efc9f861ae4ac555eb4a9cf265efdb1178ad8a02b5b44330071a78bca7a8a762",
+    "internal/server/internal/residentservice/operator_evidence_test.go": "283b75c932f8dd58d488eada4c2d0b2947b7136f2d9a7cfb464d611591e9c590",
+    "internal/server/internal/residentservice/operator_inspect.go": "a704bd0c463b3c3ee18409cdc623f83714f26f5cd7d703c8926dc09be90c8abd",
+    "internal/server/internal/residentservice/operator_inspect_test.go": "3e40544859b8569600d35dc57e3cf2ea3f89550311c95d3b1215f8faf1691dde",
+    "internal/server/internal/residentservice/owner.go": "b95ff6764ddd953dff1e8498ab02f213bf7bf0afeb4a14b443edfe984b55d641",
+    "internal/server/resident_authorize.go": "ae36e3c995879868c6abb3144dcca0e2998788409382463b9e81d98ae01aa15f",
+    "internal/server/serviceview/view.go": "16850a7d850d03d4090f89662e6b644f19c6a7a598e83d371fc3c487ea9bddce"
+  },
+  "toolchain_scope": {
+    "Go": "1.27.3",
+    "build": "normal",
+    "CGO_ENABLED": false,
+    "race_run": false,
+    "default_vet_run": false,
+    "no_native_C_or_other_platform_equivalence_claim": true
+  },
+  "actual_source_graph": {
+    "packages": 800,
+    "external_official_modules": 84,
+    "replacements": 0,
+    "official_sqlite": "modernc.org/sqlite v1.60.1"
+  },
+  "dependency_authentication": {
+    "actual_graph_derived": true,
+    "mod_archive_and_expanded_source_Hash1_checked_before_and_after": true,
+    "before_equals_after": true,
+    "shared_cache_read_only": true,
+    "network": "denied",
+    "download_repair_or_fallback": false
+  },
+  "selected_tests": [
+    {
+      "package": "./internal/server/internal/residentservice",
+      "roots": [
+        "TestResidentServiceFrameDataRoundTripAndRefusesCorruption",
+        "TestResidentServiceDataRefusesUnknownPartialAndNonfinite",
+        "TestResidentServicePendingMissingAuthorizationRetainsOriginalFailure",
+        "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit",
+        "TestResidentServiceCopiedAndCancelledHoldersIssueNoCharge",
+        "TestResidentOperatorEvidenceCanonicalData",
+        "TestResidentOperatorEvidenceRefusesIncompleteData",
+        "TestResidentOperatorCopiedZeroAndCancelledPendingRefuse",
+        "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt"
+      ],
+      "root_count": 9,
+      "named_case_count": 47,
+      "named_results": [
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/truncated-header",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/truncated-payload",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/checksum",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/chain",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/trailing",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/oversize",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/missing-grant",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/extra-state",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/wrong-debit",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/wrong-root",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/zero",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/nonfinite",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/unknown-platform",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServicePendingMissingAuthorizationRetainsOriginalFailure",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/fifo-lock",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/fifo-journal",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/damaged-journal",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceCopiedAndCancelledHoldersIssueNoCharge",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/unknown-field",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/duplicate-field",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/trailing-object",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/noncanonical",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/oversize",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-cost-scope",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-workload",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/artifact-hash",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-raw",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/unreferenced-artifact",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/claim-too-small",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/no-unknowns",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/source",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/fixture",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/runtime",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/duplicate-artifact",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/zero-bound",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/nonfinite",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/empty-interval",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorCopiedZeroAndCancelledPendingRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/absent-files",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/partial-lock",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/missing-home",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "package": "./internal/manager",
+      "roots": [
+        "TestResidentServiceCheckedTotalsDataKeepIntegerPrecisionAndOverflow",
+        "TestResidentServiceJobSubtotalChecksBeforePositiveWrap",
+        "TestResidentServiceUnboundOrZeroClaimCannotAdmit",
+        "TestResidentServiceConsumerDataExactQuantityAndLegacyShape"
+      ],
+      "root_count": 4,
+      "named_case_count": 4,
+      "named_results": [
+        {
+          "test": "TestResidentServiceCheckedTotalsDataKeepIntegerPrecisionAndOverflow",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceJobSubtotalChecksBeforePositiveWrap",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceUnboundOrZeroClaimCannotAdmit",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceConsumerDataExactQuantityAndLegacyShape",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "package": "./internal/cli",
+      "roots": [
+        "TestResidentAuthorizationRecoverySurvivesSharedInterruption",
+        "TestResidentAuthorizationCancelledBeforeMutationReportsNotApplied",
+        "TestResidentAuthorizationNilResultLateCancellationKeepsActualContext",
+        "TestResidentAuthorizationSuccessfulInspectionLateCancellationKeepsContext",
+        "TestResidentOperatorUnconfirmedOrMalformedApplyHasNoEffects"
+      ],
+      "root_count": 5,
+      "named_case_count": 48,
+      "named_results": [
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=false/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=false/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=false/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=false/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=true/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=true/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=true/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=true/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=false/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=false/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=false/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=false/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=true/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=true/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=true/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=true/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=false/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=false/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=false/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=false/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=true/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=true/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=true/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=true/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=false/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=false/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=false/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=false/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=true/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=true/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=true/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=true/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=false/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=false/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=false/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=false/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=true/human=false/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=true/human=false/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=true/human=true/wrapped=false",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=true/human=true/wrapped=true",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationCancelledBeforeMutationReportsNotApplied",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationNilResultLateCancellationKeepsActualContext",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentAuthorizationSuccessfulInspectionLateCancellationKeepsContext",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorUnconfirmedOrMalformedApplyHasNoEffects/unconfirmed",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorUnconfirmedOrMalformedApplyHasNoEffects/malformed-expect",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorUnconfirmedOrMalformedApplyHasNoEffects/unexpected-positional",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorUnconfirmedOrMalformedApplyHasNoEffects",
+          "result": "pass"
+        }
+      ]
+    }
+  ],
+  "total_roots_passed": 18,
+  "total_named_cases_passed": 99,
+  "execution_checks": {
+    "one_attempt": true,
+    "original_FIFO_and_all_started_command_envelopes_joined": true,
+    "command_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "source_tool_support_unchanged": true,
+    "temporary_Go_test_GOPATH_inventories_empty": true,
+    "no_alarm": true,
+    "retained_cache_and_evidence_not_deleted_or_credited": true
+  },
+  "tested_behavior": [
+    "bounded canonical ledger/evidence DATA and corruption/incomplete-input refusal",
+    "missing authorization, FIFO/damaged-file and copied/cancelled-before-effect refusal",
+    "checked resident job/service arithmetic and exact optional nonlease quantity DATA",
+    "actual zero/unbound standing-charge rejection before database creation",
+    "actual readonly absent/partial-lock/missing-home inspection without authority creation",
+    "typed reporting DATA preserves exact selectors across active/cancelled context, terminal/JSON and wrapped/direct errors",
+    "actual pure-pending nil-result finish and successful readonly inspection/close followed by late cancellation preserve original context"
+  ],
+  "not_exercised": [
+    "actual operator apply or positive measured profile/grant",
+    "real commit, partial write/fsync, after-apply cancellation or lost committed response",
+    "positive same-issuer inherited service descriptor lineage and root accounting",
+    "actual invalid-accounting settlement of owned storage/ports and its omission control",
+    "assembled thirteen-descriptor production birth, immutable image/fence/ACK/reference handoff",
+    "real resident listener/controller/replaceable worker/API/UI/assets",
+    "public first/repeated/concurrent arm start or genuine A-to-B original-child continuity"
+  ],
+  "gates": {
+    "source_integration": false,
+    "production_profile_or_grant": false,
+    "measurement_allocation_authority_available": false,
+    "public_start_or_worker_activation": false,
+    "finite_fresh_abort_enabled": false,
+    "native_pool_task_root_Closed_or_release_credit_proved": false
+  },
+  "remaining_gate_details": [
+    "A plain FIFO allocation is not an opaque externally funded whole-root measurement authority. Actual outside-scope containment/stop/join and retained uncertainty funding are missing.",
+    "A successful record/parser or formatter test is DATA qualification, not live measurement/approval/native ownership. Synthetic values never enter positive issuer/charge construction.",
+    "Worker replacement must preserve the original Manager/database/native supervision and stable run/proxy reporting, with genuine B API/HTML/assets and original children/logs/empty heartbeat/finish/renewal/cancel/expiry/completion."
+  ]
+}
