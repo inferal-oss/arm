@@ -9845,3 +9845,38 @@ The destination layout commit `85d85ea` also passes the public
 [Pages workflow](https://github.com/inferal-oss/arm/actions/runs/41006115170).
 This is the website/dashboard capture and publication scope; it does not
 establish a full Go suite, installed native backend or upgrade acceptance.
+
+
+## Screen Sharing source-only inventory preflight
+
+The [classification record](validation/ux-screen-source-classification-2026-10-29.json)
+contains static anchors and hashes for 26 inputs, each byte-exact to the selected
+base. Source reads cover actual main/GraphUI/Islands/fullViewport ownership,
+Screen/ephemeral-input lifecycle, clipboard helpers and real RFB/ARD/server
+effect boundaries. No new application runtime, browser, PTY, native command,
+test, build, setup, connection, credential or clipboard input is executed; no
+geometry, screenshot or visual-defect evidence is produced. Existing accepted
+private-field/footer styling is preserved. Width caps alone establish no finding.
+
+Connect can load/construct the real RFB client and cause server transport
+reservation/dial. View-only and connected setup can emit mode bytes and change
+keyboard bindings. Sign in submits the ephemeral authentication object. Clipboard
+read/write invoke browser OS APIs; send/request invoke remote protocol. Native
+canvas key/pointer/touch/wheel/gesture handling is also effectful. None is treated
+as a passive read or authorized by having a synthetic status/grant observation.
+
+A proposed no-effect seam uses only existing loadRFB/navigator factory injection
+with native UI/main/parent geometry retained. Its fake must block unknown calls,
+real imports/endpoints/sockets, credential submission and real clipboard/input
+paths; a fake connected event provides UI state only. Any dummy account or
+clipboard values need explicit future allowance and private evidence handling.
+The source roster proposes 1440×900, 390×900, 390×320 and 768×600 selected text
+tokens 2×, with local configuration, synthetic connection/auth, fullViewport and
+clipboard groups. Proposed grouping/timing is not an execution allocation.
+
+Actual framebuffer rendering/scaling, native input/clipboard effects, RFB/ARD
+authentication and server grant/resource/close enforcement remain separate live
+gates. Source clear/destroy paths do not establish heap wiping, runtime RDF/LDES
+absence or OS cleanup. Existing screen tests are read as contracts only and not
+rerun. Source-only scope, any later visual inventory and full UX/live acceptance
+remain distinct.

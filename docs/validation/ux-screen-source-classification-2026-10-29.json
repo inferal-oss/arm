@@ -1,0 +1,329 @@
+{
+  "schema": 1,
+  "kind": "source-classification-only",
+  "baseCommit": "85d85eaa0ddd121737123a459a95b85c6c88b9f1",
+  "productChanges": false,
+  "newRuntimeOrVisualEvidence": false,
+  "acceptedFix": "Existing stacked private fields/native footer source and prior c830982 acceptance are preserved; no duplicate repair or geometry finding.",
+  "sourceSHA256": {
+    "internal/server/web/semblance/screen.mjs": "7160767e1d822292f58150ca3455afba18fb90c34eca497857a728f96a003b28",
+    "internal/server/web/semblance/ephemeral-inputs.mjs": "974ea80f617ed2281b52c85e69e7b8d1435192919d04ff658f562fd3388241ea",
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "4190a9426ee587a6528b3d924860b91e1fe490cb9660c6bf9f87046718986f71",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/graph-ownership.mjs": "1180044fee6dc020b054a2ee263d4b05796a266ae5f6c022dd8e25b1e9b91edc",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "internal/server/web/node-window.mjs": "6bf5edc83c9533f25b562067124ab9ca5c6eafd594c46ddaa611937cd8423e8b",
+    "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+    "internal/server/web/screen-mode.mjs": "60f551dddf45a7b6d2c9d2ad5dc05d22d6e93ac05928f6b6524e2cb356c39342",
+    "internal/server/web/screen-clipboard.mjs": "5322da07039c8b0c3e6170529cbae57464a73c4a027f075b5fffc8217997fc1e",
+    "internal/server/web/novnc/core/rfb.js": "c46dfefbf869eda0c6d06c5dd86c42e96fc8a77c125e91599a2cdf3841261564",
+    "internal/server/web/ard/ard-patch.js": "2562aa1714e5cb46a5e261d90915b86b37a7d6fad674fd09d54956c1a1a23911",
+    "internal/server/screen.go": "17c87b12fe077980293c252195b58c9fab0deb4f2763177b410b32ed37962488",
+    "internal/server/screen_resources.go": "105771e584613021940df67251e51514a681499f30fdb60b16893ef87c22bad9",
+    "internal/server/node_sessions.go": "fd17df0611c5fe4f20f6edba37b2a5324dab428a0c05c19fefcdb4d5b600f957",
+    "internal/server/web/semblance/screen.test.mjs": "d9ea0a072aac7cc78c6b73ca15d710f9a9427a9850a4cb35037be8daff7d21d5",
+    "internal/server/web/screen-clipboard.test.mjs": "38f9e2301a26eed1f5d8d9d21bad2491319f6d29d5bb3072d7bff8095759acef",
+    "web/third_party/semblance/src/foreign.ts": "66cd197132da9a7f3f031f856b584a6bec939eeb8e93fefd7fe530cdb8f508cb",
+    "web/third_party/semblance/src/fullscreen.ts": "dda78cc2da50ad593004e26b15416bec5b6ee0f39ca780d440abc01b549e44c8",
+    "web/third_party/semblance/src/layers/fullscreen.ts": "623a194baf42741e3d47a08acea027a378c95a8271fa62be8b8c4d7207f678d7",
+    "web/third_party/semblance/ontology/layers/foreign.ttl": "992bc44bf4ec2e322b7cbc539e5a93dac03db3feea2b70aedb4c050ee5db6c1c",
+    "web/third_party/semblance/ontology/layers/fullscreen.ttl": "d461a68950bb9353534e9b3b835047c4f61f7d864dfa42643a3a497c3b66f1c8",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6"
+  },
+  "surfaces": [
+    {
+      "surface": "Screen route and actual native parent",
+      "source": {
+        "file": "internal/server/web/semblance/main.mjs",
+        "line": 105
+      },
+      "native": "Original screenContent Stack under shell/content Switch, with original main/session/route. View-only presentation uses existing screen factory; no alternate page or oversized fixture root.",
+      "states": "Initial pre-auth viewer can be disposed/recreated by authentication.onStart; collect only after synthetic connected bootstrap if later allocated. Leaving Screen disconnects; connection loss disconnects; onStart disposes viewer then clears screen root.",
+      "boundary": "Screen navigation does not establish a screen-view grant. Local/default and selected-node contexts label the target; real route admission is server-side. Public factory API has disconnect, connected getter, dispose; no reset."
+    },
+    {
+      "surface": "Desktop mode/account toolbar",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 32
+      },
+      "native": "Original Connect/Disconnect Buttons, View only Checkbox, Desktop Choice and account Island in row Stack; separate-session Text appears with account.",
+      "states": "Current console display is default; separate reveals blank private username plus explanatory text. Returning current mode clears account. Separate username is trimmed on Connect; missing username returns validation text/focus before loader. maxLength256 is a DOM input constraint, not a byte/authentication guarantee.",
+      "boundary": "Changing Desktop selection alone does not reconnect an active client; selected virtual-login0/2 and optional account are captured at a later explicit Connect. Account entry remains private. No account input is authorized in this source-only cut."
+    },
+    {
+      "surface": "Connection and view-only states",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 96
+      },
+      "native": "Original status Text, Connect/Disconnect, hidden-until-connecting action Stack with Disconnect screen/Fill window/target label/Clipboard.",
+      "states": "Disconnected; invalid/missing token; missing separate account; lazy loader pending/cancel; Connecting; six-second Waiting for Mac sign-in; connected; security failure; clean/unclean/protocol failure; explicit disconnect; stale client/generation; dispose.",
+      "boundary": "Connect with valid-shaped token crosses into real RFB loader/constructor. View-only is false by default. With a client, changing it can grab/ungrab noVNC keyboard and emit ARD/generic SetMode; it is not a passive read."
+    },
+    {
+      "surface": "Private sign-in prompt, accepted layout preserved",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 61
+      },
+      "native": "Existing native Dialog/Cancel/Sign in footer plus private input Island; fields filtered from event types username/password/target, labels Mac username/Mac password/Login target. Existing stacked-grid private-field and native-footer fix remains byte-exact.",
+      "states": "Single/multiple recognized fields; separate-session note/username seed; empty required validation; replaced prompt; native header/Escape dismissal; Cancel; source-defined submission-unknown and security-failure statuses. Unknown event types are filtered; no live protocol reach claim.",
+      "boundary": "Sign in takes/clears native fields then calls active.sendCredentials(values), which resumes authentication. The active noVNC object retains its asynchronous authentication values. Native prompt dismissal clears/disposes prompt but does not itself disconnect; Cancel additionally disconnects. Valid credential submission is excluded from the proposed first inventory."
+    },
+    {
+      "surface": "Framebuffer host, actions and full viewport",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 38
+      },
+      "native": "Original framebuffer Island creates actual Remote Mac screen div at width100%; initial height min(72dvh,900px), full-view height calc(100dvh - 8rem). Its parent is the original viewport Stack and actions remain native.",
+      "states": "Connecting without framebuffer content; connected host; Fill window/Exit full view; stock Escape; viewport resize; disconnect resets full view and clears surface.",
+      "boundary": "Fill window sets stock fs:fullViewport, a top-layer/popover presentation rather than requestFullscreen. Real RFB owns canvas and keyboard/pointer/touch/wheel/gesture handlers. No inert synthetic host capture establishes real canvas scaling, resolution, protocol or remote input behavior."
+    },
+    {
+      "surface": "Clipboard dialog and controls",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 78
+      },
+      "native": "Original Clipboard Dialog with native multiline private field, notes and Read this Mac/Send to Mac/Get from Mac/Copy to this Mac/Close clipboard row Stack in body, not footer.",
+      "states": "Connecting actions can expose an enabled Clipboard button, but handler refuses until connected; empty/cached text; incoming text; pending/failure/missing-browser-API branches; view-only send refusal; unsupported non-ARD request; cap rejection; close/reopen; disconnect; late asynchronous read/write feedback guard.",
+      "boundary": "Read this Mac invokes viewer navigator.clipboard.readText; Copy to this Mac invokes writeText. Send to Mac invokes RFB clipboardPasteFrom; Get from Mac invokes ARD requestRemoteClipboard. View-only blocks sending text but does not block reading/requesting/copying. All are effects, never passive layout actions with real dependencies."
+    },
+    {
+      "surface": "Private-leaf storage and cleanup",
+      "source": {
+        "file": "internal/server/web/semblance/ephemeral-inputs.mjs",
+        "line": 5
+      },
+      "native": "Unchanged native input/textarea/label security Island, no declared output events or initial values in RDF. Existing local grid/wrapping/padding/font/readOnly/required behavior stays intact.",
+      "states": "Mount moves initial values to properties then clears schema.initial; read/write remain JS/DOM only; take validates then clears; explicit clear and widget destroy clear fields and initial schema; unmounted reads refuse.",
+      "boundary": "Closing clipboard clears/disposes its fields but cached remoteClipboard persists for reopening. Disconnect clears prompts, clipboard dialog, remoteClipboard and account; dispose also removes watcher/resize handler. Viewer.dispose does not itself replace root; actual main onStart clears it. No memory wiping/RDF export/GC or live auth lifecycle acceptance follows from source."
+    }
+  ],
+  "effectMatrix": [
+    {
+      "action": "Connect to screen",
+      "class": "real connection/admission",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 106
+      },
+      "effect": "Dynamic noVNC+ARD loader; RFB constructor targets same-origin /v1/screen with arm.v1 and token subprotocol. Server may reserve endpoint transport resources and dial fixed local service or exact selected peer. No host/port selector from the UI.",
+      "futurePolicy": "Allow only through approved existing loadRFB injection with strict in-memory fake; block default imports and all real sockets/endpoints."
+    },
+    {
+      "action": "View only change / connected callback",
+      "class": "keyboard binding and protocol write",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 29
+      },
+      "effect": "Sets viewOnly, ARD control mode or generic SetMode bytes; connected callback sets mode/focus. Real noVNC registers keyboard/pointer/gesture/wheel handlers.",
+      "futurePolicy": "Inert property/setter/socket-byte recorder only; reject unknown calls, no real noVNC import or input handlers."
+    },
+    {
+      "action": "Sign in",
+      "class": "credential/authentication submission",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 69
+      },
+      "effect": "After local field validation/clear, invokes active.sendCredentials; original RFB stores object and resumes authentication.",
+      "futurePolicy": "No populated credential submission in initial proposed inventory. Blank validation and local dismissal only; fake sendCredentials should reject/count any attempted call. Connected state must be clearly synthetic, not authenticated."
+    },
+    {
+      "action": "Read this Mac / Copy to this Mac",
+      "class": "browser OS clipboard",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 83
+      },
+      "effect": "Calls browser clipboard readText/writeText, potentially before later dialog-identity checks. Native effects cannot be undone by merely closing the dialog.",
+      "futurePolicy": "Separate explicit inert navigator facade, no reference/fallthrough to real clipboard. Missing/denied paths may throw fixed messages; optional synthetic fulfillment needs explicit future approval."
+    },
+    {
+      "action": "Send to Mac / Get from Mac",
+      "class": "remote clipboard protocol",
+      "source": {
+        "file": "internal/server/web/screen-clipboard.mjs",
+        "line": 7
+      },
+      "effect": "Connected/viewOnly/type/UTF8 cap checks then actual RFB methods. ARD request may enable pasteboard messages before requesting contents.",
+      "futurePolicy": "Only an approved no-effect fake may record/refuse them; no real transfer or values. Keep helper code unmodified."
+    },
+    {
+      "action": "Framebuffer keyboard/pointer/touch/wheel/gesture",
+      "class": "remote input",
+      "source": {
+        "file": "internal/server/web/novnc/core/rfb.js",
+        "line": 587
+      },
+      "effect": "Real noVNC/ARD turns viewer input into remote protocol traffic. View-only has defined guards, not a substitute for a disconnected fixture.",
+      "futurePolicy": "Never instantiate real RFB; no remote input injection. Local keyboard navigation of native toolbar/dialog/fullViewport only, with explicit fake boundaries."
+    },
+    {
+      "action": "Fill window / native Escape / resize",
+      "class": "local presentation with possible real-client observers",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 54
+      },
+      "effect": "Original stock fullViewport fact plus frame host height; framework uses top-layer popover/fixed fallback, not host Fullscreen API for this fact. Real noVNC also observes display resizing.",
+      "futurePolicy": "Original framework/presentation remains intact; fake framebuffer may establish host geometry only, no protocol/display-resize acceptance."
+    },
+    {
+      "action": "Disconnect / Cancel / route away / public dispose",
+      "class": "transport and private UI lifecycle",
+      "source": {
+        "file": "internal/server/web/semblance/screen.mjs",
+        "line": 55
+      },
+      "effect": "Generation changes, closes/clears private dialogs/account/cache, resets actions/full view and calls old client.disconnect. Native widget destroy also disconnects.",
+      "futurePolicy": "Only approved fake teardown and actual context/page/API closes; no OS process/reap, memory wipe, authentication reset or network-join acceptance."
+    }
+  ],
+  "privateLifecycle": {
+    "account": "Private native value; current-mode selection/disconnect clears. Separate Connect trims then may put it in client constructor credentials.",
+    "auth": "Securityfailure changes only status until a later close/disconnect. Only known requested fields; take clears before send, active noVNC retains asynchronous authentication values. Replacing or dismissing prompt clears/disposes; only Cancel additionally disconnects. Generation/current-client guards discard stale events.",
+    "clipboard": "Bound1048576 UTF8 bytes checked on transfer/incoming; textarea has no new edit cap. Closing dialog clears native fields yet cached remoteClipboard remains until disconnect; reopening may repopulate. Browser clipboard reads/writes are explicit effects, with late-result identity guards that do not undo an already-run OS effect.",
+    "errors": "Private peer/client exceptions collapse to closed generic messages; clipboard exposes only safe allowlisted validation messages. Empty required validation messages derive from static field labels.",
+    "islandOutputs": "Existing Island declares no output bindings; native input value properties are outside graph. This is a source contract, not a new runtime RDF/LDES export or heap erasure proof.",
+    "dispose": "Disconnect first, then disposed flag/unwatch/remove resize listener; actual main separately clears its screen root. Source lifetime differs from actual native transport close/resource join, which remains unexecuted."
+  },
+  "stateRoster": [
+    {
+      "id": "S0",
+      "group": "local configuration",
+      "states": [
+        "current/disconnected",
+        "separate account revealed",
+        "empty/whitespace separate-account validation without loader",
+        "switch back clears account",
+        "view-only checked while no client"
+      ],
+      "stimulus": "Native Choice/Checkbox/Button focus and keyboard only, fields remain empty unless later explicitly approved synthetic account input.",
+      "capability": "Possible without connection; no runtime allocated now."
+    },
+    {
+      "id": "S1",
+      "group": "synthetic transport lifecycle",
+      "states": [
+        "loader pending and Disconnect cancellation",
+        "late loader resolution ignored",
+        "generic/ARD synthetic connected",
+        "six-second waiting status",
+        "security failure",
+        "clean/unclean/protocol failure",
+        "late prior-client events",
+        "route-away disconnect",
+        "public dispose/resize watcher removal"
+      ],
+      "stimulus": "Only approved loadRFB fake, actual current factory handlers; use real timer if collecting waiting state, no clock/product patch.",
+      "capability": "Requires explicit synthetic-loader/state-event allowance; public API capture distinct from main authentication reset."
+    },
+    {
+      "id": "S2",
+      "group": "private auth layout continuation",
+      "states": [
+        "password-only",
+        "username+password",
+        "username+password+target",
+        "separate note with explicitly approved synthetic account seed",
+        "blank required validation",
+        "prompt replacement",
+        "Cancel versus header/Escape close"
+      ],
+      "stimulus": "Fake credentialsrequired(types) against actual mounted factory, no populated Sign in and no real values. Preserve accepted field/footer layout.",
+      "capability": "Requires synthetic RFB state allowance; optional account seed is private synthetic input and needs explicit approval."
+    },
+    {
+      "id": "S3",
+      "group": "viewport and native controls",
+      "states": [
+        "inline host",
+        "Fill window",
+        "native Escape and restored inline host",
+        "narrow/short resize while full",
+        "Disconnect from full view",
+        "Clipboard dialog while full viewport",
+        "credentials prompt while full viewport"
+      ],
+      "stimulus": "Actual GraphUI/fullViewport/foreign host; at most inert bounded placeholder in original frame surface, no added outer wrapper or foreign input handlers.",
+      "capability": "Synthetic host geometry only; real framebuffer rendering/keyboard/pointer/scaling remains outside scope."
+    },
+    {
+      "id": "S4",
+      "group": "clipboard control/layout",
+      "states": [
+        "connected empty dialog",
+        "bounded synthetic incoming multiline text if approved",
+        "view-only send refusal",
+        "generic non-ARD Get refusal",
+        "missing/denied browser clipboard API",
+        "close/reopen cached remote text",
+        "disconnect clears field/cache",
+        "late facade read result after dialog close"
+      ],
+      "stimulus": "Actual clipboard dialog and ephemeral textarea; separate inert navigator plus strict fake RFB. No real OS clipboard, transfer, credential values or large cap stress.",
+      "capability": "Requires explicit no-effect clipboard facade/events and bounded dummy-text allowance before collection; optional successful Send/Copy mock calls excluded unless separately approved."
+    }
+  ],
+  "proposedNoEffectSeam": {
+    "status": "Proposal only; no fixture implementation or runtime allocation",
+    "preferredParent": "Unchanged main on exact selected-node stored synthetic session, original roots.screen, original GraphUI/Islands/fullViewport. Reuse existing strict destination read bootstrap for node_context/status/node_metadata; no node_open/nonce/ticket exchange or synthetic screen-view grant. After main connected state, native navigation mounts actual Screen. Local This Mac label is source-classified; a separate local bootstrap variant would need explicit allocation.",
+    "factorySeam": "Fixture-only interception of main screen.mjs import; reexport original module and invoke actual createScreenViewer with original ui/root/token/context/location/window references. Override ONLY supported existing loadRFB dependency and navigator facade. Return actual public API unchanged; optionally retain for bounded public disconnect/dispose probes. Unlike prior transparent wrapper, this seam intentionally replaces those two effectful dependencies and needs approval.",
+    "fakeContract": "Minimal fake with exact constructor URL/options checks, known event names/types, in-memory viewOnly/ARD properties, inert mode-byte recorder, focus/disconnect and strict refusal/counting of unexpected methods. No genuine noVNC/ARD import, network, RFB canvas handlers, credential submission or fallback. Any placeholder stays inside original framebuffer surface without changing its geometry policy.",
+    "globalGuards": "Same-origin task-source routing, block /v1 endpoints and all actual WebSockets, deny real noVNC/ARD imports, no real navigator clipboard reference, no server/mesh/native operation or remote input. Unknown operations/args/effects fail collection. Fake observation is not real authentication, permission or connection evidence.",
+    "viewportRoster": [
+      {
+        "width": 1440,
+        "height": 900,
+        "selectedTextScale": 1
+      },
+      {
+        "width": 390,
+        "height": 900,
+        "selectedTextScale": 1
+      },
+      {
+        "width": 390,
+        "height": 320,
+        "selectedTextScale": 1
+      },
+      {
+        "width": 768,
+        "height": 600,
+        "selectedTextScale": 2
+      }
+    ],
+    "proposedGrouping": "If later allocated: two sequential browser cohorts with two geometries each; A desktop/tall phone emphasizes local configuration/auth/lazy lifecycle, B short phone/enlarged text emphasizes viewport and clipboard controls. Dense state variants run on first geometry per group; both geometries sample core controls/own paint/keyboard/scroll. Exact roster/window must be allocated before any execution.",
+    "futureEvidence": "Full names/static labels and own control/caption/value allocations versus actual ancestor clips; actual native keyboard/focus, modal/footer and scrollbar reach, first/middle/final long explanatory/multiline ranges rather than End-only. Separate native glyph/value observations. Fresh task-owned contexts, original read/mock counters and awaited original context/browser/server closes. Private dummy values, bootstrap/session handles and rasters remain outside Git. No RDF/memory wipe/OS reap or full live Screen Sharing claim."
+  },
+  "protocolAndServerBoundary": {
+    "sourceOnly": true,
+    "browser": "Real /v1/screen authenticates browser admission and exact selected node; local platform check, bounded sessions, lifetime limited by session expiry, endpoint transport reservation before dial. It is not an observe-host/status read.",
+    "remote": "Pinned source enrollment and exact pair/local revision/certificate; destination active/proven peer screen-view grant and exact pair/remote revision; fixed service route with no user host/port selector. Declared limits and native joins are not exercised or newly accepted.",
+    "clipboardCapBytes": 1048576,
+    "accountOrCredentialDOMMaxLength": 256,
+    "waitingStatusMS": 6000,
+    "inlineFrameHeight": "min(72dvh, 900px)",
+    "fullFrameHeight": "calc(100dvh - 8rem)",
+    "screenQuality": "Viewer selects Standard/millions, scaleViewport=true and resizeSession=false; no High Performance/control/scaling acceptance from classification."
+  },
+  "sourceChecks": {
+    "all26InputsByteExactToBase": true,
+    "productionAndFixtureDiffEmpty": true,
+    "actualMainNativePathInspected": true,
+    "noNewProductRuntimeBrowserPTYNativeBuildSetupOrEffects": true
+  },
+  "remainingGates": [
+    "Coordinator approval of exact dependency seam, synthetic event/input/clipboard allowances and bounded roster/window before fixture work or collection.",
+    "Actual noVNC framebuffer rendering, auth/ARD negotiation, grant enforcement, real keyboard/pointer/clipboard effects and native transport ownership/joins require separate explicit live acceptance, not this seam.",
+    "No source-only width-cap or visual defect claim, no new cleanup/RDF/GC/auth-reset acceptance, no product remediation, merge/push/new chat/subagent or peer monitoring."
+  ]
+}

@@ -2583,3 +2583,21 @@ source classification and a proposed faithful synthetic no-effect inventory
 seam only: no browser/PTY/runtime/build/setup, credentials, real connection,
 clipboard/input/native effect or product/auth/cleanup change. Review the exact
 effect boundary and bounded state/viewport proposal before any collection.
+
+
+## Remaining Screen Sharing source classification
+
+The existing full-UX owner continues on `codex/ux-screen-inventory` from
+`85d85eaa0ddd121737123a459a95b85c6c88b9f1`. The
+[source-only classification](validation/ux-screen-source-classification-2026-10-29.json)
+binds 26 unchanged inputs to actual main/native parent, mode/account, auth-state,
+viewport and clipboard-control contracts. Existing accepted stacked private
+fields/native footer remain unchanged; this is neither a duplicate repair nor
+a new visual finding.
+
+Next gate is review/allocation of a fixture-only replacement for the existing
+loadRFB dependency and a separate inert navigator clipboard facade. Proposed
+four viewports and bounded state groups are explicit, but no fixture, runtime,
+browser/PTY/native/build/setup, synthetic input/effect or remediation window is
+allocated or used here. Preserve all completed branches/evidence. No new task,
+subagent, peer monitoring, merge/push, real Screen Sharing or full UX acceptance.

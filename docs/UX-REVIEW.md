@@ -492,3 +492,24 @@ assets pass. Failed native assertions/browser margin oracle, earlier B fixture
 and retained closed Desktop objects remain qualified. This closes the measured
 D1–D4 findings only; broader shell, terminal, transport and full UX coverage
 remain open.
+
+
+## Screen Sharing remaining coverage: source preflight
+
+The [source-only inventory plan](validation/ux-screen-source-classification-2026-10-29.json)
+continues this review's remaining Screen Sharing mode/account/auth-state/viewer/
+viewport/clipboard surfaces. It preserves the accepted stacked private-field
+and native-footer correction. No new visual finding or product change follows
+from source inspection.
+
+| Surface | Source contract | Next evidence boundary |
+| --- | --- | --- |
+| Mode/account | Native toolbar and private account Island; mode change alone does not reconnect | Empty local configuration first; synthetic account input only if separately allowed |
+| Auth state | Known requested fields in existing private Island/native Dialog; submit reaches real client | Approved fake events, blank validation/dismissal; no populated Sign in |
+| Viewer/viewport | Original frame host plus native fullViewport; real canvas owns remote input | Fake host geometry and full-viewport/auth/clipboard modal intersections; local native keys/scroll/Escape, no real canvas/control acceptance |
+| Clipboard controls | Browser read/write and remote send/request are effects; close retains viewer cache until disconnect | Separate inert clipboard/client dependencies and bounded dummy text allowance before collection |
+
+Coordinator review must approve the concrete no-effect dependency seam and
+viewport/state window before fixture or runtime work. No width-cap-only defect,
+private cleanup rewrite, real screen/credentials/clipboard, new task/subagent,
+peer monitoring, merge/push or live/full UX acceptance is included.

@@ -4167,3 +4167,31 @@ read IDs, context/origin validation, permissions, callbacks, held aging and
 pending/disconnect/disposal source remain unchanged. Closed native
 dialogs/readers retain their baseline Desktop ownership; no cleanup or live
 authority change is claimed.
+
+
+## Screen Sharing inventory seam classification
+
+The actual main mounts createScreenViewer under the existing screenContent Stack
+and disposes/recreates it during authentication reset. Route-away and connection
+loss call disconnect; main separately clears its root when resetting. Native
+GraphUI Buttons/Choice/Checkbox/Dialogs surround the existing private Islands
+and framebuffer host. Fill window uses stock fullViewport presentation, not the
+host Fullscreen API. Real noVNC owns the foreign canvas/input subtree.
+
+The [source classification](validation/ux-screen-source-classification-2026-10-29.json)
+proposes an unimplemented fixture-only import seam: call the actual factory with
+original UI/root/token/context/location/window references, replacing only its
+existing loadRFB dependency and navigator facade. A strict in-memory fake would
+provide known client events/properties without importing noVNC/ARD, opening a
+socket, submitting credentials or using browser clipboard APIs. Such replacement
+is explicit instrumentation, not a transparent unchanged-dependency claim, and
+requires coordinator approval before fixture work or collection.
+
+Account/credential values stay in native private fields and the active client's
+authentication object. Header/Escape prompt dismissal clears the prompt but only
+Cancel also disconnects. Closing Clipboard clears its fields while cached remote
+text remains until disconnect; reopening may populate it again. Disconnect and
+public dispose have distinct root/widget responsibilities. These are unchanged
+source contracts, not new memory/RDF/GC or live cleanup acceptance. No product,
+authentication, protocol, native parent, private cleanup or accepted field/footer
+layout is edited in this cut.
