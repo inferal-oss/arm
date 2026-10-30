@@ -1,0 +1,320 @@
+{
+  "schema": 1,
+  "status": "COMPLETE NATIVE READING SOURCE PREPARATION ONLY. New Go is formatter-parsed but uncompiled; capture/replay never imported/executed. Separate source/build/PTY/browser allocations required.",
+  "branch": "codex/ux-terminal-lease-reading-fixture",
+  "parentDiagnosticEvidenceCommit": "2f0920bc02a4c5183943873bf8bdde85229e7f93",
+  "mainConstraintCommit": "757033706fed1767ac84a143b61bf20f78c19194",
+  "mainComparison": "57 relevant classified/original-helper/diagnostic source files exact, no active-work rebase. Product TUI/protocol/pins unchanged.",
+  "sourceFiles": {
+    "internal/tui/ux_terminal_lease_reading_fixture_test.go": {
+      "sha256": "c0866c60a372fd2dbb4fdf1693d03e3ee9187d2ba73a02beca417df3e4c25e44",
+      "bytes": 12456,
+      "lines": 315
+    },
+    "scripts/dashboard-screenshots/ux-terminal-lease-capture.py": {
+      "sha256": "262e6768b7671c25221a32ab591e880b30af9e3f6ddd78712fb12a34b4ff028b",
+      "bytes": 18106,
+      "lines": 286
+    },
+    "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs": {
+      "sha256": "a600e5590c7790ba10e9965ef9ba3acad0d465fc548cd499dd5764af5d1a04ea",
+      "bytes": 25381,
+      "lines": 250
+    }
+  },
+  "roster": {
+    "72x28": [
+      "lease-detail-first",
+      "lease-detail-tail",
+      "lease-record-exact-number",
+      "release-review-first",
+      "release-review-tail",
+      "filter-draft",
+      "leases-filter-empty",
+      "leases-restored"
+    ],
+    "100x35": [
+      "lease-detail-first",
+      "lease-detail-tail",
+      "lease-record-exact-number",
+      "release-review-fit",
+      "filter-draft",
+      "leases-filter-empty",
+      "leases-restored"
+    ],
+    "160x50": [
+      "lease-detail-fit",
+      "lease-record-exact-number",
+      "release-review-fit",
+      "filter-draft",
+      "leases-filter-empty",
+      "leases-restored"
+    ]
+  },
+  "frames": 21,
+  "cap": 48,
+  "selectionReason": "Detail33rows/18high and29/25 need first+tail, not duplicate middle/tail snapshots; wide27/40 fits once. Review24/18 needs first+tail only at72; medium/wide21/21 fit once. Record opening/expansion uses metadata until exact-number checkpoint; no redundant initial record image. Final restored list verifies exits. Unexpected geometry/coverage fails review rather than silently adding frames.",
+  "originalDirectFootprints": {
+    "72x28": {
+      "lease-detail-first": {
+        "height": 18,
+        "offset": 0,
+        "totalLines": 33,
+        "width": 68
+      },
+      "lease-detail-middle": {
+        "height": 18,
+        "offset": 15,
+        "totalLines": 33,
+        "width": 68
+      },
+      "lease-detail-tail": {
+        "height": 18,
+        "offset": 15,
+        "totalLines": 33,
+        "width": 68
+      },
+      "release-review-draft": {
+        "height": 18,
+        "offset": 0,
+        "totalLines": 24,
+        "width": 68
+      },
+      "lease-record-exact-number": {
+        "height": 18,
+        "offset": 2,
+        "totalLines": 22,
+        "width": 68
+      },
+      "filter-draft": {
+        "height": 7,
+        "offset": 0,
+        "totalLines": 7,
+        "width": 68
+      },
+      "leases-filter-empty": {
+        "height": 18,
+        "offset": 0,
+        "totalLines": 6,
+        "width": 68
+      }
+    },
+    "100x35": {
+      "lease-detail-first": {
+        "height": 25,
+        "offset": 0,
+        "totalLines": 29,
+        "width": 96
+      },
+      "lease-detail-middle": {
+        "height": 25,
+        "offset": 4,
+        "totalLines": 29,
+        "width": 96
+      },
+      "lease-detail-tail": {
+        "height": 25,
+        "offset": 4,
+        "totalLines": 29,
+        "width": 96
+      },
+      "release-review-draft": {
+        "height": 21,
+        "offset": 0,
+        "totalLines": 21,
+        "width": 84
+      },
+      "lease-record-exact-number": {
+        "height": 25,
+        "offset": 0,
+        "totalLines": 22,
+        "width": 96
+      },
+      "filter-draft": {
+        "height": 7,
+        "offset": 0,
+        "totalLines": 7,
+        "width": 84
+      },
+      "leases-filter-empty": {
+        "height": 25,
+        "offset": 0,
+        "totalLines": 6,
+        "width": 96
+      }
+    },
+    "160x50": {
+      "lease-detail-first": {
+        "height": 40,
+        "offset": 0,
+        "totalLines": 27,
+        "width": 121
+      },
+      "lease-detail-middle": {
+        "height": 40,
+        "offset": 0,
+        "totalLines": 27,
+        "width": 121
+      },
+      "lease-detail-tail": {
+        "height": 40,
+        "offset": 0,
+        "totalLines": 27,
+        "width": 121
+      },
+      "release-review-draft": {
+        "height": 21,
+        "offset": 0,
+        "totalLines": 21,
+        "width": 84
+      },
+      "lease-record-exact-number": {
+        "height": 40,
+        "offset": 0,
+        "totalLines": 22,
+        "width": 121
+      },
+      "filter-draft": {
+        "height": 7,
+        "offset": 0,
+        "totalLines": 7,
+        "width": 84
+      },
+      "leases-filter-empty": {
+        "height": 40,
+        "offset": 0,
+        "totalLines": 6,
+        "width": 121
+      }
+    }
+  },
+  "GoWrapper": {
+    "identity": "Exact original dashboardModel with unchanged strict direct fake/data, original Update/View/OnMouse and read helpers; adapter Init=nil never original Init/connect/reconnect/clock/streams. No production Run/auth/backend. Fixed3grid/TrueColor/staticTERM options disclosed.",
+    "preFrameworkFilter": "Phase-scoped keys; exact one18B ASCII PasteMsg only in filter; raw left clicks only exact visible original first lease row or review n region; original decorated dashboardMouseMsg; fixed startup/current-grid messages and armed Quit. Others including PasteStart/End are dropped before framework Raw/exec/clipboard/Batch dispatch. No affirmative confirm, preference h, TTL/cancel/refresh/run/navigation/unreviewed Cmd.",
+    "commands": "One original inspect closure per grid executed synchronously through frozen directInspect helper; exact detail receipt consumed internally, not broadly admitted through framework. Viewport/focus/textinput cursor/Batch commands counted and suppressed uninvoked. Only pure original typed OnMouse closures and audited original Quit result reach command delivery. No subprocess launcher in admitted Go paths.",
+    "mouse": "Original parser/View.OnMouse typed event path, produced/delivered/active counters; source-grid bounds and current-frame effect policy. Exactly2 callbacks/grid: open first lease and decline via n, never y. Trusted original modalButtonRegions uses final review button row, not inert hint text.",
+    "recordPrecision": "Original recordTree preserves json.Number. Publisher type-asserts json.Number then calls String() BEFORE JSON encoding, separately stores literal type label json.Number and exact compact node path. No raw big numeric value is placed in progress JSON. Underlying typed/path/decimal observation is separate from replay actual visible ASCII9007199254740993.",
+    "readingState": "Detail ID/revision, review request ID/revision/action, visible IDs/default flags, original model identity, record path/selection, exact filter input/apply/restore and pending/unknown emptiness recorded. Record close intentionally resets detail top per original code.",
+    "budgets": "At most64 actual record navigation/expand keys/grid; exact one paste, one inspect and no run reader; original data<=12leases/10runs/8KiBlog/2KiBreason/256Blabels/64KiBDTO. No increased data.",
+    "quitCleanup": "Original Program Run/Kill/Wait even on Goexit, context cancel, original peer/run retirement and strict fake Close. Final gate requires restored list/defaults/same ID, exact-number observation, review seen/declined, one paste, one inspect,2mouse deliveries, no active/forbidden fake call/test failure. No generic goroutine or OS descendant-reap claim."
+  },
+  "captureDriver": {
+    "reuse": "Import exact SHA980fc761382c0de2854f43decb854658c69462ac05ad5b899105585eac8231d6 support script definitions under non-main name; hash guard BEFORE import. Inherit reviewed Session wait/settle/checkpoint/final Popen/slave-close/termios/EOF cleanup. Copy constructor changes only selector/env plus explicit retained inputs; copy drain changes combined budget with128KiB receipt reserve. No source/module mutation.",
+    "genuineInput": "Original owned PTY SGR press/release at fully visible original cells, End for needed first/tail reads, bounded actual Down/Enter record expansion, literal bracketed-paste framing and exact filter content, original Enter/Esc and n-decline. No host viewport/selection assignment, native clipboard or synthetic model-text terminal data. Record selection/expansion waits for the exact published selection/path effect, not merely a generic input counter.",
+    "coverage": "Union actual captured viewport logical-row offsets must cover complete original detail/review contents; no redundant middle/wide copy. Exact per-grid roster checked before continuing. No old failed wide whole-line-border helper is replaced/rerun; whole original frames and source viewport metadata retained.",
+    "buildGuard": "Fresh separately reviewed native compile binary/receipt required; old binary cannot supply selector. Validate binary digest and exact62-entry source map before/after; preserve original50 classifier values and support/helper guards. No implicit build, install/backend or test selection widening.",
+    "PopenCleanup": "Original child inherits FIFO group; no setsid/setpgid/group/PID lookup. Local terminate/kill/wait retained original only. Saved termios comparison before parent slave close and bounded final EOF/EIO versus quiet; forced/truncated/timed-out/unknown cleanup fails. Existing70s capture/25sProgram/35schild/<=9s teardown targets retained.",
+    "cumulativeBudget": "Four explicit canonical private disjoint roots bind111direct/29originalruntime/47acceptedreplay/15diagnostic manifests; mapped artifact hashes checked before and after capture. They and new native capture share16MiB, with128KiB reserve and<=4MiB stream/grid. Check before child launch and before every data block, including cleanup. Fresh output never reused. Old allocated build binaries remain separately retained.",
+    "failures": "Retain original partial streams/checkpoints/child receipts; stop first error/no replacement. Future outer wrapper must verify all old111/64/29/47/15 source/artifact scopes even after failure."
+  },
+  "replayDriver": {
+    "input": "Actual pre-exit native PTY prefixes/byte hashes/exact grids and resize offsets; exact21roster only. SourceModel.Content remains comparator, never screen data. No Go/PTY/backend/test invocation in renderer.",
+    "precision": "Require type label json.Number and decimal STRING9007199254740993 at exact request/resources/memory_bytes path, separately require full visible ASCII decimal in actual emulator rows; never JS Number conversion.",
+    "readingAssertions": "Whole active alternate-buffer rows with same symmetric trailingASCII U+0020-only comparison/raw arrays/per-row results; complete logical reading coverage in capture receipt; actual original n-region Keep lease text at review fit/tail; review ID/revision tied to original detail; exact visible filter draft, applied empty ID list and restored8/default flags. Raw PNG/cell samples retained before any assertion.",
+    "controls": "Region-cell text is read at source-owned button coordinates; inert reason/hint text cannot satisfy Keep control assertion. Bound to fully visible cells.",
+    "browser": "Pinned xterm/Playwright existing assets only; original requested font and builtin provider unchanged. No diagnostic provider, CDP/font scan or library/pin/font/output change. Fresh BrowserServer/context/Terminal with private temp/profile, loopbackCONTROL only; page/native network/clipboard refused; endpoint/error text never logged.",
+    "boundsCleanup": "Own20swork/30stotal includes init/cleanup/write markers, original retained process immediate exit observation, bounded original APIs, forced/unknown failure and original digest-bound write-return marker/no-deadline/tool-exit0 gates. Whole four prior containers + new capture/output/wrapper/temp share16MiB. Up to96wide/multi and32right-edge cells; glyph/physical terminal acceptance stays separately qualified."
+  },
+  "sourceBinding": {
+    "requiredEntries": 62,
+    "members": [
+      "docs/validation/ux-terminal-direct-fixture-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-loop-fixture-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-source-classification-2026-10-29.json",
+      "go.mod",
+      "go.sum",
+      "internal/cli/dashboard.go",
+      "internal/client/client.go",
+      "internal/client/session.go",
+      "internal/local/local.go",
+      "internal/local/statefence.go",
+      "internal/model/model.go",
+      "internal/model/operator.go",
+      "internal/model/reviews.go",
+      "internal/model/runs.go",
+      "internal/server/runs.go",
+      "internal/tui/actions.go",
+      "internal/tui/active_defaults_test.go",
+      "internal/tui/custom_names.go",
+      "internal/tui/dashboard_test.go",
+      "internal/tui/format.go",
+      "internal/tui/layout.go",
+      "internal/tui/lease_checkins.go",
+      "internal/tui/lease_table.go",
+      "internal/tui/lease_table_test.go",
+      "internal/tui/mouse.go",
+      "internal/tui/mouse_test.go",
+      "internal/tui/naming_observations.go",
+      "internal/tui/network.go",
+      "internal/tui/peers.go",
+      "internal/tui/pending_store.go",
+      "internal/tui/pending_store_test.go",
+      "internal/tui/polish.go",
+      "internal/tui/polish_test.go",
+      "internal/tui/preferences.go",
+      "internal/tui/presentation.go",
+      "internal/tui/readable_names.go",
+      "internal/tui/record.go",
+      "internal/tui/record_test.go",
+      "internal/tui/recovery.go",
+      "internal/tui/run_detail_presentation_test.go",
+      "internal/tui/run_list.go",
+      "internal/tui/run_list_test.go",
+      "internal/tui/runs.go",
+      "internal/tui/runs_test.go",
+      "internal/tui/theme.go",
+      "internal/tui/tui.go",
+      "internal/tui/ux_terminal_direct_fixture_test.go",
+      "internal/tui/ux_terminal_lease_reading_fixture_test.go",
+      "internal/tui/ux_terminal_loop_fixture_test.go",
+      "internal/tui/visual_test.go",
+      "scripts/dashboard-screenshots/capture.py",
+      "scripts/dashboard-screenshots/geometry.json",
+      "scripts/dashboard-screenshots/geometry.mjs",
+      "scripts/dashboard-screenshots/package-lock.json",
+      "scripts/dashboard-screenshots/package.json",
+      "scripts/dashboard-screenshots/render.mjs",
+      "scripts/dashboard-screenshots/ux-terminal-lease-capture.py",
+      "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs",
+      "scripts/dashboard-screenshots/ux-terminal-loop-capture.py",
+      "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs"
+    ],
+    "meaning": "New source cut/new selector/new receipt, not a forged or updated old57 receipt. Source plan itself is a receipt member but has no self-hash field. Future build owner freezes exact before/after maps and binary/original command/env/exit/log; no source changes during compile/capture/replay.",
+    "testSelector": "^TestUXTerminalLeaseReadingFixture$",
+    "proposedCompile": "env SEMBLANCE_RUN_LIMIT=115 GOMAXPROCS=2 GOMEMLIMIT=1536MiB GOENV=off GOFLAGS= GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off \"$SHARED_FIFO\" go test -mod=readonly -c -p 1 -trimpath -o \"$NEW_OWNED_LEASE_BINARY\" ./internal/tui",
+    "notAllocated": true
+  },
+  "proposedCLI": {
+    "capture": "python3 scripts/dashboard-screenshots/ux-terminal-lease-capture.py --binary \"$NEW_OWNED_LEASE_BINARY\" --build-receipt \"$NEW_NATIVE_BUILD_RECEIPT\" --output \"$FRESH_CAPTURE_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\"",
+    "replay": "node scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs \"$FRESH_CAPTURE_OUTPUT\" --output \"$FRESH_REPLAY_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\"",
+    "orchestration": "NOT RUN. Separate normal unchangedFIFO<=115s window only if explicitly allocated. Capture exit0 plus all original cleanup before replay; originals and new source/binary/pre/post receipts frozen. No queue/slot/worker overrides. Owned private tool temp, configured<=2CPU/<=2GiB target/offline localGo flags. No retries or automatic corrected flags/output reuse."
+  },
+  "preservedManifests": [
+    "01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce",
+    "17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67",
+    "60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d",
+    "bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510"
+  ],
+  "sourceValidation": [
+    "gofmt formatter parse only; no Go compile/typecheck/test invocation",
+    "Python AST/static key/SGR/paste literal parsing only; support/new capture not imported",
+    "node --check only; native replay never invoked",
+    "Original source/helper/plans/inventories and111/64/29/47/15 raw artifacts rehashed exact; added-content privacy/diff checks"
+  ],
+  "actualResults": {
+    "compiled": false,
+    "nativeProgramOrPTY": false,
+    "nativeReplayBrowser": false,
+    "sourceOnly": true,
+    "diagnosticAlreadySeparate": "Completed accepted2fa/2f09 four-case diagnostic does not compile or validate this native source."
+  },
+  "remainingGates": [
+    "Independent closed-key/paste/frame/Cmd/typed-number/source/cleanup/byte-bound review",
+    "Separate offline native compile allocation and exact62receipt; no old binary reuse",
+    "Separate single native capture/replay allocation before any actual21frames",
+    "Actual readability/precision/decline/filter/restore and glyph/cleanup findings; report first failure before correction",
+    "No product remediation or full-UX acceptance implied by source prep"
+  ]
+}

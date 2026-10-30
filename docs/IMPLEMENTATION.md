@@ -4703,3 +4703,28 @@ write results and panic behavior. Observation failure remains unknown and cannot
 replace the write result. No model/callback call while holding its lock; no stdin
 wrapper, synthetic marker/message, forced renderer or dependency change. This
 source direction adds no observer or product code to the current implementation.
+
+
+## Native lease reading — complete source prepared, uncompiled
+
+The [source plan](validation/ux-terminal-lease-reading-plan-2026-10-30.json)
+now binds a test-only original-model wrapper, owned-PTY capture and21-case byte
+replay (8/7/6 frames). It reuses the unchanged strict fake/direct helper and
+original inspect/View/OnMouse; Init/native transport, confirmations, preference
+h, refresh, unrelated commands and mutation paths remain refused. Native
+scroll, record Down/Enter, exact bracketed paste and original decline/escape
+are bounded. Complete detail/review logical-row coverage and restored defaults
+are explicit gates; no duplicate36 run-log cases are included.
+
+Precision is preserved before JSON: original json.Number is serialized using
+String(), with a separate type/path observation. Browser replay additionally
+requires actual visible ASCII9007199254740993. Full original rows/PNGs, trusted
+Keep-button cells, filter draft/empty and restored8 states remain separate
+observations. No diagnostic provider/font/CDP/package/output change is used.
+
+Only Go formatter parsing, Python AST and JS syntax/static source review ran.
+No native compile/Program/PT Y/browser result exists. A new exact62-source
+receipt and separate source/build/capture allocations are required; original57
+receipts/binaries and111/64/29/47/15 scopes stay untouched. Existing deadlines,
+Popen/Program/browser ownership and cumulative16MiB gates remain. Overall UX
+and any product fix still depend on concrete findings and independent review.
