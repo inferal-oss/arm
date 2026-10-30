@@ -5247,3 +5247,9 @@ those results qualify that isolated assembly and do not activate production.
 Linux cross-compilation is recorded separately. Original Server/root integration,
 partial initialization, funding, public startup and preservation of existing
 run/proxy children across worker replacement remain open.
+
+The same database and Manager source also cross-compiled in native-owner test
+artifacts for Linux amd64 and arm64, each after its actual target dependency
+graph and checksum verification. Both original compile command handles joined;
+neither artifact executed. These are compilation results, not Linux runtime or
+upgrade-continuity acceptance.
