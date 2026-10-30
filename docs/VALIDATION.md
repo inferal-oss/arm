@@ -10235,3 +10235,15 @@ linking passes against current embedded assets. Total active check time is
 race/vet receipt hashes were independently checked; no redundant race replay
 was needed for identical Go inputs. No binary invocation/installation, default
 state, Linux/full-suite or actual job-preserving upgrade acceptance follows.
+
+
+## Resident bootstrap contract — independent static review
+
+Reviewed owner `60b4499` against accepted `4328297`: nineteen source hashes,
+four frozen documents and twenty links resolve in the committed tree. The
+contract preserves exact proxy append/empty-heartbeat/finish behavior and
+keeps real child survival as the final gate. Privacy and whitespace checks pass.
+No source implementation, test, build, dependency change or runtime occurred.
+The startup correction Pages workflow separately completed successfully;
+[the public CI run](https://github.com/inferal-oss/arm/actions/runs/41018815971)
+is scoped to that pushed composition, not the future resident architecture.

@@ -2849,3 +2849,19 @@ finished in 32.256s with unchanged source and empty fixture temporary storage.
 No installed executable, live backend or real child process changed.
 Actual resident ownership, worker replacement and distinct-version API/UI job
 survival remain required; the existing upgrade task prepares the next cut.
+
+
+## Resident bootstrap contract — coordinator review
+
+Owner source-only contract `60b4499` is composed as `538b376`. Independent
+checks verify nineteen unchanged product inputs, four frozen document hashes,
+twenty commit-tree links and publication privacy. No runtime validation was
+needed for this documentation cut. Fresh-only entry, idle-only legacy rollout,
+original-channel handoff and explicit standing service custody are selected
+source-interface directions; finite bootstrap abort stays off. Numeric grants,
+dependency delivery and live activation remain unselected. The existing upgrade
+task prepares the actual additive retained-driver and public launch source
+candidates for review, preserving legacy behavior and original child ownership.
+
+Startup correction main `4328297` passed its push-triggered Pages workflow;
+that CI result does not establish resident/worker or job-survival acceptance.

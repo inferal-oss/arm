@@ -129,3 +129,26 @@ loss still behave correctly; do not obtain continuity by disabling supervision.
 Keep job-bearing mesh/SSH/sync/forward/screen owners resident. First, repeated
 and concurrent start must create no duplicate core/controller/worker. Only this
 composed product evidence can close the upgrade objective.
+
+
+## Coordinator disposition for source preparation
+
+The next source candidate uses fresh-only directory entry (D4), explicit fresh
+rollout with idle-only legacy entry (D6), and no finite bootstrap abort option
+(D3). Existing jobs are never terminated to enter this mode. Authenticated
+original-channel handoff (D5) is the preferred launch design; allowing the
+launcher to return does not assert that its child closed or exited. Standing
+service custody (D2) is the selected funding interface direction, with actual
+operator inputs and a measured profile still required before execution. These
+choices authorize code preparation, not production activation or resource grants.
+
+For D1, prepare a complete additive opt-in candidate against the exact pinned
+driver in an isolated source tree. Legacy Open and generated engine bytes must
+remain compatible. Return actual holder/connector/partial-open/close records,
+provenance, licenses, tests and a concrete pinned delivery option for independent
+review. The incomplete callsite sketch is insufficient. No repository module
+pin, replacement, vendor tree, shared cache, upstream publication or runtime is
+changed by preparing that candidate. Original native closure remains unknown
+where evidence cannot establish it. Public keyed-launch/handoff code must then
+consume the actual retained root; a separate demonstration entry point cannot
+replace the public-start acceptance gate.
