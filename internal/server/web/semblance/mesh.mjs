@@ -277,20 +277,27 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
       if (openNode) actions.push(button("Open dashboard \u2197", () => openNode(entry)));
       if (openNode && (platform?.os === "darwin" || !metadata && entry.trust?.state === "active")) actions.push(button("Screen \u2197", () => openNode(entry, "screen"), "primary"));
       if (!entry.local && entry.trust?.state === "revoked") actions.push(button("Reconnect\u2026", () => editConnect(entry), "primary"));
-      cards.push(graph.card(title, [
+      const card = graph.card(title, [
         graph.badge(entry.local ? "This node" : entry.trust?.state ?? "Unknown"),
         graph.text(platform ? `${platform.os} / ${platform.process_architecture} \xB7 ARM ${metadata.build?.arm_version ?? "unknown"}${entry.metadata_freshness?.stale ? " \xB7 cached / stale" : ""}` : "Metadata not yet read"),
         graph.descriptions(facts),
         graph.disclosure(`Host identity \xB7 ${entry.host.slice(0, 8)}\u2026`, [graph.descriptions([["Stable host ID", entry.host]])])
-      ], { actions: [graph.toolbar(`Actions for ${title}`, actions)] }));
+      ], { actions: [graph.toolbar(`Actions for ${title}`, actions)] });
+      graph.put?.(card.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#NodeRosterCard", true);
+      cards.push(card);
     }
-    nodes.append(graph.grid(cards));
+    const grid = graph.grid(cards);
+    graph.put?.(grid.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#NodeRosterGrid", true);
+    nodes.append(grid);
     if (roster.error) announce(roster.error.message);
   }
   async function inspect(host) {
     if (!validHostID(host)) return;
     selectedHost = host;
     const ui = modal("Node details", "MESH / NODE"), status = graph.text("Reading this exact host\u2026");
+    // Scope only this native Dialog through its existing noninteractive bodies.
+    for (const body of [ui.body, ui.d.body]) if (body) graph.put?.(body.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#NodeDetailBody", true);
+    graph.put?.(ui.foot.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#NodeDetailFoot", true);
     ui.body.append(status);
     detail = ui;
     try {
@@ -317,8 +324,11 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     ]));
     if (!entry.local) {
       note(ui.body, entry.scope_freshness?.stale ? "Permissions are stale or unavailable. A fresh destination check is required for actions." : "Permissions below are this source\u2019s current observed rights, enforced by the destination.", entry.scope_freshness?.stale ? "warning" : "");
-      ui.body.append(graph.grid([grantCard("We may do on this node", entry.outbound_scope?.grant), grantCard("This node may do here", entry.trust?.inbound_grant)]));
+      const grants = graph.grid([grantCard("We may do on this node", entry.outbound_scope?.grant), grantCard("This node may do here", entry.trust?.inbound_grant)]);
+      graph.put?.(grants.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#NodeDetailGrants", true);
+      ui.body.append(grants);
       const trust = graph.stack();
+      graph.put?.(trust.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#NodeDetailTrust", true);
       row(trust, "Endpoint", entry.trust?.address, true);
       row(trust, "Enrollment", entry.trust?.pair, true);
       row(trust, "Certificate SHA-256", entry.trust?.certificate_fingerprint, true);
