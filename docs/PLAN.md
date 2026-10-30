@@ -4276,3 +4276,19 @@ proposed data/negative gate is distinct from real issuer/partial-write acceptanc
 positive same-issuer handoff/accounting, the thirteen-descriptor composed root,
 public startup and genuine worker replacement with original-child continuity.
 No build, test, operator action or execution allocation follows from this review.
+
+
+## Rollout onboarding — recognizable session/task labels
+
+User-requested task owner: `codex/rollout-onboard-session-labels`, isolated from
+the coordinator checkout and based on reviewed `40ea2b3` or a documentation-only
+successor. Improve `rollout project onboard` suggestions with available supported
+session/task names alongside exact directory context and search, including a
+deterministic multiple-session presentation and directory-only fallback.
+
+Titles remain display metadata: canonical scope, identity, policy review/apply,
+enrollment and resource authority do not change. Reuse bounded read-only client
+metadata without transcript-derived names or starting client services. Fixture
+association/fallback/privacy/layout and unchanged onboarding regressions, source
+review and bounded validation remain gates. Shared CLI/backend/schema/module
+changes require central review; no implementation or execution is accepted yet.
