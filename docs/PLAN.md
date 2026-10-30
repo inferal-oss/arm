@@ -2959,3 +2959,21 @@ identity, growing records without bound or misreporting an operation. The owner
 continues actual launch/handoff source preparation; candidate compilation,
 normal/race/vet, delivery selection and product integration remain unallocated.
 Existing jobs, installed backend and all earlier proof/source records stay intact.
+
+
+## Terminal loop fixture — cleanup review and compile-only allocation
+
+The existing terminal owner preserves source `f46ce4b` and corrected cleanup
+`8d1039a`. Reviewed boundaries keep the original model/readers and controlled
+commands, inherit the disposable FIFO group, distinguish original child wait
+and terminal drain EOF/EIO, and retain original BrowserServer lifecycle facts.
+The Go/Python/JS/plan and selected pinned framework/browser hashes match. No
+loop/PTY/browser result exists yet.
+
+One offline compile-only normal-FIFO command is allocated: 115s, two CPU targets,
+2 GiB memory target, one build worker, private compiler scratch at most 1 GiB
+and an owned test binary at most 256 MiB. Freeze the exact 57-file cut before/
+after and retain the original build/exit/binary receipt. No test binary, Program,
+PTY, browser or ARM backend may execute under this build allocation. Review
+that original result before any separate capture/replay window. Preserve every
+failed/partial result; no automatic replacement or dependency changes.
