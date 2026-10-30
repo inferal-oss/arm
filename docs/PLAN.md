@@ -2406,3 +2406,26 @@ SQLite proof sources/audit manifest in its preserved worktree. This allocates
 no tracked production/module/DDL/policy change, compile/native run, fault injection,
 forced teardown or startup allowance. Original process/TLS/task/ABI and bounded
 cleanup source must be reviewed before any proof execution.
+
+
+## Destination dashboard — next existing UX inventory scope
+
+Owner `codex/ux-destination-inventory` starts from accepted `f021431`, preserving
+the completed forwarding branch/evidence. This continues the existing full-UX
+request; no new chat or product correction is allocated. Inspect the actual
+read-only remote resources/leases/Host/detail component and native parent/bridge
+contracts before fixtures. Exact synthetic host/source/pair/revision/certificate/
+lease/origin and observe-own/all semantics must remain validated; no real host,
+permission, publication, Screen Sharing, mutation or protocol bypass.
+
+Two separate normal-FIFO browser cohorts may cover the four established viewport/
+selected-token geometries with representative bounded dense/empty/error/stale/
+disconnected/pending data. Each is <=115s including transforms/collection/API
+cleanup, CPU <=2 and memory target <=2GiB, without hard/ARM grant claims. Use
+existing native components and actual parent allocation, strict read-only
+synthetic facade/routing and original awaited API cleanup. If faithful mounting
+needs an unallocated capability, return that interface question before collection.
+No production/module/model/Go/main/graph/pin change, build/setup/install, real
+backend/socket/clipboard/remote effect, broad suite or live/TUI/full-density
+acceptance. Return source-bound findings and existing-container scope proposals
+for review; raw identities/values/captures remain private.
