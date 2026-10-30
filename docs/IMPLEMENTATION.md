@@ -4239,3 +4239,43 @@ modals. Existing sign-in field/footer and all product behavior remain unchanged.
 Approved client/clipboard substitutions qualify native control observations
 only; no actual screen authentication, pixel rendering or transfer is
 implemented or accepted by this inventory.
+
+
+## Screen native modal presentation correction
+
+`3e0cfcb` calls the existing `fullView(false)` after the existing guards in
+`showCredentials` and `showClipboard`, before constructing their original native
+modals. An old-client/disposed credential event or duplicate/disconnected
+Clipboard request returns before presentation changes. The viewer, client,
+framebuffer host, native Dialog, private Islands, handlers and Desktop ownership
+remain original. Close/Escape leaves the viewer inline, with Fill window
+available for explicit re-entry. Existing authentication Cancel still
+disconnects; modal open/ordinary close adds no constructor, disconnect or
+clipboard transfer. There is no automatic full-view restoration state.
+
+The production GraphUI/WAT regression checks fullViewport facts, actual
+Desktop/private Island ownership and lifecycle, cache/private-field clear,
+client/frame continuity, empty authentication validation and guarded late/
+duplicate requests. Linkedom supplies no native paint or focus proof. The new
+browser fixture retains the original main and unchanged two-dependency inert
+seam. Its only counterfactual transform removes the two calls, yielding the
+byte-exact accepted original Screen module. Only the new fixture corrects the
+sticky-bar oracle for controls actually in an open popover; all original
+inventory metrics and exclusions remain unchanged.
+
+The [owner validation record](validation/ux-screen-modal-layering-2026-10-29.json)
+separates sampled native pixels, hit centers, bounded ancestry, captions,
+control/value/scroll metrics and focus observations. It adds no real protocol,
+authentication, clipboard, remote input or complete Screen Sharing acceptance.
+
+
+## Screen modal visibility — accepted behavior
+
+The [composed S1
+fix](validation/ux-screen-modal-layering-composed-2026-10-29.json) uses existing
+fullView(false) before original native credentials/Clipboard construction, after
+existing stale/disposed/connected/duplicate guards. Close leaves the same viewer
+inline; Fill window is explicit re-entry. The current client/frame/private
+fields/callbacks/cache and Cancel/disconnect semantics remain unchanged. There
+is no engine, global layer/style, auth/protocol, ownership reparenting or
+automatic reconnect/transfer change.

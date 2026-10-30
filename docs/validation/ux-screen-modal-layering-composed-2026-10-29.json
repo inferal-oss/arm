@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "scope": "Independent composed Screen S1 modal visibility fix",
+  "ownerCommits": [
+    "3e0cfcb8174a892d0e0e1a62845cdc12f0bb28b3",
+    "dd442e2f43433bf7bd83449bcd660dcd31dea837"
+  ],
+  "compositionBase": "4cd80056547122542e56e53a0da8f45afa23971e",
+  "composedSourceCommit": "3d43cf44c621cd46c2ab3f6e94413293de1c4b95",
+  "ownerRecordSHA256": "28e453bf456fb4eb61344e8558e33f0847eb9db4d32bb423da4c39d4669dc60c",
+  "inputSHA256": {
+    "internal/server/web/semblance/screen.mjs": "6d462d97d0963a42e8f3460e65e70fbbd69fd3b6d72b19f257573f51b57fa940",
+    "internal/server/web/semblance/ephemeral-inputs.mjs": "974ea80f617ed2281b52c85e69e7b8d1435192919d04ff658f562fd3388241ea",
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "4190a9426ee587a6528b3d924860b91e1fe490cb9660c6bf9f87046718986f71",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/graph-ownership.mjs": "1180044fee6dc020b054a2ee263d4b05796a266ae5f6c022dd8e25b1e9b91edc",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/web/connection-links.mjs": "fc7de770529e85cb5b340605b3dea1541c819cb0a731155565951be6b90b6361",
+    "internal/server/web/node-window.mjs": "6bf5edc83c9533f25b562067124ab9ca5c6eafd594c46ddaa611937cd8423e8b",
+    "internal/server/web/route.mjs": "ac6917749103604e326f8116a3d57be2356c82ce0e0b518a6d9dbf393956070a",
+    "internal/server/web/screen-mode.mjs": "60f551dddf45a7b6d2c9d2ad5dc05d22d6e93ac05928f6b6524e2cb356c39342",
+    "internal/server/web/screen-clipboard.mjs": "5322da07039c8b0c3e6170529cbae57464a73c4a027f075b5fffc8217997fc1e",
+    "internal/server/web/novnc/core/rfb.js": "c46dfefbf869eda0c6d06c5dd86c42e96fc8a77c125e91599a2cdf3841261564",
+    "internal/server/web/ard/ard-patch.js": "2562aa1714e5cb46a5e261d90915b86b37a7d6fad674fd09d54956c1a1a23911",
+    "internal/server/screen.go": "17c87b12fe077980293c252195b58c9fab0deb4f2763177b410b32ed37962488",
+    "internal/server/screen_resources.go": "105771e584613021940df67251e51514a681499f30fdb60b16893ef87c22bad9",
+    "internal/server/node_sessions.go": "fd17df0611c5fe4f20f6edba37b2a5324dab428a0c05c19fefcdb4d5b600f957",
+    "web/third_party/semblance/src/foreign.ts": "66cd197132da9a7f3f031f856b584a6bec939eeb8e93fefd7fe530cdb8f508cb",
+    "web/third_party/semblance/src/fullscreen.ts": "dda78cc2da50ad593004e26b15416bec5b6ee0f39ca780d440abc01b549e44c8",
+    "web/third_party/semblance/src/layers/fullscreen.ts": "623a194baf42741e3d47a08acea027a378c95a8271fa62be8b8c4d7207f678d7",
+    "web/third_party/semblance/ontology/layers/foreign.ttl": "992bc44bf4ec2e322b7cbc539e5a93dac03db3feea2b70aedb4c050ee5db6c1c",
+    "web/third_party/semblance/ontology/layers/fullscreen.ttl": "d461a68950bb9353534e9b3b835047c4f61f7d864dfa42643a3a497c3b66f1c8",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/components/controls.ttl": "b1cbc7649bb46988b4ed633f8e1df338465e05e78b281f7070db6c496ef3f2f4",
+    "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+    "scripts/dashboard-screenshots/ux-destination-inventory-backend.mjs": "84fca7763f9228b3cdcc564988710dea2d007c904ce6c1ae82b485abdd4d7506",
+    "scripts/dashboard-screenshots/ux-screen-inventory.mjs": "0aacb54485b07589613a8ea372eff0535954745ee31c36ce50fe40e7612384c2",
+    "scripts/dashboard-screenshots/ux-screen-inventory-host.mjs": "10b835eb4c08add167a26d1ccbcfa58f0d22074f2de78079b935bb0e988da65a",
+    "scripts/dashboard-screenshots/ux-screen-inventory-client.mjs": "e8603d609724b29fe8386a46ccaa966c996ee77ddb06ccbe7dd6c886224ce31e",
+    "internal/server/web/semblance/remote.mjs": "9975247ec8e7e46d7b3ee169db01c214cc42f48b5a61885e2c250d10d50d5933",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/metric-help.mjs": "23bd0fac1405f8f43276479db0d03ea98436977975fdc4f0d2c3d8a931184a19",
+    "internal/server/web/mesh-model.mjs": "adae955089af54733dc4e2e639f2a2a99f6681bcd906f43d522d2234e79b67a6",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "internal/server/web/lease-state.mjs": "66459a9d20e2a26d628556dea74de120708bf97ed2760f7df66ab436abf09bad",
+    "internal/server/node_gateway.go": "e5f2b802ca5b0fcc303253bcc9178c3f23d20e366acae9f33b65092f69e1ea6c",
+    "web/third_party/semblance/ontology/components/layout.ttl": "8b828351304d6bcada709fc1753b45d9f63e46fe9ed7a359c26c048b28ebdcc4",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "web/third_party/semblance/src/style/compile.ts": "da53952946c23d7d1ae50ef0e7bfe9929b517cec67084c6238925af995c718b0",
+    "internal/server/web/semblance/screen.test.mjs": "d9ea0a072aac7cc78c6b73ca15d710f9a9427a9850a4cb35037be8daff7d21d5",
+    "internal/server/web/screen-clipboard.test.mjs": "38f9e2301a26eed1f5d8d9d21bad2491319f6d29d5bb3072d7bff8095759acef",
+    "scripts/dashboard-screenshots/ux-screen-modal-layering.mjs": "c81c0c073cd29f5f5bf5cf847debd7cfa9a4c47a0045ad0aecadfb9ee82eb373",
+    "web/test/screen-modal-layering.test.mjs": "bbcedc522679aefd1ac2a5c985299462063961c32342f2801c06f45a5bbda9a4",
+    "web/test/ownership-regression.test.mjs": "b5c90294c90c444628c13446aff18df259ad4fd46f7267e5907e197db8fdc974"
+  },
+  "all45CurrentInputHashesMatch": true,
+  "all42ProtectedInputsMatchCurrentMain": true,
+  "wholeModuleInverseMatchesAcceptedBase": true,
+  "onlyProductSourceChange": "Two fullView(false) calls after original modal guards and before original modal construction",
+  "acceptedBehavior": "Opening credentials or Clipboard leaves full view; ordinary close remains inline and Fill window is explicit re-entry. Original client, private fields, callbacks and lifecycle remain unchanged.",
+  "independentValidation": {
+    "normalSharedFIFO": true,
+    "ARMGrantOrHardResourceEnforcement": false,
+    "JS": {
+      "passed": 454,
+      "failed": 0,
+      "skipped": 0
+    },
+    "nativeUI": {
+      "passed": 58,
+      "files": 12,
+      "failed": 0
+    },
+    "phases": [
+      {
+        "name": "web-build",
+        "exit": 0,
+        "seconds": 0.682
+      },
+      {
+        "name": "node",
+        "exit": 0,
+        "seconds": 6.33
+      },
+      {
+        "name": "native",
+        "exit": 0,
+        "seconds": 4.227
+      },
+      {
+        "name": "native-build",
+        "exit": 0,
+        "seconds": 6.026
+      },
+      {
+        "name": "web-rebuild",
+        "exit": 0,
+        "seconds": 0.624
+      }
+    ],
+    "totalSeconds": 18.049,
+    "deterministicDashboardBuilds": true,
+    "bundleSHA256": "b6cc3b4adb76a35a9afa79cacc2709afae614d25e867ddd383c66b5f01f8efbe",
+    "nativeCLIBuildOnlySHA256": "791cf3def9baacdfcf5413432a19f8c47d7669107a951190427aa27a8188bad0",
+    "nativeCLIInstalledOrExecuted": false,
+    "buildIdentityQualification": "Build before acceptance commit with regenerated asset modified; input hashes bind runtime source, not clean VCS metadata",
+    "unitMockQualification": "Full existing JS unit roster includes synthetic mocked auth/error cases; that is separate from zero populated submissions in all browser cohorts."
+  },
+  "browserAudit": {
+    "positive_control_centers_verified": 90,
+    "negative_control_centers_verified": 22,
+    "raw_selectors_scanned": 12,
+    "raw_selectors_found": 0,
+    "all_original_runtime_effect_cleanup_gates_match": true,
+    "negative_effective_source_is_exact_base": true,
+    "positiveCases": 4,
+    "negativeCases": 2,
+    "positiveScenarios": 15,
+    "negativeScenarios": 4,
+    "ownerCommandMilliseconds": [
+      18765,
+      15233,
+      7086
+    ],
+    "ownerRunnerMilliseconds": [
+      18513,
+      14970,
+      6835
+    ],
+    "all45SourceInputsIdenticalAcrossCohorts": true,
+    "negativeEffectiveScreenIsExactBase": true,
+    "fixedEffectiveScreenMatchesCurrentBytes": true,
+    "originalCaptureReadReleaseViewerDisconnectContextBrowserServerAPICleanup": true,
+    "OSGroupReapProof": false,
+    "newDuplicateBrowserRun": false
+  },
+  "artifactAudit": {
+    "files": 203,
+    "allHashesMatch": true,
+    "manifestSHA256": "7f2062e2a2c255d919c792caa80c8148cbfa37b11a810de9f193e9a84a96b14c",
+    "visualReview": [
+      "narrow visible Clipboard after leaving full view",
+      "desktop three-field empty auth",
+      "short-phone source-counterfactual obscuration"
+    ]
+  },
+  "qualifications": [
+    "Owner limited thirteen-test core is separate from the independent454JS/58native result.",
+    "Native GraphUI duplicate guard uses direct original Button events and does not establish an ordinary visible-user path.",
+    "Only sampled control centers/initial and scrolled allocations are accepted; no all-area/pixel or complete focus roster claim.",
+    "Private input/native glyph paint and universal zoom are unproved; selected tokens and existing 15px private field font stay distinct.",
+    "Inert loader/navigator/client and bounded synthetic clipboard/empty auth do not establish genuine auth/OS clipboard/remote input/framebuffer scaling or server resource authority.",
+    "Actual UI/root/client/frame/private field and callbacks remain unchanged; no memory wipe/GC/exported RDF/main auth-reset acceptance.",
+    "Old inventory invalid sticky-bar metrics and unknown hit/focus data stay historical; new measurements do not retroactively fill them.",
+    "No full Go suite, Linux/TUI/live backend/full UX or resident upgrade acceptance."
+  ]
+}

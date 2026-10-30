@@ -79,7 +79,7 @@ states; no principal view is declared complete from source inspection.
 | Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Four-case read-only inventory, primary/technical/exact-record reading, ordinary-label line boxes and local UID/context selection pass independent composition | Real transport/cluster validation, broader states/density/fonts and complete route acceptance; no cluster operations exercised |
 | Forwarding | `forward.mjs`; prepared review, listener list and retained operations | Scoped F1 reconnect/F2 full captured review, native/private-leaf lifecycle, four browser cases and isolated controls independently composed; values use full Card width | Real forwarding/unknown execution, full historical dense-prose ranges, broader states, universal font/zoom and complete UX/TUI acceptance remain open |
 | Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | D1–D4 banner/Card/detail containment, four synthetic viewport cases, exact records/amounts, native close/focus and scoped read/lifecycle checks pass independent composition | Actual transport/authority, main auth/host reset, retained native dialog cleanup, max density and full route/TUI acceptance remain open |
-| Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Stacked private fields/native footer accepted in c830982 with synthetic desktop/narrow evidence | Remaining mode/view/clipboard states; no real VNC sign-in |
+| Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Accepted stacked fields/footer plus independently composed S1 modal/full-view correction with four inert-dependency geometries, source counterfactual, native ownership/client and keyboard/close checks | Real auth/OS clipboard/framebuffer/input/transport, broader density/fonts, full focus roster and full Screen acceptance remain open |
 | Resource naming | `resource-names.mjs`; exact reference/name editor/reservations | Scoped native naming body/caption/dirty-draft and palette focus/help corrections pass independent composition | Broader reservations/recorded-result/density/state/live mutation and complete route acceptance remain open |
 
 ## Terminal inventory
@@ -535,3 +535,38 @@ presentation arbitration. No product, engine, GraphUI/main, private-input/auth
 lifecycle or remediation change is implemented. Top-layer sticky-clip inference
 and native caption/value-glyph limits are explicitly excluded from conclusions.
 Independent review and a separate correction/live acceptance window remain open.
+
+
+## Screen S1 — app-local modal presentation correction
+
+The owner correction `3e0cfcb` leaves active fullViewport after the original
+eligibility guards and before native authentication/Clipboard modal construction.
+Closing stays inline; Fill window explicitly re-enters full view. The same
+client, framebuffer host, Dialog/private inputs and Desktop ownership remain
+intact, with existing Cancel/disconnect/cache clear semantics. Whole-module
+source inverse removes only these two calls.
+
+[Owner evidence](validation/ux-screen-modal-layering-2026-10-29.json) records
+90 positive sampled control-center hits across four geometries and 22 misses
+under the exact inverse at desktop/short phone. Inspected rasters support the
+visible-modal correction. New inverse hit-winning type/role and bounded ancestry
+samples qualify those cases only; original inventory hit/focus/ancestry gaps
+remain unknown. Native captions, allocation, value/scroll and glyph limits stay
+separate; short/doubled-token dialogs require native body scrolling. Keyboard
+and close/re-entry/lifecycle checks are scoped, not exhaustive focus/all-area
+coverage. Original invalid top-layer sticky-clip metrics remain excluded.
+
+Owner implementation and allocated validation are complete; independent current
+composition and real Screen Sharing/full UX acceptance remain open. No live
+authentication, clipboard/network/protocol transfer or remote input was exercised.
+
+
+## Screen S1 — composition accepted
+
+The [current-composition
+record](validation/ux-screen-modal-layering-composed-2026-10-29.json) accepts
+modal visibility after leaving full view, with explicit user re-entry and
+unchanged original client/private lifecycle. Sampled positive/control imagery
+and hit checks agree with the exact source inverse; current tests/builds pass.
+This closes the measured S1 finding only. Original inventory clipping/hit/focus
+gaps and real Screen Sharing, terminal, shell and overall UX gates remain open.

@@ -2692,3 +2692,34 @@ identity and late/disconnect/disposal checks are required. The new fixture may
 correct the top-layer clip oracle without rewriting old inventory evidence.
 No owner assets/Go build/setup/install/PTY/live effect or extra window; central
 composition, asset rebuild and acceptance remain required.
+
+
+## Screen modal presentation — owner correction ready for review
+
+The Screen owner on `codex/ux-screen-modal-layering` implements the scoped S1
+correction from accepted inventory base `8c5bd9e` in `3e0cfcb`: eligible native
+authentication and Clipboard modal opens leave fullViewport through the existing
+app helper. Existing guards run first. Closing stays inline; Fill window is
+explicit re-entry. The entire Screen module is byte-exact to the base after
+removing only those two calls. No native field/footer or ownership change.
+
+One normal FIFO core cohort passes five selected JS checks and eight production
+GraphUI/WAT regressions. Two positive browser cohorts and one isolated two-call
+inverse cohort pass their original cleanup/effect gates. The
+[validation record](validation/ux-screen-modal-layering-2026-10-29.json) freezes
+45 inputs, the exact counterfactual source and normalized evidence. All thirteen
+previous private evidence sets remain unchanged. Owner review and validation
+are complete for this cut; independent composition/rebuild and complete Screen
+Sharing/live UX acceptance remain open. No merge or push by this owner.
+
+
+## Screen S1 — independent composition accepted
+
+Owner `3e0cfcb`/`dd442e2` passes [independent
+composition](validation/ux-screen-modal-layering-composed-2026-10-29.json).
+Exact two-call source inverse, all 45 inputs/all 42 protected inputs and 203
+private artifacts verify. Current 454 JS/58 native UI tests, deterministic
+dashboard builds and native CLI build pass in 18.049s. Opening a modal leaves
+full view; close remains inline with explicit Fill window re-entry. Same
+client/fields/cache/lifecycle and genuine-effect refusals hold within scoped
+evidence. No live Screen/TUI/Linux/full UX or upgrade acceptance.
