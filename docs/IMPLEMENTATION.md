@@ -4032,3 +4032,30 @@ child-image proof must distinguish pre-execution selection from post-Start
 observation; the latter cannot retroactively authorize earlier effects. Local
 operator intent remains a cooperative protocol, not same-account isolation or
 human-presence attestation. These qualifications do not grant a native method.
+
+
+## Forwarding inventory effect boundary
+
+The new fixture loads actual main/graph/native forwarding components and the
+actual pure local draft/preparation helper. Only list and known-key exact-status
+reads plus bounded common bootstrap are served; start, stop, recovery and every
+unknown operation/argument are refused and never invoked. Local Review Stop and
+Review local recovery expose only their existing presentation. A fixture-only
+fresh token has no listening endpoint, real credential or admission.
+
+The [inventory](validation/ux-forwarding-inventory-2026-10-29.json) preserves all
+production bytes and authority/CAS/unknown/retry/private-leaf boundaries. Runtime
+keys/tokens/identities/values and UI images remain in the private artifact bundle;
+normalized records contain redacted geometry and boolean lifecycle observations.
+No source correction, permission injection or validator weakening is performed.
+
+
+## Forwarding inventory — reviewed presentation boundary
+
+The [independent inventory review](validation/ux-forwarding-inventory-composed-2026-10-29.json)
+accepts source/fixture findings only. Current exact-status guards conflate lost
+connection with invalid key syntax. Current review captures a prepared request
+that form edits do not mutate, while omitting reason/lifetime from its summary.
+A future informational correction must expose the full prepared snapshot without
+changing that immutable request or private token, retry, uncertainty and admission
+semantics. No listener or forwarding behavior changes in the inventory cut.

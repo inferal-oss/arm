@@ -9558,3 +9558,51 @@ remain unmeasured. Atomic no-replace publication and actual child-image selectio
 observation methods still need implementation and native causal controls.
 No helper/contract evidence establishes real API/UI delivery or active-job
 survival across two versions; those remain mandatory completion gates.
+
+
+## Forwarding native inventory evidence
+
+Exactly two original FIFO cohorts (about 20 and 19 seconds) cover desktop, both
+phone heights and selected-root/token 2x tablet. The
+[record](validation/ux-forwarding-inventory-2026-10-29.json) binds identical source
+hashes, private receipts and original awaited API cleanup. It records zero
+forbidden calls, real sockets/external requests, clipboard attempts, page errors
+and pending/active reads at capture. Intervals include transforms/collection/API
+close but exclude initial static imports/source hashing and FIFO wait; CPU/RSS
+and OS process-group exit/reap are not established. No extra cohort, test suite,
+build, setup, install, source effect or ARM lease assertion.
+
+Sampled captions/controls and Stop/recovery warning ranges fit their own reading
+allocation and true clips. Tall dense status prose and selected-scale prepared
+summary require vertical scrolling; full dense-prose range reach was not separately
+sampled. Width cap and whole-box height alone produce no clipping finding.
+Native fixed form fonts and unavailable native input glyphs are qualified.
+
+Fresh private leaves are read-only, absent from DOM serialization/value attribute,
+URL/storage/RPC, retained through safe reads and synthetic connection changes,
+cleared/detached on reprepare and cleared on pending-read close. Late status/list
+replies do not reopen a closed dialog; Escape restores the opener. Runtime RDF/
+LDES was not exported or inspected, and no memory zeroization claim is made.
+
+Disconnected valid-key inspection gives malformed-key guidance without sending a
+read (F1). Unsent form edits retain the prepared leaf; source summary omits reason/
+lifetime (F2 review concern). No mutating confirmation or uncertain execution path
+is exercised. Prior 142/505/164/256/four-audit/138/450/142 artifacts rehash unchanged.
+Independent review and full UX/TUI/live acceptance remain open.
+
+
+## Forwarding inventory — independent source/evidence audit
+
+The [composed record](validation/ux-forwarding-inventory-composed-2026-10-29.json)
+records 97 artifact hashes and all 23 input hashes matching the frozen owner;
+21 production inputs also match the original base and current main. Both original
+two-case browser reports have zero forbidden/active/pending reads, real sockets,
+external requests, page errors or clipboard attempts, with positive original
+API cleanup. F1 is reproduced in all four cases. F2 is source-confirmed review
+completeness, not experimentally accepted Start behavior. Runtime generated
+identifiers are absent from added publication lines.
+
+This independent audit adds no browser/native/unit/build/backend/effect run.
+Private leaf identity/clear observations and source no-output review do not
+export runtime RDF/LDES or prove memory wiping. Full dense prose ranges, universal
+zoom/native painted fields, real listeners and full UX remain open.
