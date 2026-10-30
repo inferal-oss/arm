@@ -2723,3 +2723,24 @@ dashboard builds and native CLI build pass in 18.049s. Opening a modal leaves
 full view; close remains inline with explicit Fill window re-entry. Same
 client/fields/cache/lifecycle and genuine-effect refusals hold within scoped
 evidence. No live Screen/TUI/Linux/full UX or upgrade acceptance.
+
+
+## Remaining terminal UX — source classification only
+
+The existing UX owner continues on `codex/ux-terminal-layout-inventory` from
+`9760ef3`, preserving completed Screen branches/evidence. Bound the first
+classification to shared terminal shell/navigation/modals/action hints and
+Leases/Runs list/detail/log geometry, proposing 72x28, 100x35, 160x50. Inspect
+actual model/client/resize/key/mouse/focus/scroll and read-versus-mutation paths;
+accepted inactive/default and run-reader behavior remain unchanged. Return exact
+source/effect/lifetime boundaries and a faithful synthetic read-only fixture
+proposal before any runtime. No PTY/native/build/test/backend/adoption/setup,
+product/Go changes, real action or remediation is allocated by classification.
+
+Startup correction validation keeps the expected-red original-function failures
+separate from an initial fixed-normal fixture-home permission failure. Production
+private-home guards stay intact. Only two new test-home constructors changed;
+original failed bytes/receipts and inverse remain preserved. One replacement
+normal cohort is allocated, followed only on success/join by the unused scoped
+race/vet/native-build phases within a separate cumulative 115s FIFO envelope.
+No red replay, retry after failure, detached/default daemon or broader test scope.

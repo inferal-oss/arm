@@ -10064,3 +10064,9 @@ thirteen-test core and full unit mock-auth coverage remain distinct. No
 duplicate browser run was needed for identical runtime inputs; no real
 auth/clipboard/framebuffer, OS reap, universal glyph/zoom or complete UX
 acceptance follows.
+
+
+Screen correction `9760ef3` also passes the public
+[Pages workflow](https://github.com/inferal-oss/arm/actions/runs/41014791785).
+This covers the website/dashboard capture and publication pipeline; it is not
+a full Go suite, real Screen transport/auth or resident upgrade acceptance.
