@@ -9747,6 +9747,19 @@ review before recompilation or execution. Actual active product jobs and other
 children are outside that policy. First/repeated/concurrent `arm start`, real distinct B
 API/UI and native active-job preservation remain mandatory composed gates.
 
+The first four fixed raw SQLite cases now complete naturally with matching
+original non-reaping/reaping observations, EOF/drain/descriptor/log outcomes and
+no attempted teardown. Independent review pairs all observed file identities
+and mapping ranges. The retained observer records 4/16/10/12 completed vector
+events for empty/WAL/rollback/zombie cases. Frozen helper assertions cover the
+BUSY close, deferred close-v2 and finalization order; numeric API return values
+are not independently encoded in its spans. WAL still maps 32KiB of shared
+memory despite `mmap_size=0`; zero mapping cannot be assumed. Successful vector
+returns can preserve stale errno, which is not reclassified as failure.
+This is partial fixed-fixture observation, not independent full global
+quiescence, native resource census or product SQLite Closed. Stopped/error/
+exhaustion controls and Linux are not exercised. Separate D evidence is pending.
+
 
 ## Destination D1–D4 correction evidence
 

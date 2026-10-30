@@ -2431,9 +2431,13 @@ R cohort is now allocated to the exact reviewed binaries under the unchanged
 FIFO's 110s alarm plus existing five-second teardown target. It covers only four
 fixed disposable cases, one original child at a time, CPU <=2, memory target
 <=2GiB and owned native disk/artifacts <=128MiB. Required original child reap,
-drain/descriptor/log outcomes and bounded-error records must be reviewed before
-any D allocation. Attempted teardown or unknown outcomes fail the cohort; no
-SQLite Closed, resource credit or product resident/active-job policy is implied.
+drain/descriptor/log outcomes and bounded-error records are required. The four
+R cases now pass scoped independent review: matching original reaps, EOF/drain/
+close results and paired observed file/map records, with no teardown attempted.
+One separate D cohort is allocated for the two fixed normal/constructor cases
+under the same exact binaries and limits; no further action is allocated.
+Attempted teardown or unknown outcomes fail the cohort; no SQLite Closed,
+resource credit or product resident/active-job policy is implied.
 
 Remaining resident-upgrade work is implementation and composed acceptance:
 
