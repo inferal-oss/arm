@@ -45,7 +45,8 @@ PRESERVED_MANIFESTS = {'60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac63
  '01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce': 29,
  'bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510': 47,
  '17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67': 15,
- '2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177': 23}
+ '2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177': 23,
+ 'ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e': 22}
 ROSTER = {
  '72x28':['lease-detail-first','lease-detail-tail','lease-record-exact-number','release-review-first','release-review-tail','filter-draft','leases-filter-empty','leases-restored'],
  '100x35':['lease-detail-first','lease-detail-tail','lease-record-exact-number','release-review-fit','filter-draft','leases-filter-empty','leases-restored'],
@@ -54,6 +55,11 @@ ROSTER = {
 class LeaseSession(support.Session):
     def __init__(self, root, binary, size, deadline, retained_inputs):
         self.retained_inputs = retained_inputs
+        self.actions=[]
+        self.action_started=time.monotonic_ns()
+        self.input_readiness=None
+        self.mouse_outcome=None
+        self.mouse_observation_error=None
         self.root, self.size, self.deadline = root, size, deadline
         self.grid = f'{size[0]}x{size[1]}'
         self.progress = root / self.grid / 'progress.json'
@@ -137,7 +143,104 @@ class LeaseSession(support.Session):
         os.write(self.master, KEYS[key])
         return self.wait(lambda s: s['inputs'] > before and predicate(s), key)
 
+    def action(self, value):
+        if len(self.actions) >= 16:
+            raise RuntimeError('parent mouse diagnostic record bound')
+        value = dict(value, ordinal=len(self.actions)+1, atNS=time.monotonic_ns()-self.action_started)
+        self.actions.append(value)
+        raw = (json.dumps({'schema':1,'records':self.actions},separators=(',',':'))+'\n').encode()
+        if len(raw) > 8192:
+            raise RuntimeError('parent mouse diagnostic byte bound')
+        self.bound()
+        path = self.root/self.grid/'mouse-actions.json'
+        with path.with_suffix('.json.new').open('xb') as target:
+            target.write(raw)
+        path.with_suffix('.json.new').replace(path)
+
+    def await_startup_output(self):
+        end = min(self.deadline,time.monotonic()+5)
+        path = self.root/self.grid/'readiness.json'
+        while time.monotonic() < end:
+            self.drain()
+            state = self.load()
+            if self.child.poll() is not None:
+                raise RuntimeError('original child ended before output readiness')
+            if state and state.get('diagnostics',{}).get('unknown'):
+                raise RuntimeError('original readiness observation unknown')
+            if not path.exists():
+                continue
+            if path.stat().st_size > 16384:
+                raise RuntimeError('child diagnostic byte bound')
+            data = json.loads(path.read_text())
+            if data['unknown'] or data['startup']['drift']:
+                raise RuntimeError('original readiness observation unknown')
+            frame = data.get('frame')
+            if not frame:
+                continue
+            start,stop = frame['start'],frame['end']
+            if not all(type(n) is int for n in (start,stop,frame['requested'],frame['returned'],frame['sequence'])) or not 0<frame['sequence']<=data['writes'] or not 0<=start<stop<=4*1024*1024 or not frame['full'] or frame['requested']!=frame['returned'] or stop-start!=frame['returned']:
+                raise RuntimeError('original output range invalid')
+            if stop > len(self.bytes):
+                continue  # Read chunks are not original write/frame boundaries.
+            original = bytes(self.bytes[start:stop])
+            if hashlib.sha256(original).hexdigest()!=frame['sha256']:
+                raise RuntimeError('original complete output write hash mismatch')
+            if not all(token in original for token in (b'\x1b[?1049h',b'\x1b[?1002h',b'\x1b[?1006h',b'LEASES',b'Synthetic lease 1',b'Inspect')):
+                raise RuntimeError('query-only or unrecognized renderer frame')
+            latest=self.load();startup=data['startup']
+            if not latest['restored'] or latest['grid']!=list(self.size) or not startup['valid'] or startup['sealed'] or startup['grid']!=list(self.size) or frame['fingerprint']!=startup['fingerprint'] or latest['diagnostics']['fingerprint']!=startup['fingerprint'] or latest['diagnostics']['unknown']:
+                raise RuntimeError('startup fingerprint changed before original mouse')
+            if not data['descriptor'] or not all(data['descriptor'].values()):
+                raise RuntimeError('original descriptor/terminal/size observation failed')
+            region=next(r for r in latest['regions'] if r['key']=='' and r['row']==0 and not any(r[k] for k in ('feed','record','mesh','pool','recovery','picker')))
+            if [region[k] for k in ('x','y','width','height')]!=startup['region']:
+                raise RuntimeError('original input region fingerprint changed')
+            self.input_readiness={'frame':frame,'region':startup['region'],'fingerprint':startup['fingerprint'],'descriptor':data['descriptor'],'bytesThrough':len(self.bytes),'prefixSHA256':hashlib.sha256(self.bytes).hexdigest()}
+            self.action({'kind':'initial-output-barrier',**self.input_readiness})
+            return
+        raise RuntimeError('original output readiness deadline')
+
+    def mouse_write(self, data, kind):
+        self.mouse_outcome={'kind':kind,'requested':len(data),'returned':None}
+        self.action({'kind':kind+'-request','requested':len(data),'bytesThrough':len(self.bytes),'prefixSHA256':hashlib.sha256(self.bytes).hexdigest()})
+        try:
+            count=os.write(self.master,data)  # Exactly one original write; no short/error retry.
+        except OSError as error:
+            self.mouse_outcome.update(errorName=type(error).__name__,errno=error.errno)
+            try:
+                self.action({'kind':kind+'-error','errorName':type(error).__name__,'errno':error.errno})
+            except Exception as observation_error:
+                self.mouse_observation_error=type(observation_error).__name__
+            raise  # Preserve the original write error even if its metadata also failed.
+        self.mouse_outcome['returned']=count
+        observation_error=None
+        try:
+            self.action({'kind':kind+'-return','requested':len(data),'returned':count})
+        except Exception as error:
+            observation_error=error;self.mouse_observation_error=type(error).__name__
+        if count!=len(data):
+            raise RuntimeError('short original SGR write; no retry')
+        if observation_error:
+            raise RuntimeError('original SGR return observation unknown') from observation_error
+
+    def diagnostic_result(self):
+        try:
+            path=self.root/self.grid/'readiness.json'
+            data=json.loads(path.read_text())
+            actions=json.loads((self.root/self.grid/'mouse-actions.json').read_text())['records']
+            files=[p for p in (self.root/self.grid).iterdir() if p.name.startswith(('readiness.json','mouse-actions.json')) and p.is_file()]
+            total=sum(p.stat().st_size for p in files)
+            counts=data['counters']
+            required=('parsed-click','filter-admitted','update-click','callback-entry','cmd-created','cmd-start','cmd-produced','typed-delivery','typed-frame')
+            returned=[a for a in actions if a['kind'] in ('mouse-press-return','mouse-release-return')]
+            accepted=bool(self.input_readiness and data['frame']==self.input_readiness['frame'] and data['startup']['fingerprint']==self.input_readiness['fingerprint'] and data['startup']['sealed'] and not data['unknown'] and not data['startup']['drift'] and data['programResult']=='nil' and len(data['records'])<=48 and len(actions)<=16 and total<=65536 and all(counts.get(k)==2 for k in required) and counts.get('inspect-complete')==1 and counts.get('cmd-nil',0)==0 and len(returned)==4 and all(a['requested']==a['returned'] for a in returned))
+            return {'accepted':accepted and self.mouse_observation_error is None,'originalMouseWrite':self.mouse_outcome,'writeObservationError':self.mouse_observation_error,'readinessSHA256':sha(path),'actionsSHA256':sha(self.root/self.grid/'mouse-actions.json'),'records':len(data['records'])+len(actions),'retainedDiagnosticBytes':total,'initialBarrier':self.input_readiness,'counters':counts,'programResult':data['programResult'],'qualification':'Observed original write/input/callback stages only; no retrospective old-cause or paint claim'}
+        except Exception as error:
+            return {'accepted':False,'errorName':type(error).__name__,'originalMouseWrite':self.mouse_outcome,'writeObservationError':self.mouse_observation_error,'initialBarrier':self.input_readiness}
+
     def mouse(self, key=None, row=None):
+        if key is None and row==0 and self.input_readiness is None:
+            self.await_startup_output()
         state = self.load()
         r = next(r for r in state['regions']
                  if (r['key'] == key if key is not None else r['key'] == '' and r['row'] == row)
@@ -145,9 +248,11 @@ class LeaseSession(support.Session):
                  and r['x'] >= 0 and r['y'] >= 0 and r['width'] > 0 and r['height'] > 0
                  and r['x'] + r['width'] <= self.size[0] and r['y'] + r['height'] <= self.size[1])
         before = state['mouseDelivered']
-        os.write(self.master, f"\x1b[<0;{r['x']+1};{r['y']+1}M".encode())
+        if key is None and [r[k] for k in ("x","y","width","height")]!=self.input_readiness["region"]:
+            raise RuntimeError("mouse region changed after original output barrier")
+        self.mouse_write(f"\x1b[<0;{r['x']+1};{r['y']+1}M".encode(),"mouse-press")
         result = self.wait(lambda s: s['mouseDelivered'] > before, 'visible owned lease mouse')
-        os.write(self.master, f"\x1b[<0;{r['x']+1};{r['y']+1}m".encode())
+        self.mouse_write(f"\x1b[<0;{r['x']+1};{r['y']+1}m".encode(),"mouse-release")
         return result
 
     def paste_filter(self):
@@ -201,8 +306,8 @@ def main():
     if not root.is_absolute() or root.parent.resolve() != root.parent or root.resolve().is_relative_to(REPO):
         raise RuntimeError('fresh resolved private lease output required')
     inputs = args.retained_input_root
-    if len(inputs) != 5 or len(set(inputs)) != 5:
-        raise RuntimeError('five preserved runtime input containers required')
+    if len(inputs) != 6 or len(set(inputs)) != 6:
+        raise RuntimeError('six preserved runtime input containers required')
     for p in inputs:
         if not p.is_absolute() or p.resolve() != p or not p.is_dir() or p.is_relative_to(REPO) or p.stat().st_mode & 0o077 or root.is_relative_to(p) or p.is_relative_to(root):
             raise RuntimeError('private disjoint retained input required')
@@ -273,10 +378,10 @@ def main():
                 error=type(exc).__name__+': '+str(exc)
             finally:
                 cleanup=session.finish();p=root/session.grid/'child-final.json';child=json.loads(p.read_text()) if p.exists() else None
-                receipts.append({'grid':session.grid,'error':error,'cleanup':cleanup,'originalChild':child,'readingCoverage':coverage})
+                receipts.append({'grid':session.grid,'error':error,'cleanup':cleanup,'originalChild':child,'readingCoverage':coverage,'diagnostics':session.diagnostic_result()})
                 write_json(root/'capture-receipt.json',{'complete':False,'receipts':receipts,'failure':error})
             positive=['testFailed','programStarted','programReturned','sameWrapperReturned','sameModel','restored','quitRequested','initSuppressed','sawExactNumber','sawReview','declined','fakeClosed','contextCanceled']
-            if error or not child or child['testFailed'] or not all(child[k] for k in positive if k!='testFailed') or child['pastes']!=1 or child['recordKeys']>64 or child['mouseProduced']!=2 or child['mouseDelivered']!=2 or child['mouseActive']!=0 or child['reads']!=1 or len(child['calls'])!=1 or child['calls'][0]['Operation']!='inspect' or child['activeFakeCalls']!=0 or child['forbidden'] or cleanup.get('childExitCode')!=0 or not all(cleanup[k] for k in ['childWaited','finalDrainAfterChildJoin','termiosRestored','slaveClosed','masterClosed']) or not(cleanup['finalMasterEOFObserved'] or cleanup['finalMasterEIOObserved']) or cleanup['finalDrainTimedOut'] or cleanup['ownedChildTerminationRequested'] or cleanup['cleanupErrors'] or cleanup.get('cleanupOutputTruncated'):
+            if error or not child or not receipts[-1]['diagnostics']['accepted'] or child['diagnostics']['unknown'] or child['testFailed'] or not all(child[k] for k in positive if k!='testFailed') or child['pastes']!=1 or child['recordKeys']>64 or child['mouseProduced']!=2 or child['mouseDelivered']!=2 or child['mouseActive']!=0 or child['reads']!=1 or len(child['calls'])!=1 or child['calls'][0]['Operation']!='inspect' or child['activeFakeCalls']!=0 or child['forbidden'] or cleanup.get('childExitCode')!=0 or not all(cleanup[k] for k in ['childWaited','finalDrainAfterChildJoin','termiosRestored','slaveClosed','masterClosed']) or not(cleanup['finalMasterEOFObserved'] or cleanup['finalMasterEIOObserved']) or cleanup['finalDrainTimedOut'] or cleanup['ownedChildTerminationRequested'] or cleanup['cleanupErrors'] or cleanup.get('cleanupOutputTruncated'):
                 raise RuntimeError('original lease child/capture/cleanup failed; no replacement')
         if len(checkpoints)!=21 or retained(root)+sum(retained(p) for p in inputs)>LIMIT:
             raise RuntimeError('native lease roster/retention bound')

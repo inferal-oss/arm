@@ -1,25 +1,25 @@
 {
   "schema": 1,
-  "status": "PAGEDOWN AND FIVE-INPUT ACCOUNTING SOURCE ONLY. Original9b compile/first capture are preserved;79 source-only cut is preserved. This final correction is uncompiled/unexecuted; new source/build/runtime review required.",
-  "branch": "codex/ux-terminal-lease-five-inputs",
+  "status": "READINESS OBSERVER/DIAGNOSTICS AND SIX-INPUT ACCOUNTING IMPLEMENTED IN TEST SOURCE ONLY. Formatter/AST/JS syntax reviewed; new Go is uncompiled and prepared regressions unexecuted. Native/runtime/paint unaccepted; both original causes remain unproven.",
+  "branch": "codex/ux-terminal-native-readiness",
   "parentDiagnosticEvidenceCommit": "2f0920bc02a4c5183943873bf8bdde85229e7f93",
   "mainConstraintCommit": "757033706fed1767ac84a143b61bf20f78c19194",
   "mainComparison": "57 relevant classified/original-helper/diagnostic source files exact, no active-work rebase. Product TUI/protocol/pins unchanged.",
   "sourceFiles": {
     "internal/tui/ux_terminal_lease_reading_fixture_test.go": {
-      "sha256": "c0866c60a372fd2dbb4fdf1693d03e3ee9187d2ba73a02beca417df3e4c25e44",
-      "bytes": 12456,
-      "lines": 315
+      "sha256": "9ed475bec31d240cadd3536429a8d301f1feeebf1a4e2474836f5903e5cdcbce",
+      "bytes": 30961,
+      "lines": 833
     },
     "scripts/dashboard-screenshots/ux-terminal-lease-capture.py": {
-      "sha256": "94671bf23bd0acd455eae28671a10d847b9bd62f3ceb3f6f5e7f6c0a931419b5",
-      "bytes": 18609,
-      "lines": 290
+      "sha256": "d580138c099a235a491c1bb842d6c91eac20210543f663825db30e60b5417b40",
+      "bytes": 26690,
+      "lines": 395
     },
     "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs": {
-      "sha256": "0d5102dddb547263c3376ca08cbe9e369f9121ed368e04ff2e212e54d68a7800",
-      "bytes": 25632,
-      "lines": 250
+      "sha256": "078a1b69fc94bd8d3a92b43b39ad261bab8e8d2271401c03e25a7d697b7a73e8",
+      "bytes": 27954,
+      "lines": 264
     }
   },
   "roster": {
@@ -196,16 +196,18 @@
     "recordPrecision": "Original recordTree preserves json.Number. Publisher type-asserts json.Number then calls String() BEFORE JSON encoding, separately stores literal type label json.Number and exact compact node path. No raw big numeric value is placed in progress JSON. Underlying typed/path/decimal observation is separate from replay actual visible ASCII9007199254740993.",
     "readingState": "Detail ID/revision, review request ID/revision/action, visible IDs/default flags, original model identity, record path/selection, exact filter input/apply/restore and pending/unknown emptiness recorded. Record close intentionally resets detail top per original code.",
     "budgets": "At most64 actual record navigation/expand keys/grid; exact one paste, one inspect and no run reader; original data<=12leases/10runs/8KiBlog/2KiBreason/256Blabels/64KiBDTO. No increased data.",
-    "quitCleanup": "Original Program Run/Kill/Wait even on Goexit, context cancel, original peer/run retirement and strict fake Close. Final gate requires restored list/defaults/same ID, exact-number observation, review seen/declined, one paste, one inspect,2mouse deliveries, no active/forbidden fake call/test failure. No generic goroutine or OS descendant-reap claim."
+    "quitCleanup": "Original Program Run/Kill/Wait even on Goexit, context cancel, original peer/run retirement and strict fake Close. Final gate requires restored list/defaults/same ID, exact-number observation, review seen/declined, one paste, one inspect,2mouse deliveries, no active/forbidden fake call/test failure. No generic goroutine or OS descendant-reap claim.",
+    "outputObserver": "Test-only leaseObservedOutput explicitly forwards Read/Write/Close/Fd/Name to the same original file; compile-time term.File conformance, original terminal/size observations and unchanged os.Stdin input. No embedding, StringWriter or ReaderFrom fast paths. Serialize original Write and byte-range accounting; exactly one original call, same(n,err) and original panic. Observation recovery is confined to metadata after the original call. No model/OnMouse/injected metadata callback under observer locks.",
+    "diagnostics": "At most48 child stage records and16KiB atomic sidecar; <=2KiB summaries in progress/final receipts. Source-scoped frame recognition requires original alternate-screen/cell-motion/SGR enable bytes and original roster content, never query-only data. Initial full successful original write range/SHA/sequence/child-local return time and stable startup fingerprint are retained. Fixed parsed-kind/filter/raw Update/callback-before-original/nil-or-created Cmd/execution/typed delivery/frame/inspect counters and safe nil/context/panic/other Program category; atomics/mutexes protect concurrent observation. Metadata failure/panic/overflow is sticky unknown and never changes original Write return/panic. No diagnostic retry, renderer/private lock/flush/FPS/protocol/input/engine changes. Last returned write records requested/returned counts, nil/error type and child-local observation time without raw error text; metadata failure is separately surfaced in final summaries."
   },
   "captureDriver": {
     "reuse": "Import exact SHA980fc761382c0de2854f43decb854658c69462ac05ad5b899105585eac8231d6 support script definitions under non-main name; hash guard BEFORE import. Inherit reviewed Session wait/settle/checkpoint/final Popen/slave-close/termios/EOF cleanup. Copy constructor changes only selector/env plus explicit retained inputs; copy drain changes combined budget with128KiB receipt reserve. No source/module mutation.",
-    "genuineInput": "Original owned PTY SGR press/release at fully visible original cells, one supported PageDown for each overflowing detail tail, explicit End only for the overflowing release-review tail; both wait for actual offset==total-height, bounded actual Down/Enter record expansion, literal bracketed-paste framing and exact filter content, original Enter/Esc and n-decline. No host viewport/selection assignment, native clipboard or synthetic model-text terminal data. Record selection/expansion waits for the exact published selection/path effect, not merely a generic input counter.",
+    "genuineInput": "Original owned PTY SGR press/release at fully visible original cells, one supported PageDown for each overflowing detail tail, explicit End only for the overflowing release-review tail; both wait for actual offset==total-height, bounded actual Down/Enter record expansion, literal bracketed-paste framing and exact filter content, original Enter/Esc and n-decline. No host viewport/selection assignment, native clipboard or synthetic model-text terminal data. Record selection/expansion waits for the exact published selection/path effect, not merely a generic input counter. Initial mouse additionally requires drained/hash-matched complete successful original renderer-write range, modes+roster attribution and current matching startup region/fingerprint. Every original SGR press/release uses exactly one full-count write; short/error/unknown stops, with no resending.",
     "coverage": "Union actual captured viewport logical-row offsets must cover complete original detail/review contents; no redundant middle/wide copy. Exact per-grid roster checked before continuing. No old failed wide whole-line-border helper is replaced/rerun; whole original frames and source viewport metadata retained.",
-    "buildGuard": "New clean62-source compile receipt required after capture-input, replay-guard and plan changes, despite unchanged Go source/test selector. Never relabel or reuse the original9b build receipt as this source cut. Validate fresh binary digest and exact62-entry before/after source map; original50/helper/support guards unchanged. No implicit build/install/backend or selection widening.",
+    "buildGuard": "New exact62-source commit/map/compile receipt/binary required because Go fixture (including prepared tests), capture, replay and plan changed. No old7fe binary or receipt relabel/reuse. Original classification50/helper/support guards unchanged; no build/install/backend or broadened test selection inside capture.",
     "PopenCleanup": "Original child inherits FIFO group; no setsid/setpgid/group/PID lookup. Local terminate/kill/wait retained original only. Saved termios comparison before parent slave close and bounded final EOF/EIO versus quiet; forced/truncated/timed-out/unknown cleanup fails. Existing70s capture/25sProgram/35schild/<=9s teardown targets retained.",
-    "cumulativeBudget": "Five explicit canonical private unique/disjoint runtime roots bind111direct/29originalruntime/47acceptedreplay/15diagnostic/23first-native-failure manifests, each exact digest and entry count. Mapped artifact hashes and manifest identity checked before/after capture. All five roots and new capture share16MiB with128KiB metadata reserve and<=4MiB stream/grid. Every child-launch/data-block/cleanup-drain/Session bound includes the complete five-root sum; new output never reused. Both retained build containers/binaries remain separate.",
-    "failures": "Retain original partial streams/checkpoints/child receipts; stop first error/no replacement. Future outer independently verifies all111/64/29/47/15/71/23 source/artifact scopes even after failure. Original23-entry first failure is an explicit budgeted retained input, never overwritten or hidden in metadata reserve."
+    "cumulativeBudget": "SIX explicit canonical private unique/disjoint runtime roots bind111direct/29originalruntime/47acceptedreplay/15diagnostic/23first-native-failure/22second-native-failure exact manifests and entry counts. All mapped artifacts/identities before/after and every child-launch/block/cleanup/final sum include all six plus new capture.16MiB total,128KiB metadata reserve,<=4MiB stream/grid unchanged. New diagnostics are actual retained files counted in the same root: child16KiB/48records, parent8KiB/16records, bounded2KiB summaries; original and atomic-temporary diagnostic files are charged. At most64records/64KiB per-grid diagnostic ceiling; neither failure container is hidden in reserve. All prior build containers/binaries stay separately preserved.",
+    "failures": "First readiness/input/child/cleanup/metadata unknown/failure stops with original partial streams, observer/action/progress/child receipts intact. No retry, artificial input/Update/callback, forced flush or delayed/repeated click. Future outer independently preserves111/64/29/47/15/71/23/71/22 plus fresh build even on nonzero/missing inner report. Original SGR return/error is retained independently in the capture receipt if recording its action metadata also fails; original short/error takes precedence over metadata failure."
   },
   "replayDriver": {
     "input": "Actual pre-exit native PTY prefixes/byte hashes/exact grids and resize offsets; exact21roster only. SourceModel.Content remains comparator, never screen data. No Go/PTY/backend/test invocation in renderer.",
@@ -213,7 +215,7 @@
     "readingAssertions": "Whole active alternate-buffer rows with same symmetric trailingASCII U+0020-only comparison/raw arrays/per-row results; complete logical reading coverage in capture receipt; actual original n-region Keep lease text at review fit/tail; review ID/revision tied to original detail; exact visible filter draft, applied empty ID list and restored8/default flags. Raw PNG/cell samples retained before any assertion.",
     "controls": "Region-cell text is read at source-owned button coordinates; inert reason/hint text cannot satisfy Keep control assertion. Bound to fully visible cells.",
     "browser": "Pinned xterm/Playwright existing assets only; original requested font and builtin provider unchanged. No diagnostic provider, CDP/font scan or library/pin/font/output change. Fresh BrowserServer/context/Terminal with private temp/profile, loopbackCONTROL only; page/native network/clipboard refused; endpoint/error text never logged.",
-    "boundsCleanup": "Own20swork/30stotal includes init/cleanup/write markers, original retained process immediate exit observation, bounded original APIs, forced/unknown failure and original digest-bound write-return marker/no-deadline/tool-exit0 gates. Exactly five retained roots plus native capture means six unique canonical private disjoint inputs; exact five manifest digests/counts required before browser. retainedTotal sums native capture + all five prior runtime roots + fresh replay for initial reserve/every PNG/final cleanup receipt and deadline reserve. Whole future outer wrapper/temp/metadata also shares16MiB through128KiB reserve and explicit outer accounting. Up to96wide/multi and32right-edge cells; glyph/physical terminal acceptance remains separately qualified."
+    "boundsCleanup": "Exactly six retained roots plus native capture means seven unique canonical private disjoint inputs and17argv entries, exact six manifest digests/counts before browser. Shared retainedTotal includes native capture + all six prior roots + fresh replay at reserve/everyPNG/final cleanup/deadline receipt. Verify capture observer/action metadata hashes, returned frame range/SHA/modes/roster/fingerprint and descriptors, four full SGR write returns and required passive stage/Program outcomes before browser. Whole new outer/tool-temp/wrapper/metadata shares16MiB via explicit accounting/128KiB reserve. Existing20swork/30stotal/original APIs/process/write-return marker/tool0 unchanged; no diagnostic-provider/font/native-paint acceptance."
   },
   "sourceBinding": {
     "requiredEntries": 62,
@@ -281,34 +283,37 @@
       "scripts/dashboard-screenshots/ux-terminal-loop-capture.py",
       "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs"
     ],
-    "meaning": "Final correction cut with a fresh clean62 map/compile receipt and unchanged selector. Capture, replay and this plan differ from original9b; other59 inputs stay exact. Source-only79 cut and original9b62 binary/receipts/23-entry failure remain preserved. Plan is a receipt member without a self-hash; normalized first-failure inventory stays review evidence outside62 membership.",
+    "meaning": "Fresh readiness source cut and exact62 source/build receipt, same native selector. Go fixture, capture, replay and this plan change; other58 inputs remain original774. Existing proposal/failure inventories are review evidence outside62; this plan has no self-hash. Prepared pure observer regressions share the existing Go fixture file, preserving62membership; no regression or native execution is claimed.",
     "testSelector": "^TestUXTerminalLeaseReadingFixture$",
     "proposedCompile": "env SEMBLANCE_RUN_LIMIT=115 GOMAXPROCS=2 GOMEMLIMIT=1536MiB GOENV=off GOWORK=off GOFLAGS= GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off \"$SHARED_FIFO\" go test -mod=readonly -c -p 1 -trimpath -o \"$NEW_OWNED_LEASE_BINARY\" ./internal/tui",
     "notAllocated": true
   },
   "proposedCLI": {
-    "capture": "python3 scripts/dashboard-screenshots/ux-terminal-lease-capture.py --binary \"$NEW_OWNED_LEASE_BINARY\" --build-receipt \"$NEW_NATIVE_BUILD_RECEIPT\" --output \"$FRESH_CAPTURE_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\" --retained-input-root \"$FIRST_NATIVE_FAILURE_INPUT\"",
-    "replay": "node scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs \"$FRESH_CAPTURE_OUTPUT\" --output \"$FRESH_REPLAY_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\" --retained-input-root \"$FIRST_NATIVE_FAILURE_INPUT\"",
-    "orchestration": "NOT RUN. Future fresh outer wrapper must append the first-native-failure root as fifth RUNTIME_INPUTS entry in BOTH driver argv and all combined() sums, pin111/64/29/47/15/71/23 preservation plus the future new build, and use new source/compile receipt/binary identities. Capture exit0/positive original cleanup/source/pins/budget/time gates before browser; one unchangedFIFO<=115s only after separate allocation. Whole five prior runtime containers plus entire new root/tool-temp/wrapper/metadata share16MiB; no root hidden in128KiB reserve. No compiler in runtime, queue overrides, output reuse or retries."
+    "capture": "python3 scripts/dashboard-screenshots/ux-terminal-lease-capture.py --binary \"$NEW_OWNED_LEASE_BINARY\" --build-receipt \"$NEW_NATIVE_BUILD_RECEIPT\" --output \"$FRESH_CAPTURE_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\" --retained-input-root \"$FIRST_NATIVE_FAILURE_INPUT\" --retained-input-root \"$SECOND_NATIVE_FAILURE_INPUT\"",
+    "replay": "node scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs \"$FRESH_CAPTURE_OUTPUT\" --output \"$FRESH_REPLAY_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\" --retained-input-root \"$FIRST_NATIVE_FAILURE_INPUT\" --retained-input-root \"$SECOND_NATIVE_FAILURE_INPUT\"",
+    "orchestration": "SOURCE-ONLY UNBOUND outer template; new reviewed source/compile receipt/binary/build-manifest/count must be frozen before it can create output or invoke FIFO. Runtime RUNTIME_INPUTS/argv/combined uses SIX explicit retained roots; preserve all nine existing artifact sets and fresh build separately. Strong capture+original passive diagnostic+child cleanup/source/pins/remaining-time/budget gate before browser. Normal unchangedFIFO<=115s, capture70s/child35s/replay20work30total/prebrowser<=75/inside110 targets unchanged. All six prior runtime roots plus entire new output/temp/wrapper/metadata share16MiB/131072reserve; no retry/queue overrides/compiler/runtime until separate allocation."
   },
   "preservedManifests": [
     "01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce",
     "17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67",
     "2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177",
     "60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d",
-    "bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510"
+    "bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510",
+    "ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e"
   ],
   "sourceValidation": [
-    "Python AST parse without import/execution; JS syntax check only",
-    "Static exact five-root/count/digest/CLI position and six-input uniqueness/canonical/disjoint guards",
-    "Capture ordinary-block and cleanup-drain, Session bounds/launch/final sum and replay initial/PNG/final/deadline receipt paths all include the five-root collection",
-    "Same62membership, changed capture/replay/plan only versus9b/79;59others/classified50/Go/model/dependencies and21roster exact",
-    "Original111/64/29/47/15/71/23 artifacts/source-only79 preserved; normalized failure inventory unchanged; added-content privacy/diff review",
-    "No compiler/test executable/PTY/browser/backend/install/source reproduction/runtime retry in this source step"
+    "gofmt formatter parse only; no typecheck/compile/test execution",
+    "Python AST without import; node --check without replay/browser invocation",
+    "Static explicit same-file forwarding, no promoted fast paths, serialized original Write/range and metadata-only recovery/locks review",
+    "Prepared pass-through regressions: full/short/error results+bytes+once; descriptor methods/no fast paths; metadata error/panic/real file failure fail unknown without replacing original result; original panic identity/unlock; query-only rejection and complete-frame range/hash",
+    "Same62membership; Go/capture/replay/plan changed, other58/classified50/product/pins/21roster/key/coverage/original cleanup unchanged",
+    "SIX-root CLI/count/digest/canonical-disjoint and all capture/PNG/cleanup metadata budget paths; nine original manifest rosters/files/binaries preserved",
+    "Added-content privacy and diff review; no original failure cause, new runtime/paint or regression acceptance claimed"
   ],
   "actualResults": {
     "correctedCut": {
       "compiled": false,
+      "preparedRegressionsExecuted": false,
       "nativeProgramOrPTY": false,
       "nativeReplayBrowser": false,
       "sourceOnly": true
@@ -325,10 +330,10 @@
     "diagnosticAlreadySeparate": "Prior provider-only evidence does not validate this corrected native source."
   },
   "remainingGates": [
-    "Independent PageDown/five-input source and future outer accounting review",
-    "ONE new compile allocation on this completed clean62-source cut with fresh exact map/binary/original receipt; no intermediate79 compile or old receipt relabel",
-    "Fresh outer wrapper bound to accepted new compile and all five retained roots, original exit/API/write-marker/preservation/budget gates; separate serial runtime allocation",
-    "Full21 reading/precision/filter/decline/restore/cleanup evidence plus separate paint review; original first failure stays preserved"
+    "Independent observer/metadata recovery/locking/original interface/full-write readiness/fingerprint/counter and six-root source review",
+    "New clean62 map/compile-only receipt and separately allocated prepared observer regressions; none executed in this source step",
+    "Bind/review fresh outer identities and sixth-root accounting after accepted source/build; separate single runtime allocation",
+    "Actual21 reading/original callback/Program/fake/termios/EOF/browserAPI/process/write-marker/tool0 and separately qualified paint remain open; both old failures preserved and causes unknown"
   ],
   "continuationOfSourceCommit": "9b6b560de0580d2801e254019b5f54f9b1de5c10",
   "firstFailureInventory": {
@@ -343,27 +348,64 @@
     "detailOffsetPredicate": "offset == total - height",
     "reviewTailInput": "end",
     "freshRuntimeRootRequired": true,
-    "runtimeBudget": "All five prior runtime containers including the explicit23-entry native first failure plus entire new runtime output/metadata share16MiB. Both retained build containers/binaries remain separate. Driver guards now include all five in every existing sum; future outer must use the same five, preserve original sets and bind the new compile before separate runtime review/allocation."
+    "runtimeBudget": "All SIX runtime inputs including original23/22 failures + new output/metadata share16MiB; each is explicit in drivers/outer counts and every sum. All previous build containers/binaries stay separate; fresh compile required for observer code."
   },
   "preservedRuntimeManifestCounts": {
     "60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d": 111,
     "01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce": 29,
     "bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510": 47,
     "17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67": 15,
-    "2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177": 23
+    "2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177": 23,
+    "ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e": 22
   },
   "inputAccountingCorrection": {
     "parentSourceOnlyCommit": "79f04ee4a3b29c98e69f7a8e06fc9d44accabf72",
     "parentPlanSHA256": "96004fbd8ba473ed781987cd73c5bb24840ad8fe4a09961b9fbb8b3571b481bf",
-    "requiredRetainedRoots": 5,
-    "replayTotalInputRootsIncludingCapture": 6,
+    "requiredRetainedRoots": 6,
+    "replayTotalInputRootsIncludingCapture": 7,
     "firstFailureManifestSHA256": "2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177",
     "firstFailureManifestEntries": 23,
     "firstFailureBytes": 127994,
-    "allFivePriorRuntimeBytes": 9044068,
-    "remainingBeforeNewOutputBytes": 7733148,
+    "remainingBeforeNewOutputBytes": 7614698,
     "capBytes": 16777216,
     "metadataReserveBytes": 131072,
-    "freshOuterContract": "Use exactly these five roots in RUNTIME_INPUTS, retained argument pairs and combined-byte sums; preserve old64/native71 builds separately. Original four-root wrapper remains immutable failed-attempt evidence and cannot run as this corrected cut. New wrapper receipt identities follow new compile; no speculative executable wrapper is bound to the old binary."
+    "freshOuterContract": "Source-only unbound template derives BOTH driver argument pairs and combined sums from same SIX roots, including22; preserves nine existing sets+fresh build. New source/compile/binary/manifest/count bindings must be reviewed before output/ticket/Popen; original wrappers remain immutable.",
+    "allSixPriorRuntimeBytes": 9162518,
+    "secondFailureManifestSHA256": "ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e",
+    "secondFailureManifestEntries": 22,
+    "secondFailureBytes": 118450
+  },
+  "readinessImplementationParent": "c265f54e34ad473b39fe60d38a33d1918b4c2ccd",
+  "initialOutputGate": {
+    "implementedInSource": true,
+    "scope": "First roster mouse only; original review mouse/keys remain genuine. All passive stages are recorded for both original callbacks.",
+    "wait": "Existing min(session deadline,now+5s), drain/predicate based; no arbitrary sleep/quiet/FPS/protocol/retry.",
+    "originalObservation": "Observer startup-frame write must return full(n,err=nil); parent matches exact original range hash across arbitrary PTY chunks and original modes+roster tokens. Current startup fingerprint/region/grid/default selection must still match. Descriptor/terminal/sizing observations required.",
+    "qualification": "Source mutex/flush ordering barrier only, not proof of physical paint or the cause of either old failure. Positive original typed outcomes and all cleanup remain required.",
+    "bounds": {
+      "childBytes": 16384,
+      "childRecords": 48,
+      "parentBytes": 8192,
+      "parentRecords": 16,
+      "summaryBytes": 2048,
+      "perGridCeilingBytes": 65536,
+      "perGridRecords": 64
+    },
+    "clocks": "Child-local monotonic returnedAtNS/stage time; parent-local action time. Cross-process order uses actual observed ranges/sequences, never subtracts clock origins."
+  },
+  "futureOuterTemplate": {
+    "sha256": "8a334515280ff55ef0c04af4f9f9412f6b11744e903dfb92b93907c4b5a17dde",
+    "bytes": 24673,
+    "ASTParsedOnly": true,
+    "invoked": false,
+    "bound": false,
+    "requiredBindings": [
+      "reviewed40hex source commit",
+      "new64hex original compile receipt",
+      "new64hex original binary",
+      "fresh build manifest digest and exact count"
+    ],
+    "sourceGuard": "Unbound main guard exits before output directory/ticket/process; do not reuse prior774/7fe identities.",
+    "sixRootsAndCaptureGate": true
   }
 }

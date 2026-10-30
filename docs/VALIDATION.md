@@ -10885,3 +10885,32 @@ original9b/binary and all first-failure evidence are preserved. AST/JS syntax an
 static guard review only: no intermediate compile or runtime/source reproduction.
 One new compile allocation follows independent review of this completed cut;
 fresh outer binding/review and separate native runtime/paint gates remain open.
+
+
+## Native initial-output observer and diagnostics — implemented source only
+
+The existing test fixture now forwards the same output file through explicit
+Read/Write/Close/Fd/Name methods, retains original write results/panics and file
+ordering, and observes only byte-identical output. Metadata recovery stays after
+the original write; no model/callback is called under observer locks. Descriptor/
+terminal/sizing observations and bounded passive parsed/filter/callback/Cmd/
+typed/frame/inspect/Program counters are recorded separately from paint.
+
+Before the first mouse, capture requires a complete successful original renderer
+write, matching drained PTY range/hash/modes/roster and stable startup fingerprint.
+One full-count press/release is retained; partial/error/unknown fails without
+resend. Both drivers now explicitly include the second22-entry failure as sixth
+runtime input. Child16KiB/48records, parent8KiB/16records and2KiB summaries fit the
+64KiB/grid/64record diagnostic ceiling and share the unchanged16MiB budget with
+all six prior runtime inputs/new output. Original deadlines/21roster/coverage,
+review End and detail PageDown remain; product/pins are unchanged.
+
+The [source plan](validation/ux-terminal-lease-reading-plan-2026-10-30.json)
+retains62members using the same Go test file for prepared pass-through/error/
+metadata/panic/frame regressions. Go/capture/replay/plan are four changed members;
+other58 remain exact77467. Formatter/AST/JS syntax and source review only; tests,
+new compile/native runtime and paint are unvalidated. The new outer is an unbound
+source template requiring reviewed fresh source/build identities before any
+output/ticket/process. Nine original artifact sets/binaries and both failed
+attempts remain preserved. Independent review and separate execution allocations
+remain required; neither old mouse cause is established by this source change.

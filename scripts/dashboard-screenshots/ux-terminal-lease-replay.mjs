@@ -13,11 +13,11 @@ const now=()=>performance.now();
 const started=now(),workDeadline=started+20000,totalDeadline=started+30000;
 const ownSource=fileURLToPath(import.meta.url),here=dirname(ownSource);
 const root=resolve(process.argv[2]||''),output=resolve(process.argv[4]||'');
-const retainedRoots=[6,8,10,12,14].map(i=>resolve(process.argv[i]||'')),repo=resolve(here,'../..');
+const retainedRoots=[6,8,10,12,14,16].map(i=>resolve(process.argv[i]||'')),repo=resolve(here,'../..');
 const outsideOf=(parent,path)=>{const rel=relative(parent,path);return rel==='..'||rel.startsWith('..'+sep);};
 const normalizeRow=text=>text.replace(/\u0020+$/u,'');
 const result={complete:false,failure:null,cases:[],operations:[],cleanup:{},
- retainedBudget:{limitBytes:16777216,scope:'All five immutable retained input roots plus fresh native capture/output; future wrapper metadata also shares this cap.'},
+ retainedBudget:{limitBytes:16777216,scope:'All six immutable retained input roots plus fresh native capture/output; future wrapper metadata also shares this cap.'},
  rowComparison:{normalization:'Trailing ASCII U+0020 only, applied equally to expected and actual comparison text.',rawExpected:'cases[].expectedRawRows',rawActual:'cases[].actual.text',perRowResults:'cases[].rowMatches',qualification:'Leading/internal spaces and every other Unicode whitespace or character remain significant.'},
  limits:['Pinned xterm emulator of actual owned PTY bytes; not every physical terminal/font/platform.',
  'Original model row/text comparator is separate from actual emulator cells. No OS descendant-reap or production Run startup/auth claim.',
@@ -105,13 +105,13 @@ const hardStop=setTimeout(()=>{
 const exactGrid=(cols,rows)=>[[72,28],[100,35],[160,50]].some(([c,r])=>cols===c&&rows===r);
 const digest=b=>createHash('sha256').update(b).digest('hex');
 async function retained(path){let bytes=0;for(const e of await readdir(path,{withFileTypes:true})){const p=join(path,e.name);if(e.isSymbolicLink())throw Error('Unexpected artifact link');bytes+=e.isDirectory()?await retained(p):(await stat(p)).size;}return bytes;}
-// Budget the native capture, all five immutable prior runtime containers and this fresh replay.
+// Budget the native capture, all six immutable prior runtime containers and this fresh replay.
 // Input and output are disjoint; every write below targets output exclusively.
 async function retainedTotal(){return await retained(root)+(await Promise.all(retainedRoots.map(retained))).reduce((a,b)=>a+b,0)+await retained(output);}
 try{
- assert(process.argv.length===15&&process.argv[3]==='--output'&&[5,7,9,11,13].every(i=>process.argv[i]==='--retained-input-root'));
- assert(process.argv[2]===root&&process.argv[4]===output&&[6,8,10,12,14].every((i,j)=>process.argv[i]===retainedRoots[j]));
- const inputs=[root,...retainedRoots];assert(new Set(inputs).size===6);
+ assert(process.argv.length===17&&process.argv[3]==='--output'&&[5,7,9,11,13,15].every(i=>process.argv[i]==='--retained-input-root'));
+ assert(process.argv[2]===root&&process.argv[4]===output&&[6,8,10,12,14,16].every((i,j)=>process.argv[i]===retainedRoots[j]));
+ const inputs=[root,...retainedRoots];assert(new Set(inputs).size===7);
  assert(inputs.every(p=>outsideOf(repo,p)&&outsideOf(p,output)&&outsideOf(output,p))&&outsideOf(repo,output));
  assert(inputs.every((a,i)=>inputs.every((b,j)=>i===j||(outsideOf(a,b)&&outsideOf(b,a)))));
  for(const p of inputs){const info=await work('private native input',()=>lstat(p));assert(info.isDirectory()&&!info.isSymbolicLink()&&(info.mode&0o077)===0);assert(await work('canonical native input',()=>realpath(p))===p);}
@@ -125,7 +125,7 @@ try{
  assert.deepEqual(cases.map(c=>[c.grid,c.name]),Object.entries(roster).flatMap(([grid,names])=>names.map(name=>[grid,name])));
  const buildRaw=await work('original build receipt',()=>readFile(join(root,'build-receipt.json')));const build=JSON.parse(buildRaw);
  assert(typeof build.sourceCommit==='string'&&build.sourceCommit.length===40&&build.testSelector==='^TestUXTerminalLeaseReadingFixture$'&&Object.keys(build.sourceSHA256).length===62);
- const preservedExpected=new Map([["60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d",111],["01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce",29],["bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510",47],["17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67",15],["2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177",23]]);
+ const preservedExpected=new Map([["60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d",111],["01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce",29],["bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510",47],["17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67",15],["2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177",23],["ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e",22]]);
  const preservedSeen=new Set();
  for(const p of retainedRoots){const raw=await work('preserved manifest',()=>readFile(join(p,'artifact-manifest.json')));const h=digest(raw);assert(preservedExpected.has(h)&&!preservedSeen.has(h));assert(Object.keys(JSON.parse(raw)).length===preservedExpected.get(h));preservedSeen.add(h);}
  const ownSHA=digest(await work('native replay source',()=>readFile(ownSource)));assert(build.sourceSHA256['scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs']===ownSHA);
@@ -133,13 +133,27 @@ try{
  for(const entry of receipt.receipts){
   const c=entry.cleanup,child=entry.originalChild;
   const positive=['programStarted','programReturned','sameWrapperReturned','sameModel','restored','quitRequested','initSuppressed','sawExactNumber','sawReview','declined','fakeClosed','contextCanceled'];
+  const diagnostic=entry.diagnostics,childDiagnostic=child?.diagnostics;
+  assert(diagnostic?.accepted===true&&diagnostic.records<=64&&diagnostic.retainedDiagnosticBytes<=65536&&childDiagnostic?.unknown===false&&childDiagnostic.programResult==='nil');
+  const observationRaw=await work('original readiness metadata',()=>readFile(join(root,entry.grid,'readiness.json'))),observation=JSON.parse(observationRaw);
+  const actionRaw=await work('original mouse action metadata',()=>readFile(join(root,entry.grid,'mouse-actions.json'))),actions=JSON.parse(actionRaw).records;
+  assert(digest(observationRaw)===diagnostic.readinessSHA256&&digest(actionRaw)===diagnostic.actionsSHA256&&!observation.unknown&&!observation.startup.drift&&observation.programResult==='nil');
+  assert(observation.records.length<=48&&actions.length<=16&&observationRaw.length<=16384&&actionRaw.length<=8192);
+  assert(Object.values(observation.descriptor).every(Boolean));
+  const barrier=diagnostic.initialBarrier;assert.deepEqual(observation.frame,barrier.frame);assert(observation.startup.sealed);const range=barrier.frame,stream=await work('original initial frame stream',()=>readFile(join(root,entry.grid+'.pty')));
+  assert(range.full&&range.requested===range.returned&&Number.isInteger(range.start)&&Number.isInteger(range.end)&&range.start>=0&&range.end>range.start&&range.end<=stream.length&&range.end-range.start===range.returned);
+  const initialBytes=stream.subarray(range.start,range.end);assert(digest(initialBytes)===range.sha256&&barrier.fingerprint===range.fingerprint&&barrier.fingerprint===observation.startup.fingerprint);
+  assert(['\x1b[?1049h','\x1b[?1002h','\x1b[?1006h','LEASES','Synthetic lease 1','Inspect'].every(token=>initialBytes.includes(Buffer.from(token))));
+  const completedWrites=actions.filter(a=>a.kind==='mouse-press-return'||a.kind==='mouse-release-return');assert(completedWrites.length===4&&completedWrites.every(a=>a.requested===a.returned));
+  for(const stage of ['parsed-click','filter-admitted','update-click','callback-entry','cmd-created','cmd-start','cmd-produced','typed-delivery','typed-frame'])assert(observation.counters[stage]===2);
+  assert(observation.counters['inspect-complete']===1&&!observation.counters['cmd-nil']);
   assert(entry.error===null&&child&&!child.testFailed&&positive.every(k=>child[k]===true)&&child.activeFakeCalls===0&&!(child.forbidden??[]).length&&child.reads===1&&child.calls.length===1&&child.calls[0].Operation==='inspect'&&child.pastes===1&&child.recordKeys<=64&&child.mouseProduced===2&&child.mouseDelivered===2&&child.mouseActive===0);
   assert(c.childExitCode===0&&c.childWaited&&c.finalDrainAfterChildJoin&&c.termiosRestored&&c.slaveClosed&&c.masterClosed&&(c.finalMasterEOFObserved||c.finalMasterEIOObserved)&&!c.finalDrainTimedOut&&!c.ownedChildTerminationRequested&&!c.cleanupErrors.length&&!c.cleanupOutputTruncated);
   assert(['detail','review'].every(k=>entry.readingCoverage[k].totalLogicalRows===entry.readingCoverage[k].coveredLogicalRows));
  }
  result.sourceLineage={nativeCompiledCapture:{sourceCommit:build.sourceCommit,sourceEntries:62,binarySHA256:build.binarySHA256,buildReceiptSHA256:digest(buildRaw),captureReceiptSHA256:digest(captureRaw),checkpointsSHA256:digest(casesRaw)},nativeReplay:{sourceFile:relative(repo,ownSource),sourceSHA256:ownSHA,role:'Same reviewed native62-source compile/capture cut; never an updated original57 receipt.'}};
  result.readingCoverage=receipt.receipts.map(entry=>({grid:entry.grid,...entry.readingCoverage}));
- result.retainedBudget.scope='Five preserved runtime input containers, including the original native first failure, plus new native capture/output and future wrapper metadata share16MiB; old allocated binaries remain separate.';
+ result.retainedBudget.scope='Six preserved runtime input containers, including both original native failures, plus new native capture/output and future wrapper metadata share16MiB; old allocated binaries remain separate.';
  stage='browser initialization';
  // Public BrowserServer exposes the original ChildProcess for observation and
  // bounded fallback. Never record wsEndpoint() or credentials/error messages.
