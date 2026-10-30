@@ -9731,3 +9731,17 @@ the failed 2.069s first cohort earns no completed-case credit. Amount-selector
 exclusions remain explicit. No new runtime suite/build was needed for this
 inventory-only composition; API cleanup is not OS group/reap proof, and no
 remediation, actual remote authority or full UX acceptance follows.
+
+
+## Resident upgrade — private proof compile scope
+
+Two source-frozen private proof targets compile sequentially for Darwin/arm64
+under the normal FIFO in 8.338s and 9.845s, with original exit zero. Independent
+review rechecks both receipt/artifact hashes and all twelve frozen input hashes.
+Neither artifact was executed; no native ABI, SQLite destruction, original child
+teardown, installed backend or upgrade acceptance follows. The source-only
+no-signal waiter proposal leaves unresolved deadline custody explicit and has
+not been implemented or run. Native execution awaits a reviewed, explicitly
+authorized disposable-fixture exhaustion policy; actual active product jobs
+are outside that policy. First/repeated/concurrent `arm start`, real distinct B
+API/UI and native active-job preservation remain mandatory composed gates.

@@ -2404,14 +2404,39 @@ No real forwarding, Go/Linux/TUI/live installation or full UX claim.
 The upgrade owner's private R/D SQLite source draft is now reviewed far enough
 to allocate two separate compile-only normal-FIFO cohorts, each <=115s,
 CPU <=2 and memory target <=2GiB, using the existing offline toolchain and
-task-owned cache/temp/artifacts. Compilation remains pending and does not prove
-native ABI, SQLite closure or upgrade behavior. All twelve frozen draft inputs
-match their source manifest. No tracked production/module/DDL/policy change,
+task-owned cache/temp/artifacts. Both sequential offline compile commands passed
+in 8.338s and 9.845s; neither artifact was executed. This does not prove native
+ABI, SQLite closure or upgrade behavior. All twelve frozen draft inputs match
+their source manifest. No tracked production/module/DDL/policy change,
 native execution, fault injection, forced teardown or startup allowance is
 allocated. The existing process waiter can signal on cancellation or uncertain
-terminal-group state; the owner must propose a fixture-only no-signal original
-waiter and explain unresolved deadline custody before native execution review.
+terminal-group state. The source-only no-signal waiter proposal retains one
+original Wait and both original drains, but establishes no finite disposition
+for a child/drain/close still pending at deadline. Native execution remains
+blocked pending an explicit disposable-fixture exhaustion policy and review of
+its actual implementation; that policy cannot authorize stopping product jobs.
 No acknowledgment flag authorizes terminating an active child.
+
+Remaining resident-upgrade work is implementation and composed acceptance:
+
+1. Original bootstrap Manager/Server/image custody, non-retiring borrowers,
+   retained-failure diagnosis, format/older-writer fences and explicit admission.
+2. Admitted local package inspection/copy/review/publication/recovery and retained
+   executable/UI/storage pins bound to the original Manager.
+3. Real resident/worker/controller roles, compatible replacement readiness and
+   conservative failure/reconnect outcomes while original jobs remain resident.
+4. Actual selected-worker API and distinct HTML/assets, including coherent old
+   page assets and brief reconnect behavior.
+5. First, repeated and concurrent public `arm start` integration: truthful ready
+   states, original authority/generation reuse and exact retries without duplicate
+   staging/approval/workers or cancellation of active legacy jobs to migrate.
+6. Genuinely distinct compatible A/B executables and real B API/UI through that
+   start path, with native job identities, logs/output, renewal, cancellation,
+   expiry and completion preserved across successful/failed replacement.
+
+Supporting primitives/contracts, metadata reads and private helper compilation
+cannot complete this task. No product bootstrap or active-job teardown policy
+is implied by a disposable-fixture decision.
 
 
 ## Destination dashboard — next existing UX inventory scope
