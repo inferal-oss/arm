@@ -9540,3 +9540,21 @@ scaling and explicit-font Canvas estimates are qualified; actual line boxes
 are authoritative. Initial default-font measurement captures stay excluded.
 Direct FIFO evidence grants no ARM adoption/lease/backend or hard RSS claim.
 No installation, Linux/full-Go/new-TUI or live runtime acceptance is inferred.
+
+
+## Local package requirements — independent static review
+
+The [composed record](validation/resident-local-package-composed-2026-10-29.json)
+records all 85 source hashes matching the original accepted baseline, owner
+checkout and current composition, plus the original contract/inventory digests.
+All 36 added local links and 26 nonempty relevant source anchors resolve. The
+five-path owner cut is documentation only; current Go/modules/CLI/models/schema/
+native/runtime code is unchanged. Bound arithmetic and original custody/Close,
+publication/SQL, pin, approval and first/repeated-start dependencies were reviewed.
+
+This adds no tests/builds/browser/native fixture, payload verification/staging,
+backend or install evidence. Finite caps are proposals and native profile floors
+remain unmeasured. Atomic no-replace publication and actual child-image selection/
+observation methods still need implementation and native causal controls.
+No helper/contract evidence establishes real API/UI delivery or active-job
+survival across two versions; those remain mandatory completion gates.

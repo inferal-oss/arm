@@ -4015,3 +4015,20 @@ identity and lifecycle code remain exact. Native Grid, Dialog/close policies,
 all current Go/modules/pinned engine/main/graph and resource authority are
 unchanged. Assets are centrally rebuilt over current main. See the
 [composed record](validation/ux-node-layout-composed-2026-10-29.json).
+
+
+## Local package design — composed boundary
+
+The [accepted requirements](validation/resident-local-package-composed-2026-10-29.json)
+bind exact verified snapshot bytes/membership, explicit original-ingress review,
+dedicated Manager admission/physical transactions and charged original-owner
+retention. SQL and filesystem publication are not atomic; uncertain outcomes
+retain obligations instead of adopting or deleting a path. Existing storage/
+export primitives supply inspected seams, not worker authority or closure proof.
+
+No new factory/API/native effect is implemented. Future publication must use an
+actual atomic no-replace operation, not check-then-overwriting-rename. Future
+child-image proof must distinguish pre-execution selection from post-Start
+observation; the latter cannot retroactively authorize earlier effects. Local
+operator intent remains a cooperative protocol, not same-account isolation or
+human-presence attestation. These qualifications do not grant a native method.
