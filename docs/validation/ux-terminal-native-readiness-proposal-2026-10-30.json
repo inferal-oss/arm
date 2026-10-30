@@ -1,0 +1,371 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "status": "SOURCE-ONLY DIAGNOSIS AND PROPOSAL; no correction implementation, compile or runtime is authorized by this record.",
+  "sourceCut": "77467a00ed2330d5c34364c8dd891225bf7f873f",
+  "ownerBranch": "codex/ux-terminal-native-readiness-proposal",
+  "scope": "Retained synthetic native72x28 mouse-first failure and pinned input/render lifecycle. Existing source/binaries and both failed native attempts remain immutable; no product finding or proven root cause.",
+  "observed": {
+    "attempt": {
+      "FIFOExitCode": 1,
+      "FIFOElapsedMS": 7086,
+      "insideElapsedMS": 6982,
+      "firstError": "original state deadline: visible owned lease mouse",
+      "binaryInvocations": 1,
+      "checkpoints": 0,
+      "inspectCalls": 0,
+      "replayInvocations": 0,
+      "browserInvocations": 0,
+      "PNGs": 0,
+      "additionalRetry": false
+    },
+    "finalProgress": {
+      "inputs": 5,
+      "revision": 7,
+      "restored": true,
+      "detailOpen": false,
+      "viewport": {
+        "total": 22,
+        "height": 18,
+        "offset": 0
+      },
+      "mouseProduced": 0,
+      "mouseDelivered": 0,
+      "mouseActive": 0,
+      "readClosures": 0
+    },
+    "child": {
+      "exitCode": 1,
+      "testFailed": true,
+      "programStarted": true,
+      "programReturned": true,
+      "sameWrapperReturned": true,
+      "sameModel": true,
+      "quitRequested": true,
+      "contextCanceled": true,
+      "fakeClosed": true,
+      "activeFakeCalls": 0
+    },
+    "cleanup": {
+      "childWaited": true,
+      "termiosRestored": true,
+      "masterClosed": true,
+      "slaveClosed": true,
+      "EOFObserved": true,
+      "drainAfterChildJoin": true,
+      "forcedTermination": false,
+      "cleanupErrors": [],
+      "toolTemporaryFilesAfter": []
+    },
+    "rawPTY": {
+      "bytes": 6018,
+      "sha256": "bef2482b006f920190aead6529b12ef08d521869fd43a152bea4cf5d6f7a9bac",
+      "prefix": "Original mode2026/2027 queries precede initial renderer output.",
+      "originalModeEnableByteOffsets": {
+        "alternateScreen": 23,
+        "cellMotion": 50,
+        "SGRMouse": 58
+      },
+      "originalTextByteOffsets": {
+        "LEASES": 915,
+        "Synthetic lease 1": 2081,
+        "Inspect": 5344
+      },
+      "qualification": "These offsets prove retained output presence only. No read-chunk/action timestamps or byte-offset-at-click receipt exists, so they do not place this output before the mouse."
+    },
+    "preservation": {
+      "exact62Source": true,
+      "allEightPriorManifestRostersAndFiles": true,
+      "packagePinsUnchanged": true,
+      "newFailureEntries": 22,
+      "newFailureBytes": 118450,
+      "combinedRuntimeBytes": 9162518
+    },
+    "unknown": [
+      "Bytes-through at the mouse write and actual os.write return count/error were not recorded.",
+      "The aggregate inputs5/revision7 cannot identify message types or order; startup/resize and cleanup q contribute.",
+      "No parsed-raw-mouse, filter decision, callback-entry or nonnil-original-Cmd counter was retained. Existing produced counts Cmd execution, not callback entry.",
+      "No original renderer-write-return or post-commit receipt exists; final output presence and revision>=2 do not establish readiness at click.",
+      "Original p.Run error value/type is not retained in child-final; semantic testFailed alone is not a root-cause classifier."
+    ]
+  },
+  "sourceEvidence": {
+    "projectFiles": {
+      "internal/tui/ux_terminal_lease_reading_fixture_test.go": "c0866c60a372fd2dbb4fdf1693d03e3ee9187d2ba73a02beca417df3e4c25e44",
+      "internal/tui/presentation.go": "e14168185f6287522c3b34e62655669aa0cb506854b037417c5962643303c29d",
+      "internal/tui/mouse.go": "d8ee6291bde31ff023f1bd4f51c1877156ff788660b5995e5a7939c1e9ec11c5",
+      "scripts/dashboard-screenshots/ux-terminal-lease-capture.py": "94671bf23bd0acd455eae28671a10d847b9bd62f3ceb3f6f5e7f6c0a931419b5",
+      "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs": "0d5102dddb547263c3376ca08cbe9e369f9121ed368e04ff2e212e54d68a7800",
+      "scripts/dashboard-screenshots/ux-terminal-loop-capture.py": "980fc761382c0de2854f43decb854658c69462ac05ad5b899105585eac8231d6",
+      "docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json": "89d76dab109270fad15b37fa175e8ef320edeb044a3ffaed278ae78a16af5f3a",
+      "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+      "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6"
+    },
+    "dependencies": [
+      {
+        "module": "charm.land/bubbletea/v2@v2.1.0",
+        "file": "tea.go",
+        "sha256": "c8b3eb6783de644c4422f87ba446bf8652869de72574b6fa5649248fd18a878d",
+        "lineAnchors": [
+          [
+            775,
+            787
+          ],
+          [
+            824,
+            834
+          ],
+          [
+            895,
+            919
+          ],
+          [
+            1064,
+            1166
+          ],
+          [
+            1436,
+            1465
+          ]
+        ]
+      },
+      {
+        "module": "charm.land/bubbletea/v2@v2.1.0",
+        "file": "cursed_renderer.go",
+        "sha256": "cdb531fe458b74b0ff393814234e444ca5013f8e90d3f811c6d8ea3b6defdda0",
+        "lineAnchors": [
+          [
+            296,
+            303
+          ],
+          [
+            626,
+            638
+          ],
+          [
+            831,
+            844
+          ]
+        ]
+      },
+      {
+        "module": "charm.land/bubbletea/v2@v2.1.0",
+        "file": "tty.go",
+        "sha256": "c3743d7918200d348fab872b6f587bece41602605dd6cd3350ac13c0f1d624cb",
+        "lineAnchors": [
+          [
+            56,
+            91
+          ]
+        ]
+      },
+      {
+        "module": "charm.land/bubbletea/v2@v2.1.0",
+        "file": "tty_unix.go",
+        "sha256": "455271234d6707abf7cd2884f3f02243480a7e42f91c4e6aed3b3ed35cf855c8",
+        "lineAnchors": [
+          [
+            15,
+            35
+          ]
+        ]
+      },
+      {
+        "module": "charm.land/bubbletea/v2@v2.1.0",
+        "file": "input.go",
+        "sha256": "29d670f3e9f050d8b93c7e49a0a913b448073b045c05ad726ec0a53094fda478",
+        "lineAnchors": [
+          [
+            25,
+            41
+          ]
+        ]
+      },
+      {
+        "module": "charm.land/bubbletea/v2@v2.1.0",
+        "file": "signals_unix.go",
+        "sha256": "3954426922ae0a399a29769ed8e85ace7c451f33bb835b7009336ed086e65bf3",
+        "lineAnchors": [
+          [
+            16,
+            33
+          ]
+        ]
+      },
+      {
+        "module": "github.com/charmbracelet/ultraviolet@v0.0.0-20261008173134-6b8d4baf91b4",
+        "file": "terminal_reader.go",
+        "sha256": "ec6086f97216fe833c526d440a01bf5f73fdc76523fe30bdb137f00fc123cc94",
+        "lineAnchors": [
+          [
+            117,
+            158
+          ],
+          [
+            192,
+            218
+          ],
+          [
+            231,
+            237
+          ]
+        ]
+      },
+      {
+        "module": "github.com/charmbracelet/ultraviolet@v0.0.0-20261008173134-6b8d4baf91b4",
+        "file": "decoder.go",
+        "sha256": "6a4f2106ddc551c10471922e515cdc36b55d6c43bb2625623523ccd4e8895e52",
+        "lineAnchors": [
+          [
+            411,
+            416
+          ],
+          [
+            1593,
+            1624
+          ]
+        ]
+      },
+      {
+        "module": "github.com/charmbracelet/x/term@v0.2.2",
+        "file": "terminal.go",
+        "sha256": "2192e20761f3a6437fd088aa87eb652742c6d1ef05dc5be9abea129fa353a390",
+        "lineAnchors": [
+          [
+            8,
+            12
+          ]
+        ]
+      }
+    ]
+  },
+  "actualPaths": [
+    {
+      "stage": "PTY/input",
+      "facts": "Parent writes one SGR press with x+1/y+1 and releases only after typed-delivery wait. Original stdin remains the PTY slave. initInput enters raw mode; initInputReader starts ultraviolet before initial View; StreamEvents scans input and sends decoded events. Decoder accepts exactly three SGR parameters, converts one-based coordinates to zero-based and distinguishes M press/m release.",
+      "alternatives": "Unrecorded partial/failed parent write, unread/incomplete/other decoded input cannot be excluded by output alone. Unix SGR decoding is not proof of enabled physical-terminal reporting."
+    },
+    {
+      "stage": "translate/filter",
+      "facts": "BubbleTea translates ultraviolet mouse event before fixture filter. Only admitted MouseClick passes safeMouse. Releases/motion/other messages are dropped by current default policy. Accepted raw mouse increments aggregate Update inputs but does not itself inspect; the renderer separately obtains OnMouse.",
+      "alternatives": "Type/policy/coordinate/frame differences and other input branches need counters; no blanket conclusion that no input arrived follows from produced=0."
+    },
+    {
+      "stage": "renderer",
+      "facts": "p.render calls model.View before renderer.render; fixture publishes progress inside View. Renderer flush is ticker-driven. Tick first flushes Program query output, then renderer.flush. renderer.flush holds its mutex across io.Copy and only afterward assigns lastView. onMouse reads lastView.OnMouse under that same mutex and invokes the copied callback after unlock.",
+      "candidate": "A query-only parent drain can satisfy the current progress-ready predicate before first renderer commit. A click then can see no committed OnMouse; later output still appears. This ordering is source-consistent, not proven for this failure."
+    },
+    {
+      "stage": "original handler/Cmd",
+      "facts": "Original mouseHandler captures frame/regions/geometry, returns nil on wrong type/button/out-of-bounds/no region, otherwise returns pure dashboardMouseMsg Cmd. Fixture decoration calls original before incrementing produced inside returned Cmd. Cmd is executed asynchronously; typed delivery then checks frame and performs the single strict inspect.",
+      "alternatives": "Callback not entered, original returned nil, Cmd not executed, Cmd not delivered, stale typed frame and inspect failure are distinct. Existing zero production/delivery cannot distinguish the first three."
+    }
+  ],
+  "recommendedGate": {
+    "name": "One original startup frame/output barrier before the first mouse; no elapsed-delay readiness heuristic.",
+    "steps": [
+      "Require existing Init/grid/restored progress predicates, and record a bounded startup fingerprint from original mouseFrame, fully visible row0 region, expected selection/IDs and grid. Reject any startup fingerprint drift; use no model/viewport/selection assignment.",
+      "Require original emitted alternate-screen/cell-motion/SGR enable sequences AND initial roster content from the original renderer output, not merely capability-query bytes or progress revision. Keep exact source-derived token/byte ranges as diagnostics, never synthetic screen data.",
+      "For a positive original-write-success gate, propose a passive forwarding output observer in the test wrapper only. It returns original(n,err), forwards the identical bytes exactly once, and records monotonically numbered bounded output ranges/hashes plus full-write/return/error observations. Publish a matching startup-frame write receipt outside the PTY; add no output marker/terminal command. Parent must actually drain and hash-match that complete successful original frame-write range before sending the mouse.",
+      "Reload progress and require the same startup fingerprint/region after the output barrier, then send ONE original SGR press and save actual write count, bytes-through/prefix hash and action ordinal. No repeat if short/error/unknown; retain original failure. Keep original typed-delivery and semantic/cleanup gates.",
+      "Keep the existing min(session deadline,5s) bounded wait; no fixed sleep, more generous timeout, repeated click or manufactured input. If readiness cannot be observed within it, stop before the mouse with partial output/receipts intact."
+    ],
+    "orderingArgument": "The startup marker must be recognized as a real renderer frame, not Program query output. Original flush holds renderer.mu while the observed original frame write succeeds and until lastView is assigned. Once the parent has observed that original write, subsequent onMouse acquisition either waits for that same critical section or observes a committed view. With a stable startup fingerprint this closes the identified initial nil/stale-handler window without touching renderer internals. It does not guarantee parsing, Cmd success or glyph paint; those original outcomes remain separately required.",
+    "observerConstraints": [
+      "Keep tea.WithInput(os.Stdin) unchanged; do not insert a reader that hides the terminal descriptor.",
+      "Preserve original output terminal detection/sizing by explicitly forwarding term.File Read/Close/Fd and Name to the same original file. Avoid embedding unobserved WriteString/ReadFrom fast paths; every output write stays byte-identical. No library/product/pin/renderer modification.",
+      "No extra observer goroutine, model calls, Cmd execution, synthetic message or framework/private-lock access. Small fixed observation storage and independent synchronization; do not hold an observer lock while invoking model/callback code.",
+      "Record bounded success/short/error outcomes; metadata-write failure must never change the original output Write result. Missing/failed metadata means unknown readiness and failure, not permission to proceed.",
+      "Limit proposed observer metadata to64KiB/grid plus an explicitly budgeted small parent action receipt, fixed counters/at most64 diagnostic records. No log-every-keystroke or unbounded trace. All metadata shares the existing16MiB cap.",
+      "Instrumentation can change scheduling. A future successful instrumented attempt would validate that new harness cut only; it cannot retroactively prove this failure was the proposed race.",
+      "Do not treat os.read chunk boundaries as frame/write boundaries. Match complete original write ranges/hashes across arbitrary PTY read chunks; uncertain startup-frame attribution fails review/readiness."
+    ],
+    "rejectedAsReadiness": [
+      "revision>=2 alone",
+      "initial 150ms quiet or arbitrary sleep as a renderer-commit proof",
+      "any capability-query bytes alone",
+      "manually calling original callback/Update or injecting dashboardMouseMsg",
+      "new forced flush/render protocol mode, altered FPS/provider/font/pin",
+      "retrying or repeatedly clicking until a callback arrives"
+    ]
+  },
+  "passiveDiagnostics": {
+    "childStages": [
+      "Filter counters by parsed mouse kind before policy, accepted/rejected counts and coordinates/button/modifiers; retain existing drop/panic behavior.",
+      "Raw MouseClick Update seen count, separately from aggregate inputs/startup type counts.",
+      "OnMouse wrapper entry with captured view generation/fingerprint BEFORE calling the original, then original nil/nonnil Cmd result counts.",
+      "Existing Cmd execution start/return, typed dashboardMouseMsg production/delivery, frame-match acceptance and strict inspect counters remain distinct.",
+      "Bounded child-local monotonic offsets/action ordinals, current grid/view generation and original output-write sequence; atomics or explicit snapshots for callback/command concurrency.",
+      "Final original Program Run result nil/error category and context-cancellation observation, without raw error text; preserve original return/semantic failure distinctions."
+    ],
+    "parentStages": [
+      "Pre-input gate outcome and original emitted mode/frame range hash, source-derived target region and progress fingerprint.",
+      "Original os.write requested/returned byte counts and error classification for the one press and original release; no replay of short/unknown writes.",
+      "Before/after original output byte offsets/hashes, observed diagnostic counters at deadline and original handle/cleanup results."
+    ],
+    "clockQualification": "Use monotonic times only within each process. Bind cross-process order by observed receipt sequence/range and parent action ordinal; do not subtract unrelated clock origins or infer missing events from final aggregates.",
+    "interpretation": [
+      {
+        "observation": "parent full-write saved; parsed raw mouse absent",
+        "meaning": "Input read/parse/classification remains unknown; callback race not established."
+      },
+      {
+        "observation": "raw mouse admitted and Update seen; callback entry absent",
+        "meaning": "Dispatch/committed-handler stage is isolated, still requires original-output/epoch evidence."
+      },
+      {
+        "observation": "callback entry; original Cmd nil",
+        "meaning": "Original captured geometry/type/region stage, not Cmd delivery."
+      },
+      {
+        "observation": "nonnil Cmd; execution/production absent",
+        "meaning": "Original command scheduling or failure stage."
+      },
+      {
+        "observation": "produced; typed delivery/frame acceptance/inspect absent",
+        "meaning": "Delivery/frame/policy/inspect stage; preserve original failure."
+      }
+    ]
+  },
+  "sixthInputAccountingProposal": {
+    "implemented": false,
+    "requiredRetainedRoots": 6,
+    "replayTotalInputsIncludingCapture": 7,
+    "replayArgc": 17,
+    "replayValuePositions": [
+      6,
+      8,
+      10,
+      12,
+      14,
+      16
+    ],
+    "replayFlagPositions": [
+      5,
+      7,
+      9,
+      11,
+      13,
+      15
+    ],
+    "addedManifestSHA256": "ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e",
+    "addedManifestEntries": 22,
+    "addedRuntimeBytes": 118450,
+    "allSixPriorRuntimeBytes": 9162518,
+    "headroomBeforeNewOutputBytes": 7614698,
+    "capBytes": 16777216,
+    "metadataReserveBytes": 131072,
+    "requiredChanges": "Any future authorized correction must update BOTH driver CLI/root uniqueness/canonical-disjoint/digest-count guards, all capture block/cleanup/launch and replay PNG/final/deadline sums, source plan and outer RUNTIME_INPUTS/argv/combined/preservation together. Added22 is an explicit sixth root, never hidden in metadata reserve. Preserve all nine existing artifact sets111/64/29/47/15/71/23/71/22 plus any future new build and all original binaries; no current guard/source changed in this proposal."
+  },
+  "validationAndRemaining": {
+    "performed": "Read-only pinned source/raw/progress inspection, exact source hashes/anchors and preservation review only. No correction source/compile/PTY/browser/recapture/backend/download/install.",
+    "compiled62InputsChanged": 0,
+    "implementation": "NOT IMPLEMENTED",
+    "required": [
+      "Independent source/proposal review, including initial-frame attribution, writer descriptor/byte preservation and counter synchronization/bounds",
+      "Explicitly authorized implementation of the accepted minimal correction, sixth-input accounting and fresh62source/compile receipt",
+      "Separate compile/runtime allocations; no original receipt relabel, correction retry or product acceptance implied",
+      "Original callback/Program/fake/termios/EOF/browserAPI/process/write-marker/tool0 gates and separate paint review remain mandatory"
+    ]
+  }
+}

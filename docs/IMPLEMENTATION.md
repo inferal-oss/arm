@@ -4669,3 +4669,37 @@ had already used Page Down before that checkpoint. A focused harness correction
 will use the supported input and require the same actual tail/reading coverage;
 this finding does not call for changing the product's key handling. Original
 compiled source, binary and failed receipts stay preserved.
+
+
+## Native mouse readiness — source diagnosis/proposal only
+
+The [proposal](validation/ux-terminal-native-readiness-proposal-2026-10-30.json)
+records the second preserved failure: first72x28 mouse predicate timed out before
+inspect/checkpoints, with zero Cmd-produced/typed-delivered messages. Original Program/
+fake/PTY cleanup observations passed; no replay/browser/PNG followed. Retained
+output contains startup queries, mouse modes and roster, without timing at click.
+Aggregate inputs/revisions do not establish parsed mouse or renderer readiness.
+
+Pinned input/filter/original-handler/Cmd paths and the renderer mutex/lastView
+ordering make a progress-before-first-flush race plausible, not proven. Proposed
+readiness uses one observed original startup-frame write and stable geometry,
+with passive raw-input/callback/Cmd/delivery counters and bounded original write/
+action receipts. It uses no synthetic callback/Update, fixed delay or repeated
+click. Output bytes, descriptor behavior, product/pins and all semantic/cleanup
+gates stay protected. A future instrumented success cannot prove the old cause.
+
+No correction is implemented and all compiled62 inputs remain exact77467.
+Future work must explicitly add the new22-entry failure as sixth retained runtime
+input in both drivers and every budget path, under the same16MiB cap. The source
+proposal requires review before any implementation or compile/runtime allocation.
+
+
+## Native output observer — reviewed implementation boundary
+
+The observer must retain the same terminal-file Read/Write/Close/Fd and Name
+behavior without promoted fast paths bypassing observation. It forwards original
+bytes once, serializes range attribution consistently, and preserves original
+write results and panic behavior. Observation failure remains unknown and cannot
+replace the write result. No model/callback call while holding its lock; no stdin
+wrapper, synthetic marker/message, forced renderer or dependency change. This
+source direction adds no observer or product code to the current implementation.

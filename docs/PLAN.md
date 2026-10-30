@@ -3317,3 +3317,37 @@ checkpoint. Return a focused capture-only correction using supported Page Down,
 with new source binding and preserved original failure; no product change or
 automatic retry is authorized. Separately, retained-driver acquisition did not
 start, so exact dependencies and all driver runtime validation remain pending.
+
+
+## Native mouse readiness — source diagnosis/proposal only
+
+The [proposal](validation/ux-terminal-native-readiness-proposal-2026-10-30.json)
+records the second preserved failure: first72x28 mouse predicate timed out before
+inspect/checkpoints, with zero Cmd-produced/typed-delivered messages. Original Program/
+fake/PTY cleanup observations passed; no replay/browser/PNG followed. Retained
+output contains startup queries, mouse modes and roster, without timing at click.
+Aggregate inputs/revisions do not establish parsed mouse or renderer readiness.
+
+Pinned input/filter/original-handler/Cmd paths and the renderer mutex/lastView
+ordering make a progress-before-first-flush race plausible, not proven. Proposed
+readiness uses one observed original startup-frame write and stable geometry,
+with passive raw-input/callback/Cmd/delivery counters and bounded original write/
+action receipts. It uses no synthetic callback/Update, fixed delay or repeated
+click. Output bytes, descriptor behavior, product/pins and all semantic/cleanup
+gates stay protected. A future instrumented success cannot prove the old cause.
+
+No correction is implemented and all compiled62 inputs remain exact77467.
+Future work must explicitly add the new22-entry failure as sixth retained runtime
+input in both drivers and every budget path, under the same16MiB cap. The source
+proposal requires review before any implementation or compile/runtime allocation.
+
+
+## Native input readiness — coordinator source disposition
+
+Proposal `c265f54` is composed as `cafe425`, documents only. Independent source/
+hash review accepts a minimal test-only output/readiness observer and bounded
+stage diagnostics for implementation. The original mouse-first failure remains
+unexplained; no success or product defect is inferred. Preserve original writes,
+terminal interfaces and results, match returned frame ranges to parent-drained
+bytes, then permit one native press. Six retained runtime roots must be counted
+explicitly. Source implementation is authorized; compile/runtime remain closed.
