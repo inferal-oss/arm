@@ -678,3 +678,15 @@ ran. Actual visible log first/middle/tail and remaining emulator/glyph frames
 remain unaccepted despite genuine captured lower model viewport offsets.
 Source-only oracle review and a separate future execution window are gates;
 terminal and overall UX acceptance remain open.
+
+
+## Source-only replay correction proposed
+
+The [narrow correction](validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json)
+prepares symmetric trailing ASCII-space comparison with both raw row arrays
+and per-row results. Original first-frame failure stays frozen. Fresh external
+replay output and combined original-input/new-output accounting preserve the
+byte budget; original compiled/capture lineage stays distinct from new replay
+source. No corrected browser run, replacement render or native acceptance is
+implied. Independent review and separate replay-only allocation are pending;
+visible log markers and remaining frame/glyph checks remain open.

@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "status": "SOURCE ONLY. No corrected replay/browser/build/capture has run or is allocated.",
+  "branch": "codex/ux-terminal-loop-replay-correction",
+  "baseEvidenceCommit": "48aa1c1dba18a2c9a255d6def58fdee73cd3d249",
+  "originalCompiledCaptureCommit": "8d1039a71ffc401bca3405ee7b49228eea9012e9",
+  "originalParentSourceCommit": "f46ce4b8a2360b9e63cdeac52a4b450fd5981665",
+  "frozenFirstAttemptEvidence": {
+    "file": "docs/validation/ux-terminal-loop-inventory-2026-10-30.json",
+    "sha256": "9ac1b2d5013c930cacff12c2d5005c1b7bafedddcb312060e74d677133b9fbda",
+    "bytes": 59228,
+    "originalRuntimeManifestEntries": 29,
+    "originalRuntimeManifestSHA256": "01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce",
+    "originalCaptureComplete": true,
+    "originalReplayComplete": false,
+    "originalReplayCases": 1,
+    "classification": "Two saved first-frame rows differ only by one trailing U+0020; original whitespace-asymmetric comparator failed. Original evidence remains unchanged."
+  },
+  "sourceFiles": {
+    "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs": {
+      "sha256": "c0fce1a63511f464bee46f367ed11d006b2ddf6415e550a6d0044d29c66b82be",
+      "bytes": 21205,
+      "lines": 230
+    }
+  },
+  "scope": {
+    "changedRuntimeSource": "Replay JS only; additional new plan and four project documentation updates. Go fixture, Python capture, old57-source receipt/copies, binary, original plan and first evidence remain unchanged.",
+    "notExecuted": [
+      "No new compiler invocation",
+      "No PTY/Program/capture",
+      "No corrected browser/replay",
+      "No original failure replacement, screenshot/PTY rewrite or old helper rerun"
+    ]
+  },
+  "normalization": {
+    "code": "text.replace(/\\u0020+$/u, \"\")",
+    "meaning": "Only trailing ASCII U+0020 is removed from BOTH expected and actual comparison text. Leading/internal U+0020, tabs, carriage returns, NBSP, other Unicode whitespace and every non-space character remain significant.",
+    "rawExpected": "cases[].expectedRawRows: original model row text after existing CSI removal, with whitespace unchanged. Complete original styled model Content remains in read-only captured checkpoint input.",
+    "rawActual": "cases[].actual.text remains the original xterm translateToString(true) rows unchanged.",
+    "perRowResults": "cases[].rowMatches remains a boolean for each original actual row; modelRowsMatch also requires original expected row count. Policy is explicitly recorded in receipt rowComparison.",
+    "unmodifiedOracles": "Original exact dimensions/alternate buffer, native-path refusal, LOG FIRST/MIDDLE/FINAL checks, original actual PNG/cell extraction and prefix bytes/resize replay. Normalization never changes terminal text, screenshots, marker checks or captured input.",
+    "failureStage": "Set terminal dimensions/row/marker assertions immediately before original assertions, after saving original PNG/item. Original failed receipt stage remains untouched."
+  },
+  "CLI": {
+    "proposedReplayOnlyCommand": "node scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs \"$ORIGINAL_CAPTURE_INPUT\" --output \"$FRESH_REPLAY_OUTPUT\" --retained-input-root \"$IMMUTABLE_ORIGINAL_ATTEMPT\"",
+    "arguments": [
+      "Existing resolved absolute capture input directory, read-only",
+      "--output: resolved absolute, fresh exclusive replay directory outside repository and original input-attempt directory",
+      "--retained-input-root: explicit resolved private directory containing capture input and every original retained attempt artifact; budget input container, read-only"
+    ],
+    "pathGates": "Input/counted input root must be private non-symlink directories and match realpath. Capture input must be within counted input container. Output and input container must be disjoint in both ancestry directions; output must be outside repository, its parent canonical, mkdir exclusive700. No reuse, nested output, copied input receipt or capture recreation.",
+    "writeBoundary": "Every JS writeFile/writeFileSync/mkdir targets only the fresh output directory. All original build/capture/checkpoint/PTY data and source self-digest reads are read-only. Browser temporary state must be separately owned/private in a future wrapper."
+  },
+  "stageLineage": {
+    "originalCompiledCapture": {
+      "sourceCommit": "8d1039a71ffc401bca3405ee7b49228eea9012e9",
+      "sourceEntries": 57,
+      "binarySHA256": "956f8b767a4c728ed323363493239de3dd31f2c4fdf575594c7cd132f4b3bc60",
+      "binaryBytes": 68270946,
+      "originalBuildReceiptSHA256": "b7ae0ac8ac02c17ade163bf1df4f58d7f5a86f3935da10153e03659463c86944",
+      "originalCaptureReceiptSHA256": "dc43ea6cf92e01a2c30a7753ff8667aca2b3f7e0c7c366e0052e4b1ae85a776f",
+      "originalCheckpointsSHA256": "83383251937903bf4bcb102b9ca3319f63de43356c3836ae8b8e44c1ded67296",
+      "originalReplaySourceSHA256": "0a429ef2ecd1f230d75a04dee500827a42d5712e1e4e458b6f2bf98fccb32ee6"
+    },
+    "correctedReplay": {
+      "sourceFile": "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs",
+      "sourceSHA256": "c0fce1a63511f464bee46f367ed11d006b2ddf6415e550a6d0044d29c66b82be",
+      "meaning": "Original8d compiled/capture provenance is recorded separately from corrected replay self-digest. The original57-source build receipt is never edited/forged to cover changed replay source; no new binary build or PTY capture is required. Future wrapper records this reviewed correction commit, plan/code hashes and original immutable input identities.",
+      "deadlineSnapshot": "Carries known source lineage, comparison policy and retained-budget scope. Early unknown lineage is null, never claimed known."
+    },
+    "proposedBeforeAfterSnapshots": "Verify original57-source snapshot/copies and receipts against frozen8d evidence, not by pretending current changed JS matches old map. Compare current56 other inputs to original hashes and current corrected replay/plan to new reviewed hashes. Record both stages before/after; never alter old57-source receipt or captured input."
+  },
+  "preservedGates": {
+    "prefix": "Original <=4MiB prefix length/hash and OSC52 refusal, actual raw stream byte replay and exact-grid resize byte offsets unchanged.",
+    "coverage": "Same exact three grids,36 checkpoints under48cap, up to96 wide/multi-character samples and32 right-edge samples, actual alternate buffer/PNG/marker checks unchanged. No new coverage claimed from source preparation.",
+    "budget": "All existing128KiB per-PNG/future-receipt and64KiB final deadline/marker reserves unchanged. Every size check now counts recursively retained IMMUTABLE_ORIGINAL_ATTEMPT plus fresh replay output <=16MiB, including old failed replay/receipts, rather than omitting originals. Future wrapper also includes its own new logs/receipts/temporary leftovers under same total; no extra evidence budget.",
+    "ownershipAndCleanup": "Original BrowserServer retained process, immediate exit/already-exited observation, bounded original API close/kill/pending outcomes, forced/unknown failure, own total deadline/failure exit, digest-bound write-return marker and private CONTROL/no page-network gates unchanged.",
+    "time": "Existing20s work/30s total replay including initialization/cleanup/receipt unchanged; future unchanged FIFO115s maximum only when separately allocated. No source-only execution allocation.",
+    "inputIntegrity": "Future wrapper must verify original29-entry manifest and source/binary/build identities before and after read-only replay; original positive capture child wait/termios/afterjoinEOF/FD/Program/fake gates before browser. New JS keeps positive capture receipt/36cases check and records original metadata digests; external original-manifest/capture-cleanup gates remain mandatory. No Go or Python invocation in replay-only wrapper."
+  },
+  "dependencyVerification": {
+    "existingPackageLockSHA256": "3fbc9cd6ed43c1a4598cf52c51c3ffafecfe32c05272a152b411ff9c6afed1fe",
+    "selectedSourceSHA256": {
+      "playwright-core/lib/coreBundle.js": "829521b67ed7be90c7d6d6098ff39f2241562d47e4ad7ccab13710924a56001d",
+      "playwright-core/types/types.d.ts": "c458c9da21dde7732dd440f4f2f861ec66ef89813955a591157ec30e4a90186e",
+      "@xterm/xterm/lib/xterm.js": "14903579ff54664cd72f8e8699e6961a6272c21863ec1c3b118cdc8af5d4a972",
+      "@xterm/xterm/css/xterm.css": "854a7c0fb70e8b1a083c16797ab827299fb18744f5ad34f227b48337e33293c6",
+      "playwright-core/browsers.json": "2cfd419f71ac6475d81e1301fa86c34cf2a2a6bae2a0da4b5a2b18310216b6bf"
+    },
+    "meaning": "Pins unchanged. Before any future browser, verify existing locked package/cache integrity and selected BrowserServer2/xterm JS/CSS sources; no install/download/cache/pin changes."
+  },
+  "sourcePreparationValidation": [
+    "node --check only; no browser/replay/test execution",
+    "Frozen56 other original capture inputs, Go/Python/old plan and binary unchanged; changed JS explicitly separated from old57-source cut",
+    "All111 direct,64 build,29 runtime artifacts and normalized first evidence rehashed unchanged",
+    "Focused diff, new plan JSON/privacy/write-boundary review; no runtime acceptance"
+  ],
+  "remainingGates": [
+    "Independent review of ASCII-only symmetric comparison/raw rows, fresh output/input budget root, separate stage lineage and preserved cleanup/byte/marker gates",
+    "Explicit new replay-only allocation before invoking corrected source; no compiler or PTY recapture is proposed",
+    "Retain original first failure and every input unchanged; stop first new failure without replacement/retry",
+    "Actual full36 rows/cells/PNGs, visible log markers and broader terminal acceptance remain unverified by this correction"
+  ]
+}

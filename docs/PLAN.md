@@ -3078,3 +3078,21 @@ All frozen source/binary, 111 direct and 64 build artifacts remain unchanged.
 Independent evidence review and a separately reviewed source-only oracle change
 are pending; no further execution window remains. Visible log markers and all
 remaining emulator/cell/glyph frames are unaccepted. Overall UX remains open.
+
+
+## Terminal replay oracle correction — source only
+
+Normalized first-attempt evidence is frozen at `48aa1c1`; source continuation
+`codex/ux-terminal-loop-replay-correction` changes only replay JS behavior. The
+[correction plan](validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json)
+prepares symmetric trailing ASCII U+0020-only comparison, raw expected/actual
+rows and per-row results. Leading/internal spaces and other Unicode whitespace
+remain significant. Original failed PNG/receipt and all inputs remain exact.
+
+Replay-only CLI requires a fresh external output and an explicit immutable
+input-attempt budget root. Original retained inputs plus new evidence share
+the existing 16MiB cap. Original compiled/capture source `8d1039a` and changed
+replay self-digest are distinct stages; the old build receipt is never changed.
+No new Go build or PTY capture is proposed. All previous byte/resize/marker/
+cleanup/time gates remain. Source review is pending before any separately
+allocated replay-only attempt; no corrected replay/browser has run.

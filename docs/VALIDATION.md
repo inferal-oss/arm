@@ -10526,3 +10526,24 @@ locked xterm/Playwright dependencies without extraction/install/download. The
 selected BrowserServer implementation/types and xterm source pins were checked
 before browser execution and afterward. Independent evidence/oracle review and
 separate authorization are required before any further execution.
+
+
+## Replay comparison correction — source checks only
+
+First-attempt normalized evidence `48aa1c1` and all raw artifacts remain frozen.
+The source-only [correction plan](validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json)
+records changed replay hash independently of original compiled/capture `8d1039a`.
+JS syntax parsing, focused diff/privacy/path-write review and immutable input
+hash checks are complete; no corrected rendering/runtime result exists.
+
+Only trailing ASCII U+0020 is normalized symmetrically. Raw expected/actual rows
+and per-row results remain retained; no arbitrary Unicode whitespace removal,
+terminal byte rewrite, screenshot replacement or marker weakening is proposed.
+Fresh replay output is outside immutable inputs; recursive byte accounting
+includes original attempt artifacts under the unchanged 16MiB cap. All original
+resize/hash/OSC52/alternate-buffer/marker/cleanup/deadline/write-return gates
+remain. Future wrapper must verify original manifest and positive capture
+cleanup before browser and recheck inputs afterward. No old57-source receipt
+is updated to claim the new JS; original56 other inputs/binary,111 direct,64
+build and29 runtime artifacts are unchanged. Independent source review and a
+separate replay-only allocation remain prerequisites.

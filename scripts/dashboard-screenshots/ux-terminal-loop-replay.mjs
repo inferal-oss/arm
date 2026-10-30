@@ -1,7 +1,7 @@
 // SOURCE PREPARATION ONLY. Separate review/browser allocation required.
 // Replays actual owned Program PTY bytes, never model text as screen data.
 import assert from 'node:assert/strict';
-import {readFile,writeFile,mkdir,readdir,stat,lstat} from 'node:fs/promises';
+import {readFile,writeFile,mkdir,readdir,stat,lstat,realpath} from 'node:fs/promises';
 import {writeFileSync} from 'node:fs';
 import {resolve,dirname,join,relative,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -11,9 +11,14 @@ import {performance} from 'node:perf_hooks';
 
 const now=()=>performance.now();
 const started=now(),workDeadline=started+20000,totalDeadline=started+30000;
-const here=dirname(fileURLToPath(import.meta.url)),root=resolve(process.argv[2]||'');
-const repo=resolve(here,'../..'),output=join(root,'replay');
+const ownSource=fileURLToPath(import.meta.url),here=dirname(ownSource);
+const root=resolve(process.argv[2]||''),output=resolve(process.argv[4]||'');
+const inputBudgetRoot=resolve(process.argv[6]||''),repo=resolve(here,'../..');
+const outsideOf=(parent,path)=>{const rel=relative(parent,path);return rel==='..'||rel.startsWith('..'+sep);};
+const normalizeRow=text=>text.replace(/\u0020+$/u,'');
 const result={complete:false,failure:null,cases:[],operations:[],cleanup:{},
+ retainedBudget:{limitBytes:16777216,scope:'Entire immutable --retained-input-root plus fresh --output; future wrapper metadata also shares this cap.'},
+ rowComparison:{normalization:'Trailing ASCII U+0020 only, applied equally to expected and actual comparison text.',rawExpected:'cases[].expectedRawRows',rawActual:'cases[].actual.text',perRowResults:'cases[].rowMatches',qualification:'Leading/internal spaces and every other Unicode whitespace or character remain significant.'},
  limits:['Pinned xterm emulator of actual owned PTY bytes; not every physical terminal/font/platform.',
  'Original model row/text comparator is separate from actual emulator cells. No OS descendant-reap or production Run startup/auth claim.',
  'Private loopback Playwright CONTROL connection only; its endpoint is never recorded. Page/native-app networking is refused.',
@@ -89,7 +94,7 @@ const hardStop=setTimeout(()=>{
  // including a constructor that never returned a public handle. That is not an
  // observed process exit and is explicitly unknown in this receipt.
  if(outputCreated&&deadlineReceiptAllowed){
-  const snapshot={complete:false,failure:result.failure,elapsedMS:elapsed(),cleanup:result.cleanup,
+  const snapshot={complete:false,failure:result.failure,elapsedMS:elapsed(),cleanup:result.cleanup,sourceLineage:result.sourceLineage??null,rowComparison:result.rowComparison,retainedBudget:result.retainedBudget,
    operations:result.operations.filter(x=>x.phase==='cleanup'||x.name.startsWith('initialize ')),
    qualification:'Deadline snapshot only; unresolved original APIs/process exit remain unknown. No universal reap claim.'};
   const raw=JSON.stringify(snapshot,null,2)+'\n';
@@ -99,15 +104,30 @@ const hardStop=setTimeout(()=>{
 },Math.max(1,totalDeadline-now()));
 const exactGrid=(cols,rows)=>[[72,28],[100,35],[160,50]].some(([c,r])=>cols===c&&rows===r);
 const digest=b=>createHash('sha256').update(b).digest('hex');
-const json=async path=>JSON.parse(await readFile(path,'utf8'));
 async function retained(path){let bytes=0;for(const e of await readdir(path,{withFileTypes:true})){const p=join(path,e.name);if(e.isSymbolicLink())throw Error('Unexpected artifact link');bytes+=e.isDirectory()?await retained(p):(await stat(p)).size;}return bytes;}
+// Budget the entire immutable input-attempt container plus this fresh replay.
+// Input and output are disjoint; every write below targets output exclusively.
+async function retainedTotal(){return await retained(inputBudgetRoot)+await retained(output);}
 try{
- const rel=relative(repo,root);assert(process.argv[2]&&resolve(process.argv[2])===process.argv[2]&&(rel==='..'||rel.startsWith('..'+sep)));
- const info=await work('private root',()=>lstat(root));assert(info.isDirectory()&&!info.isSymbolicLink()&&(info.mode&0o077)===0);
+ assert(process.argv.length===7&&process.argv[3]==='--output'&&process.argv[5]==='--retained-input-root');
+ assert(process.argv[2]===root&&process.argv[4]===output&&process.argv[6]===inputBudgetRoot);
+ assert(outsideOf(repo,root)&&outsideOf(repo,output)&&outsideOf(repo,inputBudgetRoot));
+ assert(!outsideOf(inputBudgetRoot,root)&&outsideOf(inputBudgetRoot,output)&&outsideOf(output,inputBudgetRoot));
+ for(const value of [root,inputBudgetRoot]){
+  const info=await work('private input root',()=>lstat(value));assert(info.isDirectory()&&!info.isSymbolicLink()&&(info.mode&0o077)===0);
+  assert(await work('resolved input root',()=>realpath(value))===value);
+ }
+ assert(await work('resolved output parent',()=>realpath(dirname(output)))===dirname(output));
  await work('new replay directory',()=>mkdir(output,{mode:0o700}),()=>{outputCreated=true;});
- assert(await work('receipt reserve',()=>retained(root))+131072<16*1024*1024);deadlineReceiptAllowed=true;
- stage='capture receipt';const receipt=await work('capture receipt',()=>json(join(root,'capture-receipt.json')));assert(receipt.complete===true);
- const cases=await work('checkpoint receipt',()=>json(join(root,'checkpoints.json')));assert(cases.length===36&&cases.length<=48);
+ assert(await work('receipt reserve',()=>retainedTotal())+131072<16*1024*1024);deadlineReceiptAllowed=true;
+ stage='capture receipt';
+ const captureRaw=await work('capture receipt',()=>readFile(join(root,'capture-receipt.json')));const receipt=JSON.parse(captureRaw);assert(receipt.complete===true);
+ const casesRaw=await work('checkpoint receipt',()=>readFile(join(root,'checkpoints.json')));const cases=JSON.parse(casesRaw);assert(cases.length===36&&cases.length<=48);
+ const buildRaw=await work('original build receipt',()=>readFile(join(root,'build-receipt.json')));const build=JSON.parse(buildRaw);
+ assert(build.sourceCommit==='8d1039a71ffc401bca3405ee7b49228eea9012e9'&&build.testSelector==='^TestUXTerminalLoopFixture$'&&Object.keys(build.sourceSHA256).length===57);
+ // Preserve the original compiled/capture cut as provenance. It does not cover
+ // this corrected replay; its separately reviewed self digest identifies it.
+ result.sourceLineage={originalCompiledCapture:{sourceCommit:build.sourceCommit,sourceEntries:57,binarySHA256:build.binarySHA256,buildReceiptSHA256:digest(buildRaw),captureReceiptSHA256:digest(captureRaw),checkpointsSHA256:digest(casesRaw),originalReplaySourceSHA256:build.sourceSHA256['scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs']},correctedReplay:{sourceFile:relative(repo,ownSource),sourceSHA256:digest(await work('corrected replay source',()=>readFile(ownSource))),role:'Replay-only source; not covered by original compile receipt. Input receipts and captured bytes remain read-only.'}};
  stage='browser initialization';
  // Public BrowserServer exposes the original ChildProcess for observation and
  // bounded fallback. Never record wsEndpoint() or credentials/error messages.
@@ -134,14 +154,15 @@ try{
   await work('terminal evaluate',()=>page.evaluate(()=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('layout deadline')),1000);requestAnimationFrame(()=>requestAnimationFrame(()=>{clearTimeout(timer);resolve();}));})));
   stage='actual cells and model comparator';
   const actual=await work('terminal evaluate',()=>page.evaluate(()=>{const t=window.__terminal,b=t.buffer.active;return{cols:t.cols,rows:t.rows,alternate:b.type==='alternate',text:Array.from({length:t.rows},(_,i)=>b.getLine(i)?.translateToString(true)??''),wideSamples:(()=>{const a=[];for(let y=0;y<t.rows;y++)for(let x=0;x<t.cols;x++){const c=b.getLine(y)?.getCell(x);if(c&&(c.getWidth()!==1||c.getChars().length>1)&&a.length<96)a.push({row:y,col:x,chars:c.getChars(),width:c.getWidth()});}return a;})(),rightEdgeSamples:Array.from({length:Math.min(32,t.rows)},(_,y)=>{const c=b.getLine(y)?.getCell(t.cols-1);return{row:y,col:t.cols-1,chars:c?.getChars()??'',width:c?.getWidth()??null};}),cellSampleQualification:'At most96 wide/multi-character cells and32 right-edge cells; no exhaustive glyph-paint proof',forbidden:window.__loopForbidden??[]};}));
-  const expected=c.state.viewContent.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,'').split('\n').map(x=>x.trimEnd());
-  const rowMatches=actual.text.map((s,i)=>s===expected[i]);
+  const expectedRaw=c.state.viewContent.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,'').split('\n');
+  const rowMatches=actual.text.map((s,i)=>i<expectedRaw.length&&normalizeRow(s)===normalizeRow(expectedRaw[i]));
   const visible=actual.text.join('\n');
   const tail=['inline-follow-tail','inline-paused-tail','inline-end-tail','full-end-tail'].includes(c.name);
   const first=c.name==='full-first',middle=c.name==='full-middle-resize';
-  const item={grid:c.grid,name:c.name,sourcePrefixSHA256:c.prefixSHA256,bytes:c.bytesThrough,actual,modelRowsMatch:rowMatches.every(Boolean)&&expected.length===c.rows,rowMatches,tailRequired:tail,logFinalVisible:visible.includes('LOG FINAL'),logFirstVisible:visible.includes('LOG FIRST'),logMiddleVisible:visible.includes('LOG MIDDLE'),model:c.state.reader,resizeTimeline:c.resizes};
-  stage='original replay PNG';const png=await work('original replay PNG',()=>page.locator('#terminal').screenshot({animations:'disabled'}));const receiptReserve=Buffer.byteLength(JSON.stringify({...result,cases:[...result.cases,item]}))+131072;if(await work('retained bytes',()=>retained(root))+png.length+receiptReserve>16*1024*1024)throw Error('retained artifact budget');
+  const item={grid:c.grid,name:c.name,sourcePrefixSHA256:c.prefixSHA256,bytes:c.bytesThrough,actual,modelRowsMatch:rowMatches.every(Boolean)&&expectedRaw.length===c.rows,expectedRawRows:expectedRaw,rowMatches,tailRequired:tail,logFinalVisible:visible.includes('LOG FINAL'),logFirstVisible:visible.includes('LOG FIRST'),logMiddleVisible:visible.includes('LOG MIDDLE'),model:c.state.reader,resizeTimeline:c.resizes};
+  stage='original replay PNG';const png=await work('original replay PNG',()=>page.locator('#terminal').screenshot({animations:'disabled'}));const receiptReserve=Buffer.byteLength(JSON.stringify({...result,cases:[...result.cases,item]}))+131072;if(await work('retained bytes',()=>retainedTotal())+png.length+receiptReserve>16*1024*1024)throw Error('retained artifact budget');
   item.png=`${String(index+1).padStart(2,'0')}-${c.grid}-${c.name}.png`;await work('retain PNG',()=>writeFile(join(output,item.png),png,{mode:0o600,flag:'wx'}));result.cases.push(item);
+  stage='terminal dimensions/row/marker assertions';
   assert(actual.cols===c.cols&&actual.rows===c.rows&&actual.alternate);assert.deepEqual(actual.forbidden,[]);assert(item.modelRowsMatch);if(tail)assert(item.logFinalVisible);if(first)assert(item.logFirstVisible);if(middle)assert(item.logMiddleVisible);item.terminalDisposeReturned=await work('terminal evaluate',()=>page.evaluate(()=>{window.__terminal.dispose();window.__terminal=null;return true;}));
  }
 
@@ -189,7 +210,7 @@ finally{
  if(outputCreated){
   try{
    // Keep a separate 64KiB deadline-receipt reserve; do not overwrite a receipt.
-   const budget=begin('final receipt budget','receipt',()=>retained(root));
+   const budget=begin('final receipt budget','receipt',()=>retainedTotal());
    const used=await waitFor(budget,500,totalDeadline-100);
    let receiptRaw;
    const op=begin('final receipt write','receipt',()=>{

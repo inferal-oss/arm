@@ -4492,3 +4492,26 @@ close/final EOF and descriptor facts are positive scoped observations. They do
 not imply universal descendant/goroutine reap or production startup coverage.
 The [inventory](validation/ux-terminal-loop-inventory-2026-10-30.json) records
 normalized results; raw evidence stays private and immutable.
+
+
+## Replay-only comparison/output correction prepared
+
+The new source proposal compares both row-text sides after removing only
+trailing U+0020, preserving raw expected rows (existing CSI removal only), raw
+xterm rows and every per-row result. It keeps leading/internal/other Unicode
+whitespace significant and leaves actual PTY bytes, terminal writes, PNGs and
+marker checks unchanged. Assertion stage now identifies dimensions/rows/markers
+after item/PNG retention instead of reporting the preceding PNG operation.
+
+Replay source requires fresh `--output` and explicit `--retained-input-root`,
+disjoint from the read-only capture input. Canonical/private input checks and
+exclusive output creation prevent reuse/nesting; every evidence write targets output.
+Budget checks include the entire original attempt container plus new replay.
+Original build/capture receipt identities and source commit are recorded
+separately from corrected replay self-digest; no old receipt is edited/copied
+as a new build claim. Cleanup/timeout/write-marker gates remain unchanged.
+
+This is source preparation only, described by the
+[plan](validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json).
+The original compiled Go fixture/binary, Python capture, source plan and first
+failure stay exact. No compiler, capture, corrected browser or replay ran.
