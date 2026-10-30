@@ -4228,3 +4228,14 @@ presentation ordering. It does not change dialog, private-input or authenticatio
 engine/main behavior. Prompt dismissal/Cancel differences, cached clipboard
 reopen, late-result guards and disconnect/public dispose retain their original
 source. No private cleanup, RDF/GC/auth-reset or live transport acceptance is added.
+
+
+## Screen inventory — accepted boundary
+
+Independent [inventory
+review](validation/ux-screen-inventory-composed-2026-10-29.json) confirms the
+sampled conflict between native fullViewport presentation and Desktop-owned
+modals. Existing sign-in field/footer and all product behavior remain unchanged.
+Approved client/clipboard substitutions qualify native control observations
+only; no actual screen authentication, pixel rendering or transfer is
+implemented or accepted by this inventory.

@@ -2641,3 +2641,31 @@ complete focus/pixel coverage and real client behavior remain unknown. Existing
 app dialog-open/fullView presentation arbitration is the smallest proposed review
 boundary; no correction or new runtime window is assigned. Central composition/
 review and any separately allocated remediation/live acceptance remain open.
+
+
+## Screen inventory — independent review accepted
+
+Owner `e27b7c7` passes [composition
+review](validation/ux-screen-inventory-composed-2026-10-29.json): all 42
+inputs/current 39 prior inputs and 127 private artifacts match, actual
+fixtures/parents/effect boundaries and three contrasting rasters inspected. S1
+is accepted for the sampled fullViewport/Clipboard and desktop auth
+intersections. Top-layer sticky-bar clip metrics and uncollected hit/focus/glyph
+facts remain excluded. Product source is unchanged; remediation is still
+pending.
+
+
+## Upgrade first production correction — assigned
+
+The upgrade owner continues on `codex/resident-start-identity` from `3064be2`.
+Only the real CLI existing-endpoint/startup authority checks and post-Start
+polling/cancellation reporting are allocated. Explicit endpoint absence stays
+distinct from unknown read/status outcomes; post-launch readiness must verify
+the actual selected home/owner/directory/generation. Cancellation after Start
+keeps typed startup uncertainty and exit130, while pre-launch interruption stays
+ordinary. One expected-red focused cohort and one final focused normal/race/vet/
+native-build cohort use the unchanged FIFO<=115s, CPU<=2/memory target<=2GiB.
+Task-owned loopback fixtures only, no detached/default/installed daemon or jobs.
+No first-launch serialization/native handoff/worker readiness or resident
+activation is claimed. Dependency retention API, funding/exhaustion and ledger
+layout remain proposals; no module/fork/binding/schema/bootstrap policy change.

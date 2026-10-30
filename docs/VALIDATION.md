@@ -9950,3 +9950,16 @@ rehash unchanged; raw values/identities/captures stay private. No genuine noVNC/
 evaluation, canvas rendering, remote input/clipboard/auth, server grant/resource
 transport, heap/RDF/LDES/GC or OS process-reap acceptance is claimed. Central
 review/composition and any remediation/full UX/live gates remain open.
+
+
+## Screen inventory — current-main composition
+
+The [composed record](validation/ux-screen-inventory-composed-2026-10-29.json)
+verifies 42 current inputs, 39 unchanged prior inputs and 127 artifacts.
+Original A/B cohorts complete 28.522s/22.551s with four cases, no replacement,
+zero genuine/forbidden/credential effects and positive original API cleanup.
+Source/factory/native-parent review plus full-view Clipboard/auth and inline
+Clipboard rasters support S1 as sampled modal obscuration. Invalid inherited
+sticky-bar clip metrics are excluded; exact hit winners, full runtime
+ancestry/focus/all-area coverage and native glyph paint remain unknown. No new
+runtime/build, real effect, remediation or complete UX acceptance follows.
