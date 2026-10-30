@@ -2540,3 +2540,15 @@ actual surviving-opener branch passes, and only the unused fallback capture was
 later tightened. Independent current composition/assets/builds/review remain
 required. No owner bundle, Go/native build, install, merge/push or live/full UX
 acceptance is included. All earlier branches and private evidence remain frozen.
+
+
+## Destination D1–D4 — independent composition accepted
+
+Owner `25b2933`/`49d4219` passes exact current-main composition, source
+inverse/privacy review and the [composed
+record](validation/ux-destination-layout-composed-2026-10-29.json). All 38 final
+inputs and 34 protected inputs match; all 362 private artifact hashes verify.
+Independent 454 JS/55 native UI tests, two identical dashboard builds and native
+CLI build pass. D1–D4 containment is accepted; original failed oracles and
+earlier B fixture remain separate. No installed/live/terminal/full-UX or upgrade
+acceptance follows.

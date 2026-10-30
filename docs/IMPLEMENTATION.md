@@ -4152,3 +4152,18 @@ desktop ownership retains closed Dialog/body/reader handles while their native
 projection closes/hides; no cleanup or RDF/GC/authentication reset behavior is
 changed or newly accepted. Main, GraphUI, bridge, backend, protocol, Go, models,
 formatters, pins and native theme/component sources remain unchanged.
+
+
+## Destination layout — composed behavior
+
+Five noninteractive hooks on original native Stack/Card handles contain
+destination names, resource/lease labels, full reason controls and lease-detail
+text. The marker-selected native dialog reserves close space and wraps its title
+while retaining panel sizing, close dimensions/margins and original scroll
+policy. Full records remain readable through native scrolling. The [composed
+record](validation/ux-destination-layout-composed-2026-10-29.json) accepts
+source-equivalent browser evidence and current regenerated assets/tests. Exact
+read IDs, context/origin validation, permissions, callbacks, held aging and
+pending/disconnect/disposal source remain unchanged. Closed native
+dialogs/readers retain their baseline Desktop ownership; no cleanup or live
+authority change is claimed.

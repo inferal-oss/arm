@@ -9808,3 +9808,21 @@ Raw values/IDs/captures remain private. Representative density, selected root/te
 tokens 2×, native glyphs, server enforcement and unchanged JSON caps retain their
 stated limits; central composition/assets/builds/review and TUI/Linux/upgrade/
 live/full UX gates remain open. No new effect, setup or owner build is run.
+
+
+## Destination D1–D4 — independent final composition
+
+The [composed record](validation/ux-destination-layout-composed-2026-10-29.json)
+binds final source and regenerated assets to independent 454 JS and 55 native UI
+tests across eleven files, zero failures/skips, two deterministic dashboard
+builds and a native CLI build, completed in 19.773s through the normal FIFO. A
+Python wrapper setup error before any tests was preserved, corrected only in
+file enumeration and excluded. All 38 owner input hashes, 34 protected inputs
+and 362 artifacts match. Whole remote-module inverse restores the base; only
+appended app rules change. Effective isolated cuts remove only their intended
+style sections. Narrow detail/lease and desktop resource captures were visually
+reviewed. Four exact-input owner browser cases and both controls qualify this
+composition; B keeps its distinct earlier fixture and all its observed closes
+restore the surviving opener. No duplicate browser run or real destination
+effect was needed. Original failed native/browser oracles remain failed, and API
+cleanup is not OS process/reap proof.
