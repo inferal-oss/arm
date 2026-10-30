@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "status": "Independent inventory/source review accepted; forwarding remediation and full UX remain open",
+  "owner_commit": "988b8fe87493967a9e313f1038d6f2ef088026fb",
+  "composed_source": "16be8032dda48a198eb057439b19dc12696915e9",
+  "composed_on": "b355b9165ad6a811899e9044041f8774186d1ae3",
+  "owner_inventory": "docs/validation/ux-forwarding-inventory-2026-10-29.json",
+  "owner_inventory_sha256": "eb57222e52e77b4145840ee958f600dbe31cb4b5476aae8bce881c02f47aacd9",
+  "verified_sourceSHA256": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "34fb46909b3d3ae9ec6333f0ca82226d8929f756c0d011d27fa5e368f93cce55",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/mesh.mjs": "1b5faaeac90aa0b5f868f362310d7decf5537707fb0ff5bba93343a6ddf8f3bc",
+    "internal/server/web/semblance/forward.mjs": "b50037f245b53bae7cf30739248b53fb8116fa3c3a48d12268cedd19aea30c71",
+    "internal/server/web/semblance/ephemeral-inputs.mjs": "974ea80f617ed2281b52c85e69e7b8d1435192919d04ff658f562fd3388241ea",
+    "internal/server/web/mesh-forward-console.mjs": "65ae2e3fd9e55fc154a6d77efab272510aa998d83308c189be1ad3a186f330ef",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/server/mesh_forward_source.go": "12d90ba20cc860e684ff3dc1b91d408d5f36e9b7150080d894c93e48d6d64dac",
+    "internal/manager/forward_listener.go": "66c3dbef87c55d8cb1b76a2420279dcac0ff702fb1b6d07a3e86da04b9f114a8",
+    "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+    "internal/meshforward/grant.go": "70e5113e97b57bd4ff0ef133a24f18ebe24dda92d154a19c3fb8d03105d396a0",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/components/textfield.ttl": "884f18336b9f123868972937cae65fb73d0e5044b7c17ddd4c164c02a9e1f688",
+    "web/third_party/semblance/ontology/components/inputs.ttl": "e9ab0af176ef77101f4a6b35000990c5ec870cc4c0eff9c46192e589520f2b04",
+    "web/third_party/semblance/ontology/components/layout.ttl": "8b828351304d6bcada709fc1753b45d9f63e46fe9ed7a359c26c048b28ebdcc4",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+    "web/third_party/semblance/ontology/theme/inputs.ttl": "e6eb4ad06c5da458255969ef317d1fe7a9c0e45bf3851c4feea8e112cf9aa095",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "scripts/dashboard-screenshots/ux-forwarding-inventory.mjs": "5f349de680f44a2e77ebeae42a69aa2fbbf703320be33300a09ecfad8a33d856",
+    "scripts/dashboard-screenshots/ux-forwarding-inventory-backend.mjs": "02925df01a3301f66b893a4b95959f689a95a37e83ca861a8f181d35dbf0b658"
+  },
+  "production_inputs_unchanged": 21,
+  "private_artifact_count": 97,
+  "private_manifest_sha256": "7e4c305276e1cd3eb69e094d2bf2fa09cfdec89abce29d9dbce956fe1d872123",
+  "review_findings": [
+    {
+      "id": "F1",
+      "priority": "P2",
+      "basis": "All four disconnected known-valid-key attempts show malformed-key guidance and zero read delta; the source combines disconnected and invalid checks under one message.",
+      "approved_correction_scope": "Separate local reconnect guidance from invalid-key guidance without changing read operations, canonical key validation, callback identity or lifecycle."
+    },
+    {
+      "id": "F2",
+      "priority": "P2 review completeness",
+      "basis": "Source captures the prepared request for exact start while unsent form edits leave it unchanged. The existing review omits reason and lifetime. Runtime start semantics were not exercised.",
+      "approved_correction_scope": "Complete labeled snapshot data and a concise distinction from editable form fields in existing native review containers. Preserve exact request, token private leaf, sent/uncertain/retry/admission and no automatic credential erasure."
+    }
+  ],
+  "cohorts": [
+    {
+      "cohort": "a",
+      "cases": 2,
+      "sessions": 2,
+      "runnerElapsedMS": 19547,
+      "rawReportSHA256": "52030706ede3eafe54650dcc18a23f98395beedb7f35e8e8f51b6b00e20cce68",
+      "operationCounts": {
+        "status": 10,
+        "subscribe": 4,
+        "mesh_operator_watch": 4,
+        "monitor_subscribe": 4,
+        "events": 4,
+        "messages": 10,
+        "agents": 10,
+        "node_list": 14,
+        "pool_list": 4,
+        "mesh_operator_list": 10,
+        "mesh_forward_list": 8,
+        "mesh_forward_status": 6
+      },
+      "forbiddenCalls": 0,
+      "activeReadsAtCapture": 0,
+      "pendingReadsAtCapture": 0,
+      "realSockets": 0,
+      "externalRequests": 0,
+      "pageErrors": 0,
+      "clipboardAttempts": 0,
+      "failure": null,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      }
+    },
+    {
+      "cohort": "b",
+      "cases": 2,
+      "sessions": 2,
+      "runnerElapsedMS": 18910,
+      "rawReportSHA256": "6b40d0b0278eae25fc574de56424c4a8b2cc566d4a79671570ff91dc8becc7b5",
+      "operationCounts": {
+        "status": 10,
+        "subscribe": 4,
+        "mesh_operator_watch": 4,
+        "monitor_subscribe": 4,
+        "events": 4,
+        "messages": 10,
+        "agents": 10,
+        "node_list": 14,
+        "pool_list": 4,
+        "mesh_operator_list": 10,
+        "mesh_forward_list": 8,
+        "mesh_forward_status": 6
+      },
+      "forbiddenCalls": 0,
+      "activeReadsAtCapture": 0,
+      "pendingReadsAtCapture": 0,
+      "realSockets": 0,
+      "externalRequests": 0,
+      "pageErrors": 0,
+      "clipboardAttempts": 0,
+      "failure": null,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      }
+    }
+  ],
+  "static_review": {
+    "strict_known_read_operations_arguments": true,
+    "start_stop_recover_never_invoked": true,
+    "runtime_identifiers_excluded_from_added_lines": 49,
+    "F1_four_case_reproduction": true,
+    "F2_source_binding_confirmed": true,
+    "new_preparation_and_late_reply_private_leaf_cleanup": true,
+    "no_production_source_or_asset_build": true
+  },
+  "limitations": [
+    "Inventory/source/visual review only, no independent new browser or unit suite run and no product correction acceptance.",
+    "No mutation execution, native listener/backend/token/host/cluster/permission effect or wire/Go validator acceptance.",
+    "Runtime RDF/LDES was not exported. Source-reviewed no-output island and DOM/property observations do not prove memory zeroization/GC.",
+    "Exact stored native-field values/logical End and selected token scaling are qualified; native input painted glyphs, popup painting and universal zoom are unverified.",
+    "Individual control/warning scrolling is measured; full dense uncertainty-prose first/middle/final reach remains unverified.",
+    "Original capture/release and awaited context/browser/server APIs do not establish OS process-group exit/reaping.",
+    "No Go/CLI/assets/setup/install/full-UX/TUI/live acceptance or ARM adoption/grant is implied."
+  ]
+}

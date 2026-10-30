@@ -9589,3 +9589,20 @@ read (F1). Unsent form edits retain the prepared leaf; source summary omits reas
 lifetime (F2 review concern). No mutating confirmation or uncertain execution path
 is exercised. Prior 142/505/164/256/four-audit/138/450/142 artifacts rehash unchanged.
 Independent review and full UX/TUI/live acceptance remain open.
+
+
+## Forwarding inventory — independent source/evidence audit
+
+The [composed record](validation/ux-forwarding-inventory-composed-2026-10-29.json)
+records 97 artifact hashes and all 23 input hashes matching the frozen owner;
+21 production inputs also match the original base and current main. Both original
+two-case browser reports have zero forbidden/active/pending reads, real sockets,
+external requests, page errors or clipboard attempts, with positive original
+API cleanup. F1 is reproduced in all four cases. F2 is source-confirmed review
+completeness, not experimentally accepted Start behavior. Runtime generated
+identifiers are absent from added publication lines.
+
+This independent audit adds no browser/native/unit/build/backend/effect run.
+Private leaf identity/clear observations and source no-output review do not
+export runtime RDF/LDES or prove memory wiping. Full dense prose ranges, universal
+zoom/native painted fields, real listeners and full UX remain open.

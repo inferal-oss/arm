@@ -77,7 +77,7 @@ states; no principal view is declared complete from source inspection.
 | Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Four-case exact metadata/line/scroll/freshness retention and scoped header/menu/tooltip checks pass independent composition | Real transport, broader states and full acceptance remain open |
 | Mesh | `mesh.mjs`; roster, node detail and separate operator workflows | Read-only roster/detail layout, exact metadata/grants/trust and degraded/pending lifecycle pass independent four-case composition | Connect/reconnect/install/stop/uninstall/handoff/recovery review, exact pins/revisions and broader workflow states remain open |
 | Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Four-case read-only inventory, primary/technical/exact-record reading, ordinary-label line boxes and local UID/context selection pass independent composition | Real transport/cluster validation, broader states/density/fonts and complete route acceptance; no cluster operations exercised |
-| Forwarding | `forward.mjs`; preparation/review, tunnel list and retained operations | Source inventory only | Long endpoints, narrow dialogs, uncertainty and cleanup warnings; no real forwarding |
+| Forwarding | `forward.mjs`; preparation/review, listener list and retained operations | Four-case read-only native inventory, private-leaf retention/clear, pending/error/disconnect and Stop/recovery warning reach independently audited | F1 reconnect guidance and F2 complete prepared snapshot corrections, dense-prose range reach, real effects and broader states remain open |
 | Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | Source inventory only | Scope/staleness/unknown values, long records and unsupported mutation visibility |
 | Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Stacked private fields/native footer accepted in c830982 with synthetic desktop/narrow evidence | Remaining mode/view/clipboard states; no real VNC sign-in |
 | Resource naming | `resource-names.mjs`; exact reference/name editor/reservations | Scoped native naming body/caption/dirty-draft and palette focus/help corrections pass independent composition | Broader reservations/recorded-result/density/state/live mutation and complete route acceptance remain open |
@@ -399,3 +399,13 @@ Private values and images stay outside version control. Four source-bound cases
 use actual native keys/focus/scroll and browser-local preparation with no backend
 source mutation. Fixed/native glyph, selected scaling, dense prose reach and
 original API cleanup limits remain explicit. This is inventory, not acceptance.
+
+
+## Forwarding inventory — independent findings
+
+The [reviewed inventory](validation/ux-forwarding-inventory-composed-2026-10-29.json)
+identifies F1 disconnected-key guidance and F2 incomplete prepared snapshot
+information. A focused informational/guard correction is allocated, preserving
+all private token and uncertain-outcome boundaries. Sampled geometry alone found
+no clipping defect; tall dense content still scrolls. Correction/current-source
+composition, full dense-prose reach, actual effects and full UX remain open.

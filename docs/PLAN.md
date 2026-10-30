@@ -2317,3 +2317,26 @@ editable-form changes while reason/lifetime are absent from its summary; any
 future presentation must preserve uncertain-token retention and intent guards.
 No geometry correction is justified by width cap alone. Independent review and
 any remediation remain unallocated; no forwarding/live/full-UX acceptance.
+
+
+## Forwarding inventory — independent review and correction allocation
+
+Owner `988b8fe87493967a9e313f1038d6f2ef088026fb` is accepted as source-bound
+inventory only. The [composed record](validation/ux-forwarding-inventory-composed-2026-10-29.json)
+verifies 23 inputs (21 production files unchanged), 97 artifacts and the two
+four-case-total read-only cohorts. F1 misleading disconnected-key guidance is
+reproduced; F2 incomplete prepared-snapshot review is source-confirmed, without
+executing Start. No general clipping or forwarding/full-UX acceptance is claimed.
+
+Next owner `codex/ux-forwarding-review-fixes` may correct F1 in existing local
+message guards and F2 in existing native review Card/body informational fields,
+with scoped noninteractive styles if required. Full reason/lifetime and exact
+prepared values must remain readable; editable fields cannot silently redefine
+that snapshot. Preserve helpers/private-leaf/token and sent/uncertain/retry/
+admission/source operation boundaries. No real listener or source mutation,
+backend/schema/Go/module/CLI/main/graph/pin/private-input change is allocated.
+Affected mock/native tests and bounded read-only four-case browser validation
+plus isolated F1/F2 controls use separate normal-FIFO commands, each <=115s,
+CPU <=2 and memory target <=2GiB. No owner asset/native build, environment setup,
+installation, real effect or ARM adoption/lease is granted. Review/composition
+and central current-main rebuild remain required before product acceptance.

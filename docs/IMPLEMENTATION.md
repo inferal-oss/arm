@@ -4048,3 +4048,14 @@ production bytes and authority/CAS/unknown/retry/private-leaf boundaries. Runtim
 keys/tokens/identities/values and UI images remain in the private artifact bundle;
 normalized records contain redacted geometry and boolean lifecycle observations.
 No source correction, permission injection or validator weakening is performed.
+
+
+## Forwarding inventory — reviewed presentation boundary
+
+The [independent inventory review](validation/ux-forwarding-inventory-composed-2026-10-29.json)
+accepts source/fixture findings only. Current exact-status guards conflate lost
+connection with invalid key syntax. Current review captures a prepared request
+that form edits do not mutate, while omitting reason/lifetime from its summary.
+A future informational correction must expose the full prepared snapshot without
+changing that immutable request or private token, retry, uncertainty and admission
+semantics. No listener or forwarding behavior changes in the inventory cut.
