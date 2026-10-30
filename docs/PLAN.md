@@ -2995,3 +2995,21 @@ and a private loopback control connection are permitted; page/native-app
 networking and real backend/lease/job effects remain refused. Stop on the
 first failure, bound or cleanup uncertainty; preserve all original evidence
 before any correction. Actual cells, log-tail reach and cleanup remain pending.
+
+
+## Terminal loop replay — original failure and narrow correction
+
+The original bounded attempt captured all 36 checkpoints with positive original
+child/Program/termios/EOF/FD outcomes, then stopped at the first replay assertion.
+Independent review confirms two rows differ only by one trailing ASCII space;
+all 29 original artifact hashes agree. Original browser cleanup passed separately.
+No later replayed cells or visible log markers are accepted from that attempt.
+
+Owner evidence `48aa1c1` and correction `13ab228` preserve the first failure.
+The corrected replay compares trailing ASCII U+0020 symmetrically, retains raw
+rows, writes only a fresh disjoint output, and records separate capture/replay
+source lineage. Independent hashes, 56 unchanged other inputs and all original
+111/64/29 artifact sets agree. One replay-only normal-FIFO window is allocated,
+115s outer with unchanged 20s work/30s replay total, two CPU/2 GiB targets and
+16 MiB combined retained inputs/new evidence. No rebuild, test binary, Program
+or PTY recapture is allocated. Preserve the first new failure before any retry.

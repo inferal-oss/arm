@@ -10394,3 +10394,20 @@ after compiler cleanup. Samples are not an every-instant aggregate quota or
 measured RSS guarantee. No binary/test/Program/PTY/browser execution follows
 from this build receipt. A separately allocated capture/replay attempt must
 provide its own source-bound results and original lifecycle evidence.
+
+
+## Terminal loop first replay — qualified failure retained
+
+Independent checks verify all 29 original attempt artifacts. Capture completed
+36 checkpoints and all three original child exit/termios/after-join EOF-EIO/FD
+gates. The first browser replay failed its whitespace-asymmetric row comparator
+on zero-based rows 1 and 25: each actual row equals the complete expected row
+plus one trailing U+0020. The saved first PNG was visually reviewed. Browser
+API cleanup and original process exit zero passed separately; overall replay
+remains failed and later cells/markers are unverified.
+
+Source-only correction `13ab228` applies the same trailing-ASCII-space rule to
+both comparison rows while preserving raw arrays, actual PTY bytes and all
+other oracles. Original evidence `48aa1c1`, 56 unchanged inputs and original
+artifact sets remain exact. A separately allocated replay-only attempt must
+supply its own changed-source result; no original build receipt is rewritten.
