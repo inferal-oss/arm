@@ -111,3 +111,34 @@ strict cleanups. It retains original normal 0 joins/EOF, stable final scan, sour
 history/cache and resource limits. Only source formatting/parser/hash checks
 have run for this correction. Independent diff/pin review and a separate single
 allocation precede any execution. Other 15 reading/hit cases remain separate.
+
+
+## Owner inventory green accepted; composition remains separate
+
+The [normalized green result](validation/ux-terminal-monitor-inventory-green-2026-10-30.json)
+binds exact source `88132d6`, immutable accepted/red test bytes and the six new
+guards. One allocated original invocation passed all 45 named nodes (nine roots/
+36 children) plus packagepass, 86 complete observations/32 strict cleanups, with
+normal matched original Go/helper/FIFO 0 joins/EOF and no termination, force,
+truncation, failure or skip. Independent review accepted this ordinary scope.
+
+Read-only original comparison verifies all 26 existing full initial observations
+equal their baselines; all 86 IDs are canonical. 74 observations retain visible
+viewport/frame pairs; 12 intentionally keep them offscreen. All six unchanged/
+reorder/disappearance reading guards retain exact offset 21 and chart policies.
+The four visible inventory cases now follow canonical stable/replaced focus,
+with exact chart policies equal to red. No unexpected source messages remain.
+
+The final complete post-join/EOF enumeration and empty TMP/GOTMP passed. Two
+intermediate samples were unknown/deferred during six temporary ENOENTs; no
+positive/zero sample or charge-release credit was invented. 937 observed identities
+retain 70,170,310 logical/70,172,672 allocated high-water charges. Final retained
+evidence is 7,906,184 logical/7,970,816 allocated bytes in 30 regular files including
+the 29-member manifest. Phase time 10,105ms and whole time 13,737ms are within the
+reviewed ceilings. All 7,034 source/tool pins and 30 protected sets stayed exact.
+
+Original evidence remains immutable; the completed active window is returned.
+Only a documentation/evidence successor follows this tested Go tree. Central
+composition/landing remains separate, preserving any independent source changes.
+Other 15 reading/hit, native/browser/wheel/PTY/font/real transport/collector and
+full UX acceptance are not established. No further runtime was performed.

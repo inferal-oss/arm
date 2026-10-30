@@ -4350,3 +4350,15 @@ Six original-page-scroll off-focus/unchanged-poll guards are prepared; the
 is nine roots/45 nodes, 86 observations/32 strict cleanups. Source/diff/pin review
 and a new single-run allocation remain gates; no product acceptance, execution,
 other 15 or native/browser scope follows.
+
+
+## Inventory focus/read-position owner green accepted — composition pending
+
+Exact `88132d6` passes the allocated nine-root/45-node ordinary contract with
+86 complete observations/32 strict cleanups, normal original 0 joins/EOF, stable
+final enumeration and exact guards. The six page-reading controls preserve
+offset 21, canonical identity and chart policies. The
+[scoped result](validation/ux-terminal-monitor-inventory-green-2026-10-30.json)
+records independent owner-green acceptance; central composition/landing remains.
+Active execution is returned, originals retained, and no further runtime or
+other 15/native/browser scope is implied. Evidence successor is documentation only.

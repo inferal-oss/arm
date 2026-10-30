@@ -5605,3 +5605,14 @@ keep accepted behavior. Selection policies and backend/metrics are untouched.
 Accepted/red tests stay exact and one six-case page-reading guard root is added.
 The [bounded proposal](validation/ux-terminal-monitor-inventory-green-proposal-2026-10-30.json)
 is unexecuted; independent review/green/composition remain gates.
+
+
+## Inventory focus/read-position correction — owner ordinary green accepted
+
+Exact `88132d6` validates identity-only reconciliation and conditional follow of
+previously visible changed focus. Four visible inventory transitions now pass;
+six unchanged/reorder/disappearance off-focus controls retain exact reading
+offset 21 and chart policies, with canonical focus. All prior selected I/O roots
+pass. The [owner result](validation/ux-terminal-monitor-inventory-green-2026-10-30.json)
+is 45 named passes/86 observations/32 strict cleanups. No further product bytes
+changed; central composition and broader native/UI/transport gates remain.
