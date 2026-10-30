@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"charm.land/bubbles/v2/viewport"
+	tea "charm.land/bubbletea/v2"
 	"getarm.org/internal/model"
 	"github.com/charmbracelet/colorprofile"
 	"github.com/charmbracelet/x/ansi"
@@ -182,6 +183,124 @@ func TestWritePolishedColorProfilePreviews(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(dir, name+"."+extension), []byte(content), 0600); err != nil {
 				t.Fatal(err)
 			}
+		}
+	}
+}
+
+// Shape assertions matter here: final row-width checks alone also pass when
+// fitBlock hides an oversized shadow by replacing the modal border with ….
+func TestModalShadowPreservesBordersAndTrustedMouseGeometry(t *testing.T) {
+	for _, size := range [][2]int{{45, 14}, {70, 24}, {72, 28}, {88, 28}, {89, 28}, {100, 35}, {110, 35}, {160, 50}} {
+		for _, phase := range []string{"review-first", "review-tail", "filter"} {
+			t.Run(fmt.Sprintf("%dx%d/%s", size[0], size[1], phase), func(t *testing.T) {
+				m, transport := fixtureDashboard(t)
+				m.width, m.height = size[0], size[1]
+				m.view = 2
+				lease := activeLease("synthetic-lease")
+				lease.Request.Reason = strings.Repeat("bounded modal purpose ", 40) + "FINAL"
+				m.data.status.Leases = []model.Lease{lease}
+				if phase == "filter" {
+					m.inputMode = "filter"
+					m.input.SetValue("no-synthetic-match")
+				} else {
+					m.detail = &m.data.status.Leases[0]
+					m.startReview("release")
+				}
+				m.syncViewport()
+				if phase == "review-tail" {
+					m.key(tea.KeyPressMsg{Code: tea.KeyEnd})
+				}
+				dialogWidth, dialogHeight := m.modalGeometry()
+				x, y := (m.mainWidth()-dialogWidth)/2, (m.bodyHeight()-dialogHeight)/2
+				offset, viewWidth, viewHeight := m.viewport.YOffset(), m.viewport.Width(), m.viewport.Height()
+				review := m.review
+				rows := strings.Split(ansi.Strip(m.renderMain()), "\n")
+				if len(rows) != m.bodyHeight() {
+					t.Fatal("main panel height changed")
+				}
+				for _, row := range rows {
+					if ansi.StringWidth(row) != m.mainWidth() {
+						t.Fatal("main panel width changed")
+					}
+				}
+				if m.viewport.YOffset() != offset || m.viewport.Width() != viewWidth || m.viewport.Height() != viewHeight || m.review != review {
+					t.Fatal("render changed viewport or review")
+				}
+				if viewWidth != dialogWidth-4 || viewHeight != dialogHeight-2 {
+					t.Fatal("modal content geometry changed")
+				}
+				// The test data is ASCII; the one-cell border runes make these exact
+				// terminal-cell positions independent of ANSI styling.
+				for row := 0; row < dialogHeight; row++ {
+					cells := []rune(rows[y+row])
+					left, right := '║', '║'
+					if row == 0 {
+						left, right = '╔', '╗'
+					} else if row == dialogHeight-1 {
+						left, right = '╚', '╝'
+					}
+					if x+dialogWidth > len(cells) || cells[x] != left || cells[x+dialogWidth-1] != right {
+						t.Fatalf("modal border clipped at row%d: %q", row, rows[y+row])
+					}
+				}
+				full := strings.Split(ansi.Strip(m.View().Content), "\n")
+				if phase == "filter" {
+					if len(m.modalButtonRegions()) != 0 {
+						t.Fatal("filter gained lease review hit targets")
+					}
+					if m.viewport.TotalLineCount() <= m.viewport.Height() && (!strings.Contains(strings.Join(rows, "\n"), "[Enter] Apply filter") || !strings.Contains(strings.Join(rows, "\n"), "[Esc] Back")) {
+						t.Fatal("fitting filter controls clipped")
+					}
+					_, controls := m.controlBar()
+					for _, r := range controls {
+						cells := []rune(full[r.y])
+						if r.x < 0 || r.x+r.width > len(cells) || !strings.Contains(string(cells[r.x:r.x+r.width]), "["+r.key+"]") {
+							t.Fatal("filter control hit geometry diverged", r)
+						}
+					}
+				} else {
+					regions := m.modalButtonRegions()
+					if m.viewport.TotalLineCount()-1-offset >= m.viewport.Height() {
+						if len(regions) != 0 {
+							t.Fatal("offscreen review buttons became clickable")
+						}
+					} else {
+						if len(regions) != 2 {
+							t.Fatal("visible trusted review buttons missing")
+						}
+						var decline mouseRegion
+						for _, r := range regions {
+							if r.x < x+1 || r.x+r.width > x+dialogWidth-1 || r.y < 4+y+1 || r.y >= 4+y+dialogHeight-1 {
+								t.Fatal("button hit region escaped intact modal", r)
+							}
+							cells := []rune(full[r.y])
+							label := "[y] Release lease"
+							if r.key == "n" {
+								label = "[n/Esc] Keep lease"
+								decline = r
+							}
+							if r.x+r.width > len(cells) || !strings.Contains(string(cells[r.x:r.x+r.width]), label) {
+								t.Fatal("trusted button hit region differs from visible control", r)
+							}
+						}
+						if decline.key != "n" {
+							t.Fatal("trusted decline region missing")
+						}
+						handler := m.View().OnMouse
+						cmd := handler(tea.MouseClickMsg{X: decline.x + decline.width/2, Y: decline.y, Button: tea.MouseLeft})
+						if cmd == nil {
+							t.Fatal("visible Keep lease control not clickable")
+						}
+						m.Update(cmd())
+						if m.review != nil || m.detail == nil || m.pending || len(transport.operations) != 0 {
+							t.Fatal("decline changed behavior or sent a mutation")
+						}
+					}
+				}
+				if len(transport.operations) != 0 {
+					t.Fatal("rendering dispatched transport")
+				}
+			})
 		}
 	}
 }

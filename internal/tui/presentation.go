@@ -190,8 +190,17 @@ func (m *dashboardModel) renderMain() string {
 	background := window(strings.ToUpper(viewNames[m.view]), fitBlock(backgroundContent, max(1, width-4), max(1, height-2)), width, height, false, "")
 	dimmed := lipgloss.NewStyle().Foreground(lipgloss.Color("#52616c")).Background(colorBackground).Render(ansi.Strip(background))
 	x, y := max(0, (width-dialogWidth)/2), max(0, (height-dialogHeight)/2)
-	shadow := lipgloss.NewStyle().Background(lipgloss.Color("#080d10")).Render(fitBlock("", dialogWidth, dialogHeight))
-	return fitBlock(lipgloss.NewCompositor(lipgloss.NewLayer(dimmed), lipgloss.NewLayer(shadow).X(x+1).Y(y+1).Z(1), lipgloss.NewLayer(dialog).X(x).Y(y).Z(2)).Render(), width, height)
+	// A full-width/full-height dialog leaves no room for part of its offset
+	// shadow. Bound the shadow itself: clipping the oversized compositor with
+	// fitBlock would replace the dialog's right border with truncation marks.
+	layers := []*lipgloss.Layer{lipgloss.NewLayer(dimmed)}
+	shadowWidth, shadowHeight := min(dialogWidth, max(0, width-x-1)), min(dialogHeight, max(0, height-y-1))
+	if shadowWidth > 0 && shadowHeight > 0 {
+		shadow := lipgloss.NewStyle().Background(lipgloss.Color("#080d10")).Render(fitBlock("", shadowWidth, shadowHeight))
+		layers = append(layers, lipgloss.NewLayer(shadow).X(x+1).Y(y+1).Z(1))
+	}
+	layers = append(layers, lipgloss.NewLayer(dialog).X(x).Y(y).Z(2))
+	return fitBlock(lipgloss.NewCompositor(layers...).Render(), width, height)
 }
 func (m *dashboardModel) renderFeed() string {
 	if m.nodeUI != nil {
