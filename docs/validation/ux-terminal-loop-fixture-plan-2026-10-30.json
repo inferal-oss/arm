@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "status": "SOURCE PREPARATION ONLY; new Go test, PTY driver and replay have not been compiled/executed. Separate review/build/PTY/browser allocations required.",
-  "branch": "codex/ux-terminal-loop-fixture",
+  "branch": "codex/ux-terminal-loop-cleanup",
   "parentFrozenDirectEvidenceCommit": "60c65a3f66bfd21a973b48712fdf4abf17d4a4fe",
   "originalDirectSourceCommit": "a79462d478b6c81057977d69c9d5e782e6b6c70b",
   "currentComparisonCommit": "738ad54ee4fa9e98a17e64d2e2a7aee4847b3acb",
@@ -12,14 +12,14 @@
       "lines": 327
     },
     "scripts/dashboard-screenshots/ux-terminal-loop-capture.py": {
-      "sha256": "3821630bccc6b7fa78dd700671c1ef5ed3ac73596ce34b5e76b86970db962c42",
-      "bytes": 19208,
-      "lines": 397
+      "sha256": "980fc761382c0de2854f43decb854658c69462ac05ad5b899105585eac8231d6",
+      "bytes": 21759,
+      "lines": 438
     },
     "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs": {
-      "sha256": "354ea37ad731c6d3d914e1f8b1049b9881b7e20fafda406b170b764ca473d95d",
-      "bytes": 8345,
-      "lines": 65
+      "sha256": "0a429ef2ecd1f230d75a04dee500827a42d5712e1e4e458b6f2bf98fccb32ee6",
+      "bytes": 18398,
+      "lines": 209
     }
   },
   "preservedOriginal": {
@@ -86,8 +86,8 @@
     "reader": "Original model identity/reader pointer retained. No Home reset/re-read. Pause/real key scrolling/fold/fullscreen/return reuse original buffer/cursor. End is expected to schedule one original empty read closure when done, with zero transport calls, same buffer hash/cursor and original reader; actual deltas must be recorded and checked.",
     "mouse": "Actual SGR press travels from owned PTY through original Program input parser/renderer OnMouse and original typed event Update. F12 is an explicit test-only control to hold the original fullscreen-exit callback across an actual reviewed-grid SIGWINCH; callback delivery must be rejected without changing full state/reader. This controlled delay is not a general OS input-queue race proof.",
     "program": "Original tea.NewProgram on os.Stdin/Stdout owned PTY, original view including AltScreen/Mouse mode. WithContext25s/WithoutSignalHandler/TrueColor/staticTERM+COLORTERM/WithFilter are explicit test options. No production tui.Run startup/auth/unknown-receipt cleanup coverage.",
-    "parent": "Python starts only the separately built reviewed test binary with exact selector, fresh per-grid homes,35s child test timeout,70s overall capture deadline, owned process session/group and PTY descriptors. It never builds ARM or starts a backend.",
-    "replay": "Node uses existing pinned xterm6.0.0/Playwright assets, static terminal container and actual pre-exit PTY byte prefixes. Source Model.View.Content is a separate comparator, never inserted as terminal text or DOM. Per-prefix resize byte offsets are replayed in order. No live web URL/backend/build pipeline."
+    "parent": "Python starts only the separately built reviewed test binary with exact selector, fresh per-grid homes,35s child test timeout,70s overall capture deadline and original PTY descriptors. Child inherits the disposable FIFO process group: no start_new_session/setsid/setpgid or private group escape. Local TERM/KILL/wait target only retained original Popen. It never builds ARM or starts a backend.",
+    "replay": "Node uses existing pinned xterm6.0.0/Playwright assets, static terminal container and actual pre-exit PTY byte prefixes. Source Model.View.Content is a separate comparator, never inserted as terminal text or DOM. Per-prefix resize byte offsets are replayed in order. No live web URL/backend/build pipeline. Public pinned BrowserServer supplies the original ChildProcess for immediate exit observation, including already-exited exitCode/signalCode. Its private loopback CONTROL endpoint is used only to connect the original browser and is never logged. Page/native-app networking remains refused."
   },
   "bounds": {
     "grids": [
@@ -155,26 +155,27 @@
       "node scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs \"$NEW_ABSOLUTE_PRIVATE_OUTPUT\""
     ],
     "outerInvocation": "Use unchanged shared FIFO<=115s with2CPU/1536MiB target and offline/local GOENVoff/emptyGOFLAGS settings. Build is a distinct proposed original command; capture+replay share one proposed original window. No slots/worker overrides.",
-    "deadlines": "Capture70s, per Program context25s/child test35s, owned failure teardown<=9s, replay30s plus collection within115s target. No claim compilation or execution fits until allocated/measured.",
+    "deadlines": "Capture70s, per Program context25s/child test35s, original failure teardown within existing9s target (explicit waits2.5+2+2+1+1=8.5s plus local API overhead). Replay own monotonic30s includes initialization/work20s and cleanup/receipt reserve10s, with bounded close waits and own forced-exit fallback. Capture+teardown+replay remains within existing115s outer target plus collection; no execution/timing guarantee until allocated/measured. OS/API scheduling and synchronous I/O are not hard-real-time guarantees.",
     "output": "New resolved private directory outside checkout, never reused. Fresh synthetic-home pending-only effects, raw append-only PTY streams, resize timelines, metadata/model comparator, captured prefixes/hashes, original handle outcomes, bounded PNGs and receipts. No real account/native endpoint/session state."
   },
   "cleanup": {
     "GoChild": "Defer cleanup on original Program even on Goexit: original Kill/Wait, owned context cancel, original peer/run retirement and strict fake Close. Record Run return, same wrapper/model/reader, callback acknowledgments, active/forbidden state and test failure. Normal returns and forced cleanup remain distinct.",
-    "PTYParent": "Retain exact Popen/master/slave/stream handles. Send q, wait/drain; on timeout target only that child session/group with TERM then KILL and bounded original wait. Independent saved termios comparison and explicit FD closes; record unknown/error outcomes. Failure must not abandon owned handle cleanup.",
-    "browser": "Original context/browser close in finally, bounded timer; screenshots/cell facts retained before oracle assertion failures, no automatic replacement.",
+    "PTYParent": "Retain exact Popen/master/slave/stream handles. Inherit original FIFO group; no session/group creation or PID/group lookup. Send q and wait/drain2.5s; original Popen terminate wait2s, kill wait2s, final original wait1s, each actual request/outcome retained. Forced or unknown cleanup fails. After child wait, compare saved termios, close original parent slave, then drain original master at most1s to actual zero-byte EOF or errno EIO. Quiet polls are separate observations, never EOF. Record child-join qualification, final drain timeout, truncation/dropped bytes, errors and original FD closes. Partial evidence remains failure; no automatic replacement.",
+    "browser": "Own monotonic budget begins before filesystem/browser/context/page initialization, with20s work ceiling and30s total. Every original init/work promise records returned/rejected/pending separately from bounded wait timeout. Late init handles are retained and immediately closed/killed during cleanup. Last terminal dispose300ms, page close300ms, context close800ms, browser connection close800ms, original BrowserServer close1200ms, forced server kill800ms, original ChildProcess TERM/KILL exit waits500ms each. Overall cleanup deadline is min(total minus1s,cleanup start plus8.5s). Only retained original handles/APIs are used. BrowserServer process exit listener attaches immediately; retain already-exited original exitCode/signalCode. Forced/timed-out/unknown or nonzero/signal exit is failure, even after a later API return. Tool has its own total-deadline kill/exit request and finite failure exit after cleanup; original pending constructors remain unknown, not claimed reaped. Pinned launcher exit callback requests cleanup of its own launches; this is not independent OS exit observation. Outer FIFO is a second bound, not sole cleanup.",
     "qualifications": [
       "Pure mouse Cmd produced/delivered counters are not a join proof for all framework goroutines.",
       "Program Run/Kill/Wait and actual child wait/FD/termios facts do not prove every OS descendant reaped or production native Run behavior.",
       "No frame/Close return alone is cleanup acceptance. Keep every failure and original handle outcome; no replacement without report."
-    ]
+    ],
+    "replayReceipt": "Each original operation records originalStatus plus waitTimedOut. Normal receipt writes are bounded and exclusive; receipt records its own pending write honestly. Separate replay-receipt-written.json binds original receipt digest and observed original write return; success additionally requires marker complete=true, final tool exit0 and no replay-deadline.json. Missing/partial marker, pending/rejected original cleanup or deadline snapshot never passes. Total-deadline snapshot is separate/exclusive, at most63KiB, best effort and marked failed/unknown. Per-PNG128KiB reserve covers subsequent cleanup/receipts; final64KiB reserve covers deadline snapshot and small write-return marker, all inside existing16MiB cap. No endpoint/error messages/PID lookup recorded."
   },
   "sourcePreparationValidation": [
-    "New Go source formatter parse only, Python AST parse and JS syntax check; none compiles/executes the fixture/capture/replay",
-    "All50 classified inputs compare to accepted current738ad54 source; old fixture/plans/evidence and111 private artifacts rehashed unchanged",
-    "New source/privacy/diff review and frozen hashes only"
+    "Unchanged Go fixture remains previously formatter-parsed only; changed Python AST parse and node --check only. No compilation or fixture/capture/replay execution.",
+    "All50 classified inputs, frozen Go loop fixture, old direct fixture/plans/evidence and111 private artifact manifest entries rehashed unchanged.",
+    "Focused seven-file diff/privacy/source review; corrected code/plan hashes retained. No runtime/timing/OS cleanup proof."
   ],
   "remainingGates": [
-    "Independent review of adapter/filter/actual Cmd callsites/owned cleanup and complete57-file build receipt",
+    "Independent review of corrected FIFO inheritance/final drain, full-budget replay/API/process/receipt ownership, Go adapter/filter/Cmd paths, pinned BrowserServer CONTROL seam and complete57-file build receipt",
     "Explicit offline compile window and own binary receipt",
     "Explicit single owned PTY/capture and terminal-only browser window; no runtime allocation now",
     "Actual visible tail/native rows/glyph/callback/resize/cleanup outcomes; report any failure before replacement",
@@ -187,5 +188,36 @@
     "nativeTailVisible": null,
     "runtimeAssertionsPassed": null,
     "sourceOnly": true
+  },
+  "parentFrozenLoopSourceCommit": "f46ce4b8a2360b9e63cdeac52a4b450fd5981665",
+  "reviewCorrection": {
+    "scope": "Focused source-only continuation of frozen f46ce4b; changes Python capture, JS replay, this plan and four project documentation files. Go Program fixture, old direct helpers, capture/geometry tools, source classification and evidence remain byte-exact.",
+    "GoProgramSubprocessAudit": "No subprocess launcher in the reviewed Go wrapper or admitted original read/typed mouse/Quit Cmd paths. WithFilter excludes framework execMsg before internal dispatch; original Init and unreviewed Cmds remain suppressed. This is selected source/callsite review, not a full transitive Go package-init audit.",
+    "FIFO": "No start_new_session=True, setsid, setpgid, killpg or private process-group signaling in Python. Outer FIFO TERM reaches inherited child group; local fallback only retained original Popen terminate/kill/wait. No unreviewed Go Program subprocess admitted.",
+    "PTY": "Saved termios check precedes original parent slave close; only then bounded final original master drain. Join/EOF/EIO/quiet/timeout/truncation/FD outcomes distinct.",
+    "Browser": "Public BrowserServer CONTROL seam accepted for source proposal; immediate original ChildProcess exit listener plus already-exited fields. Original API return, bounded wait expiry, forced kill and unknown exit remain distinct. No endpoint logged or later PID adopted.",
+    "execution": "None: no compiler, fixture/Program, PTY, browser/replay, replacement helper or performance proof. Syntax parsers and read-only hashes only.",
+    "bounds": "Unchanged exact grids, data/defaults,36 checkpoints under48cap,4MiB per stream,16MiB retained cap,70s capture/9s teardown target/30s replay/115s outer target. Replay now splits existing30s into20s work and10s cleanup; no runtime widening."
+  },
+  "reviewedPinnedReplaySources": {
+    "lib/coreBundle.js": {
+      "module": "playwright-core",
+      "version": "1.64.1",
+      "relativeFile": "lib/coreBundle.js",
+      "sha256": "829521b67ed7be90c7d6d6098ff39f2241562d47e4ad7ccab13710924a56001d",
+      "bytes": 3585406
+    },
+    "types/types.d.ts": {
+      "module": "playwright-core",
+      "version": "1.64.1",
+      "relativeFile": "types/types.d.ts",
+      "sha256": "c458c9da21dde7732dd440f4f2f861ec66ef89813955a591157ec30e4a90186e",
+      "bytes": 1150893
+    }
+  },
+  "replaySourceAudit": {
+    "types/types.d.ts": "Public launchServer host/port/timeout and BrowserServer close/kill/process/wsEndpoint interfaces; process() returns the original ChildProcess.",
+    "lib/coreBundle.js": "Selected BrowserServerLauncher implementation exposes original browser.options.browserProcess process/close/kill. Original launchProcess retains spawnedProcess and original cleanup closures; process exit handler invokes registered original kill callbacks. No re-discovery/rebinding. Selected source inspection, not universal launch-failure/OS reap proof.",
+    "runtimeGate": "Verify these pinned installed implementation hashes before any allocated browser run; existing57-file receipt remains unchanged in membership. No install/download or runtime performed."
   }
 }

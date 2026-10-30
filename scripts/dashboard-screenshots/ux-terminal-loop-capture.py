@@ -63,9 +63,12 @@ class Session:
         self.resizes = []
         self.end_effects = []
         self.state = None
+        self.last_drain_observation = None
         self.cleanup = {'childWaited': False, 'termiosRestored': None,
                         'masterClosed': False, 'slaveClosed': False,
-                        'ownedGroupTerminationRequested': False}
+                        'ownedChildTerminationRequested': False,
+                        'finalMasterEOFObserved': False, 'finalMasterEIOObserved': False,
+                        'finalDrainQuietPolls': 0, 'finalDrainTimedOut': False}
         self.stream = (root / (self.grid + '.pty')).open('wb')
         self.stream_path = self.grid + '.pty'
         try:
@@ -78,14 +81,15 @@ class Session:
                    'GOPROXY': 'off', 'GOSUMDB': 'off',
                    'TMPDIR': str(root / 'tmp'), 'ARM_TUI_LOOP_ROOT': str(root),
                    'ARM_TUI_LOOP_GRID': self.grid}
-            # New process session/group is owned by this runner. No shared process
-            # enumeration, terminal attachment, detached daemon or resource claim.
+            # Inherit the original disposable FIFO process group. Outer queue
+            # termination therefore includes this child; no setsid/setpgid or
+            # detached session can escape that group. Local fallback targets
+            # only this retained original Popen handle.
             self.child = subprocess.Popen(
                 [str(binary), '-test.run=^TestUXTerminalLoopFixture$',
                  '-test.timeout=35s', '-test.count=1'],
                 cwd=REPO / 'internal/tui', env=env,
-                stdin=self.slave, stdout=self.slave, stderr=self.slave,
-                start_new_session=True)
+                stdin=self.slave, stdout=self.slave, stderr=self.slave)
         except Exception:
             for fd in (self.master, self.slave):
                 if fd is not None:
@@ -102,18 +106,23 @@ class Session:
     def drain(self, wait=0.03, cleanup=False):
         if not cleanup:
             self.bound()
+        self.last_drain_observation = 'quiet'
         if select.select([self.master], [], [], wait)[0]:
             try:
                 data = os.read(self.master, 65536)
             except OSError as error:
                 if error.errno == errno.EIO:
+                    self.last_drain_observation = 'eio'
                     return False
                 raise
             if not data:
+                self.last_drain_observation = 'eof'
                 return False
+            self.last_drain_observation = 'data'
             if len(self.bytes) + len(data) > 4 * 1024 * 1024 or retained(self.root) + len(data) > LIMIT:
                 if cleanup:
                     self.cleanup['cleanupOutputTruncated'] = True
+                    self.cleanup['cleanupOutputDroppedBytes'] = self.cleanup.get('cleanupOutputDroppedBytes', 0) + len(data)
                     return True
                 raise RuntimeError('next PTY block exceeds byte bound')
             self.bytes.extend(data)
@@ -192,7 +201,7 @@ class Session:
             self.resizes.append({'offset': len(self.bytes), 'cols': size[0], 'rows': size[1]})
         fcntl.ioctl(self.slave, termios.TIOCSWINSZ, struct.pack('HHHH', size[1], size[0], 0, 0))
         if self.child is not None:
-            os.kill(self.child.pid, signal.SIGWINCH)
+            self.child.send_signal(signal.SIGWINCH)
             self.wait(lambda s: s['grid'] == list(size), 'native resize')
 
     def scroll(self, target):
@@ -225,13 +234,25 @@ class Session:
 
     def finish(self):
         errors = []
+
+        def request_termination(kind, original_method):
+            self.cleanup['ownedChildTerminationRequested'] = True
+            request = {'kind': kind, 'originalAPIReturned': False}
+            self.cleanup.setdefault('childTerminationRequests', []).append(request)
+            try:
+                original_method()
+                request['originalAPIReturned'] = True
+            except Exception as error:
+                request['errorName'] = type(error).__name__
+                errors.append('original-child-' + kind + '-unknown')
+
         try:
             if self.child is not None and self.child.poll() is None:
                 try:
                     os.write(self.master, b'q')
                 except OSError:
                     errors.append('quit-write')
-                end = time.monotonic() + 4
+                end = time.monotonic() + 2.5
                 while self.child.poll() is None and time.monotonic() < end:
                     try:
                         self.drain(cleanup=True)
@@ -239,33 +260,25 @@ class Session:
                         errors.append('cleanup-drain')
                         time.sleep(0.02)
                 if self.child.poll() is None:
-                    self.cleanup['ownedGroupTerminationRequested'] = True
-                    try:
-                        os.killpg(self.child.pid, signal.SIGTERM)
-                    except ProcessLookupError:
-                        pass
+                    request_termination('terminate', self.child.terminate)
                     try:
                         self.child.wait(timeout=2)
                     except subprocess.TimeoutExpired:
-                        try:
-                            os.killpg(self.child.pid, signal.SIGKILL)
-                        except ProcessLookupError:
-                            pass
+                        request_termination('kill', self.child.kill)
                         try:
                             self.child.wait(timeout=2)
-                        except subprocess.TimeoutExpired:
+                        except Exception:
                             errors.append('original-child-wait-unknown')
+                    except Exception:
+                        errors.append('original-child-wait-unknown')
             if self.child is not None:
                 try:
                     code = self.child.wait(timeout=1)
                     self.cleanup.update(childWaited=True, childExitCode=code)
-                except subprocess.TimeoutExpired:
-                    errors.append('original-child-wait-timeout')
-            try:
-                while self.drain(0, cleanup=True):
-                    pass
-            except Exception:
-                errors.append('final-drain')
+                except Exception:
+                    errors.append('original-child-wait-unknown')
+            # Observe saved terminal mode before closing the parent's original
+            # slave. Quiet select while a slave is held is not an EOF proof.
             try:
                 restored = termios.tcgetattr(self.slave)
                 restored[3] &= ~getattr(termios, 'PENDIN', 0)
@@ -273,6 +286,34 @@ class Session:
                 self.cleanup['termiosRestored'] = restored == self.mode
             except OSError:
                 errors.append('terminal-mode-unknown')
+            try:
+                os.close(self.slave)
+                self.cleanup['slaveClosed'] = True
+            except OSError:
+                errors.append('slave-close-unknown')
+            finally:
+                self.slave = None
+            # Only now, after the original child wait and parent slave close,
+            # distinguish actual EOF/EIO from quiet polls. Preserve truncation.
+            self.cleanup['finalDrainAfterChildJoin'] = self.cleanup['childWaited']
+            drain_end = time.monotonic() + 1
+            try:
+                while time.monotonic() < drain_end:
+                    self.drain(0.05, cleanup=True)
+                    outcome = self.last_drain_observation
+                    if outcome == 'eof':
+                        self.cleanup['finalMasterEOFObserved'] = True
+                        break
+                    if outcome == 'eio':
+                        self.cleanup['finalMasterEIOObserved'] = True
+                        break
+                    if outcome == 'quiet':
+                        self.cleanup['finalDrainQuietPolls'] += 1
+                else:
+                    self.cleanup['finalDrainTimedOut'] = True
+                    errors.append('final-master-no-eof-within-bound')
+            except Exception:
+                errors.append('final-master-drain-unknown')
         finally:
             try:
                 self.stream.close()
@@ -379,7 +420,7 @@ def main():
                 child = json.loads(child_path.read_text()) if child_path.exists() else None
                 receipts.append({'grid': session.grid, 'error': error, 'cleanup': cleanup, 'originalChild': child, 'endEffects': session.end_effects})
                 write_json(root / 'capture-receipt.json', {'complete': False, 'receipts': receipts, 'failure': error})
-            if error or cleanup.get('childExitCode') != 0 or not cleanup['termiosRestored'] or cleanup['ownedGroupTerminationRequested'] or cleanup.get('cleanupErrors') or not child or child['testFailed'] or not child['programReturned'] or not child['sameWrapperReturned']:
+            if error or cleanup.get('childExitCode') != 0 or not cleanup['childWaited'] or not cleanup['finalDrainAfterChildJoin'] or not cleanup['termiosRestored'] or cleanup['ownedChildTerminationRequested'] or cleanup.get('cleanupErrors') or not (cleanup['finalMasterEOFObserved'] or cleanup['finalMasterEIOObserved']) or not cleanup['slaveClosed'] or not cleanup['masterClosed'] or cleanup.get('cleanupOutputTruncated') or not child or child['testFailed'] or not child['programReturned'] or not child['sameWrapperReturned']:
                 raise RuntimeError('original owned child/capture/cleanup failed; no replacement')
         if len(checkpoints) != 36 or retained(root) > LIMIT:
             raise RuntimeError('capture roster/retention bound')

@@ -644,3 +644,20 @@ cut. Independent wrapper/filter/owned-cleanup review and a bound binary/source
 receipt precede any new execution window. Native rows/glyphs/tail/input/cleanup
 and concrete terminal findings remain open; the terminal/overall UX task is
 not complete at source preparation.
+
+
+## Terminal cleanup proposal corrected after source review
+
+The [source plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json) now
+retains FIFO group inheritance and original Popen ownership, drains the master
+after child wait and parent slave close, and distinguishes quiet from EOF/EIO.
+Replay initialization through cleanup fits its existing proposed 30-second
+ceiling with bounded original API waits and immediate original browser process
+exit observation. Private loopback CONTROL is separate from refused page/
+native-app network; its endpoint is never logged. Forced/unknown cleanup and
+missing receipt-write confirmation remain failures.
+
+This corrects source only. The Go fixture, old helpers/evidence and all existing
+bounds remain unchanged. Syntax/hash review supplies no native tail, paint,
+input, timing or teardown acceptance. Independent source review and separate
+build/PTY/browser allocation are still required; overall UX acceptance is open.

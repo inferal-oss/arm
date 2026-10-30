@@ -3035,3 +3035,24 @@ Go wrapper is uncompiled; no Program/PTY/browser ran. Review must bind an owned
 test binary and exact 57-file build receipt before separately allocated compile
 and capture/replay windows. Native rows/tail/glyph/input/cleanup findings and
 any product correction remain pending. Overall terminal UX work continues.
+
+
+## Terminal loop cleanup review correction — source only
+
+The terminal owner continues on `codex/ux-terminal-loop-cleanup` from frozen
+`f46ce4b`. The [corrected plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+replaces that cut's Python private-session cleanup with inherited FIFO group
+ownership and original Popen-only fallback. Saved termios precedes parent slave
+close and bounded actual master EOF/EIO drain; quiet polls remain distinct.
+
+Replay now includes initialization through cleanup in its existing 30-second
+budget. Public pinned BrowserServer retains the original process handle and
+immediate exit observation; its private loopback CONTROL endpoint is never
+logged. Page/native-app network refusal remains. Bounded original close/kill
+promises, forced/unknown failure and receipt-write evidence are separate.
+
+Only source correction, parsing and hash review are complete. Exact grids, data,
+checkpoint/byte/time ceilings and all old evidence remain unchanged; the Go
+wrapper is unchanged and still uncompiled. Independent corrected-source review
+and separately allocated build/PTY/browser windows remain gates. No execution
+or additional proof was allocated or performed.

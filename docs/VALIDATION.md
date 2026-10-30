@@ -10461,3 +10461,31 @@ returns and callback acknowledgments are not OS descendant-reap or universal
 framework-goroutine proof. Browser context/terminal/browser handles close in
 finally. Independent source review and explicit build/PTY/browser windows remain
 gates before native findings or remediation.
+
+
+## Terminal loop cleanup correction — source evidence only
+
+Frozen `f46ce4b` remains available unchanged. Its corrected continuation on
+`codex/ux-terminal-loop-cleanup` changes only Python/JS cleanup source, the
+[plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json) and four project
+documents. Python AST and JS syntax parsing pass; no compiler or runtime was
+invoked. The Go loop fixture, all 50 classified inputs, old direct fixtures/
+plans/evidence and 111 original private artifact hashes remain exact.
+
+Review covers inherited FIFO process group, retained original Popen-only
+termination/wait, saved termios before parent slave close and final master
+EOF/EIO versus quiet/timeout/truncation. Replay source budgets initialization
+through cleanup inside the original 30 seconds; original API promises and
+bounded wait outcomes remain distinct. Selected pinned BrowserServer launcher/
+types inspection supports immediate original ChildProcess observation and
+private CONTROL connection ownership; it does not prove every launch failure,
+descendant exit or OS cleanup path. Page/native-app networking stays refused.
+
+Forced, timed-out, pending, unknown or abnormal original teardown fails even
+when a later API returns. Normal receipt acceptance requires its separate
+digest-bound original-write-return marker, tool exit zero and no deadline
+receipt. Missing/partial output is not success. Deadline/forced-exit fallbacks
+request original-owned cleanup but are not universal reap evidence. All
+previous geometry/data/checkpoint/byte/time ceilings remain. Actual browser/PTY
+cleanup, tail/cells/input and timing remain untested and require independent
+review followed by allocated execution; no replacement or additional proof ran.

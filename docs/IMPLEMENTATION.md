@@ -4441,3 +4441,29 @@ and resize byte offsets into pinned xterm. Model View.Content is only a separate
 row comparator; it is never substituted as terminal or DOM text. Browser
 network/clipboard/socket paths are refused; old live capture/render/geometry
 helpers are untouched. This is source preparation only, not executed behavior.
+
+
+## Terminal loop cleanup source correction
+
+The source continuation of `f46ce4b` supersedes its cleanup proposal above.
+Python no longer detaches the original test child from the FIFO group. Local
+TERM/KILL/wait uses only retained original Popen; no group/PID lookup. After
+original child wait it compares saved termios, closes the parent slave, then
+bounds final master drain to actual EOF/EIO. Quiet polls, timeout, dropped bytes
+and unknown/partial closes remain explicit failures.
+
+Replay's existing 30-second ceiling now covers launch/context/page setup, work,
+cleanup and receipt writes: 20 seconds for work, 10 reserved for cleanup. The
+pinned public BrowserServer owns a private loopback CONTROL connection and
+exposes its original ChildProcess. Exit observation attaches immediately,
+including already-exited fields; no endpoint is logged. Page/native-app sockets,
+network and clipboard remain refused. Original close/kill promises and wait
+timeouts are recorded separately. Forced/unknown cleanup fails; own kill/exit
+fallback bounds the tool without claiming universal OS reaping.
+
+The normal receipt honestly leaves its own write pending. A separate digest-
+bound write-return marker, successful tool exit and no deadline-failure receipt
+are required for acceptance. All outputs remain under the existing 16MiB cap.
+The Go wrapper/admitted commands contain no subprocess launcher in the reviewed
+paths; this is not a full transitive package-init audit. No Go/source-oracle
+change, build, Program/PTY/browser run or replacement helper occurs here.
