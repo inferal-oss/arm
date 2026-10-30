@@ -1,5 +1,18 @@
 # ARM delivery plan
 
+## Original Manager assembly — actual source, qualification pending
+
+Owner: `codex/resident-standard-manager-assembly`, based on `ccf4c509`.
+Six reviewed Manager sources now compose with the official-driver owner; the
+native issuer and the original claim/pool/generation binding remain unchanged.
+Two genuine-claim fixture roots and three Manager constructor controls pass
+normal and race checks alongside affected legacy workspace/sync/named-format
+controls: 12 normal roots/72 named results and 10 race roots/25 named results.
+Affected-package default vet and Linux amd64/arm64 compile-only gates pass.
+Both foreign artifacts remain unexecuted. Named format4 retention,
+partial initialization/cancellation and actual Server/root/service/start/worker/
+job-continuity acceptance remain open. No production caller is activated.
+
 ## Original official-driver database owner — selected normal and race scope qualified
 
 Owner: `codex/resident-standard-driver-owner`, based on reviewed `891689b`.
@@ -3898,3 +3911,18 @@ artifacts for Linux amd64 and arm64, each after its actual target dependency
 graph and checksum verification. Both original compile command handles joined;
 neither artifact executed. These are compilation results, not Linux runtime or
 upgrade-continuity acceptance.
+
+## Original Manager assembly — composed review accepted
+
+The focused Manager cut is accepted as an unconnected library assembly after
+independent final-source and original-receipt review. All seven source hashes
+match the qualified cut. The only Go differences from its validation checkout
+are four terminal UI paths absent from the actual 754-package dependency graph;
+normal/race/vet and Linux compile evidence therefore applies by source
+equivalence, without claiming another execution. The affected legacy constructor
+and storage format checks remain in the selected regression scope.
+
+This lands the pending Manager, original-pool initialization and genuine-claim
+fixtures only. Production Server/root/worker activation, partial initialization
+and cancellation, named format-4 persistence and existing-job continuity remain
+open as recorded in the normalized validation file.

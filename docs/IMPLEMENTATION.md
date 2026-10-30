@@ -1,5 +1,22 @@
 # Backend and CLI implementation
 
+## Original Manager assembly — unconnected implementation
+
+`manager.ResidentManagerPending` retains the actual Manager before claiming its
+native view or opening the original database. It initializes the existing base
+schema and resident generation marker in one fresh transaction, then runs the
+existing configuration, ordinary sync2 and helper initializers on that same
+private pool. The original operation remains inspectable during effects and
+retains partial/abnormal state and first errors. Legacy Start/Close refuse a
+resident instance before loops, cancellation or SQL close; workers receive no
+Manager pointer. Only one same-issuer Server borrower may be bound, and access
+still requires original loop startup. No production Server/root connects it yet.
+The fresh 19-statement base schema matches the current legacy constructor.
+Named-storage saves use the private original-bound combined-format check while
+the generic workspace refusal remains unchanged. Selected actual constructor/binding/legacy controls pass normal/race and affected
+default vet. Linux amd64/arm64 test artifacts compile without execution. Named
+format4 retention and partial initialization/cancellation validation remain pending.
+
 ## Original official-driver database owner — unconnected source
 
 `database.ResidentOpen` is a pure pending holder registered before effects. It
@@ -5253,3 +5270,18 @@ artifacts for Linux amd64 and arm64, each after its actual target dependency
 graph and checksum verification. Both original compile command handles joined;
 neither artifact executed. These are compilation results, not Linux runtime or
 upgrade-continuity acceptance.
+
+## Original Manager assembly — composed review accepted
+
+The focused Manager cut is accepted as an unconnected library assembly after
+independent final-source and original-receipt review. All seven source hashes
+match the qualified cut. The only Go differences from its validation checkout
+are four terminal UI paths absent from the actual 754-package dependency graph;
+normal/race/vet and Linux compile evidence therefore applies by source
+equivalence, without claiming another execution. The affected legacy constructor
+and storage format checks remain in the selected regression scope.
+
+This lands the pending Manager, original-pool initialization and genuine-claim
+fixtures only. Production Server/root/worker activation, partial initialization
+and cancellation, named format-4 persistence and existing-job continuity remain
+open as recorded in the normalized validation file.

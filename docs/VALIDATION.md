@@ -1,5 +1,27 @@
 # Validation record
 
+## Original Manager assembly — selected native scope qualified
+
+The six Manager sources retain the reviewed ordinary sync2 selection and match
+the existing Manager/storage/module/refusal baselines. A static comparison of all
+19 fresh base DDLs with the legacy constructor passes. Actual normal checks pass
+12 roots/72 names; race checks pass 10 roots/25 names, including all three
+constructor and two genuine-claim roots. Four affected packages pass default vet.
+The actual graph has 754 packages/63 official modules, all authenticated before
+and after against root checksums; no replacements, acquisition or cache repairs
+were used. Source guards passed, original envelopes joined and actual temps
+were empty. See the [source-bound record](validation/resident-original-manager-2026-10-30.json).
+The latter use an original owned test child, actual native issuer/view/claim and
+original database/pool binding; they fabricate no positive authority. The Manager
+fixture reaches real schema/helper initialization and same-issuer Server binding
+without starting loops. A fixture process boundary supplies no product Closed,
+service grant or resource credit. The affected legacy/sync/format controls passed. Linux amd64 and arm64 exact
+claim-fixture test binaries compile with CGO disabled against actual target
+graphs (704 and 703 packages, respectively; 60 authenticated official modules
+each). Artifacts are retained by normalized size/hash and were never executed;
+no foreign native/runtime behavior is established. Production
+startup, worker replacement and original run/proxy continuity remain open gates.
+
 ## Official-driver database owner — selected actual normal and race scope
 
 The [source-bound record](validation/resident-standard-database-owner-2026-10-30.json)
@@ -11410,3 +11432,18 @@ artifacts for Linux amd64 and arm64, each after its actual target dependency
 graph and checksum verification. Both original compile command handles joined;
 neither artifact executed. These are compilation results, not Linux runtime or
 upgrade-continuity acceptance.
+
+## Original Manager assembly — composed review accepted
+
+The focused Manager cut is accepted as an unconnected library assembly after
+independent final-source and original-receipt review. All seven source hashes
+match the qualified cut. The only Go differences from its validation checkout
+are four terminal UI paths absent from the actual 754-package dependency graph;
+normal/race/vet and Linux compile evidence therefore applies by source
+equivalence, without claiming another execution. The affected legacy constructor
+and storage format checks remain in the selected regression scope.
+
+This lands the pending Manager, original-pool initialization and genuine-claim
+fixtures only. Production Server/root/worker activation, partial initialization
+and cancellation, named format-4 persistence and existing-job continuity remain
+open as recorded in the normalized validation file.
