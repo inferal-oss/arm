@@ -5622,3 +5622,13 @@ All terminal product/tests remain exactly the green-tested bytes. Visible focus
 follows its surviving ID or a clamped replacement, while unchanged polling and
 deliberate offscreen page reading retain their position. No chart-selection,
 transport or backend behavior changed.
+
+
+## Resident image candidate boundary
+
+A private unintegrated mesh candidate retains runtime capture/pin operations,
+rehashes the readonly destination after writable-close, retires its own source
+reference and binds nonclosing image aliases to one exact private command.
+Review corrected cancellation and ownership-test coverage. Only pre-effect
+refusal paths and package vet are qualified; successful pin/close/binding and
+actual root/child handoff have not run. Current product behavior is unchanged.

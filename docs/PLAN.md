@@ -4369,3 +4369,14 @@ The entire terminal-package tree equals the tested owner tree; the only other
 product differences are the independently accepted onboarding-name packages,
 outside the terminal dependency path. Documentation conflicts preserve both
 coordination and owner records. Broader UX/native gates remain open.
+
+
+## Resident image primitives — pre-effect qualification only
+
+The unintegrated eight-file mesh candidate now passes eight selected negative
+roots and affected package vet. The reviewed source covers original runtime
+custody, private image pinning, source-reference retirement and nonclosing P1
+command/image binding. Positive native effects remain untested. Actual service
+funding, fresh-fence/all-thirteen-reference composition, sender/child/ACK and
+public start/worker/run/proxy continuity remain separate implementation and
+validation gates. This record does not land or activate the candidate.

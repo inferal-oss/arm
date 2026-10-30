@@ -11987,3 +11987,21 @@ import review places those changes outside this terminal test dependency path.
 No composed rerun or fresh dependency graph is claimed. This accepts the
 focused ordinary-model fix, with all native, reading/hit, rendering, full-suite
 and earlier failed-scope limitations unchanged.
+
+
+## Resident image/P1 source — eight negative roots and vet
+
+The [normalized record](validation/resident-image-p1-negative-2026-10-30.json)
+binds eight new mesh source/test files to a 3,163-file older-base candidate.
+Normal CGO-disabled qualification passed eight unique pre-effect negative roots
+and default mesh vet. The actual graph had 657 packages/51 official modules;
+all referenced module metadata, archives and expanded sources authenticated
+before and after. Three original commands and the shared-FIFO control joined
+with exit 0 in 12.857 seconds, empty temporary inventories and unchanged pins.
+Coordinator review independently verified the six command-output hashes, exact
+raw run/pass pairs, module map and normalized candidate hashes.
+
+This is unintegrated source qualification, not current-main or binary acceptance.
+No positive capture/pin/reference-close/binding, native Start, child image/ACK,
+real funding, root/Manager/database/Server activation or original-child upgrade
+continuity was exercised. Earlier wrapper/permission failures remain separate.
