@@ -2340,3 +2340,35 @@ plus isolated F1/F2 controls use separate normal-FIFO commands, each <=115s,
 CPU <=2 and memory target <=2GiB. No owner asset/native build, environment setup,
 installation, real effect or ARM adoption/lease is granted. Review/composition
 and central current-main rebuild remain required before product acceptance.
+
+
+## Bootstrap checkpoint — prerequisites before physical schema
+
+The reply-only upgrade checkpoint identifies two missing boundaries before an
+actual pending-resident writer can be approved. These are source/interface
+findings, not newly executed failures of ordinary ARM:
+
+- The pinned `modernc.org/sqlite v1.60.1` constructor can discard a partial
+  connection after calling Close. Its close-v2 path can acknowledge before
+  outstanding objects finish, as documented by
+  [SQLite](https://sqlite.org/c3ref/close.html). Selected Darwin VFS source also
+  logs a native close error without propagating it through its success result.
+  A future original Closed proof needs retained actual connection/task/VFS
+  outcomes; an outer sql.DB wrapper or close-function substitution is inadequate.
+  Investigate the smallest bootstrap-only retention integration using the same
+  pinned engine before selecting a fork, replacement or private binding.
+- Explicit operator-funded cold-start infrastructure is the selected PROPOSED
+  allowance direction for fresh-home resident startup. This changes no current
+  policy or permission. Exact local review must bind finite active/profile/home/
+  config/key/reason and diagnosis/retained-debt entitlement. Headroom/configuration
+  alone is no grant. Expiry, finite retention exhaustion and a pre-genesis crash/
+  exit fence against older writers need concrete resolution before effects.
+
+The next upgrade response is a source-only selected-platform SQLite/driver/VFS/
+libc/cancellation ownership trace and bounded original-native proof plan. No new
+source/API/module/DDL/policy, compile/test/profile, native fixture, forced teardown,
+backend or installation is allocated. Platform selection, actual VFS outcomes,
+source identity and original TLS/statement lifetime must be qualified before
+granted proof execution. No standalone helper/contract milestone completes the
+required first/repeated `arm start` and compatible distinct-version API/UI job
+preservation. Prior branches/artifacts remain frozen.
