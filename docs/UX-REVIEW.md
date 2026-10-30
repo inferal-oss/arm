@@ -409,3 +409,19 @@ information. A focused informational/guard correction is allocated, preserving
 all private token and uncertain-outcome boundaries. Sampled geometry alone found
 no clipping defect; tall dense content still scrolls. Correction/current-source
 composition, full dense-prose reach, actual effects and full UX remain open.
+
+
+## Forwarding prepared review correction boundary
+
+The [owner correction](validation/ux-forwarding-review-2026-10-29.json) addresses
+F1 reconnect guidance and F2 complete captured review information. Reason/lifetime
+remain exact after editable fields change, with concise snapshot guidance and
+no new retry instruction or authority. Existing private-leaf ownership and all
+sent/uncertain/reprepare/dispose guards remain intact. Layout is scoped only to
+the existing prepared Card and native description parts.
+
+Painted text Range reach is distinguished from tall grid-cell geometry; failed
+cell-centering and TDZ fixtures remain historical. Four final positive cases,
+two isolated source controls and passing native/module checks support owner
+handoff, not independent acceptance. No real forwarding mutation, build/install
+or global Dialog/grid/theme change occurs.

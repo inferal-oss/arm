@@ -4059,3 +4059,21 @@ that form edits do not mutate, while omitting reason/lifetime from its summary.
 A future informational correction must expose the full prepared snapshot without
 changing that immutable request or private token, retry, uncertainty and admission
 semantics. No listener or forwarding behavior changes in the inventory cut.
+
+
+## Captured forwarding review presentation
+
+Disconnected exact-status inspection now gives reconnect guidance without a read.
+Online malformed-key wording/validator and exact RPC arguments remain unchanged.
+The prepared Card displays eight labeled captured-request fields, including full
+reason and exact nanoseconds/minutes, with an edits-do-not-update statement. It
+reads no current editable input and gives no reprepare/retry instruction.
+
+A noninteractive native Card scope contains/wraps this review, preserves whitespace
+with break-spaces and stacks description labels/values at compact/medium widths.
+Dialog/close/grid/theme and interactive types remain unchanged. The
+[source inverse guard](validation/ux-forwarding-review-2026-10-29.json) restores
+the entire native forwarding module to its inventory base after only F1/F2
+presentation inverses: prepare/start/sent/uncertain/private-leaf prefix, original
+request/key/token, callbacks, historical statusLine/listener cards, pending/retry
+and admission behavior stay exact. No automatic uncertain credential erasure.
