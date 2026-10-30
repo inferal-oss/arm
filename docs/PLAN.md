@@ -3299,3 +3299,21 @@ inputs only; graph mismatch, checksum, budget or cleanup uncertainty stops witho
 retry. No compile, tests, source execution, shared cache or ARM graph change.
 Normal validation remains separately gated on the actual receipt/cache and full
 1,902-file before/after candidate guard.
+
+
+## Native lease reading — first runtime stopped; harness correction returned
+
+The exact `9b6b560` source compiled successfully with a fresh binary and 62-input
+receipt; independent review verifies all 71 build artifacts and unchanged inputs.
+The one native runtime attempt then failed at its first detail-tail predicate:
+one 72-column checkpoint, viewport 33/18 at offset zero, and no browser/replay.
+Original child/Program/terminal/fake cleanup passed; all preserved artifacts and
+source remained unchanged. This failed attempt grants no 21-frame acceptance.
+
+Source diagnosis identifies an unsupported harness expectation: the original
+detail branch delegates End to the pinned viewport, whose default key map has no
+End action. Earlier direct coverage had already paged down before its End-named
+checkpoint. Return a focused capture-only correction using supported Page Down,
+with new source binding and preserved original failure; no product change or
+automatic retry is authorized. Separately, retained-driver acquisition did not
+start, so exact dependencies and all driver runtime validation remain pending.
