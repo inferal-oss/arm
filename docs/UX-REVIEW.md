@@ -908,3 +908,27 @@ readable, but the modal compositor/shadow containment is a separate P2 product
 layout finding. A later product fix requires focused source/regression review and
 new source/validation bindings; it cannot inherit this capture's acceptance.
 No new runtime or corrective run is authorized by this evidence record.
+
+
+## P2 narrow modal shadow containment — source correction prepared
+
+Owner branch `codex/ux-terminal-modal-shadow` bounds only the offset shadow layer
+to the remaining main-panel width/height before composition. Modal dimensions,
+content wrapping/viewport geometry, origin and trusted mouse coordinates remain
+unchanged; full-width/full-height dialogs retain their complete borders instead
+of being ellipsized by final compositor truncation. No generic fitBlock/theme,
+provider/font/dependency, protocol/backend/upgrade or operator behavior changes.
+
+A prepared regression checks review first/tail and filter at45/70/72/88/89/100/
+110/160 widths: exact border/corner cells, bounded output, unchanged viewport,
+fitting controls, no offscreen review targets and visible trusted hit regions;
+original Keep lease decline must preserve detail and send no mutation. Width-only
+assertions previously masked this defect. Source/formatter review only; the test
+and fix are uncompiled/unexecuted, with no new CPU/browser/runtime window.
+
+Historical [70c evidence](validation/ux-terminal-native-reading-inventory-2026-10-30.json)
+remains unchanged and cannot accept this later product source. presentation.go
+and polish_test.go intentionally differ from the original classifier/source map;
+old native fixture guards must continue to reject them. Separate source review,
+ordinary regression allocation and explicitly reviewed updated source/classifier/
+helper/build/capture bindings are required before any fixed-source native run.
