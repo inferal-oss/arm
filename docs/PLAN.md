@@ -4313,3 +4313,16 @@ conflict was resolved by retaining the current coordinator records and appending
 the owner's implementation record. Native generated-title compatibility and
 Claude title discovery remain outside this acceptance; the first validation
 attempt's recorded cleanup uncertainty is preserved.
+
+## Resident standing authorization — scoped source qualification
+
+Coordinator review accepts the frozen finish-context V5 and accounting V2
+materialization's normal data/negative qualification: 18 roots/99 named cases,
+four original commands joined successfully, with official dependencies checked
+before and after. This is an older-base private source cut, not integrated
+resident service activation. The actual production issuer, positive inherited
+root lineage, settlement omission control and original run/proxy child survival
+across worker replacement remain gates. The separate external-measurement
+authority contract supplies direction only; its concrete supervisor and funded
+uncertainty-tail capability are still missing. No measurement interface or
+production grant is authorized by this qualification.

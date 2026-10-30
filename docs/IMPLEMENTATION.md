@@ -5575,3 +5575,11 @@ Coordinator composition preserves the exact tested product tree. Review covered
 metadata-only title parsing, exact directory association, display sanitization,
 unchanged ordinary session parameters and unchanged onboarding review/apply
 scope. No backend, identity, module or shared command-dispatch change is included.
+
+## Resident standing-source qualification boundary
+
+The private standing-authorization/accounting draft passed its selected normal
+data and refusal tests with the official driver intact. These unpublished
+source packets have not been applied to the product tree. There is still no
+accepted externally funded measurement-root construction or positive production
+service grant/root handoff. Existing installed processes are unchanged.

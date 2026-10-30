@@ -11902,3 +11902,27 @@ all 1,792 Go/module inputs still match the tested manifest. Only documentation
 composition differed, so no additional execution is claimed. This accepts the
 focused synthetic normal scope, with the native, rendering and prior failed-run
 limitations above unchanged.
+
+## Resident standing source — normal data/negative gate
+
+Frozen qualification V3 (`53e7dcfe`) materialized the accepted finish-context V5
+and conservative accounting V2 over the earlier original-server source. Its
+3,155-file/1,804-Go-file input tree remains distinct from current main. The
+normal CGO-disabled gate passed service 9 roots/47 named cases, accounting
+4 roots/4 cases and CLI 5 roots/48 cases, with no failures or skips. All four
+original sandbox/Go command envelopes and the original shared-FIFO process
+joined with exit 0 in 34.667 seconds. Temporary Go, test and GOPATH inventories
+were empty; source/compiler/support checks were unchanged. Actual dependency
+graph discovery found 800 packages/84 official modules; module metadata,
+archives and expanded sources authenticated before and after, with equal
+results and no replacements or downloads.
+
+Coordinator review independently checked all eight command-output hashes and
+the unique raw run/pass pairs, exact root rosters and package results. Owned
+storage observations remain sampled and retained without physical-reclamation
+credit. This qualifies declarations/data/refusal and reporting paths only:
+there was no real operator apply, positive grant/commit, inherited resident
+root, worker or workload. No race, later-main, native-C, measured-profile or
+original-child continuity acceptance follows. The external measurement owner
+and its actual containment/funded uncertainty tail remain a separate source
+and execution gate.
