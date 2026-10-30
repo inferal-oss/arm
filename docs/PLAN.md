@@ -1,5 +1,36 @@
 # ARM delivery plan
 
+## Nodes/Kubernetes inventory — reviewed findings and bounded correction
+
+Read-only inventory `ac3230c` matches 28 unique source/contract hashes and 138
+retained artifacts. Source/visual review supports narrow roster-title clipping,
+Node title/trust/grant/body horizontal overflow, Kubernetes card/grid overflow
+and selected-scale technical label/value clipping. Native dialog End is only a
+recorded scroll observation, not standalone proof that a metadata tail cannot
+be read; reader-specific range/scroll validation remains required.
+
+Allocate focused app-owned fixes in the existing Mesh helper and appended app
+styles: noninteractive roster/grid/card/header/action containment; Node-specific
+body/trust/grant/metadata containers; Kubernetes inventory/card and technical
+description allocation. Preserve full labels/IDs/units/quantities, the 64-field
+summary cap/omission notice, exact reader bytes/truncation, binding/UID maps and
+all lifecycle/permission/operator callbacks. Generic modal/row helpers, availability,
+formatters/validators and other workflow implementations remain protected.
+Keep native interactive types and use existing noninteractive markers. Node-only
+native header/panel styles may be scoped through that body marker, with panel
+width at most 72rem and existing viewport gutters/max-height/scroll/lifecycle;
+no global Dialog/Card/Grid/theme or shared focus changes. Return before changing
+native height/overflow/anchor policy or widening any other surface.
+
+Require complete title/trust/description reading and nonoverlap, meaningful
+control allocation, exact first/middle/final reader ranges and unchanged refresh/
+focus/Escape/late-reply/reconnect/context selection behavior. Browser fixtures
+remain strict synthetic reads, with no operator/availability/remote/cluster
+mutation or discovery. Focused commits, exact source/negative controls and
+sequential original-FIFO cohorts stay within 120s/two CPU/two GiB with positive
+original cleanup. No owner asset/Go build, backend/schema/module/CLI/install,
+environment, new task or subagent is allocated; current-main assets are central.
+
 ## Shared dialogs — independently reviewed composition
 
 Inventory `be9af44` and focused corrections `0280f4f`, `c0045a3`, `9fb2e96`,
