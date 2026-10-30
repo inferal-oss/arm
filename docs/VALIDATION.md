@@ -11660,3 +11660,28 @@ hashes and exact accepted-base bytes. The composed diff contains only the six
 review documents. No test, compiler, native fixture or browser ran. The next
 bounded step is preparation and review of two ordinary-model roots/22 cases;
 no product correction or execution allocation follows from this source review.
+
+
+## Terminal Monitor focus — failed initial collection, no defect acceptance
+
+The first two-root/22-case allocation used frozen owner source `74513de` and
+test SHA-256 `f87b9a227f3e373850d84f8c33ffd9d594efea5bb717482301d332fd8aa4c706`.
+Independent preflight checked the packet, 2,019 project plus 5,004 external source
+inputs, tool pins and 20 historical manifests. Source and supervision review
+preceded a single offline FIFO invocation; no product correction was included.
+
+The scratch traversal failed on an owned temporary directory disappearing during
+test cleanup. Collection returned 125, with incomplete output and no terminal
+test results. One complete original pre-transition observation survives; the
+next observation is partial. Neither M1 nor M2 is accepted as reproduced. The
+original FIFO and Go handles were reaped after cancellation; the helper's KILL
+request reported a permission error, and universal descendant cleanup is not
+proved. A subsequent exact-scope absence observation is separately qualified.
+All 67 retained artifact members and their exact roster were independently
+verified unchanged; original temporary/build evidence was not deleted or repaired.
+
+A separate source review found that the test's empty-home cleanup assertion
+incorrectly excluded the constructor-created private recovery lock. That fixture
+error and the sampler require focused source corrections before any new
+allocation. No retry, green result, product fix, native paint or full-UX acceptance
+is inferred. Live ARM state and jobs were outside this disposable ordinary test.

@@ -4126,3 +4126,20 @@ roots/22 cases and their bounded execution proposal. Product corrections and
 execution remain unallocated until those concrete test and supervision bytes
 are reviewed. The additional 19 proposed cases remain outside this first cut.
 No reproduced defect, runtime, paint or full-UX acceptance is claimed.
+
+
+## Terminal Monitor focus — first collection failed; fixture correction pending
+
+The reviewed owner test source `74513de` received one bounded offline FIFO
+allocation for two ordinary-model roots/22 cases. The scratch sampler encountered
+a directory disappearing during test cleanup and cancelled the original work.
+Only the first case started in retained output; no terminal test result or
+complete cleanup record was collected. Neither focus candidate is reproduced
+or accepted. The failed attempt and its source remain preserved.
+
+Independent follow-up also found that the fixture's empty-home assertion ignored
+the constructor's intentional private recovery lock. The existing owner may
+prepare a narrowly scoped bookkeeping assertion and sampler correction for
+review. Product edits, retries, the additional 19 cases and native/browser work
+remain unallocated. The original FIFO and Go handles were reaped; a later scoped
+process absence observation does not establish a retained descendant join.
