@@ -1,0 +1,176 @@
+{
+  "schema": 1,
+  "scope": "Optional display-only session names on existing onboarding directory suggestions",
+  "source_base": "40ea2b39a4666a348be3a7e54b28ef81e42111be",
+  "source_inputs": {
+    "tracked_go_and_module_files": 1792,
+    "manifest_sha256": "41bb050fce7eeef8506dc15a476b036afdaa01f59a7ab1e41c69b5ead2b4adda",
+    "changed_files_sha256": {
+      "internal/agentprojects/discovery.go": "7aca6ea4f3e05613ba44d61aa83bf0d86495106dd5f14f1f30d453f07baa1a7d",
+      "internal/agentprojects/titles.go": "674b41ba672a9fe1bb25d5c5aa5e522ab811fb5033d09f020debccbfa5c62405",
+      "internal/agentprojects/titles_test.go": "4034227943d7bc960acfbd1631a95f5d9b2f9d4af1da79f4fc76205227a95083",
+      "internal/agentsessions/codex.go": "b54c1af8ff83928014868805457f03c64496010020e672ce59ada18e2e1e6190",
+      "internal/agentsessions/titles.go": "3bfe4aa1af38084816371b829a857f72c7b82608e0591ea963d0ab33dbc6c383",
+      "internal/agentsessions/sessions_test.go": "4d2d79da972fd4d5489dc3628656fd7bf508ea2cd8f0a81593afd72298b40325",
+      "internal/cli/rollout_onboard.go": "c3ec13b3e28e6d69c5be60c2d8e2119c802c967a0314f0b1e8bd0461c5cd5ada",
+      "internal/cli/rollout_onboard_test.go": "afc3bf07f0cb3e7162667d1108adbf6c807757faeea1cb361cbd8e527ab23b67"
+    }
+  },
+  "validation": {
+    "status": "normal fixture cohort passed; independent integration review pending",
+    "compiler": "go1.27.3",
+    "platform": "darwin/arm64",
+    "cgo": false,
+    "package_parallelism": 1,
+    "gomaxprocs": 2,
+    "packages": [
+      "internal/agentsessions",
+      "internal/agentprojects",
+      "internal/cli"
+    ],
+    "selector": "^Test(NativeMetadata|CodexMetadata|ClaudeSession|NativeProject|Discovery|ProjectTitles|RolloutOnboard)",
+    "root_tests": 25,
+    "named_nodes": 44,
+    "skips": 0,
+    "failures": 0,
+    "expected_root_roster": [
+      {
+        "package": "agentsessions",
+        "name": "TestNativeMetadataHelper"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexMetadataUsesReadOnlyAPIAndIgnoresConversationFields"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestClaudeSessionMarkersAreBoundedAndUnverified"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestNativeMetadataMissingUnsafeAndMalformed"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexMetadataTitlesCancellationJoinsProxy"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestNativeProjectDiscoveryMergesDirectoriesWithoutPrivateContent"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestDiscoveryMissingUnsafeAndUnsupportedMetadataIsReadOnly"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestDiscoveryCanonicalPathsCancellationAndBudgets"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestDiscoveryKeepsSelectedAndSessionHintsAtCatalogLimit"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestProjectTitlesCatalogBudgets"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestProjectTitlesExactAssociationSharedDirectoriesAndFallback"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestProjectTitlesSanitizeAndBoundRendering"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardReadinessAndStaleReviewCannotApply"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardCanSaveDisabledProjectWithoutInstructions"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardSkipsRemovedProjectIdentity"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardActiveReplacementWinsOverRemovedFence"
+      }
+    ],
+    "original_go_exit": 0,
+    "original_helper_exit": 0,
+    "original_fifo_exit": 0,
+    "original_wrapper_exit": 0,
+    "original_handles_joined": true,
+    "output_eof": true,
+    "output_bytes": 41250,
+    "truncated": false,
+    "forced_cleanup": false,
+    "temporary_files_empty": true,
+    "source_inputs_reverified": 1792,
+    "tool_pins_reverified": 12,
+    "scratch": {
+      "final_stable_enumeration": true,
+      "intermediate_deferred_unknown_samples": 3,
+      "observed_identity_charges_never_decrease": true,
+      "reclamation_credit": false,
+      "qualification": "Sampled metadata only; no atomic snapshot, kernel resource-limit, shared-cache growth or physical reclamation claim."
+    }
+  },
+  "prior_attempt": {
+    "status": "failed supervision; no full cohort acceptance",
+    "cause": "Intentional fixture symlink under the Go temporary root was outside the initial sampler allowlist. The correction permits only no-follow metadata accounting under either owned temporary root.",
+    "original_go_exit": -15,
+    "original_fifo_exit": 125,
+    "recorded_kill_permission_error": true,
+    "output_eof": false,
+    "scratch_retained": true,
+    "cleanup_uncertainty_retained": true,
+    "later_success_does_not_cure_prior_uncertainty": true
+  },
+  "limitations": [
+    "Native generated desktop-title compatibility unverified; only supported persisted thread.name metadata is used.",
+    "Claude titles are unsupported.",
+    "Title enrichment covers at most 16 exact suggested roots and 512 native sessions; all directory choices remain selectable.",
+    "No native client read, backend, real enrollment, terminal/browser capture, race suite or broader full-suite acceptance."
+  ],
+  "contract_reference": "https://learn.chatgpt.com/docs/app-server"
+}

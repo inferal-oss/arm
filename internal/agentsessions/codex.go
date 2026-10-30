@@ -21,6 +21,25 @@ type Codex struct {
 
 func (Codex) Name() string { return "codex" }
 func (c Codex) Discover(ctx context.Context) Result {
+	return c.discover(ctx, nil)
+}
+
+// DiscoverTitles reuses the bounded metadata-only reader without exposing titles
+// through session discovery or changing its identity contract.
+func (c Codex) DiscoverTitles(ctx context.Context, roots []string) TitleResult {
+	c.Roots = roots
+	names := map[string]string{}
+	result := c.discover(ctx, names)
+	out := TitleResult{Warnings: result.Warnings}
+	for _, session := range result.Sessions {
+		if name := names[session.ID]; name != "" {
+			out.Titles = append(out.Titles, Title{Directory: session.CWD, Name: name, Updated: session.Updated})
+		}
+	}
+	return out
+}
+
+func (c Codex) discover(ctx context.Context, names map[string]string) Result {
 	out := Result{Adapter: "codex", Sessions: []Session{}, Warnings: []string{}}
 	fail := func() Result {
 		out.Sessions = []Session{}
@@ -108,6 +127,7 @@ func (c Codex) Discover(ctx context.Context) Result {
 		var response struct {
 			Data []struct {
 				ID      string          `json:"id"`
+				Name    json.RawMessage `json:"name"`
 				CWD     string          `json:"cwd"`
 				Created json.RawMessage `json:"createdAt"`
 				Updated json.RawMessage `json:"updatedAt"`
@@ -118,6 +138,11 @@ func (c Codex) Discover(ctx context.Context) Result {
 			Next string `json:"nextCursor"`
 		}
 		params := map[string]any{"limit": 100, "archived": false, "useStateDbOnly": true, "sortKey": "updated_at", "sortDirection": "desc", "cwd": c.Roots}
+		if names != nil {
+			// Desktop tasks can use appServer rather than the native default
+			// cli/vscode source kinds. This affects display metadata only.
+			params["sourceKinds"] = []string{"cli", "vscode", "appServer"}
+		}
 		if cursor != "" {
 			params["cursor"] = cursor
 		}
@@ -136,6 +161,12 @@ func (c Codex) Discover(ctx context.Context) Result {
 			if e == nil && seen[s.ID] == "" {
 				out.Sessions = append(out.Sessions, s)
 				seen[s.ID] = s.Generation
+				if names != nil {
+					var name string
+					if json.Unmarshal(thread.Name, &name) == nil {
+						names[s.ID] = name
+					}
+				}
 			}
 		}
 		if response.Next == "" {

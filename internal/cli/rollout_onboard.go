@@ -16,6 +16,8 @@ import (
 	"charm.land/lipgloss/v2"
 	"getarm.org/internal/activation"
 	"getarm.org/internal/agentprojects"
+	"getarm.org/internal/agents"
+	"getarm.org/internal/agentsessions"
 	"getarm.org/internal/install"
 	"getarm.org/internal/model"
 	"getarm.org/internal/rollout"
@@ -82,7 +84,8 @@ func (a *app) rolloutOnboard(args []string) error {
 	}
 	var adapters []agentprojects.Adapter
 	if *adapter == "all" || *adapter == "codex" {
-		adapters = append(adapters, agentprojects.Codex{Home: *codexHome})
+		binary, _ := agents.Binary("codex")
+		adapters = append(adapters, agentprojects.WithTitles{Adapter: agentprojects.Codex{Home: *codexHome}, Source: agentsessions.Codex{Home: *codexHome, Binary: binary}})
 	}
 	if *adapter == "all" || *adapter == "claude" {
 		adapters = append(adapters, agentprojects.Claude{Home: *claudeHome, ConfigFile: *claudeConfig})
@@ -220,7 +223,14 @@ func (i onboardItem) Title() string {
 			sources = append(sources, e.Adapter)
 		}
 	}
-	return terminalSafe(filepath.Base(i.project.Directory)) + "  ·  " + terminalSafe(strings.Join(sources, " + "))
+	label := "Directory: " + terminalSafe(filepath.Base(i.project.Directory))
+	if names := i.names(); len(names) > 0 {
+		label = "Session names: " + strings.Join(names[:min(3, len(names))], " · ")
+		if len(names) > 3 {
+			label += fmt.Sprintf(" (+%d more)", len(names)-3)
+		}
+	}
+	return label + "  ·  " + terminalSafe(strings.Join(sources, " + "))
 }
 func (i onboardItem) Description() string {
 	if i.manual {
@@ -238,7 +248,21 @@ func (i onboardItem) Description() string {
 	}
 	return terminalSafe(i.project.Directory) + " · " + strong
 }
-func (i onboardItem) FilterValue() string { return i.Title() + " " + i.Description() }
+func (i onboardItem) names() []string {
+	names := []string{}
+	for _, raw := range i.project.Names {
+		name := agentprojects.SanitizeTitle(raw)
+		if name != "" && !slices.Contains(names, name) {
+			names = append(names, name)
+		}
+	}
+	slices.Sort(names)
+	return names
+}
+
+func (i onboardItem) FilterValue() string {
+	return i.Title() + " " + i.Description() + " " + strings.Join(i.names(), " ")
+}
 
 type rolloutOnboardModel struct {
 	ctx                               context.Context

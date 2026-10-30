@@ -22,7 +22,8 @@ const maxBytes = 4 << 20
 const maxProjects = 512
 
 // Adapter is the extension point for supported client project catalogs.
-// Implementations return only directory evidence, never conversations or IDs.
+// Implementations return directory evidence and optional display names, never
+// conversations, prompt previews or session IDs.
 type Adapter interface {
 	Name() string
 	Discover(context.Context) Result
@@ -35,6 +36,7 @@ type Evidence struct {
 type Project struct {
 	Directory string     `json:"directory"`
 	Evidence  []Evidence `json:"evidence"`
+	Names     []string   `json:"session_names,omitempty"`
 }
 type Result struct {
 	Adapter  string    `json:"adapter"`
@@ -58,6 +60,12 @@ func Discover(ctx context.Context, adapters []Adapter) Catalog {
 		for _, project := range result.Projects {
 			if index, ok := byPath[project.Directory]; ok {
 				out.Projects[index].Evidence = append(out.Projects[index].Evidence, project.Evidence...)
+				for _, name := range project.Names {
+					if !slices.Contains(out.Projects[index].Names, name) {
+						out.Projects[index].Names = append(out.Projects[index].Names, name)
+					}
+				}
+				slices.Sort(out.Projects[index].Names)
 			} else if len(out.Projects) < maxProjects {
 				byPath[project.Directory] = len(out.Projects)
 				out.Projects = append(out.Projects, project)

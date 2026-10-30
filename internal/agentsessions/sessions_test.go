@@ -2,10 +2,12 @@ package agentsessions
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"syscall"
 	"testing"
@@ -35,6 +37,13 @@ func TestNativeMetadataHelper(t *testing.T) {
 		if request.Method == "thread/list" {
 			if roots, ok := request.Params["cwd"].([]any); !ok || len(roots) == 0 {
 				os.Exit(16)
+			}
+			if os.Getenv("ARM_NATIVE_METADATA_TITLES") == "1" {
+				if !reflect.DeepEqual(request.Params["sourceKinds"], []any{"cli", "vscode", "appServer"}) {
+					os.Exit(17)
+				}
+			} else if _, exists := request.Params["sourceKinds"]; exists {
+				os.Exit(18)
 			}
 			if request.Params["useStateDbOnly"] != true || request.Params["archived"] != false {
 				os.Exit(12)
@@ -148,5 +157,88 @@ func TestNativeMetadataMissingUnsafeAndMalformed(t *testing.T) {
 		if _, e := Normalize(bad); e == nil {
 			t.Fatal(fmt.Sprintf("unsupported metadata accepted: %+v", bad))
 		}
+	}
+}
+
+func TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity(t *testing.T) {
+	home, cwd := t.TempDir(), t.TempDir()
+	executable, e := os.Executable()
+	if e != nil {
+		t.Fatal(e)
+	}
+	script := filepath.Join(t.TempDir(), "codex")
+	quoted := "'" + strings.ReplaceAll(executable, "'", "'\\''") + "'"
+	if e = os.WriteFile(script, []byte("#!/bin/sh\nexec "+quoted+" -test.run '^TestNativeMetadataHelper$'\n"), 0700); e != nil {
+		t.Fatal(e)
+	}
+	t.Setenv("ARM_NATIVE_METADATA_HELPER", "1")
+	id := uuid.NewString()
+	source := Codex{Home: home, Binary: script, Roots: []string{cwd}}
+	var generation string
+	for _, tc := range []struct {
+		name  string
+		value any
+		want  string
+	}{
+		{"named", "Fix resource picker", "Fix resource picker"},
+		{"renamed", "Review shared directory", "Review shared directory"},
+		{"missing", nil, ""},
+		{"malformed", map[string]string{"text": "unsupported"}, ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			testJSON(t, filepath.Join(home, "threads-fixture.json"), map[string]any{"data": []any{map[string]any{
+				"id": id, "cwd": cwd, "name": tc.value, "createdAt": 1760000000, "updatedAt": time.Now().Unix(),
+				"preview": "PRIVATE_PROMPT", "title": "UNSUPPORTED_TITLE", "status": map[string]string{"type": "idle"},
+			}}})
+			t.Setenv("ARM_NATIVE_METADATA_TITLES", "")
+			sessions := source.Discover(t.Context())
+			if len(sessions.Sessions) != 1 {
+				t.Fatal(sessions)
+			}
+			if generation == "" {
+				generation = sessions.Sessions[0].Generation
+			}
+			if generation != sessions.Sessions[0].Generation {
+				t.Fatal("title changed session identity")
+			}
+			raw, _ := json.Marshal(sessions)
+			if strings.Contains(string(raw), "Fix resource") || strings.Contains(string(raw), "PRIVATE_") || strings.Contains(string(raw), "Review shared") {
+				t.Fatal("title leaked into identity discovery", string(raw))
+			}
+			t.Setenv("ARM_NATIVE_METADATA_TITLES", "1")
+			titles := source.DiscoverTitles(t.Context(), []string{cwd})
+			if len(titles.Warnings) != 0 {
+				t.Fatal(titles)
+			}
+			if tc.want == "" {
+				if len(titles.Titles) != 0 {
+					t.Fatal("inferred unsupported title", titles)
+				}
+			} else if len(titles.Titles) != 1 || titles.Titles[0].Name != tc.want || titles.Titles[0].Directory != sessions.Sessions[0].CWD {
+				t.Fatal(titles)
+			}
+		})
+	}
+	t.Run("unavailable", func(t *testing.T) {
+		source.Binary = "/nonexistent"
+		got := source.DiscoverTitles(t.Context(), []string{cwd})
+		if len(got.Titles) != 0 || len(got.Warnings) == 0 {
+			t.Fatal(got)
+		}
+	})
+}
+
+func TestCodexMetadataTitlesCancellationJoinsProxy(t *testing.T) {
+	home, cwd := t.TempDir(), t.TempDir()
+	script := filepath.Join(t.TempDir(), "codex")
+	if e := os.WriteFile(script, []byte("#!/bin/sh\nexec /bin/sleep 30\n"), 0700); e != nil {
+		t.Fatal(e)
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 40*time.Millisecond)
+	defer cancel()
+	start := time.Now()
+	out := (Codex{Home: home, Binary: script}).DiscoverTitles(ctx, []string{cwd})
+	if len(out.Titles) != 0 || len(out.Warnings) == 0 || time.Since(start) > 2*time.Second {
+		t.Fatal("proxy cancellation did not return promptly", out)
 	}
 }

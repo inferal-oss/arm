@@ -11858,3 +11858,38 @@ source gate cannot establish composed-main, later-binary, measured-profile or
 native C-runtime equivalence. No Go metadata, compiler, test or actual operator
 plan/apply ran. Positive real-issuer, partial-write/ACK and original root/worker/
 job-continuity validation remain open, and installed/live ARM is unchanged.
+
+
+## Onboarding session-name fixtures — scoped normal cohort passed
+
+The isolated onboarding change adds fixtures for exact title/directory
+association, shared and duplicate names, dormant-title retention, undated/future fallback, catalog
+root/entry/deadline budgets, sanitized long labels and search, optional malformed
+native `name`, unchanged session generations and exact onboarding review/apply
+scope, plus bounded proxy cancellation. The CLI discovery fixture uses an
+exit-only synthetic client instead of installed native client metadata.
+
+Source formatting and whitespace review pass. The first allocated three-package
+normal cohort was cancelled by the scratch sampler after three existing roots
+passed: intentional fixture symlinks appeared under the Go test temporary root,
+while the sampler allowlist covered only the general temporary root. The original
+FIFO and Go handles joined, but cleanup retained a KILL permission error, missing
+output EOF and nonempty scratch. This failed attempt establishes no full cohort
+acceptance or cleanup/reclamation credit. The source/tool checks remained exact.
+A source-only sampler correction allows charged no-follow metadata for intentional
+symlink/FIFO entries under either owned temporary root.
+
+The separately allocated corrected normal cohort passes 25 roots/44 named nodes
+across session metadata, project discovery and CLI onboarding, with no skips.
+Original Go/helper/FIFO/wrapper exits are 0, full output EOF is confirmed, temporary
+files are empty, and final sampled scratch enumeration is stable. All 1,792
+tracked Go/module inputs and 12 tool pins remain unchanged before/after. Three
+intermediate scratch measurements are explicitly deferred/unknown; observed
+identity charges never decrease and no physical reclamation is claimed. The
+first failed attempt retains its own output/descendant/scratch uncertainty.
+
+The [normalized scoped evidence](validation/rollout-onboard-session-labels-2026-10-30.json)
+records source hashes, exact root roster, closure checks and limitations.
+Independent coordinator integration review remains pending.
+No real client metadata, backend, agent enrollment or terminal/browser capture is
+part of this evidence. Native client-version compatibility remains unverified.

@@ -4292,3 +4292,16 @@ metadata without transcript-derived names or starting client services. Fixture
 association/fallback/privacy/layout and unchanged onboarding regressions, source
 review and bounded validation remain gates. Shared CLI/backend/schema/module
 changes require central review; no implementation or execution is accepted yet.
+
+
+## Onboarding directory session names — focused implementation
+
+Branch `codex/rollout-onboard-session-labels` decorates discovered directories
+with optional native session names. The title adapter is separate from session
+identity, fingerprints and enrollment. Exact directory association, sorted shared
+names, safe bounded labels/search and directory-only fallback are implemented.
+Codex reuses the bounded metadata-only proxy reader; Claude title discovery is
+unsupported. The scoped normal fixture cohort passes 25 roots/44 named nodes
+against unchanged product bytes; independent coordinator integration review
+remains pending. A first failed supervision attempt and its cleanup uncertainty
+remain retained separately. No native client or rendering acceptance is claimed.
