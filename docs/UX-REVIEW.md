@@ -535,3 +535,27 @@ presentation arbitration. No product, engine, GraphUI/main, private-input/auth
 lifecycle or remediation change is implemented. Top-layer sticky-clip inference
 and native caption/value-glyph limits are explicitly excluded from conclusions.
 Independent review and a separate correction/live acceptance window remain open.
+
+
+## Screen S1 — app-local modal presentation correction
+
+The owner correction `3e0cfcb` leaves active fullViewport after the original
+eligibility guards and before native authentication/Clipboard modal construction.
+Closing stays inline; Fill window explicitly re-enters full view. The same
+client, framebuffer host, Dialog/private inputs and Desktop ownership remain
+intact, with existing Cancel/disconnect/cache clear semantics. Whole-module
+source inverse removes only these two calls.
+
+[Owner evidence](validation/ux-screen-modal-layering-2026-10-29.json) records
+90 positive sampled control-center hits across four geometries and 22 misses
+under the exact inverse at desktop/short phone. Inspected rasters support the
+visible-modal correction. New inverse hit-winning type/role and bounded ancestry
+samples qualify those cases only; original inventory hit/focus/ancestry gaps
+remain unknown. Native captions, allocation, value/scroll and glyph limits stay
+separate; short/doubled-token dialogs require native body scrolling. Keyboard
+and close/re-entry/lifecycle checks are scoped, not exhaustive focus/all-area
+coverage. Original invalid top-layer sticky-clip metrics remain excluded.
+
+Owner implementation and allocated validation are complete; independent current
+composition and real Screen Sharing/full UX acceptance remain open. No live
+authentication, clipboard/network/protocol transfer or remote input was exercised.

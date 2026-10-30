@@ -9963,3 +9963,86 @@ Clipboard rasters support S1 as sampled modal obscuration. Invalid inherited
 sticky-bar clip metrics are excluded; exact hit winners, full runtime
 ancestry/focus/all-area coverage and native glyph paint remain unknown. No new
 runtime/build, real effect, remediation or complete UX acceptance follows.
+
+
+## Screen modal presentation — owner source and runtime cut
+
+The [normalized record](validation/ux-screen-modal-layering-2026-10-29.json)
+binds implementation `3e0cfcb` to accepted base `8c5bd9e`. Removing only two
+`fullView(false)` calls restores the entire Screen module byte for byte. The
+positive Screen SHA-256 is
+`6d462d97d0963a42e8f3460e65e70fbbd69fd3b6d72b19f257573f51b57fa940`;
+the inverse is
+`7160767e1d822292f58150ca3455afba18fb90c34eca497857a728f96a003b28`.
+All 45 frozen inputs agree across three original browser cohorts; 42 existing
+inputs other than Screen remain byte-exact to the base. The earlier inventory
+and source-classification records, original fixtures and thirteen previous
+private evidence sets are unchanged.
+
+One original shared-FIFO core command completes in 1.292s: two clipboard-helper
+tests, three selected Screen explicit-connect/invalid-session/lazy-cancel tests,
+three new production GraphUI/WAT Screen cases and five existing ownership cases.
+The other Screen tests, including populated credential submission and oversized
+clipboard cases, are not part of this roster. Production regression uses actual
+Runtime/projection/EventBus/Islands/GraphUI and checks private sentinel exclusion
+from stored graph terms, native Desktop ownership and guard/lifecycle behavior.
+
+Original browser commands complete in 18.765s (A), 15.233s (B) and 7.086s
+(counterfactual); inner runner times are 18.513s, 14.970s and 6.835s. Each uses
+the unchanged shared FIFO with the allocated 115s limit, sequentially joined.
+A samples 1440×900 and 390×900; B samples 390×320 and 768×600 with selected
+root/text tokens doubled. The inverse samples desktop and short phone only.
+No failed cohort, replacement, new task/window or extra runtime was used.
+
+All fifteen positive modal scenarios start with actual fullViewport/popover
+open, then leave it before the native modal. All 90 sampled field/button
+centers hit their controls; initial title/close and individually scrolled
+control allocations fit. Inspected native screenshots show visible Clipboard
+and empty authentication dialogs. Clipboard button/Escape close and empty
+password auth/header close are sampled at all four geometries; desktop adds
+Clipboard header close, empty two-field auth/Escape and empty three-field
+auth/Cancel. All closes clear and detach the original private fields. Cached
+clipboard text survives ordinary close; existing Cancel disconnects. Native
+client/frame and constructor/load/disconnect/transfer counters are unchanged
+on modal open/ordinary close. Explicit Fill window re-entry and Escape work
+after each positive non-Cancel scenario.
+
+The exact two-call inverse reproduces S1: all 22 sampled centers miss while
+fullViewport remains open in four Clipboard/password-auth intersections.
+Recorded hit-winning types are the existing Remote Mac screen DIV (20 samples)
+and Stack DIV (two short-phone samples), all with an open-popover ancestor and
+null explicit role. This is new counterfactual evidence; the original inventory
+hit identities remain uncollected. Up to ten ancestry elements per sampled
+control are recorded, without claiming complete ancestry/RDF ownership export,
+all-area occlusion or framebuffer rendering.
+
+Initial Clipboard focus is the native dialog SECTION; initial auth focus is
+the first INPUT. One Tab/Shift+Tab sample remains within each positive modal;
+recorded close targets are Clipboard, Fill window or the existing ARM button
+after Cancel. This does not establish full traversal or universal return policy.
+Native textarea first/middle/final selection and actual scroll positions retain
+the approved dummy value; native glyph paint is not measured. Short and
+doubled-token Clipboard uses its native body scroller; controls are sampled
+individually, not asserted visible all at once. Private-field font remains 15px
+at selected token scale two. Label/caption/control/value metrics remain separate.
+
+All four positive geometries also cover stale old-client events against healthy
+full view, pending in-memory clipboard read closed before resolution, actual
+client disconnect with modal open, and public dispose followed by late events.
+No modal/full-view re-entry occurs. Duplicate-open guard ordering is checked
+through original Button events in GraphUI, not claimed as a normal visible UI
+flow. Synthetic pending browser-read counts are A2/B2; no clipboard send, write
+or request occurs. All auth prompts stay empty, populated credential attempts
+and genuine/forbidden/network/protocol effects are zero, and all six original
+sessions report released reads and zero pending synthetic work. Original
+context/browser/server closes return successfully. These API observations do not
+establish OS process reap, heap/GC wipe or main authentication reset.
+
+Only the new fixture skips sticky app-bar subtraction for actual top-layer
+controls; all 38 recorded full-view action samples fit and hit. Original
+inventory top-layer clip exclusions remain frozen. No engine/pin/GraphUI/main/
+app.ttl/global z-index/native sizing/private reparenting/auth/clipboard/protocol
+change or owner build/install/Go/native/PTY/Linux/full-suite run is claimed.
+Resource CPU/memory targets are cooperative, without hard enforcement or an
+ARM grant. Independent composition/rebuild and full live Screen acceptance
+remain separate gates.
