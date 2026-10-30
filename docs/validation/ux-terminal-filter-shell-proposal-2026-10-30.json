@@ -1,0 +1,447 @@
+{
+  "captureContract": {
+    "checkpointCount": 8,
+    "checkpoints": [
+      {
+        "assertions": [
+          "view2, no modal/record/detail; original model identity; default flags retained; offset positive; zero fake calls"
+        ],
+        "input": "After an original initial-output barrier, bounded actual Down keys until original list viewport offset is at least3.",
+        "name": "leases-scrolled"
+      },
+      {
+        "assertions": [
+          "inputMode filter; focused true; value probe-draft; unapplied filter empty; field visible in actual viewport/emulator; viewport starts at top after carried list offset"
+        ],
+        "input": "Original slash key, then one bracketed paste of probe-draft.",
+        "name": "filter-visible"
+      },
+      {
+        "assertions": [
+          "focus retained; offset positive; actual Enter Apply filter and Esc Back controls readable; complete form-row coverage derived from captured offsets/height/total, not guessed equations"
+        ],
+        "input": "Exactly two original SGR wheel-down events in the actual modal body.",
+        "name": "filter-help"
+      },
+      {
+        "assertions": [
+          "value probe-draftq; q did not quit; focus retained; field visible again in actual viewport/emulator; original help scroll did not swallow the edit"
+        ],
+        "input": "One actual typed q key, preserving the original KeyPressMsg Text field.",
+        "name": "filter-edited"
+      },
+      {
+        "assertions": [
+          "trimmed filter probe-draftq; inputMode empty and blurred; selected0; zero matching synthetic leases; zero fake calls"
+        ],
+        "input": "Original Enter.",
+        "name": "leases-applied"
+      },
+      {
+        "assertions": [
+          "focused value probe-draftq-discard visible; existing applied filter remains probe-draftq"
+        ],
+        "input": "Original slash, then bracketed paste -discard.",
+        "name": "filter-discard-draft"
+      },
+      {
+        "assertions": [
+          "inputMode empty and blurred; applied filter still probe-draftq; discarded draft was not applied; zero fake calls"
+        ],
+        "input": "Original Escape.",
+        "name": "leases-cancelled"
+      },
+      {
+        "assertions": [
+          "focused value probe-draftq restored and visible; actual footer [ctrl+c] Exit fully readable within its original in-bounds region; this is the frame used for original footer dispatch"
+        ],
+        "input": "Original slash; capture actual prefix before the final footer press.",
+        "name": "filter-quit-ready"
+      }
+    ],
+    "cleanupGates": [
+      "original child0 and waited",
+      "original termios restored before original slave closes",
+      "slave/master/stream closed",
+      "final drain after child join and slave close distinguishes actual EOF/EIO from quiet",
+      "no truncation, timeout, forced or unknown cleanup"
+    ],
+    "finalFooterPresses": 1,
+    "finalInput": "After final quiet prefix capture, one original full-return SGR left press in actual ctrl+c Exit region. No release is required after Program Quit; no short/error retry. Await actual original child/final receipt, not an invented post-Quit View.",
+    "initialPaste": "probe-draft",
+    "maxDownKeys": 12,
+    "normalExit": "Footer Quit is the only normal exit. New finish drains/joins this original without sending q or Ctrl+C; failure teardown preserves partial streams and never retries input/callbacks.",
+    "originalPopen": "Retain exact new child Popen immediately under cleanup try/finally; inherit owned disposable FIFO group, no setsid/setpgid/PID lookup. Local fallback only original terminate/kill/wait; any fallback/unknown normal join fails.",
+    "prefixes": "Each checkpoint stores a monotonically bounded actual PTY prefix length/hash, complete raw stream reference, original model comparator/state and resize history. No snapshots/viewContent supplied as terminal input.",
+    "proposedLimits": {
+      "ProgramSeconds": 25,
+      "captureSeconds": 70,
+      "childTestSeconds": 35,
+      "diagnosticBytes": 16384,
+      "diagnosticRecords": 64,
+      "parentActionBytes": 8192,
+      "parentActionRecords": 24,
+      "perStreamBytes": 4194304
+    },
+    "secondPaste": "-discard",
+    "wheelDownEvents": 2
+  },
+  "currentSource": {
+    "effectiveCurrentClassifiedSourceSHA256": {
+      "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+      "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+      "internal/cli/dashboard.go": "3b236979452a042abed01c5b122b950e59e534f1447460839187882b2e819a35",
+      "internal/client/client.go": "b59a7c3cf54352b1fa8ad68bd4999c494c9381057a3c4891d9e1f8b165348511",
+      "internal/client/session.go": "94bd3271624af086461dbb6a27206b653126600d2889d70313cef9e0682071c2",
+      "internal/local/local.go": "cad921688f833ed4f57adecdf01e02dac467327078ac985e2ef49283d12eeebe",
+      "internal/local/statefence.go": "5d98092715151176268268f331a4b1c483bb90280aff1583e3c27bfcb9c5190a",
+      "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+      "internal/model/operator.go": "817f54d81b1c29767eb916084ea7728a0383d32255223bb2b1c792f4893cc67f",
+      "internal/model/reviews.go": "e69808756b1bbb8510f4f995db72f89093cc982b7d609e0a0a643f28a0dde031",
+      "internal/model/runs.go": "a44654d3c514f011108194798b79845ac317c3b4d888f4a117199162dd5450e8",
+      "internal/server/runs.go": "51a82cc79ed683b9056475e7c3fe855f9089beb6c2f561d5aba95388425c6dd3",
+      "internal/tui/actions.go": "e73c737dcdf105a8943040dc7728093927b97f9f2f0446896feeb5511db0bcc3",
+      "internal/tui/active_defaults_test.go": "8546ae076f7a43b087cc35db43add9f15de7fca38aeea2a5b5c7bdad20ccdb28",
+      "internal/tui/custom_names.go": "ac2cce293c2d7da032150ebf6dee26c7755e23eeae3d3a46f7e7e96f789b3a07",
+      "internal/tui/dashboard_test.go": "95fc49e80bf96fcc0c5c97c734447ec91e1d4c8764c429d5dfb5056eeb67d8f0",
+      "internal/tui/format.go": "48d1f6f3010121e3f44f2714b86966183466d97045b77da69cd2f3d8f0e12109",
+      "internal/tui/layout.go": "6b30cd2faf0ab7d80b18d1ec4f384d3d378eabf2871ef7582f11da4474bc96a4",
+      "internal/tui/lease_checkins.go": "e50bfcc5408f5dedb4070e8ba15db09f693ef873c3c220fbbb420ab69903cd84",
+      "internal/tui/lease_table.go": "924868fccf062ae6ad89eaa55dc7954c7eb42a3d71dadaefe69aac88d558aef1",
+      "internal/tui/lease_table_test.go": "8cfb5bb69d6fb960c8bbab5b16fd44746d1610d42a786c4e26a46a0599e49bab",
+      "internal/tui/mouse.go": "9a75ed40429cf6966e5ecd9002debd53168d92775e8470f9f7349efc39721211",
+      "internal/tui/mouse_test.go": "2f9da14913b89b1fb9f74c89ecfc2f2fce79a127b7877ef49d7b0558758c0286",
+      "internal/tui/naming_observations.go": "12ef1323cd4874bb4d059855051a42e270a5e77e48dd5f8c3501f796a60d69fc",
+      "internal/tui/network.go": "57184f635ad82cd773578a72c11127d495fe7b8eef17e505eb0a0c3884e15873",
+      "internal/tui/peers.go": "deeeda7f73c78a6374c53c7493499707629a4b046797eee67b771e9d8fbd508b",
+      "internal/tui/pending_store.go": "9d51f078673a928fe6dec409b39c9c3fd3a9908c85f745183349d5fd97642626",
+      "internal/tui/pending_store_test.go": "68e6fd8c5c4f07f1b0f2420cd60a084c1868b709d295e6a9bfe8d2d6ff853194",
+      "internal/tui/polish.go": "5cc6df4d7894b21cdbd8fb0ee49b93d0071adaffc3933ba33fbf0bd5d894d740",
+      "internal/tui/polish_test.go": "04ff15993dbdac1a7d7866aaa429587df6f3364e5730e61d4c9374a204d90a34",
+      "internal/tui/preferences.go": "fa7706ef1c57cadd0e341eea5239cde099acb4622e5695a6d5b507584d13702c",
+      "internal/tui/presentation.go": "bb759cc27ae78618cc9bc08953405cd75f3c4626dfde7f918ddaf833b72b9e11",
+      "internal/tui/readable_names.go": "1b88d86562342c6ce794d3e69eea3644a451438a89285ca0a174edd53ddc7845",
+      "internal/tui/record.go": "4fa6a28fbd1d99d4676eac42f5fea310d8e8f10ed20eba03c7b807c51cecda3f",
+      "internal/tui/record_test.go": "4929350811795b2a29f4be8ef4dced6bef45bc0d9b9db2fa77ebe5232ed17fb7",
+      "internal/tui/recovery.go": "f9425c743ff8f4c74997b19ca2c184fb40851429abc0fc901daa1675aa81a74a",
+      "internal/tui/run_detail_presentation_test.go": "dacafc2103d62a1701b9072e491953dfefbe29eba448edff5ea8027c99db18a2",
+      "internal/tui/run_list.go": "254348fb34414151d95d85ba4a94f419e2726875ee4384026491475cb9f6b426",
+      "internal/tui/run_list_test.go": "79f45324c09e6ebc0d79d618921f487ea6037211e52431e5de75471916e01e4a",
+      "internal/tui/runs.go": "74ea280a55d48b5a1d0f638e017d648d738822ea9364b5976b7515892c61303c",
+      "internal/tui/runs_test.go": "1271daf032c890f399a653bb68529f803c09a2dc7971ec0f490347e8fc357137",
+      "internal/tui/theme.go": "2bfa9013539c9c8f9dfbc2cc58ae38458d1b4e9be6cc023a6c4854fd0ac539e3",
+      "internal/tui/tui.go": "b5a86e52d9226475732f4cd4f51db455a8b9871bbaf65bc84758d1ef7863a255",
+      "internal/tui/visual_test.go": "5f01d583801c63dd9dc4d3d384df36628281a930f65f19e05082ee9e0b12138a",
+      "scripts/dashboard-screenshots/capture.py": "737a2bf75c9d66fc8935a6b78fd1eb5ce6d4326f27b7d4a829a35381ea834b3c",
+      "scripts/dashboard-screenshots/geometry.json": "213d6f6520828b2d6534e8a80b31b2a9938433535e10e7dd4fa912040db6258a",
+      "scripts/dashboard-screenshots/geometry.mjs": "2834649750f9ad30fddfbd54e52906ab5bc6a2259c531015ccfd829e15927813",
+      "scripts/dashboard-screenshots/package-lock.json": "3fbc9cd6ed43c1a4598cf52c51c3ffafecfe32c05272a152b411ff9c6afed1fe",
+      "scripts/dashboard-screenshots/package.json": "e8f00e720461f432eebad25ca092b462c3cb71994f764a48037952abb26233e6",
+      "scripts/dashboard-screenshots/render.mjs": "e9b0b4fd1acfbf208cd3f86eb5281d058e23885313fa41a8260eca67e6c38494"
+    },
+    "existingMemberCount": 65,
+    "existingMemberSHA256": {
+      "docs/validation/ux-shell-filter-focus-green-2026-10-30.json": "9be875465d86528dbe292c4be86325badae73399a12c8b5ca62e4e413aebcbcd",
+      "docs/validation/ux-terminal-direct-fixture-plan-2026-10-30.json": "75b9ad26b4c82e9f16cc1fdde1861c692049e09c3ceb0dc954c337effd6622e2",
+      "docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json": "10c195a224dd78573bf11320efa32e559f09635a7431a03fa232cc1a2b5746f9",
+      "docs/validation/ux-terminal-loop-fixture-plan-2026-10-30.json": "28ca5f201ac0d35f444045dc0f79f9eb0c7828cd48dd0461e78792a9a39a790e",
+      "docs/validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json": "a79c1ddd8cfd7c720c8b71906874b93bed0b080ac8519cf80eb322a7468116da",
+      "docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json": "c6c6858e9b97dd4a71bc54f05ab1c22a1856b5ef730c3c92e7c51019965b532d",
+      "docs/validation/ux-terminal-source-classification-2026-10-29.json": "574c62ed1e2d66828082880beeaa4d706b7690cf4f38b1ff3a229aa1165cae5d",
+      "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+      "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+      "internal/cli/dashboard.go": "3b236979452a042abed01c5b122b950e59e534f1447460839187882b2e819a35",
+      "internal/client/client.go": "b59a7c3cf54352b1fa8ad68bd4999c494c9381057a3c4891d9e1f8b165348511",
+      "internal/client/session.go": "94bd3271624af086461dbb6a27206b653126600d2889d70313cef9e0682071c2",
+      "internal/local/local.go": "cad921688f833ed4f57adecdf01e02dac467327078ac985e2ef49283d12eeebe",
+      "internal/local/statefence.go": "5d98092715151176268268f331a4b1c483bb90280aff1583e3c27bfcb9c5190a",
+      "internal/model/model.go": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+      "internal/model/operator.go": "817f54d81b1c29767eb916084ea7728a0383d32255223bb2b1c792f4893cc67f",
+      "internal/model/reviews.go": "e69808756b1bbb8510f4f995db72f89093cc982b7d609e0a0a643f28a0dde031",
+      "internal/model/runs.go": "a44654d3c514f011108194798b79845ac317c3b4d888f4a117199162dd5450e8",
+      "internal/server/runs.go": "51a82cc79ed683b9056475e7c3fe855f9089beb6c2f561d5aba95388425c6dd3",
+      "internal/tui/actions.go": "e73c737dcdf105a8943040dc7728093927b97f9f2f0446896feeb5511db0bcc3",
+      "internal/tui/active_defaults_test.go": "8546ae076f7a43b087cc35db43add9f15de7fca38aeea2a5b5c7bdad20ccdb28",
+      "internal/tui/custom_names.go": "ac2cce293c2d7da032150ebf6dee26c7755e23eeae3d3a46f7e7e96f789b3a07",
+      "internal/tui/dashboard_test.go": "95fc49e80bf96fcc0c5c97c734447ec91e1d4c8764c429d5dfb5056eeb67d8f0",
+      "internal/tui/format.go": "48d1f6f3010121e3f44f2714b86966183466d97045b77da69cd2f3d8f0e12109",
+      "internal/tui/layout.go": "6b30cd2faf0ab7d80b18d1ec4f384d3d378eabf2871ef7582f11da4474bc96a4",
+      "internal/tui/lease_checkins.go": "e50bfcc5408f5dedb4070e8ba15db09f693ef873c3c220fbbb420ab69903cd84",
+      "internal/tui/lease_table.go": "924868fccf062ae6ad89eaa55dc7954c7eb42a3d71dadaefe69aac88d558aef1",
+      "internal/tui/lease_table_test.go": "8cfb5bb69d6fb960c8bbab5b16fd44746d1610d42a786c4e26a46a0599e49bab",
+      "internal/tui/mouse.go": "9a75ed40429cf6966e5ecd9002debd53168d92775e8470f9f7349efc39721211",
+      "internal/tui/mouse_test.go": "2f9da14913b89b1fb9f74c89ecfc2f2fce79a127b7877ef49d7b0558758c0286",
+      "internal/tui/naming_observations.go": "12ef1323cd4874bb4d059855051a42e270a5e77e48dd5f8c3501f796a60d69fc",
+      "internal/tui/network.go": "57184f635ad82cd773578a72c11127d495fe7b8eef17e505eb0a0c3884e15873",
+      "internal/tui/peers.go": "deeeda7f73c78a6374c53c7493499707629a4b046797eee67b771e9d8fbd508b",
+      "internal/tui/pending_store.go": "9d51f078673a928fe6dec409b39c9c3fd3a9908c85f745183349d5fd97642626",
+      "internal/tui/pending_store_test.go": "68e6fd8c5c4f07f1b0f2420cd60a084c1868b709d295e6a9bfe8d2d6ff853194",
+      "internal/tui/polish.go": "5cc6df4d7894b21cdbd8fb0ee49b93d0071adaffc3933ba33fbf0bd5d894d740",
+      "internal/tui/polish_test.go": "04ff15993dbdac1a7d7866aaa429587df6f3364e5730e61d4c9374a204d90a34",
+      "internal/tui/preferences.go": "fa7706ef1c57cadd0e341eea5239cde099acb4622e5695a6d5b507584d13702c",
+      "internal/tui/presentation.go": "bb759cc27ae78618cc9bc08953405cd75f3c4626dfde7f918ddaf833b72b9e11",
+      "internal/tui/readable_names.go": "1b88d86562342c6ce794d3e69eea3644a451438a89285ca0a174edd53ddc7845",
+      "internal/tui/record.go": "4fa6a28fbd1d99d4676eac42f5fea310d8e8f10ed20eba03c7b807c51cecda3f",
+      "internal/tui/record_test.go": "4929350811795b2a29f4be8ef4dced6bef45bc0d9b9db2fa77ebe5232ed17fb7",
+      "internal/tui/recovery.go": "f9425c743ff8f4c74997b19ca2c184fb40851429abc0fc901daa1675aa81a74a",
+      "internal/tui/run_detail_presentation_test.go": "dacafc2103d62a1701b9072e491953dfefbe29eba448edff5ea8027c99db18a2",
+      "internal/tui/run_list.go": "254348fb34414151d95d85ba4a94f419e2726875ee4384026491475cb9f6b426",
+      "internal/tui/run_list_test.go": "79f45324c09e6ebc0d79d618921f487ea6037211e52431e5de75471916e01e4a",
+      "internal/tui/runs.go": "74ea280a55d48b5a1d0f638e017d648d738822ea9364b5976b7515892c61303c",
+      "internal/tui/runs_test.go": "1271daf032c890f399a653bb68529f803c09a2dc7971ec0f490347e8fc357137",
+      "internal/tui/shell_filter_test.go": "f55cbfdff1f9c02dde1bf693f6a7233f8d6af9b97d1e57ed9117d19e32cf6179",
+      "internal/tui/theme.go": "2bfa9013539c9c8f9dfbc2cc58ae38458d1b4e9be6cc023a6c4854fd0ac539e3",
+      "internal/tui/tui.go": "b5a86e52d9226475732f4cd4f51db455a8b9871bbaf65bc84758d1ef7863a255",
+      "internal/tui/ux_terminal_direct_fixture_test.go": "ef37d0bdf89bce2dcd68ae7b2de2961f046c57f868edcb9d2e8ccc5952e37420",
+      "internal/tui/ux_terminal_lease_reading_fixture_test.go": "7f6d03c887d662ec91328233269d13701aa59753d71a19214e3d3bde748f0390",
+      "internal/tui/ux_terminal_loop_fixture_test.go": "1dce0f1852791781f941eff7086c3cb6420c7d1305f87868182ae3f0a0ded168",
+      "internal/tui/visual_test.go": "5f01d583801c63dd9dc4d3d384df36628281a930f65f19e05082ee9e0b12138a",
+      "scripts/dashboard-screenshots/capture.py": "737a2bf75c9d66fc8935a6b78fd1eb5ce6d4326f27b7d4a829a35381ea834b3c",
+      "scripts/dashboard-screenshots/geometry.json": "213d6f6520828b2d6534e8a80b31b2a9938433535e10e7dd4fa912040db6258a",
+      "scripts/dashboard-screenshots/geometry.mjs": "2834649750f9ad30fddfbd54e52906ab5bc6a2259c531015ccfd829e15927813",
+      "scripts/dashboard-screenshots/package-lock.json": "3fbc9cd6ed43c1a4598cf52c51c3ffafecfe32c05272a152b411ff9c6afed1fe",
+      "scripts/dashboard-screenshots/package.json": "e8f00e720461f432eebad25ca092b462c3cb71994f764a48037952abb26233e6",
+      "scripts/dashboard-screenshots/render.mjs": "e9b0b4fd1acfbf208cd3f86eb5281d058e23885313fa41a8260eca67e6c38494",
+      "scripts/dashboard-screenshots/ux-terminal-lease-capture.py": "f6e62e1d373c6bb567320bd8035407cc387086a01ae55a359d94c2de22d33e9c",
+      "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs": "824064d8e79419548f24b088d9ff4ec1c31c3e1f8c08a7991f3b13dada768003",
+      "scripts/dashboard-screenshots/ux-terminal-loop-capture.py": "980fc761382c0de2854f43decb854658c69462ac05ad5b899105585eac8231d6",
+      "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs": "c0fce1a63511f464bee46f367ed11d006b2ddf6415e550a6d0044d29c66b82be"
+    },
+    "explicitCurrentOverrides": {
+      "internal/tui/mouse.go": "9a75ed40429cf6966e5ecd9002debd53168d92775e8470f9f7349efc39721211",
+      "internal/tui/polish_test.go": "04ff15993dbdac1a7d7866aaa429587df6f3364e5730e61d4c9374a204d90a34",
+      "internal/tui/presentation.go": "bb759cc27ae78618cc9bc08953405cd75f3c4626dfde7f918ddaf833b72b9e11",
+      "internal/tui/tui.go": "b5a86e52d9226475732f4cd4f51db455a8b9871bbaf65bc84758d1ef7863a255"
+    },
+    "originalClassifiedEntries": 50,
+    "qualification": "Current existing project/helper/driver source hashes, not a compiler/SDK/generated-file closure. The historical native entries still reject incompatible current source as designed."
+  },
+  "implementationStatus": {
+    "ProgramOrPTYOrBrowserExecuted": false,
+    "freshNativeBinaryProduced": false,
+    "meaning": "This binds existing reviewed source and specifies the exact additive implementation/capture contract for design review. It is not an executable69-member binding, a build receipt or a runnable outer wrapper.",
+    "nativeEntryExecuted": false,
+    "newCaptureDriverImplemented": false,
+    "newFixtureImplemented": false,
+    "newReplayDriverImplemented": false,
+    "resourceWindowStarted": false
+  },
+  "knownFrozenHelperBoundaries": [
+    "directFixture.update rejects45x14 and wheel messages; prepareDirectFixture calls that strict update. Do not broaden these accepted guards or route45through them.",
+    "The old lease initial-renderer recognizer requires a72-specific roster label and its diagnostics expect two lease clicks/one inspect; do not weaken or pretend those counters certify this filter lifecycle.",
+    "Existing PTY Session init/resize/keys bind the historical selector/grids, and finish may send q. The new capture needs its own init/grid/key/normal-quit/cleanup paths; do not monkey-patch shared globals or use q as post-failure exit input."
+  ],
+  "limitations": [
+    "This is a design/binding/capture proposal, not implementation or an executable native harness.",
+    "No Go metadata/build/test-list/native selector, Program/PTY/browser/install/download or resource window was run.",
+    "Current ordinary green and historical72 native evidence do not establish45native rendering or full UX acceptance.",
+    "Broader routes, states, production startup/auth/backend and physical terminals/fonts/Unicode remain separate scopes."
+  ],
+  "newFixtureContract": {
+    "arrangement": "Fresh owned0700grid/home, original newDashboard constructor, canonical synthetic data and strict fake transport; disclose pending-only home bookkeeping. Build a separate45adapter/arrangement without calling the frozen grid-gated prepare/update paths. No live transport or production Init.",
+    "commands": "Observe/suppress known textinput focus/cursor commands without scheduling them; reject unknown effectful commands, streams/timers/Batch/Raw/exec/clipboard. Zero fake calls/reads throughout. The sole allowed returned command is the exact original named tea.Quit from validated footer dispatch.",
+    "finalCleanup": "Original Program returns normally, no forced outcome; own fake closes once, context cancels, pending-only home effects exact, no active/forbidden calls or pending command. A failed/unknown observation remains failure with partial artifacts retained.",
+    "inputPolicy": "Closed native parsed message set: exact WindowSize, harmless profile/env, bounded Down/slash/q/Enter/Escape, two exact bracketed pastes, two wheel-down body events, one final footer press and only original decorated dashboardMouseMsg commands. Forward original KeyPressMsg including Text; never rewrite typed q through mouseKey/f.key.",
+    "mouseAndQuit": "Decorate only original View.OnMouse; retain actual produced typed command once and frame/region. Two wheel commands use original mouseScrollFrame; footer uses original mouseFrame/key ctrl+c. Return exact original named Quit command to Program, observe original QuitMsg in the filter, then require original Run nil and same wrapper/model. Do not substitute keyboard Ctrl+C/q or manufacture QuitMsg to make the case pass.",
+    "originalModelAndProgram": "One original dashboardModel pointer behind one stable tea.Model wrapper. Wrapper Init returns nil. Actual Program uses original PTY stdin/stdout, original WindowSize45x14 and native parsed keys/pastes/mouse; no synthetic direct model updates/callback substitutions in the parent.",
+    "originalOutputObserver": "New bounded passive term.File-preserving wrapper calls the original Write exactly once and returns original n/error/panic unchanged; serialize original write order, retain actual offsets/return/hash and descriptors. Observation failure stays unknown and cannot replace input/output outcomes. No model text is emitted as PTY screen data.",
+    "progress": "Passive View metadata: revision/grid/original viewContent as comparator only, inputMode/value/focus/applied filter, selection, viewport offset/height/total and visible draft, original regions/frame, wrapper/command counters and zero fake calls. Actual stream bytes come only from the PTY.",
+    "startupBarrier": "Before first input require an original complete returned renderer write/prefix with alternate-screen and1002/1006modes plus actual readable q Exit/Inspect footer/control text; verify original FD/terminal/size and captured range hash. Keep capability-query-only and quiet-read observations insufficient."
+  },
+  "ordinaryEvidence": {
+    "file": "docs/validation/ux-shell-filter-focus-green-2026-10-30.json",
+    "scope": "Original13roots/102ordinary passes; no native45 acceptance.",
+    "sha256": "9be875465d86528dbe292c4be86325badae73399a12c8b5ca62e4e413aebcbcd"
+  },
+  "ordinaryOwnerCommit": "d156d1066a754174f0b1f02d13e8a9e91b218171",
+  "preservedHistoricalGuards": {
+    "PTYSupportSHA256": "980fc761382c0de2854f43decb854658c69462ac05ad5b899105585eac8231d6",
+    "acceptedEntriesAndSelectorsRemainUnedited": true,
+    "classifier": {
+      "entries": 50,
+      "file": "docs/validation/ux-terminal-source-classification-2026-10-29.json",
+      "sha256": "574c62ed1e2d66828082880beeaa4d706b7690cf4f38b1ff3a229aa1165cae5d"
+    },
+    "directHelperSHA256": "ef37d0bdf89bce2dcd68ae7b2de2961f046c57f868edcb9d2e8ccc5952e37420",
+    "loopHelperSHA256": "1dce0f1852791781f941eff7086c3cb6420c7d1305f87868182ae3f0a0ded168",
+    "modalShadowBinding": {
+      "file": "docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json",
+      "sha256": "c6c6858e9b97dd4a71bc54f05ab1c22a1856b5ef730c3c92e7c51019965b532d"
+    },
+    "nativePlan": {
+      "file": "docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json",
+      "sha256": "10c195a224dd78573bf11320efa32e559f09635a7431a03fa232cc1a2b5746f9"
+    }
+  },
+  "proposedSourceBinding": {
+    "environmentKeys": [
+      "ARM_TUI_FILTER_SHELL_ROOT",
+      "ARM_TUI_FILTER_SHELL_GRID"
+    ],
+    "futureBindingRule": "After the three additive files exist and are independently reviewed, a fresh compile receipt must bind every actual69member digest, exact source commit and original new binary. No old binary/receipt or incomplete planned roster may satisfy the gate. This proposal has no self-hash.",
+    "futureMembers": [
+      "docs/validation/ux-shell-filter-focus-green-2026-10-30.json",
+      "docs/validation/ux-terminal-direct-fixture-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-filter-shell-proposal-2026-10-30.json",
+      "docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-loop-fixture-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json",
+      "docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json",
+      "docs/validation/ux-terminal-source-classification-2026-10-29.json",
+      "go.mod",
+      "go.sum",
+      "internal/cli/dashboard.go",
+      "internal/client/client.go",
+      "internal/client/session.go",
+      "internal/local/local.go",
+      "internal/local/statefence.go",
+      "internal/model/model.go",
+      "internal/model/operator.go",
+      "internal/model/reviews.go",
+      "internal/model/runs.go",
+      "internal/server/runs.go",
+      "internal/tui/actions.go",
+      "internal/tui/active_defaults_test.go",
+      "internal/tui/custom_names.go",
+      "internal/tui/dashboard_test.go",
+      "internal/tui/format.go",
+      "internal/tui/layout.go",
+      "internal/tui/lease_checkins.go",
+      "internal/tui/lease_table.go",
+      "internal/tui/lease_table_test.go",
+      "internal/tui/mouse.go",
+      "internal/tui/mouse_test.go",
+      "internal/tui/naming_observations.go",
+      "internal/tui/network.go",
+      "internal/tui/peers.go",
+      "internal/tui/pending_store.go",
+      "internal/tui/pending_store_test.go",
+      "internal/tui/polish.go",
+      "internal/tui/polish_test.go",
+      "internal/tui/preferences.go",
+      "internal/tui/presentation.go",
+      "internal/tui/readable_names.go",
+      "internal/tui/record.go",
+      "internal/tui/record_test.go",
+      "internal/tui/recovery.go",
+      "internal/tui/run_detail_presentation_test.go",
+      "internal/tui/run_list.go",
+      "internal/tui/run_list_test.go",
+      "internal/tui/runs.go",
+      "internal/tui/runs_test.go",
+      "internal/tui/shell_filter_test.go",
+      "internal/tui/theme.go",
+      "internal/tui/tui.go",
+      "internal/tui/ux_terminal_direct_fixture_test.go",
+      "internal/tui/ux_terminal_filter_shell_fixture_test.go",
+      "internal/tui/ux_terminal_lease_reading_fixture_test.go",
+      "internal/tui/ux_terminal_loop_fixture_test.go",
+      "internal/tui/visual_test.go",
+      "scripts/dashboard-screenshots/capture.py",
+      "scripts/dashboard-screenshots/geometry.json",
+      "scripts/dashboard-screenshots/geometry.mjs",
+      "scripts/dashboard-screenshots/package-lock.json",
+      "scripts/dashboard-screenshots/package.json",
+      "scripts/dashboard-screenshots/render.mjs",
+      "scripts/dashboard-screenshots/ux-terminal-filter-shell-capture.py",
+      "scripts/dashboard-screenshots/ux-terminal-filter-shell-replay.mjs",
+      "scripts/dashboard-screenshots/ux-terminal-lease-capture.py",
+      "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs",
+      "scripts/dashboard-screenshots/ux-terminal-loop-capture.py",
+      "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs"
+    ],
+    "futureRequiredMemberCount": 69,
+    "futureTestSelector": "^TestUXTerminalFilterShellFixture$",
+    "grid": [
+      45,
+      14
+    ],
+    "newAdditiveSourceFiles": [
+      "internal/tui/ux_terminal_filter_shell_fixture_test.go",
+      "scripts/dashboard-screenshots/ux-terminal-filter-shell-capture.py",
+      "scripts/dashboard-screenshots/ux-terminal-filter-shell-replay.mjs"
+    ]
+  },
+  "replayContract": {
+    "PNGCount": 8,
+    "PNGInspectionRequired": "Inspect all eight original images at original resolution before accepting paint.",
+    "actualInput": "Only original captured45x14PTYprefix bytes, replayed into pinned existing xterm6.0.0. Model content is a separate expected-row comparator.",
+    "browserCleanup": "Reuse the reviewed public BrowserServer/original process/promise-return lifecycle pattern in an additive driver, page networking/clipboard/native sockets refused, endpoint/error text never retained. Every original initialization/close/receipt-write-return and original process0 must be observed; forced/late/unknown cleanup fails.",
+    "checkpointTargets": [
+      "leases-scrolled",
+      "filter-visible",
+      "filter-help",
+      "filter-edited",
+      "leases-applied",
+      "filter-discard-draft",
+      "leases-cancelled",
+      "filter-quit-ready"
+    ],
+    "comparedRows": 112,
+    "focusQualification": "Model input.Focused plus actual visible field/emulator cells; separately record emulator cursor state if useful. No physical terminal cursor/font/all-Unicode claim.",
+    "newReplayDriver": "scripts/dashboard-screenshots/ux-terminal-filter-shell-replay.mjs",
+    "proposedTotalSecondsIncludingCleanup": 30,
+    "proposedWorkSeconds": 20,
+    "rowComparison": "All14actual alternate-buffer rows per checkpoint; symmetric trailing ASCII U+0020 trimming only, preserve leading/internal/other whitespace. Raw actual cells, expected rows, row matches and all original PNGs retained before assertions.",
+    "semanticCells": [
+      "actual focused draft inside original modal viewport after open/edit/reopen",
+      "actual help/control rows readable after wheel",
+      "actual q remains draft text and field returns visible",
+      "applied-empty and cancel-retained local filter states agree with original model",
+      "final actual ctrl+c Exit glyphs fit the original in-bounds region used for original Quit"
+    ]
+  },
+  "requiredReviewGates": [
+    "Review this source-bound design and exact eight-checkpoint/footer-Quit contract.",
+    "Implement the three additive files without modifying accepted72 entries/helper guards/classifier/plans. Then independently review actual final source, binding membership, callbacks/command policy, ownership and retention.",
+    "Prepare and review a separately allocated fresh compile-only wrapper/receipt with actual complete source hashes, no native entry invocation. Old binaries cannot be reused.",
+    "Bind the actual new binary/receipt and reviewed capture/replay source into one bounded outer proposal; allocate Program/PTY and browser work separately from source preparation.",
+    "Require original full lifecycle/cleanup, actual112row comparisons and inspection of all8PNGs. Preserve all failures and source scopes; no retry/relabel acceptance."
+  ],
+  "retention": {
+    "combinedNativeCapBytes": 16777216,
+    "countedFreshContents": "Entire new capture, replay, stream, diagnostics, PNGs, wrapper/tool temporaries, selected auxiliary sources and receipts. No existing input hidden in reserve.",
+    "historicalRuntimeBytes": 13531355,
+    "historicalRuntimeContainers": [
+      {
+        "entries": 111,
+        "manifestSHA256": "60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d"
+      },
+      {
+        "entries": 29,
+        "manifestSHA256": "01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce"
+      },
+      {
+        "entries": 47,
+        "manifestSHA256": "bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510"
+      },
+      {
+        "entries": 15,
+        "manifestSHA256": "17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67"
+      },
+      {
+        "entries": 23,
+        "manifestSHA256": "2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177"
+      },
+      {
+        "entries": 22,
+        "manifestSHA256": "ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e"
+      },
+      {
+        "entries": 62,
+        "manifestSHA256": "fb8ee961d2618708c672bfeb7bb2c96feda582be72f4f2712325135390b13055"
+      },
+      {
+        "entries": 37,
+        "manifestSHA256": "94e8289e127b2d147f40312ce5bbf2dad628f8a3e75261022a695478c1173a8d"
+      }
+    ],
+    "historicalRuntimeRoots": 8,
+    "metadataReserveBytes": 131072,
+    "otherPreservation": "All17existing ordinary/build/runtime artifact sets, including959/973failures and984positive ordinary evidence, plus metadata/telemetry/posthoc/source/plan/tool bindings remain separately preserved. Build/ordinary containers are not silently charged to the16MiB native runtime cap.",
+    "remainingBytesBeforeFreshOutputs": 3114789
+  },
+  "schema": 1,
+  "sourceBaseCommit": "342d28b572dc5608d28dc18c31428970e5964720",
+  "status": "source-bound-design-proposal-only-no-native45-implementation-or-execution"
+}

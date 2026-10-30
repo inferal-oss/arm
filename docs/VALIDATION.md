@@ -11503,3 +11503,25 @@ claiming that the earlier phase reached post-authentication.
 The source preserves the legacy ingress path and supplies no production listener,
 startup, funding grant or worker activation. Actual resident network reporting and
 existing run/proxy child continuity remain required end-to-end acceptance gates.
+
+
+## Native45 filter lifecycle — source-bound design proposal
+
+The [native45 proposal](validation/ux-terminal-filter-shell-proposal-2026-10-30.json)
+pins 65 existing reviewed source members and specifies an eventual additive
+69-member cut: a new fixture entry, capture driver, replay driver and proposal.
+Those three native45 implementation files do not yet exist; no runnable binding,
+compile or native result is claimed. The current strict helper rejects45/wheel
+and the accepted72 observer/driver has different workflow assumptions, so its
+entry/guards/classifier/plans remain unedited.
+
+The proposed fixed45x14 case has eight actual PTY-prefix checkpoints: carried
+list scroll, focused filter, readable help, q text/edit visibility, apply,
+discard draft, cancel and reopened footer-ready filter. The final original
+footer press must produce the exact original Quit command/message and normal
+Program return. Actual model/input/callback identity, complete row comparison
+(112rows/eight inspected PNGs), original child/termios/EOF/browser cleanup and
+cumulative eight-runtime-container16MiB accounting are required. Source design,
+additive implementation, fresh compile binding and runtime/browser allocation
+remain separate review gates. No new executable source, native entry, PTY,
+browser, resource window, native45 acceptance or full-UX completion occurred.
