@@ -4083,3 +4083,19 @@ graph. The resulting binary SHA-256 is
 `98a1ff212853df8efbebd0a5b1ae93f6f1a55b9900413ffbd7a1e54d22970f9a`.
 It was not executed, and no composed native runtime rerun is claimed. No module,
 product behavior or accepted historical fixture was changed by this cut.
+
+## Remaining terminal UX — Monitor/I/O source review routed
+
+The existing full-UX owner next reviews terminal Monitor/I/O reading on an
+isolated continuation from `83681e7`. This is a coverage gap, not an established
+product defect. The initial scope is `monitor.go`, `io_picker.go` and the
+presentation-only budget helpers in `capacity_budget.go`, plus directly related
+rendering/selection tests. Review dense cores/devices, long labels, unknown/stale
+measurements, local selection/focus and scrolling at narrow and short geometries.
+
+Return concrete source findings and a bounded inert ordinary-model validation
+proposal before product edits or execution. Existing web Monitor acceptance and
+terminal native45/native72 records retain their scopes. No metric/accounting,
+backend, transport, resource action, real measurement or new feature is assigned.
+No CPU/native/browser allocation follows from this routing. Review, resource
+windows, composition and integration remain central.
