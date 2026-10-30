@@ -5002,3 +5002,20 @@ inputs plus new output/metadata under16MiB. Independent outer review, a separate
 original lifecycle/receipt-return gates and PNG inspection remain pending.
 Historical positive/failed evidence remains unchanged; native paint, production
 startup and full-UX acceptance are not claimed.
+
+
+## Retained statement construction — reviewed private revision
+
+A shared original constructor body replaces the duplicated retained/legacy SQL
+statement preparation bodies. Legacy construction still allocates its statement
+object after successful SQL-string allocation. The retained path supplies its
+already-registered original object before allocation and preparation, with the
+same directly deferred lifetime interval and original error/cleanup behavior.
+The generated engine, module pins, license and other 1,901 candidate files remain
+unchanged. This is a reviewed private candidate, not an activated project
+replacement or production startup implementation.
+
+The native-owner fixture now explicitly prepares and checks only its owned
+temporary leaf as private before opening its lock. Production directory and
+lock validation are unchanged; the deliberate nonprivate-lock case is retained.
+This correction does not reinterpret the earlier failed native run as a pass.
