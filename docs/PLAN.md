@@ -1,5 +1,18 @@
 # ARM delivery plan
 
+## Private package manifest declarations — source pending review
+
+Owner: `codex/resident-package-manifest`, from accepted
+`2eec7dd15a6c3ef8c75aed92ba2ec0d967f6dfcf`. The private
+[pure manifest codec](design/resident-worker-package-manifest.md) incrementally
+parses exact bounded fields, rejects aliases/duplicates/noncanonical integers and
+conflicting asset paths, and commits fixed canonical sorted declaration bytes.
+It adds no production caller/export, native/filesystem/archive/provenance/approval/
+staging/admission/execution API or compatibility/resource grant. Parsing ceilings
+must not relax existing mesh validation. Native approval/ownership/binding,
+launch/controller/API/assets, first/repeated `arm start` and real A-to-B API/UI
+job preservation remain required before completion.
+
 ## Nodes/Kubernetes inventory — reviewed findings and bounded correction
 
 Read-only inventory `ac3230c` matches 28 unique source/contract hashes and 138
@@ -2194,3 +2207,16 @@ Grid parameters, hooks, callbacks and all protected contracts remain exact.
 The [source-bound correction](validation/ux-kube-primary-labels-2026-10-29.json)
 records the allocated Kube four-case positive, stacking-only K1 omission and
 affected native/module checks. Independent composed review remains open.
+
+
+## Private worker package metadata — independent acceptance
+
+Focused owner `632cf482a9167b1d09ab00c1600fbff6c540b4fa` is composed and
+independently reviewed. The unexported pure codec has no production callers.
+The [composed record](validation/resident-worker-package-manifest-composed-2026-10-29.json)
+binds 71 protected inputs and final codec hashes to normal/race 6-root,
+101-node passes and package vet. This accepts declared metadata parsing only.
+Trusted local approval/actual bytes verification and admitted immutable staging
+remain next dependencies; borrower/controller/API/assets, first/repeated
+`arm start` and distinct-version active-job preservation are still mandatory
+unimplemented completion gates. No installed backend or runtime is changed.
