@@ -1,5 +1,20 @@
 # Backend and CLI implementation
 
+## Private untrusted package declarations — pure codec only
+
+The [unexported codec](../internal/workerpackage/README.md) accepts private v1
+executable-plus-assets metadata, checking the raw cap before UTF-8/JSON work and
+bounded fields/files incrementally. Canonical encoding revalidates manual
+candidates, preserves input order, emits fixed fields/integers and sorted file
+paths, and hashes only these declaration bytes. Unknown/duplicate/aliased fields,
+invalid numeric/path/digest/count/total data and oversized output refuse.
+
+Successful parsing is untrusted declared data; it verifies no actual bytes,
+provenance, worker/native identity, compatibility or resource profile. No
+filesystem/staging/approval/admission/execution surface or existing production
+source/module/schema/CLI/native/mesh behavior changes. The overall `arm start`
+and distinct-version API/UI job-preservation objective remains incomplete.
+
 ## Borrower binding and closure — missing APIs/source contract only
 
 The [binding proposal](design/resident-lifetime-binding.md) adds no implementation.
@@ -3903,3 +3918,14 @@ failed candidates and source-bound evidence. Independent current-main review,
 central deterministic assets/native build and fresh browser controls are in the
 [composed record](validation/ux-shared-dialog-composed-2026-10-29.json). Broader UX
 and installed/live-runtime acceptance remain open.
+
+
+## Private worker package codec — composed scope
+
+The independently reviewed private codec parses bounded untrusted declarations,
+revalidates canonical encoding, sorts a copy and hashes deterministic declared
+bytes. Exact decoded fields, integer spelling, paths, conflicts and aggregate
+limits refuse invalid input. No approval, native content/identity/compatibility,
+resource capability or runtime route is created. All current Go/module/CLI
+behavior is preserved; no production package imports the codec. See the
+[composed record](validation/resident-worker-package-manifest-composed-2026-10-29.json).

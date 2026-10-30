@@ -1,5 +1,22 @@
 # Validation record
 
+## Pure package manifest — focused unit qualification
+
+The [evidence](validation/resident-worker-package-manifest-2026-10-29.json)
+qualifies only the private pure codec on accepted
+`2eec7dd15a6c3ef8c75aed92ba2ec0d967f6dfcf`: normal/race each pass six roots / 101
+nodes with no failure/skip; package vet passes separately through the original
+shared FIFO. Original command exits and final source hashes are retained, with
+all 71 protected baseline sources unchanged via referenced inventory digests.
+Golden canonical bytes/hash, four declared platforms/empty asset, exact limits,
+key/type/numeric/UTF-8/path/set refusals, changed commitments, manual malformed/
+oversized candidates and concurrent input-preserving roundtrips are covered.
+
+This is queued-command evidence, not an ARM lease or native artifact/profile
+validation. No filesystem/native fixture, approval/staging/worker/bootstrap,
+production caller, broad suite/browser/install or `arm start`/A-to-B acceptance
+is implied; declarations and their hashes stay untrusted metadata.
+
 ## Lifetime binding contract — source inspection/documentation only
 
 The [contract](design/resident-lifetime-binding.md) and
@@ -9362,3 +9379,20 @@ universal zoom, and fixed native fonts are recorded. Tall forms require scrollin
 all controls are not claimed simultaneously visible. Maximum-entry performance,
 every theme/language/viewport, real auth/transport and broader UX/TUI remain open.
 Independent current composition and central rebuilding are recorded above.
+
+
+## Private manifest — independent composed validation
+
+The [composed record](validation/resident-worker-package-manifest-composed-2026-10-29.json)
+records independent normal 0.603s and race 1.627s passes of six roots/101 nodes,
+zero failed/skipped nodes, and package vet 0.209s. Original FIFO commands ran
+sequentially with bounded Go settings; these are direct queued-command receipts,
+not ARM grants, kernel RSS limits or backend/enrollment evidence. All 71 reused
+protected hashes and two new Go hashes match. Source review confirms pure
+imports, private types/functions and no production import/call path.
+
+Golden bytes/digest, order/escape/roundtrip/input preservation, exact and excess
+bounds, invalid decoded keys/types/numbers/paths/digests and manual oversized
+encoding have scoped positive/refusal evidence. This proves no native bytes,
+provenance, approval, compatibility, filesystem/staging/admission or execution.
+No CLI/build/browser/Linux/full-suite or actual upgrade acceptance is inferred.
