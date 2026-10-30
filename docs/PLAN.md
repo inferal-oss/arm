@@ -4362,3 +4362,10 @@ offset 21, canonical identity and chart policies. The
 records independent owner-green acceptance; central composition/landing remains.
 Active execution is returned, originals retained, and no further runtime or
 other 15/native/browser scope is implied. Evidence successor is documentation only.
+
+Coordinator composition accepted the focused sequence `2ecf0d0`, `88132d6`,
+`fed2ed8` as `2ffe728`, `f054c1f`, `0a0a87a`. Current onboarding work is preserved.
+The entire terminal-package tree equals the tested owner tree; the only other
+product differences are the independently accepted onboarding-name packages,
+outside the terminal dependency path. Documentation conflicts preserve both
+coordination and owner records. Broader UX/native gates remain open.

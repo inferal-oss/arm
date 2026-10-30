@@ -5616,3 +5616,9 @@ offset 21 and chart policies, with canonical focus. All prior selected I/O roots
 pass. The [owner result](validation/ux-terminal-monitor-inventory-green-2026-10-30.json)
 is 45 named passes/86 observations/32 strict cleanups. No further product bytes
 changed; central composition and broader native/UI/transport gates remain.
+
+Coordinator review accepts the focused correction on the current composition.
+All terminal product/tests remain exactly the green-tested bytes. Visible focus
+follows its surviving ID or a clamped replacement, while unchanged polling and
+deliberate offscreen page reading retain their position. No chart-selection,
+transport or backend behavior changed.

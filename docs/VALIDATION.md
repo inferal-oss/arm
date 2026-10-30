@@ -11971,3 +11971,13 @@ Intermediate unknown samples retain charges; no reclamation credit is claimed.
 The active window is returned; final owner evidence commit is documentation only.
 Central composed source review/landing and other 15/native/browser/full UX remain
 separate; no additional execution or upgrade of prior failed scopes occurred.
+
+Coordinator review independently verified all 29 original artifact hashes,
+unique raw run/pass pairs for 45 named nodes, 86 original observations and 32
+strict cleanup/constructor checks. The current composed terminal-package tree
+equals tested `88132d6` exactly. The only non-documentation differences from the
+owner are eight onboarding-name files in separate CLI/discovery packages;
+import review places those changes outside this terminal test dependency path.
+No composed rerun or fresh dependency graph is claimed. This accepts the
+focused ordinary-model fix, with all native, reading/hit, rendering, full-suite
+and earlier failed-scope limitations unchanged.
