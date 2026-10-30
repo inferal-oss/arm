@@ -59,7 +59,7 @@ export function createScreenViewer({ui,root,token,context,loadRFB=loadPatchedRFB
     frameSurface?.replaceChildren();setStatus('Disconnected');
   }
   function showCredentials(event,active) {
-    if(disposed||active!==rfb)return;setStatus('Mac sign-in required');closePrompt();
+    if(disposed||active!==rfb)return;fullView(false);setStatus('Mac sign-in required');closePrompt();
     const types=event.detail?.types??[];
     const schema=['username','password','target'].filter(type=>types.includes(type)).map(type=>({name:type,label:type==='username'?'Mac username':type==='password'?'Mac password':'Login target',type:type==='password'?'password':'text',required:true,maxLength:256,initial:type==='username'&&mode.value==='separate'?accountInputs.read('username').trim():''}));
     const inputs=createEphemeralInputs(schema),island=ui.island('screen-credentials-'+generation,inputs.widget,{label:'Private Mac credentials'}),note=ui.text('');
@@ -77,6 +77,7 @@ export function createScreenViewer({ui,root,token,context,loadRFB=loadPatchedRFB
   }
   function showClipboard() {
     if(disposed||!connected||clipboardDialog)return;
+    fullView(false);
     const inputs=createEphemeralInputs([{name:'text',label:'Clipboard text',multiline:true,initial:remoteClipboard}]);
     const island=ui.island('screen-clipboard-'+generation,inputs.widget,{label:'Private clipboard text'}),note=ui.text('Clipboard text stays in this viewer until disconnect.');
     const dialog=ui.dialog('Clipboard',[ui.text('Text only · up to 1 MiB. Use a button to transfer between this browser and the Mac.'),island,note],[]);
