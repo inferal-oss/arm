@@ -383,3 +383,19 @@ source, deterministic assets, current CLI build, native/module/browser checks
 and isolated controls pass. Disconnected disabled-opener focus remains baseline
 behavior. Operator workflows, forwarding/destination, live transport, wider
 state/density/font/platform coverage and terminal UX remain open.
+
+
+## Forwarding inventory boundary
+
+The [read-only inventory](validation/ux-forwarding-inventory-2026-10-29.json)
+confirms sampled form/review allocations and native scrolling without treating a
+Dialog width cap or tall text as a defect. It identifies disconnected exact-key
+guidance (F1) and an editable-form/prepared-snapshot presentation concern (F2),
+with proposed scopes on existing message Text and review Card/body Stack only.
+Any future correction must preserve sent/uncertain private-token retention, exact
+request identity, authority, retry and admission. No product correction is made.
+
+Private values and images stay outside version control. Four source-bound cases
+use actual native keys/focus/scroll and browser-local preparation with no backend
+source mutation. Fixed/native glyph, selected scaling, dense prose reach and
+original API cleanup limits remain explicit. This is inventory, not acceptance.

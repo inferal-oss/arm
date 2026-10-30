@@ -2300,3 +2300,20 @@ not human-presence attestation. No implementation, exports, native validation
 or activation is accepted. Real bootstrap/combined writer/owners, admitted
 staging, worker/API/assets and first/repeated `arm start` with distinct-version
 active-job preservation remain open.
+
+
+## Forwarding read-only inventory
+
+Owner branch `codex/ux-forwarding-inventory` starts from accepted
+`17ec201f8397940694628865f7e1124773f5d8ed`. The
+[source-bound inventory](validation/ux-forwarding-inventory-2026-10-29.json)
+classifies native forwarding presentation and local private preparation without
+invoking any source mutation. Exactly two allocated browser cohorts cover the
+four viewports. Product source and all frozen earlier evidence remain unchanged.
+
+F1 proposes distinct disconnected versus malformed-key guidance in the existing
+message Text. F2 is a review concern about an unsent prepared snapshot surviving
+editable-form changes while reason/lifetime are absent from its summary; any
+future presentation must preserve uncertain-token retention and intent guards.
+No geometry correction is justified by width cap alone. Independent review and
+any remediation remain unallocated; no forwarding/live/full-UX acceptance.
