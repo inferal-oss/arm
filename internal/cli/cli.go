@@ -120,7 +120,7 @@ func (a *app) finishCommand(code int, e error) int {
 			a.reportError(detail)
 			return 130
 		}
-		if errors.As(e, &detail) && (detail.Code == "rollout_outcome_unknown" || detail.Code == "workspace_outcome_unknown" || detail.Code == "routing_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "history_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
+		if errors.As(e, &detail) && (detail.Code == "rollout_outcome_unknown" || detail.Code == "workspace_outcome_unknown" || detail.Code == "routing_outcome_unknown" || detail.Code == "ssh_outcome_unknown" || detail.Code == "history_outcome_unknown" || detail.Code == "provision_outcome_unknown" || detail.Code == "agent_message_outcome_unknown" || detail.Code == "budget_outcome_unknown" || detail.Code == "shutdown_wait_interrupted" || detail.Code == "startup_outcome_unknown" || detail.Code == "remote_outcome_unknown" || detail.Code == "remote_wait_interrupted" || detail.Code == "mesh_connect_incomplete" || detail.Code == "mesh_disconnect_incomplete") {
 			a.reportError(detail)
 		} else {
 			a.reportError(model.Err("interrupted", "operation interrupted"))
@@ -997,19 +997,11 @@ func (a *app) daemon(command string, args []string) (int, error) {
 		return 1, e
 	}
 	_ = cmd.Process.Release()
-	for i := 0; i < 50; i++ {
-		ctx, cancel := context.WithTimeout(a.ctx, 200*time.Millisecond)
-		e = client.Call(ctx, a.home, "status", nil, &existing)
-		cancel()
-		if e == nil {
-			return 0, a.print(map[string]any{"running": true, "host": existing.Host, "home": a.home})
-		}
-		if a.ctx.Err() != nil {
-			return 1, a.ctx.Err()
-		}
-		time.Sleep(100 * time.Millisecond)
+	existing, e = a.waitForStartup()
+	if e != nil {
+		return 1, e
 	}
-	return 1, fmt.Errorf("backend did not become ready; inspect %s", filepath.Join(a.home, "daemon.log"))
+	return 0, a.print(map[string]any{"running": true, "host": existing.Host, "home": a.home})
 }
 
 func (a *app) agent(args []string) error {

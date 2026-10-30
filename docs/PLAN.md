@@ -1,5 +1,30 @@
 # ARM delivery plan
 
+## Start authority validation — final scoped checks pass; review pending
+
+Owner: `codex/resident-start-identity`, based on `3064be2`. The real `arm start`
+path distinguishes an absent endpoint name from failed inspection, including a
+dangling endpoint symlink, and uses the same home/owner/directory/generation
+validation after launching as when reusing an authority. Post-launch timeout or
+cancellation retains typed startup uncertainty and the selected home's log hint;
+shared interruption output preserves it with exit 130. Known identity, backend
+refusal and drain errors stay explicit.
+
+The original function's three failed-inspection cases reproduced the erroneous
+absent/nil result before the fix. A first fixed-source cohort failed new fixture
+privacy checks; corrected intermediate normal/race results and their allocation
+stop remain separate from the final source. Final normal and race each pass 21
+roots/49 named tests without failures/skips; affected CLI vet and native compile/
+link also pass. Four sequential phases use 68.367 seconds of cumulative active
+elapsed upper bounds. Independent integration review remains pending; see the
+[scoped validation record](VALIDATION.md#start-authority-correction--final-source-scoped-checks).
+
+Stale endpoints now require inspection rather than an implicit replacement
+launch. Leaf-name observation does not serialize absent-first-launch races.
+Native launch handoff, worker readiness, resident bootstrap/funding/format and
+actual distinct-version API/UI job survival remain implementation gates. This
+correction does not complete them.
+
 ## Local worker package custody — concrete source contract pending review
 
 Owner: `codex/resident-local-package-contract`, from accepted
