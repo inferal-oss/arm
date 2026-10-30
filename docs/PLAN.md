@@ -3496,3 +3496,23 @@ readable, but the modal compositor/shadow containment is a separate P2 product
 layout finding. A later product fix requires focused source/regression review and
 new source/validation bindings; it cannot inherit this capture's acceptance.
 No new runtime or corrective run is authorized by this evidence record.
+
+
+## Resident retained driver — initial normal qualification
+
+The private additive candidate against exact `modernc.org/sqlite v1.60.1` now
+has one successful scoped normal run: 34 test roots, 60 named passes, two
+packages, no failures or skips. Its full 1,902-file source inventory was checked
+before and after. Exact dependency acquisition verified the observed 26-module
+graph; the two modules absent from the initial static estimate were authenticated
+through the official Go checksum database without changing dependency versions.
+The initial graph-mismatch stop, pre-Go sandbox refusal and storage-threshold
+interruption remain separate preserved outcomes, not test failures or passes.
+
+This qualifies only the initial private driver cohort. Causal controls, affected
+race/vet, delivery/provenance and actual ARM dependency composition remain open.
+Concrete retained native/root/service-birth ownership and public startup wiring
+continue in the existing upgrade task. No deployed backend or live jobs were
+restarted. Public first/repeated/concurrent startup and genuinely different
+worker replacement with both supervised and CLI-owned producers surviving are
+still required; no positive native-closure or completed-upgrade claim is made.

@@ -10958,3 +10958,23 @@ readable, but the modal compositor/shadow containment is a separate P2 product
 layout finding. A later product fix requires focused source/regression review and
 new source/validation bindings; it cannot inherit this capture's acceptance.
 No new runtime or corrective run is authorized by this evidence record.
+
+
+## Retained driver — scoped first-normal result
+
+Candidate manifest SHA-256
+`6d5951477495218c1ba90a332304a57a591a16ce662f543b97da3068ac6a518e`
+passed 34 exact test roots (19 main-package and 15 isolated), 60 named cases
+and two package results with zero failures/skips. Original test/FIFO processes
+were joined successfully; active elapsed time was 2.488 seconds. Sampled owned
+build-cache and retained/fresh temporary allocation peaked at 2,040,377,344 bytes
+under a 4 GiB ceiling. These are sampled/cooperative bounds, not hard OS limits.
+The original event-roster commitment is
+`0581a4799cccf351ecb6b3d377c1462e0986c5d0c7da36c4830fae4d9c4bf012`.
+
+Independent review checked the source/receipt identities and exact passed roster.
+Earlier attempts stopped at graph comparison, sandbox inspection or the smaller
+storage threshold; none is counted as a test failure or successful qualification.
+All original evidence remains preserved. Race/vet/causal controls, delivery and
+composed ARM-graph checks are pending. No public startup, native closure, live
+upgrade or child-process continuity result is inferred from this driver cohort.
