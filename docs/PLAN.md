@@ -2788,3 +2788,13 @@ make the dashboard effect-free. Existing capture builds/starts/acquires and
 requires an eighty-column minimum, so it cannot run unchanged for the proposed
 72×28/100×35/160×50 synthetic slice. Independent source review and a separately
 allocated fixture/build/PTY window remain gates. No new task, merge or push.
+
+
+## Shared terminal classification — coordinator acceptance
+
+Focused owner source classification `c18e9c8` is composed as `713fcd5`.
+Independent checks confirm all fifty source hashes and 152 anchors against the
+current composition; product code is unchanged. Geometry and command/effect
+boundaries are source observations only. The existing terminal UX task now
+prepares its bounded test-only fixture for source review; execution, PTY replay
+and remediation remain pending. No live backend or running child is affected.
