@@ -293,6 +293,12 @@ func TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels(t *testing.T) {
 }
 
 func TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy(t *testing.T) {
+	// Never connect to a real native client during fixture discovery.
+	bin := t.TempDir()
+	if err := os.WriteFile(filepath.Join(bin, "codex"), []byte("#!/bin/sh\nexit 1\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", bin+string(os.PathListSeparator)+os.Getenv("PATH"))
 	base := t.TempDir()
 	home := filepath.Join(base, "state")
 	codex := filepath.Join(base, "codex")
@@ -358,5 +364,55 @@ func TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery(t *tes
 	m.Update(catalog)
 	if !m.cancelled || m.stage != onboardDone {
 		t.Fatal("late discovery resurrected a cancelled editor", m.stage)
+	}
+}
+
+func TestRolloutOnboardSessionNamesSearchAndDirectoryFallback(t *testing.T) {
+	item := onboardItem{project: agentprojects.Project{Directory: "/work/abcd/project", Names: []string{"Zulu", "Alpha", "Alpha", "Delta", "Hidden search name"}, Evidence: []agentprojects.Evidence{{Adapter: "codex"}}}}
+	if !strings.HasPrefix(item.Title(), "Session names: Alpha · Delta · Hidden search name (+1 more)") || !strings.Contains(item.Description(), "/work/abcd/project") || !strings.Contains(item.FilterValue(), "Zulu") {
+		t.Fatal(item.Title(), item.Description(), item.FilterValue())
+	}
+	item.project.Names = []string{"  Fix\nstatus\x1b[2J\u202e" + strings.Repeat("界", 300)}
+	if strings.ContainsAny(item.Title()+item.FilterValue(), "\n\x1b\u202e") || !strings.Contains(item.Title(), "…") {
+		t.Fatal(item.Title())
+	}
+	item.project.Names = nil
+	if !strings.HasPrefix(item.Title(), "Directory: project") || !strings.Contains(item.Description(), item.project.Directory) {
+		t.Fatal(item)
+	}
+	manual := onboardItem{manual: true}
+	if !strings.Contains(manual.Title(), "another directory") {
+		t.Fatal(manual)
+	}
+}
+
+func TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply(t *testing.T) {
+	m, home := onboardReviewFixture(t, true)
+	before, _ := json.Marshal(m.change())
+	review := m.plan.Review
+	// Return to the directory picker with names attached to the same directory.
+	root := m.directory.Root
+	m.stage = onboardLoading
+	m.Update(onboardCatalogMsg{agentprojects.Catalog{Projects: []agentprojects.Project{{Directory: root, Names: []string{"Unrelated task name", "Second task"}}}}})
+	runOnboardCmd(t, m, onboardKey(m, "enter"))
+	m.cursor = len(m.choices) - 1
+	onboardKey(m, "enter")
+	if m.id != "demo" || m.binding.Root != root {
+		t.Fatal(m.id, m.binding)
+	}
+	onboardKey(m, "enter")
+	runOnboardCmd(t, m, onboardKey(m, "enter"))
+	after, _ := json.Marshal(m.change())
+	if !bytes.Equal(before, after) || review != m.plan.Review {
+		t.Fatal("display names changed exact policy review", string(before), string(after))
+	}
+	runOnboardCmd(t, m, onboardKey(m, "y"))
+	st, e := (rollout.Store{Home: home}).Read()
+	if e != nil || len(st.Projects) != 1 || st.Projects[0].Bindings[0].Root != root || len(st.Sessions) != 0 {
+		t.Fatal(st, e)
+	}
+	raw, _ := json.Marshal(st)
+	if strings.Contains(string(raw), "Unrelated task") || strings.Contains(string(raw), "Second task") {
+		t.Fatal("display names persisted into policy", string(raw))
 	}
 }

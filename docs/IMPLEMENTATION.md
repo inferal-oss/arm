@@ -5537,3 +5537,41 @@ All tracked product inputs equal the seven-root green-tested owner source.
 Documentation conflicts were append-only and both histories were retained.
 This accepts the focused ordinary-model behavior, not broader Monitor/native
 paint, live transport, race or full-UX coverage.
+
+
+## Optional names for onboarding directory choices
+
+`rollout project onboard` can show native session names alongside a full directory
+in its discovery roster. Names decorate existing exact canonical directory
+suggestions only; they never add or widen scope, choose a project ID, enroll a
+session, change a fingerprint or enter the policy review/apply request. Multiple
+names are deduplicated and sorted; the picker shows up to three and searches all
+retained names. A `Directory:` label and manual entry remain available without
+supported names. Names do not establish ownership or activity.
+
+The optional `agentsessions.TitleSource` is separate from the session identity
+contract. Codex reads only `thread/list`'s `name` through the existing installed
+proxy to an already-running control socket, requiring the supported root filter
+and `useStateDbOnly` interface. Title-only lookup includes `cli`, `vscode` and
+`appServer` sources; ordinary session discovery retains its original defaults. There is one enrichment request sequence for up
+to 16 exact roots: an eight-second deadline, at most six pages, 128 messages,
+512 sessions, eight MiB total response bytes and two MiB per frame. Unsupported
+clients or unavailable metadata keep directory discovery usable. No prompt,
+preview, transcript or guessed basename supplies a title. Claude currently has
+no supported title source.
+
+Undated and future (beyond one minute) name records are omitted. Old activity
+timestamps do not invalidate a directory/name association, so dormant tasks retain
+their names. Display
+metadata removes terminal/direction controls, folds whitespace and retains at most
+256 runes plus an ellipsis. Native title changes do not change session generations.
+The [official app-server protocol](https://learn.chatgpt.com/docs/app-server)
+documents `name` as the persisted user-facing title. Generated desktop titles
+are supported only when exposed in that field; installed native compatibility
+has not been verified. The scoped synthetic cohort passes 25 roots/44 named
+nodes; no native client read or terminal capture was performed.
+
+Coordinator composition preserves the exact tested product tree. Review covered
+metadata-only title parsing, exact directory association, display sanitization,
+unchanged ordinary session parameters and unchanged onboarding review/apply
+scope. No backend, identity, module or shared command-dispatch change is included.
