@@ -570,3 +570,24 @@ unchanged original client/private lifecycle. Sampled positive/control imagery
 and hit checks agree with the exact source inverse; current tests/builds pass.
 This closes the measured S1 finding only. Original inventory clipping/hit/focus
 gaps and real Screen Sharing, terminal, shell and overall UX gates remain open.
+
+
+## Shared terminal — bounded source cut
+
+The [source classification](validation/ux-terminal-source-classification-2026-10-29.json)
+continues the remaining shared terminal inventory from `9760ef3`. It records
+exact source hashes and anchors for shell/navigation/modals/action hints plus
+Leases/Runs list/detail/log containment. Proposed grids are 72×28, 100×35 and
+160×50; formulas, source caps and existing tests are not current visual evidence.
+No defect, correction or full terminal/UX acceptance is asserted.
+
+The smallest future synthetic seam is test-only, preserving original native
+model/layout/viewport/mouse code while explicitly suppressing native Init and
+reconnect. Constructor pending-file effects, roster preference writes, action
+confirmation and returned commands need separate allowlists/ownership. A new
+terminal-only replay validator could accept the three exact grids using pinned
+assets without changing the old backend/build/authenticated capture pipeline.
+The coordinator reviewed these possible seams; no fixture or execution window
+is allocated yet. Accepted inactive/default/run-reader behavior and all prior
+Screen/terminal evidence remain preserved. Narrow/short native PTY replay,
+actual cells/hits/scroll/focus and read/lifecycle observations are still pending.

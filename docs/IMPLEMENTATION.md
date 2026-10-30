@@ -4279,3 +4279,35 @@ inline; Fill window is explicit re-entry. The current client/frame/private
 fields/callbacks/cache and Cancel/disconnect semantics remain unchanged. There
 is no engine, global layer/style, auth/protocol, ownership reparenting or
 automatic reconnect/transfer change.
+
+
+## Shared terminal source classification
+
+The [classification record](validation/ux-terminal-source-classification-2026-10-29.json)
+records existing behavior only. The actual CLI selects `tui.Run`; original
+Bubble Tea TUI methods own a shared Bubbles viewport, Lip Gloss
+windows, shell/controls and native cell mouse regions. Leases use two-line table
+rows with width-dependent columns; Runs use two-line purpose/status/command rows
+and an independent same-buffer log reader. Native source maps selection and
+mouse rows, exact IDs, read cursors, generation/session retirement, folded/full
+reader state and private settings separately from display names. No Go source,
+logic, formatting, exports, test scaffold or capture tool is changed.
+
+Construction reads preferences but also creates/syncs pending directory/lock
+bookkeeping under its supplied state home. Original Init/reconnect open an
+authenticated native endpoint, while roster h writes preferences synchronously.
+Review y and check-in confirmation cross mutation boundaries. The record maps
+these effects and returned Batch/stream/timer/read/editor/quit commands. Unknown
+UI-library Cmd implementations are explicitly unclassified for execution and
+must be inspected or refused before a later fixture runs them.
+
+A future adapter could retain original newDashboard/Update/View/viewport/mouse
+code while suppressing native Init/reconnect and retaining itself after each
+delegated Update. It would require a newly allocated owned private synthetic
+home and strict read allowlist, bounded Cmd tracking and original reader/peer/
+context/session retirement. Direct frames would qualify model rendering only;
+a separately allocated test-binary/Bubble Tea PTY loop would remain distinct
+from production Run startup/authentication/unresolved-receipt cleanup. Existing
+pinned xterm assets could replay the actual bytes in a terminal-only fixture,
+with a new validator limited to the three exact proposed grids. All of this is
+a reviewed proposal, not implemented behavior or current terminal acceptance.

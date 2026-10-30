@@ -2767,3 +2767,24 @@ excluding waiting, CPU <=2/memory target<=2GiB. Existing owned cache/tmp remains
 first failure/budget/cache/cleanup uncertainty; no retry or red replay. CLI build
 is not installed/invoked. Resident API/UI/ownership/funding/layout and overall
 upgrade completion remain unimplemented gates.
+
+
+## Shared terminal source classification — owner handoff
+
+The terminal layout owner continues the full UX review on
+`codex/ux-terminal-layout-inventory` from `9760ef3`, bounded to shared shell,
+navigation, modal/action hints and Leases/Runs list/detail/log containment. The
+[source-only record](validation/ux-terminal-source-classification-2026-10-29.json)
+freezes fifty source/test/tool/pin files and 152 declaration anchors. Product
+source, accepted inactive defaults, selected-reader behavior and all existing
+capture helpers remain unchanged. No visual finding or remediation is claimed.
+
+The coordinator has reviewed a possible future package-local test-only
+model/transport adapter, explicitly isolated private constructor bookkeeping,
+and exact-grid terminal-only replay validator. None is implemented or allocated
+for runtime. Native Init/reconnect, synchronous preference writes and all
+returned Cmd paths require explicit boundaries; a transport stub alone does not
+make the dashboard effect-free. Existing capture builds/starts/acquires and
+requires an eighty-column minimum, so it cannot run unchanged for the proposed
+72×28/100×35/160×50 synthetic slice. Independent source review and a separately
+allocated fixture/build/PTY window remain gates. No new task, merge or push.
