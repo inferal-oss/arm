@@ -3279,3 +3279,23 @@ local Go, one fresh test binary, exact 62-input before/after receipt, one GiB
 owned output/temp bound and no retries. No test binary invocation, PTY or browser.
 Capture/replay remains separately gated on the original build/cleanup evidence.
 The retained-driver prerequisite phase remains unallocated source preparation.
+
+
+## Retained-driver v3 — source correction and prerequisite-only window
+
+The focused method-specific EOF correction passes independent source/hash review
+in the preserved private candidate. Ordinary row exhaustion no longer occupies
+the first-failure record; exact caller returns, other-method/wrapped EOF and
+abnormal uncertainty are preserved. This is source acceptance for validation,
+not a driver dependency or runtime integration. Three prepared causal controls
+also needed import/local-reference corrections; their separate revised cut is
+source-reviewed and remains unexecuted. No compiler failure is causal evidence.
+
+Missing exact dependencies block the first normal test cohort. One unchanged
+FIFO acquisition-only phase is allocated after the terminal compile's release:
+100-second watchdog plus existing grace, 115-second total target, two CPU/two GiB
+cooperative targets and one GiB private scratch. Official exact proxy/checksum
+inputs only; graph mismatch, checksum, budget or cleanup uncertainty stops without
+retry. No compile, tests, source execution, shared cache or ARM graph change.
+Normal validation remains separately gated on the actual receipt/cache and full
+1,902-file before/after candidate guard.

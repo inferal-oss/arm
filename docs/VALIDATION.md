@@ -10735,3 +10735,21 @@ Only one offline compile-only FIFO attempt is allocated, with 115-second total,
 two CPU/two GiB targets, one GiB owned output/temp bound and exact new binary/62
 source receipts. No test invocation or runtime acceptance is claimed. First
 failure and all previous artifacts must remain unchanged; no automatic retry.
+
+
+## Retained-driver v3 — source gate and exact-dependency preparation
+
+Independent review verifies all 1,902 frozen v3 files, its focused EOF delta and
+twelve prepared overlay maps/source hashes. Additional source inspection caught
+three controls that would lose import/local references; the separately corrected
+control cut retains those references and passes source/hash inspection. Neither
+cut has compiled or run; these are source findings, not failed control receipts.
+
+The offline prerequisite check identifies absent exact dependency versions. The
+reviewed wrapper receives one acquisition-only normal-FIFO window, bounded to
+115 seconds including cleanup and one GiB private scratch with conservative
+headroom. It compares actual Go module selection with the frozen expectation,
+then verifies exact original module/checksum inputs; a difference stops before
+archives without rewriting pins. No compilation, tests, native proof replay or
+product activation is accepted. First normal requires its own later allocation,
+positive original cleanup/cache evidence and the complete source guard.
