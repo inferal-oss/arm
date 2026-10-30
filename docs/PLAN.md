@@ -3172,3 +3172,21 @@ unless that result requires it. It also prepares the minimal 21-frame native
 lease-detail/record/review-decline/filter continuation, preserving strict
 no-mutation and original-model boundaries. Source review must precede any new
 build/replay/PTY/browser allocation; no new task or runtime is opened.
+
+
+## Terminal provider diagnostic — source reviewed, one replay allocation
+
+Owner `2fa74ee` supplies a complete MIT-attributed Unicode6 baseline derivation
+and a separate four-case diagnostic. Independent review verifies the exact
+TypeScript-only transform, bit helpers, unchanged upstream license, frozen
+source/plan hashes and all prior artifact sets. The fixture-only variant
+changes U+1F642 width alone; builtin baseline, fonts, original bytes and
+production renderer remain unchanged. No CDP/font scan or new dependency.
+
+One replay-only normal-FIFO attempt is allocated: two exact grids/two providers,
+115s outer and unchanged 20s work/30s total replay, two CPU/2 GiB targets,
+16 MiB combined original/corrected/new retained evidence. No rebuild or native
+recapture. Original process/API/write-marker, bytes, rows and marker gates stay
+mandatory; preserve the first failure before any correction. Paint needs
+independent before/after PNG review and is not granted by cell-width assertions.
+The remaining 21-frame reading fixture continues source preparation only.

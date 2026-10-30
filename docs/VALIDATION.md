@@ -10638,3 +10638,15 @@ font/fallback and every painted pixel remain unqualified. Privacy/whitespace
 checks pass; no new execution, provider/font/pin or product edit occurred.
 A four-case provider-only source candidate and 21-frame reading fixture still
 require code review and separate execution allocations.
+
+
+## Terminal provider diagnostic — independent source review
+
+Reviewed owner `2fa74ee`: full derived Unicode6 tables/logic match the pinned
+source after explicit TypeScript-only removals, two bit-packing helpers match,
+and MIT license bytes remain exact. The only variant changes one codepoint's
+width and labels itself diagnostic-only. Lifecycle/byte/row/budget gates follow
+the accepted replay, with both immutable input containers counted. Prior
+111/64/29/47 artifact sets rehash unchanged. No changed-source runtime result
+is accepted by this source review; the separately allocated four-case probe
+must retain raw cells/rows and original process outcomes for independent review.
