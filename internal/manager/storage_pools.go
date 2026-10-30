@@ -129,10 +129,16 @@ func (m *Manager) saveStoragePools() error {
 		return err
 	}
 	defer tx.Rollback()
-	if err = database.CheckWorkspaceFormat(context.Background(), tx); err != nil {
+	format := database.StoragePoolWorkspaceFormat
+	if m.resident != nil {
+		if err = m.resident.checkOriginalWorkspace(context.Background(), tx); err != nil {
+			return err
+		}
+		format = residentManagerWorkspaceFormat
+	} else if err = database.CheckWorkspaceFormat(context.Background(), tx); err != nil {
 		return err
 	}
-	if _, err = tx.Exec(`INSERT INTO metadata(key,value) VALUES('workspace_format',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, database.StoragePoolWorkspaceFormat); err != nil {
+	if _, err = tx.Exec(`INSERT INTO metadata(key,value) VALUES('workspace_format',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, format); err != nil {
 		return err
 	}
 	if _, err = tx.Exec(`INSERT INTO metadata(key,value) VALUES('storage_pools',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, string(data)); err != nil {

@@ -1,5 +1,22 @@
 # Backend and CLI implementation
 
+## Original Manager assembly — unconnected implementation
+
+`manager.ResidentManagerPending` retains the actual Manager before claiming its
+native view or opening the original database. It initializes the existing base
+schema and resident generation marker in one fresh transaction, then runs the
+existing configuration, ordinary sync2 and helper initializers on that same
+private pool. The original operation remains inspectable during effects and
+retains partial/abnormal state and first errors. Legacy Start/Close refuse a
+resident instance before loops, cancellation or SQL close; workers receive no
+Manager pointer. Only one same-issuer Server borrower may be bound, and access
+still requires original loop startup. No production Server/root connects it yet.
+The fresh 19-statement base schema matches the current legacy constructor.
+Named-storage saves use the private original-bound combined-format check while
+the generic workspace refusal remains unchanged. Selected actual constructor/binding/legacy controls pass normal/race and affected
+default vet. Linux amd64/arm64 test artifacts compile without execution. Named
+format4 retention and partial initialization/cancellation validation remain pending.
+
 ## Original official-driver database owner — unconnected source
 
 `database.ResidentOpen` is a pure pending holder registered before effects. It

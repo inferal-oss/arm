@@ -1,5 +1,18 @@
 # ARM delivery plan
 
+## Original Manager assembly — actual source, qualification pending
+
+Owner: `codex/resident-standard-manager-assembly`, based on `ccf4c509`.
+Six reviewed Manager sources now compose with the official-driver owner; the
+native issuer and the original claim/pool/generation binding remain unchanged.
+Two genuine-claim fixture roots and three Manager constructor controls pass
+normal and race checks alongside affected legacy workspace/sync/named-format
+controls: 12 normal roots/72 named results and 10 race roots/25 named results.
+Affected-package default vet and Linux amd64/arm64 compile-only gates pass.
+Both foreign artifacts remain unexecuted. Named format4 retention,
+partial initialization/cancellation and actual Server/root/service/start/worker/
+job-continuity acceptance remain open. No production caller is activated.
+
 ## Original official-driver database owner — selected normal and race scope qualified
 
 Owner: `codex/resident-standard-driver-owner`, based on reviewed `891689b`.

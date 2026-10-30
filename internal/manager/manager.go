@@ -89,6 +89,8 @@ type originalJobSettlement struct {
 }
 
 type Manager struct {
+	resident *ResidentManagerPending // original resident owner; never a worker lifetime
+
 	proxyReported map[string]time.Time
 
 	kubernetesSourceAdmissions map[string]bool
@@ -551,6 +553,13 @@ func openWithSyncSchemaAndStartupLock(home string, capacity model.Resources, clo
 }
 
 func (m *Manager) Start() {
+	if m.resident != nil {
+		panic("resident Manager must be started by its original pending owner")
+	}
+	m.startOriginalLoops()
+}
+
+func (m *Manager) startOriginalLoops() {
 	m.startCPUSampling()
 	m.wg.Go(func() {
 		ticker := time.NewTicker(time.Second)
@@ -623,6 +632,9 @@ func (m *Manager) Observation(kind string) model.ResourceMeasurement {
 	return m.observations[kind]
 }
 func (m *Manager) Close() error {
+	if m.resident != nil {
+		return model.Err("resident_owner_required", "resident Manager/database closure is unavailable through the legacy close path")
+	}
 	var closeErr error
 	var syncOwners []*SyncWorkerHold
 	m.pressureLaunchMu.Lock()

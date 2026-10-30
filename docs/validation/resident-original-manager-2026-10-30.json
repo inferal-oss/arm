@@ -1,0 +1,95 @@
+{
+  "scope": "unconnected original resident Manager and genuine-claim fixtures using official database owner",
+  "status": "selected-native-normal-race-vet-and-Linux-compilation-pass-product-gates-open",
+  "source_sha256": {
+    "internal/manager/manager.go": "0e25c87c3986b1d37e9056718679de53a4b4df012067ac8e4decbbe565af73d2",
+    "internal/manager/resident_base_schema.go": "79101c3d76963f1787bb2c6f19cf3b8d4914615a9a4a34b162cce16784c6538d",
+    "internal/manager/resident_format.go": "1dc38ba5f48d94a39e0864404c8310ea48f8b1507d4fb2152d371ce454431a0a",
+    "internal/manager/resident_manager.go": "0f97f3737a02c30b1b4622a4bfba854fc78031f6ceb3ca655a492f8dbd40c446",
+    "internal/manager/resident_manager_test.go": "a5a9c08760365e6f7b4e0c06ca9f86871360ecc29a5901355998850e1508d110",
+    "internal/manager/storage_pools.go": "ec795646115208ee17d647bf3b38a41637bdda14ca65837107c159dedfc04dc6",
+    "internal/server/internal/nativeowner/resident_assembly_test.go": "06763e67adab7e241f0b567423e221f732566a13fdba3414d019ebad9108fb7c"
+  },
+  "driver_or_module_or_import_change": false,
+  "static_legacy_base_schema_statements_identical": 19,
+  "actual_native_graph": {
+    "packages": 754,
+    "external_official_modules": 63,
+    "no_replacements": true,
+    "source_mod_zip_and_expanded_Hash1_authenticated_against_root_checksums_before_and_after": true
+  },
+  "normal": {
+    "Manager_roots": 8,
+    "Manager_named_passes": 23,
+    "genuine_claim_roots": 2,
+    "genuine_claim_named_passes": 2,
+    "generic_format_roots": 2,
+    "generic_format_named_passes": 47,
+    "total_roots": 12,
+    "total_named_passes": 72
+  },
+  "race": {
+    "Manager_roots": 8,
+    "Manager_named_passes": 23,
+    "genuine_claim_roots": 2,
+    "genuine_claim_named_passes": 2,
+    "total_roots": 10,
+    "total_named_passes": 25
+  },
+  "actual_genuine_claim_tests": [
+    "TestResidentActualOriginalDatabaseClaimAndPoolBinding",
+    "TestResidentActualOriginalManagerInitializesSameOwnedDatabase"
+  ],
+  "fixture_original_child_wait_and_success_marker_checked": true,
+  "fixture_whole_process_exit_is_not_product_native_Closed": true,
+  "failed_or_skipped_tests": 0,
+  "affected_default_vet_packages": [
+    "internal/database",
+    "internal/manager",
+    "internal/server/internal/nativeowner",
+    "internal/server/lifetimeview"
+  ],
+  "all_original_command_envelopes_and_FIFO_joined": true,
+  "actual_temporary_directories_empty": true,
+  "source_and_module_unchanged_checked_before_and_after": true,
+  "module_cache_read_only_and_network_denied_on_actual_Go_commands": true,
+  "acquisition_repair_or_fallback": false,
+  "open_gates": [
+    "actual named format4 persistence",
+    "partial Manager initialization and cancellation",
+    "original Server/root and standing funding",
+    "fresh fence and keyed launch/handoff",
+    "public first/repeated/concurrent arm start",
+    "distinct B API/UI/assets with original run/proxy children/logs/heartbeat/finish/renew/cancel/expiry/completion across replacement"
+  ],
+  "fresh_abort_enabled": false,
+  "service_grant_supplied": false,
+  "native_Closed_or_resource_credit_supplied": false,
+  "production_start_or_worker_caller_supplied": false,
+  "Linux_compile_only": {
+    "amd64": {
+      "target_graph_packages": 704,
+      "external_official_modules": 60,
+      "before_and_after_mod_zip_expanded_source_authentication": "pass",
+      "CGO_ENABLED": 0,
+      "artifact_bytes": 44063529,
+      "artifact_sha256": "f2d4431a6a1360177d7fdf61642badc7c22e4233a491ce35ed82312b2e4eac0b",
+      "artifact_executed": false,
+      "actual_Go_and_FIFO_joined": true,
+      "temporary_directories_empty": true,
+      "source_inputs_unchanged": true
+    },
+    "arm64": {
+      "target_graph_packages": 703,
+      "external_official_modules": 60,
+      "before_and_after_mod_zip_expanded_source_authentication": "pass",
+      "CGO_ENABLED": 0,
+      "artifact_bytes": 41241912,
+      "artifact_sha256": "a20687cfb2cef76309d14f9fb6c000c8c5627421e1cd081327e629723d3f6b8f",
+      "artifact_executed": false,
+      "actual_Go_and_FIFO_joined": true,
+      "temporary_directories_empty": true,
+      "source_inputs_unchanged": true
+    }
+  }
+}

@@ -1,5 +1,27 @@
 # Validation record
 
+## Original Manager assembly — selected native scope qualified
+
+The six Manager sources retain the reviewed ordinary sync2 selection and match
+the existing Manager/storage/module/refusal baselines. A static comparison of all
+19 fresh base DDLs with the legacy constructor passes. Actual normal checks pass
+12 roots/72 names; race checks pass 10 roots/25 names, including all three
+constructor and two genuine-claim roots. Four affected packages pass default vet.
+The actual graph has 754 packages/63 official modules, all authenticated before
+and after against root checksums; no replacements, acquisition or cache repairs
+were used. Source guards passed, original envelopes joined and actual temps
+were empty. See the [source-bound record](validation/resident-original-manager-2026-10-30.json).
+The latter use an original owned test child, actual native issuer/view/claim and
+original database/pool binding; they fabricate no positive authority. The Manager
+fixture reaches real schema/helper initialization and same-issuer Server binding
+without starting loops. A fixture process boundary supplies no product Closed,
+service grant or resource credit. The affected legacy/sync/format controls passed. Linux amd64 and arm64 exact
+claim-fixture test binaries compile with CGO disabled against actual target
+graphs (704 and 703 packages, respectively; 60 authenticated official modules
+each). Artifacts are retained by normalized size/hash and were never executed;
+no foreign native/runtime behavior is established. Production
+startup, worker replacement and original run/proxy continuity remain open gates.
+
 ## Official-driver database owner — selected actual normal and race scope
 
 The [source-bound record](validation/resident-standard-database-owner-2026-10-30.json)
