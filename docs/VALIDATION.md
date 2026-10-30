@@ -11893,3 +11893,12 @@ records source hashes, exact root roster, closure checks and limitations.
 Independent coordinator integration review remains pending.
 No real client metadata, backend, agent enrollment or terminal/browser capture is
 part of this evidence. Native client-version compatibility remains unverified.
+
+Coordinator review independently verified the four successful raw artifact
+hashes, unique run/end records for all 25 roots/44 named nodes, package passes,
+original joins/output EOF and the stable final scratch checks. Composition
+`78cdb1a` has the same entire tracked non-documentation tree as owner `cf4f765`;
+all 1,792 Go/module inputs still match the tested manifest. Only documentation
+composition differed, so no additional execution is claimed. This accepts the
+focused synthetic normal scope, with the native, rendering and prior failed-run
+limitations above unchanged.

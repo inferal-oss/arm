@@ -5570,3 +5570,8 @@ documents `name` as the persisted user-facing title. Generated desktop titles
 are supported only when exposed in that field; installed native compatibility
 has not been verified. The scoped synthetic cohort passes 25 roots/44 named
 nodes; no native client read or terminal capture was performed.
+
+Coordinator composition preserves the exact tested product tree. Review covered
+metadata-only title parsing, exact directory association, display sanitization,
+unchanged ordinary session parameters and unchanged onboarding review/apply
+scope. No backend, identity, module or shared command-dispatch change is included.
