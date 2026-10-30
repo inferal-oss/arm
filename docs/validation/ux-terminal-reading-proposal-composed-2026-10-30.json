@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "scope": "Independent source-only width-boundary and remaining reading-proposal review",
+  "ownerCommit": "b0f28730acbf593cd80c4b9bbf94e9501f9041e0",
+  "composedCommit": "e935195",
+  "proposalSHA256": "8f7ef0367224f2353eca0aacb00269de55db16af07c056671c74710bd031889a",
+  "verifiedPinnedSourceFiles": 31,
+  "verifiedAnchorLocations": 80,
+  "staticModelTableTrace": {
+    "smiley": {
+      "UTF8": "f0 9f 99 82",
+      "indexTrace": [
+        "f0:17",
+        "65f:15",
+        "5d9:ea"
+      ],
+      "valueIndex": "3b02",
+      "property": 2,
+      "derivedWidth": 2
+    },
+    "CJK": {
+      "UTF8": "e7 95 8c",
+      "indexTrace": [
+        "e7:6",
+        "215:39"
+      ],
+      "valueIndex": "ecc",
+      "property": 2,
+      "derivedWidth": 2
+    }
+  },
+  "sourceEmulatorPolicy": "Pinned UnicodeService selects UnicodeV6; its non-BMP rule gives U+1F642 width1 and BMP table gives U+754C width2. Saved cells corroborate this policy.",
+  "qualification": "Static source/literal inspection only; original runtime activeVersion and actual glyph font/fallback were not recorded. Paint attribution remains incomplete.",
+  "sourcePreparationDisposition": {
+    "providerProbe": "Prepare four matched cases on existing original byte prefixes, attributed unchanged UnicodeV6 baseline plus fixture-only U+1F642 override, unchanged fonts/pins/output.",
+    "fontInstrumentation": "Defer CDP/platform-font query until provider-only results show it necessary. Requested/computed CSS is observation, not resolved-font proof.",
+    "readingInventory": "Prepare 21 native lease detail/record/review-decline/filter frames with original model and strict no-mutation boundaries.",
+    "executionAllocated": false
+  },
+  "noRuntimeOrProductChange": true,
+  "privacyAndWhitespaceReviewed": true
+}

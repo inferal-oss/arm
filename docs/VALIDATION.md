@@ -10625,3 +10625,16 @@ and local filter behavior, excludes persistent h/confirmation/native backend
 paths, and requires new audited test-only source plus distinct execution windows.
 Relevant source/plan bytes compare exactly to current main `ac1455a` without
 rebasing. All111/64/29/47 raw artifact scopes and prior inventories remain exact.
+
+
+## Terminal width/reading proposal — independent static review
+
+The [composed source review](validation/ux-terminal-reading-proposal-composed-2026-10-30.json)
+verifies 31 pinned source files, 80 anchor locations and the exact proposal hash.
+Independent literal-table walks for smiley and CJK reach property2/width2 in the
+model dependency; pinned UnicodeV6 source assigns the smiley width1. This
+corroborates saved cell facts without running a library probe. Actual glyph
+font/fallback and every painted pixel remain unqualified. Privacy/whitespace
+checks pass; no new execution, provider/font/pin or product edit occurred.
+A four-case provider-only source candidate and 21-frame reading fixture still
+require code review and separate execution allocations.
