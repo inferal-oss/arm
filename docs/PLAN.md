@@ -2164,6 +2164,51 @@ Independent current-source composition and central asset/native builds are
 recorded above. No owner build/install/push/activation or full UX acceptance.
 
 
+## Nodes and Kubernetes read-only UX inventory
+
+The inventory owner branch `codex/ux-node-inventory` depends on the accepted
+shared-dialog composition `99c4fc8a831f7dacc5ba55b35e80a853b49a17ef`.
+The [source-bound record](validation/ux-node-inventory-2026-10-29.json) records
+four P2 findings before correction: narrow Node roster card labels; Node detail
+modal title/trust/grants/exact-reader allocation; overflowing Kubernetes Node
+cards; and selected-scale Kubernetes technical label/value allocation. Proposed
+app-owned scopes attach to existing graph containers. Production, authority,
+models, backend, validation, operator actions and prior evidence are unchanged.
+
+Two final four-case synthetic browser cohorts and strict read-only argument
+checks cover dense and degraded read/lifecycle states. Exact-source independent
+review and any scoped correction remain open. No broad suite, asset/native
+build, installation, runtime activation or full Nodes/Kubernetes UX acceptance.
+
+
+## Nodes and Kubernetes owner correction
+
+Owner branch `codex/ux-node-layout` depends on frozen inventory `ac3230c`.
+Focused product commits `ffe8b6e6448d6664b812214c88fc0cf101855c6a` (Nodes) and
+`79e4e7c87e9ae2400f1a4056220dc1d30d03800f` (Kubernetes) address N1/N2/K1/K2
+within existing noninteractive containers and app-owned native part rules.
+The [final-source owner record](validation/ux-node-layout-2026-10-29.json) binds
+eight positive browser cases, four isolated declaration omissions, 27 native and
+23 module regressions to the final source.
+
+Native Grid parameters, Dialog/close policies and effect/control source remain
+unchanged. Final review removed shadowed grid overrides and an unused hook.
+Independent current-main composition, visual/source review and central asset/Go
+build against newer backend code remain open. No owner merge/push, build/install,
+runtime activation or full UX acceptance is implied.
+
+
+## Kubernetes primary-fact review correction
+
+A focused follow-up to frozen `36d62f6` addresses K1 ordinary-label fragmentation
+that geometric fit alone missed. Existing Node-card primary descriptions stack
+at compact/medium widths, with a direct primary-list selector. Technical rules,
+Grid parameters, hooks, callbacks and all protected contracts remain exact.
+The [source-bound correction](validation/ux-kube-primary-labels-2026-10-29.json)
+records the allocated Kube four-case positive, stacking-only K1 omission and
+affected native/module checks. Independent composed review remains open.
+
+
 ## Private worker package metadata — independent acceptance
 
 Focused owner `632cf482a9167b1d09ab00c1600fbff6c540b4fa` is composed and
@@ -2175,3 +2220,16 @@ Trusted local approval/actual bytes verification and admitted immutable staging
 remain next dependencies; borrower/controller/API/assets, first/repeated
 `arm start` and distinct-version active-job preservation are still mandatory
 unimplemented completion gates. No installed backend or runtime is changed.
+
+
+## Nodes/Kubernetes — independent composed acceptance
+
+The focused inventory, Node/Kubernetes layout corrections and primary-label
+review fix `4b3a1ba` pass independent source/visual and current-main composition.
+The [composed record](validation/ux-node-layout-composed-2026-10-29.json) binds
+454 JavaScript tests, 48 native tests, deterministic assets/native CLI build,
+eight final browser cases and primary/technical isolated omissions. Initial
+geometry-only acceptance missed avoidable Architecture fragmentation; the
+scoped primary-list correction and actual line-box oracle now pass all 40
+sampled labels. Older source evidence and failed measurement candidates remain
+qualified and preserved. No full UX, live backend, Linux or new TUI claim.

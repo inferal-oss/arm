@@ -75,12 +75,12 @@ states; no principal view is declared complete from source inspection.
 | Messages | `messages.mjs`; composer, recipient/reply review, conversation, deliveries, saved-send recovery | Corrected slice: 320/390/768/1440/1920 widths, 768 at actual doubled text-token coverage (15px/30px); long/unbroken values, stale/disconnected review, held focus, restored unknown/offline, empty and validation error | Message product source accepted in c830982; corrected text-scale evidence accepted with Pools composition; broader broadcast density and recorded-result visual states |
 | Activity | `main.mjs`; history pages, timeline, event picker/detail, live drawer | Four-case selected-reader refresh/focus and two-case context/selection/cap checks pass independent composition | Live drawer/transport, broader states and full acceptance remain open |
 | Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Four-case exact metadata/line/scroll/freshness retention and scoped header/menu/tooltip checks pass independent composition | Real transport, broader states and full acceptance remain open |
-| Mesh | `mesh.mjs`; roster, node detail, connect/reconnect, installation, stop, uninstall, handoff, operations | Source inventory only | Dense nodes, every draft/review/unknown/cancel/error state, exact pins/revisions and control visibility |
-| Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Source inventory only | Dense inventory, unverified/stale/unavailable states; no cluster operations |
+| Mesh | `mesh.mjs`; roster, node detail and separate operator workflows | Read-only roster/detail layout, exact metadata/grants/trust and degraded/pending lifecycle pass independent four-case composition | Connect/reconnect/install/stop/uninstall/handoff/recovery review, exact pins/revisions and broader workflow states remain open |
+| Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Four-case read-only inventory, primary/technical/exact-record reading, ordinary-label line boxes and local UID/context selection pass independent composition | Real transport/cluster validation, broader states/density/fonts and complete route acceptance; no cluster operations exercised |
 | Forwarding | `forward.mjs`; preparation/review, tunnel list and retained operations | Source inventory only | Long endpoints, narrow dialogs, uncertainty and cleanup warnings; no real forwarding |
 | Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | Source inventory only | Scope/staleness/unknown values, long records and unsupported mutation visibility |
 | Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Stacked private fields/native footer accepted in c830982 with synthetic desktop/narrow evidence | Remaining mode/view/clipboard states; no real VNC sign-in |
-| Resource naming | `resource-names.mjs`; exact reference, name editor, preserved reservations | Source inventory only | Long references, dense options, modal width, stale selection and focus |
+| Resource naming | `resource-names.mjs`; exact reference/name editor/reservations | Scoped native naming body/caption/dirty-draft and palette focus/help corrections pass independent composition | Broader reservations/recorded-result/density/state/live mutation and complete route acceptance remain open |
 
 ## Terminal inventory
 
@@ -326,3 +326,60 @@ current-main composition, central builds and fresh positive/isolated controls
 are accepted in the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
 No product install, owner asset build or runtime activation occurs. Maximum
 cases, universal zoom and full UX/TUI/live transport acceptance remain open.
+
+
+## Nodes and Kubernetes read-only inventory boundary
+
+The [owner inventory](validation/ux-node-inventory-2026-10-29.json) finds four
+P2s in actual native surfaces: long narrow Node card labels; Node detail header,
+trust/grant/body and exact metadata allocation; Kubernetes card/grid overflow;
+and technical labels/values at selected larger text. Native captions, exact
+Kubernetes record bytes/final ranges and local selection have separate positive
+measurements; complete tall readers are expected to scroll vertically.
+
+Proposed corrections stay on existing app-owned roster/detail/inventory/technical
+graph containers and their style allocations. Preserve native components, exact
+labels/identities/units, summary caps/omission notes, host/context/UID bindings,
+focus/refresh/cancellation and every permission/operator-action boundary. This
+inventory changes no production file and activates only bounded read paths and
+local selection. Review/fixes and broader UX acceptance remain separate gates.
+
+
+## Nodes and Kubernetes owner correction boundary
+
+The [owner correction record](validation/ux-node-layout-2026-10-29.json) addresses
+N1/N2/K1/K2 on the allocated native surfaces: complete card titles/actions, Node
+modal header/trust/grants/facts/metadata/foot, and Kubernetes card/technical
+label/value allocation. The native Node close's negative margins are reserved
+inside the scoped header; its declarations and native Dialog policies stay exact.
+Native Grid parameters stay unchanged. Exact record ranges are read through their
+actual scrollers; an End key alone is not a reachability oracle.
+
+Eight final positive cases, four isolated omissions, 27 native and 23 module tests
+support this owner handoff. Prior inventory and failed candidates are preserved.
+Selected text scaling, native glyphs, individual scrolling and original API
+cleanup are explicitly qualified. Independent source/visual acceptance, current
+composition and central rebuild remain gates; no full UX or installed/live claim.
+
+
+## Kubernetes primary-label review follow-up
+
+Review found that fullTextFits alone accepted Architecture split before its final
+letter. The [focused K1 correction](validation/ux-kube-primary-labels-2026-10-29.json)
+stacks only actual primary facts at compact/medium widths. The new oracle checks
+whole ordinary labels against a complete available line and their actual native
+line boxes. A stacking-only omission reproduces the defect. Technical facts and
+native Grid retain their independent rules and parameters. Prior owner/central
+evidence stays historical; independent final-source acceptance remains open.
+
+
+## Nodes/Kubernetes independent acceptance
+
+The [composed record](validation/ux-node-layout-composed-2026-10-29.json) accepts
+scoped roster/detail/inventory/technical reading and native lifecycle at the four
+allocated geometries, including ordinary primary labels beyond geometric fit.
+The direct primary-list correction leaves technical rules independent. Exact
+source, deterministic assets, current CLI build, native/module/browser checks
+and isolated controls pass. Disconnected disabled-opener focus remains baseline
+behavior. Operator workflows, forwarding/destination, live transport, wider
+state/density/font/platform coverage and terminal UX remain open.

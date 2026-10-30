@@ -1,0 +1,1416 @@
+{
+  "schema": 1,
+  "scope": "Focused K1 review correction: avoid needless ordinary primary-fact label fragmentation. Independent current-main source/visual acceptance remains open.",
+  "baseCommit": "36d62f61c41c410955be1ba8fa6b3c7eac45f392",
+  "productChange": {
+    "file": "internal/server/web/semblance/app.ttl",
+    "selector": "> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"description-list\"]",
+    "widths": [
+      "CompactWidth",
+      "MediumWidth"
+    ],
+    "property": "grid-template-columns: minmax(0, 1fr)",
+    "newRuleSHA256": "15ccafbcbf54454110c58eed2c63cfd240c2b6bd8058325b28744a3007efea08",
+    "removingOnlyRuleRestoresBaseAppExactly": true,
+    "technicalRulesByteExact": true,
+    "nativeGridHooksCallbacksAndAllOtherProductInputsByteExact": true
+  },
+  "sourceSHA256": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "34fb46909b3d3ae9ec6333f0ca82226d8929f756c0d011d27fa5e368f93cce55",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/mesh.mjs": "1b5faaeac90aa0b5f868f362310d7decf5537707fb0ff5bba93343a6ddf8f3bc",
+    "internal/server/web/semblance/node-availability.mjs": "e365c195bcb48b9c2a3a78624489b151c800a5e9598b7c03f3940f26186246b6",
+    "internal/server/web/semblance/kube-quantity.mjs": "6ddb9f7203ac26e32df9f7919396c0058c7008950023df3e784a2bd6d972980c",
+    "internal/server/web/mesh-model.mjs": "adae955089af54733dc4e2e639f2a2a99f6681bcd906f43d522d2234e79b67a6",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/model/node_registry.go": "41da35e98ac72453c53a0d27b1276af375c592826c8c493d19569a5b89d5666b",
+    "internal/model/node_metadata.go": "37f47880669571a310d5e0a84df56097c60c7e8fcfb94b7a234769872f526441",
+    "internal/server/node_registry.go": "e226c631e5d63c4243be3d1a0df6dd59dc25930b3a49c733cf22d034dcabb957",
+    "internal/server/node_availability.go": "80d7471d4a8132c1bc5ffaa7135381d7cca2cf3fd44b5438fc2483842d99b7bc",
+    "internal/nodeavailability/inspection.go": "64ecdba07ad213901b750a0157ada8c47fcc765fd5bbbc6258b77e2f01e9e4ae",
+    "internal/nodeavailability/profile.go": "eeef6b99237a7a9aeef39137bb15bc675884b5318ab0269a9eaff617f90db4bc",
+    "internal/server/kubernetes_inventory.go": "55a6743e18fec0749c7b649c8b7439ce14fcf2a73f44242f8f21013a5c8482f4",
+    "internal/kubeprovision/types.go": "7ca78b6352f490b4555b73522645db1eebd75f36d76325ef518f81d1a6938c8e",
+    "internal/kubeprovision/clientgo.go": "936ba2414414cdb311eadaa12c825f2d4b0814bc2fc351830bc30f973dae00d8",
+    "web/third_party/semblance/ontology/components/inputs.ttl": "e9ab0af176ef77101f4a6b35000990c5ec870cc4c0eff9c46192e589520f2b04",
+    "web/third_party/semblance/ontology/components/controls.ttl": "b1cbc7649bb46988b4ed633f8e1df338465e05e78b281f7070db6c496ef3f2f4",
+    "web/third_party/semblance/ontology/components/textfield.ttl": "884f18336b9f123868972937cae65fb73d0e5044b7c17ddd4c164c02a9e1f688",
+    "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/theme/data.ttl": "5dfefcfb38b77459150851b67a386faf419f9c4f0eb26cb681b5997007fbaeff",
+    "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "web/third_party/semblance/ontology/components/layout.ttl": "8b828351304d6bcada709fc1753b45d9f63e46fe9ed7a359c26c048b28ebdcc4",
+    "web/third_party/semblance/ontology/components/type.ttl": "80bc0082a1cecab49f7f68cccf7f42c0f6cb356416b353d94fa4346f960d6ad0",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/layers/position.ttl": "21888ee3fa30c614f9cea40043604579f37578261c927386e15747e928e06956",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "web/test/node-layout.test.mjs": "9d3dd6e8529da54ca3ef69888712e06b77cc29346eda8887c53a5817a1844256",
+    "scripts/dashboard-screenshots/ux-node-layout.mjs": "ac88226d3de24e7ee3e2ac53d25a41840d16a08f52569a29892cd1749ac6c0fd",
+    "scripts/dashboard-screenshots/ux-node-inventory-backend.mjs": "40302e3bc8d00894f1c3fb8ae2cb3cfb2b97ef3ac2e3a41437c8d4c3b19772f9"
+  },
+  "protectedInputSHA256": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/mesh.mjs": "1b5faaeac90aa0b5f868f362310d7decf5537707fb0ff5bba93343a6ddf8f3bc",
+    "internal/server/web/semblance/node-availability.mjs": "e365c195bcb48b9c2a3a78624489b151c800a5e9598b7c03f3940f26186246b6",
+    "internal/server/web/semblance/kube-quantity.mjs": "6ddb9f7203ac26e32df9f7919396c0058c7008950023df3e784a2bd6d972980c",
+    "internal/server/web/mesh-model.mjs": "adae955089af54733dc4e2e639f2a2a99f6681bcd906f43d522d2234e79b67a6",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/model/node_registry.go": "41da35e98ac72453c53a0d27b1276af375c592826c8c493d19569a5b89d5666b",
+    "internal/model/node_metadata.go": "37f47880669571a310d5e0a84df56097c60c7e8fcfb94b7a234769872f526441",
+    "internal/server/node_registry.go": "e226c631e5d63c4243be3d1a0df6dd59dc25930b3a49c733cf22d034dcabb957",
+    "internal/server/node_availability.go": "80d7471d4a8132c1bc5ffaa7135381d7cca2cf3fd44b5438fc2483842d99b7bc",
+    "internal/nodeavailability/inspection.go": "64ecdba07ad213901b750a0157ada8c47fcc765fd5bbbc6258b77e2f01e9e4ae",
+    "internal/nodeavailability/profile.go": "eeef6b99237a7a9aeef39137bb15bc675884b5318ab0269a9eaff617f90db4bc",
+    "internal/server/kubernetes_inventory.go": "55a6743e18fec0749c7b649c8b7439ce14fcf2a73f44242f8f21013a5c8482f4",
+    "internal/kubeprovision/types.go": "7ca78b6352f490b4555b73522645db1eebd75f36d76325ef518f81d1a6938c8e",
+    "internal/kubeprovision/clientgo.go": "936ba2414414cdb311eadaa12c825f2d4b0814bc2fc351830bc30f973dae00d8",
+    "web/third_party/semblance/ontology/components/inputs.ttl": "e9ab0af176ef77101f4a6b35000990c5ec870cc4c0eff9c46192e589520f2b04",
+    "web/third_party/semblance/ontology/components/controls.ttl": "b1cbc7649bb46988b4ed633f8e1df338465e05e78b281f7070db6c496ef3f2f4",
+    "web/third_party/semblance/ontology/components/textfield.ttl": "884f18336b9f123868972937cae65fb73d0e5044b7c17ddd4c164c02a9e1f688",
+    "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/theme/data.ttl": "5dfefcfb38b77459150851b67a386faf419f9c4f0eb26cb681b5997007fbaeff",
+    "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "web/third_party/semblance/ontology/components/layout.ttl": "8b828351304d6bcada709fc1753b45d9f63e46fe9ed7a359c26c048b28ebdcc4",
+    "web/third_party/semblance/ontology/components/type.ttl": "80bc0082a1cecab49f7f68cccf7f42c0f6cb356416b353d94fa4346f960d6ad0",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/layers/position.ttl": "21888ee3fa30c614f9cea40043604579f37578261c927386e15747e928e06956",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "web/test/node-layout.test.mjs": "9d3dd6e8529da54ca3ef69888712e06b77cc29346eda8887c53a5817a1844256",
+    "scripts/dashboard-screenshots/ux-node-inventory-backend.mjs": "40302e3bc8d00894f1c3fb8ae2cb3cfb2b97ef3ac2e3a41437c8d4c3b19772f9"
+  },
+  "oracle": {
+    "criterion": "When an ordinary fixture fact label fits a complete available row with 2px slack, its actual DOM Range line boxes must occupy exactly one line. FullTextFits remains a separate geometry check.",
+    "font": "Canvas uses explicit computed font style, weight, size, family and spacing; accepted canvasFontUsed and computed fontSize are saved. Canvas width is an estimate for the fit predicate; actual DOM line boxes are authoritative. Fixture fit margins are ample; no universal font/zoom claim.",
+    "scope": "First two actual Node cards, five ordinary primary labels each, across all four allocated viewports:40 checks. No technical-list or all-descendant selector."
+  },
+  "cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "selectedTextScale": 1,
+      "grid": {
+        "columns": "671px 671px",
+        "width": 1358,
+        "scrollWidth": 1358
+      },
+      "primaryLabels": [
+        {
+          "card": 0,
+          "text": "CPU allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            295.3125
+          ],
+          "naturalWidth": 98.20458984375,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "RAM allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            331.8125
+          ],
+          "naturalWidth": 99.86767578125,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Disk allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            368.3125
+          ],
+          "naturalWidth": 97.82373046875,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Architecture",
+          "lineCount": 1,
+          "lineTops": [
+            404.8125
+          ],
+          "naturalWidth": 76.91136169433594,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Status",
+          "lineCount": 1,
+          "lineTops": [
+            441.3125
+          ],
+          "naturalWidth": 39.97119140625,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "CPU allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            295.3125
+          ],
+          "naturalWidth": 98.20458984375,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "RAM allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            331.8125
+          ],
+          "naturalWidth": 99.86767578125,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Disk allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            368.3125
+          ],
+          "naturalWidth": 97.82373046875,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Architecture",
+          "lineCount": 1,
+          "lineTops": [
+            404.8125
+          ],
+          "naturalWidth": 76.91136169433594,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Status",
+          "lineCount": 1,
+          "lineTops": [
+            441.3125
+          ],
+          "naturalWidth": 39.97119140625,
+          "availableLineWidth": 613,
+          "labelTrackWidth": 191,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      ],
+      "geometryViolations": [],
+      "exactCluster": true,
+      "exactNode": true,
+      "technicalSummaryRows": 74,
+      "omissionNotice": "10 additional capacity or allocatable fields omitted from this summary. See Exact Kubernetes Node record; its display reports any truncation.",
+      "passiveRefresh": {
+        "readerRetained": true,
+        "readerFocus": true,
+        "open": "true"
+      },
+      "localSelectionBackendCallDelta": 0,
+      "contextChange": {
+        "namespace": "synthetic-namespace-1-longvalidlabellongvalidlabellongvalidlabe",
+        "lastRequest": {
+          "context": "synthetic-context-1-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+          "namespace": "synthetic-namespace-1-longvalidlabellongvalidlabellongvalidlabe",
+          "query": "worker-3-",
+          "limit": 50
+        }
+      },
+      "namespaceChange": {
+        "lastRequest": {
+          "context": "synthetic-context-1-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+          "namespace": "synthetic-namespace",
+          "query": "worker-3-",
+          "limit": 50
+        },
+        "selected": 0
+      },
+      "pendingLatestContext": "synthetic-context-2-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+      "closedPendingContexts": {
+        "cards": 0,
+        "browseVisible": null,
+        "contentHidden": true
+      }
+    },
+    {
+      "width": 390,
+      "height": 900,
+      "selectedTextScale": 1,
+      "grid": {
+        "columns": "308px",
+        "width": 308,
+        "scrollWidth": 308
+      },
+      "primaryLabels": [
+        {
+          "card": 0,
+          "text": "CPU allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            197.5625
+          ],
+          "naturalWidth": 98.20458984375,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "RAM allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            253.5625
+          ],
+          "naturalWidth": 99.86767578125,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Disk allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            309.5625
+          ],
+          "naturalWidth": 97.82373046875,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Architecture",
+          "lineCount": 1,
+          "lineTops": [
+            365.5625
+          ],
+          "naturalWidth": 76.91136169433594,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Status",
+          "lineCount": 1,
+          "lineTops": [
+            421.5625
+          ],
+          "naturalWidth": 39.97119140625,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "CPU allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            198.0625
+          ],
+          "naturalWidth": 98.20458984375,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "RAM allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            254.0625
+          ],
+          "naturalWidth": 99.86767578125,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Disk allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            310.0625
+          ],
+          "naturalWidth": 97.82373046875,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Architecture",
+          "lineCount": 1,
+          "lineTops": [
+            366.0625
+          ],
+          "naturalWidth": 76.91136169433594,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Status",
+          "lineCount": 1,
+          "lineTops": [
+            422.0625
+          ],
+          "naturalWidth": 39.97119140625,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      ],
+      "geometryViolations": [],
+      "exactCluster": true,
+      "exactNode": true,
+      "technicalSummaryRows": 74,
+      "omissionNotice": "10 additional capacity or allocatable fields omitted from this summary. See Exact Kubernetes Node record; its display reports any truncation.",
+      "passiveRefresh": {
+        "readerRetained": true,
+        "readerFocus": true,
+        "open": "true"
+      },
+      "localSelectionBackendCallDelta": 0,
+      "contextChange": {
+        "namespace": "synthetic-namespace-1-longvalidlabellongvalidlabellongvalidlabe",
+        "lastRequest": {
+          "context": "synthetic-context-1-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+          "namespace": "synthetic-namespace-1-longvalidlabellongvalidlabellongvalidlabe",
+          "query": "worker-3-",
+          "limit": 50
+        }
+      },
+      "namespaceChange": {
+        "lastRequest": {
+          "context": "synthetic-context-1-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+          "namespace": "synthetic-namespace",
+          "query": "worker-3-",
+          "limit": 50
+        },
+        "selected": 0
+      },
+      "pendingLatestContext": "synthetic-context-2-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+      "closedPendingContexts": {
+        "cards": 0,
+        "browseVisible": null,
+        "contentHidden": true
+      }
+    },
+    {
+      "width": 390,
+      "height": 320,
+      "selectedTextScale": 1,
+      "grid": {
+        "columns": "308px",
+        "width": 308,
+        "scrollWidth": 308
+      },
+      "primaryLabels": [
+        {
+          "card": 0,
+          "text": "CPU allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            -92.4375
+          ],
+          "naturalWidth": 98.20458984375,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "RAM allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            -36.4375
+          ],
+          "naturalWidth": 99.86767578125,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Disk allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            19.5625
+          ],
+          "naturalWidth": 97.82373046875,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Architecture",
+          "lineCount": 1,
+          "lineTops": [
+            75.5625
+          ],
+          "naturalWidth": 76.91136169433594,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Status",
+          "lineCount": 1,
+          "lineTops": [
+            131.5625
+          ],
+          "naturalWidth": 39.97119140625,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "CPU allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            -91.9375
+          ],
+          "naturalWidth": 98.20458984375,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "RAM allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            -35.9375
+          ],
+          "naturalWidth": 99.86767578125,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Disk allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            20.0625
+          ],
+          "naturalWidth": 97.82373046875,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Architecture",
+          "lineCount": 1,
+          "lineTops": [
+            76.0625
+          ],
+          "naturalWidth": 76.91136169433594,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Status",
+          "lineCount": 1,
+          "lineTops": [
+            132.0625
+          ],
+          "naturalWidth": 39.97119140625,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 250,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      ],
+      "geometryViolations": [],
+      "exactCluster": true,
+      "exactNode": true,
+      "technicalSummaryRows": 74,
+      "omissionNotice": "10 additional capacity or allocatable fields omitted from this summary. See Exact Kubernetes Node record; its display reports any truncation.",
+      "passiveRefresh": {
+        "readerRetained": true,
+        "readerFocus": true,
+        "open": "true"
+      },
+      "localSelectionBackendCallDelta": 0,
+      "contextChange": {
+        "namespace": "synthetic-namespace-1-longvalidlabellongvalidlabellongvalidlabe",
+        "lastRequest": {
+          "context": "synthetic-context-1-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+          "namespace": "synthetic-namespace-1-longvalidlabellongvalidlabellongvalidlabe",
+          "query": "worker-3-",
+          "limit": 50
+        }
+      },
+      "namespaceChange": {
+        "lastRequest": {
+          "context": "synthetic-context-1-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+          "namespace": "synthetic-namespace",
+          "query": "worker-3-",
+          "limit": 50
+        },
+        "selected": 0
+      },
+      "pendingLatestContext": "synthetic-context-2-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+      "closedPendingContexts": {
+        "cards": 0,
+        "browseVisible": null,
+        "contentHidden": true
+      }
+    },
+    {
+      "width": 768,
+      "height": 600,
+      "selectedTextScale": 2,
+      "grid": {
+        "columns": "335px 335px",
+        "width": 686,
+        "scrollWidth": 686
+      },
+      "primaryLabels": [
+        {
+          "card": 0,
+          "text": "CPU allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            -154.4375
+          ],
+          "naturalWidth": 183.33108520507812,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "RAM allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            -59.4375
+          ],
+          "naturalWidth": 186.53030395507812,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Disk allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            35.5625
+          ],
+          "naturalWidth": 181.18557739257812,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Architecture",
+          "lineCount": 1,
+          "lineTops": [
+            130.5625
+          ],
+          "naturalWidth": 141.7391357421875,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 0,
+          "text": "Status",
+          "lineCount": 1,
+          "lineTops": [
+            225.5625
+          ],
+          "naturalWidth": 74.31643676757812,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "CPU allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            -154.4375
+          ],
+          "naturalWidth": 183.33108520507812,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "RAM allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            -59.4375
+          ],
+          "naturalWidth": 186.53030395507812,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Disk allocatable",
+          "lineCount": 1,
+          "lineTops": [
+            35.5625
+          ],
+          "naturalWidth": 181.18557739257812,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Architecture",
+          "lineCount": 1,
+          "lineTops": [
+            130.5625
+          ],
+          "naturalWidth": 141.7391357421875,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        },
+        {
+          "card": 1,
+          "text": "Status",
+          "lineCount": 1,
+          "lineTops": [
+            225.5625
+          ],
+          "naturalWidth": 74.31643676757812,
+          "availableLineWidth": 277,
+          "labelTrackWidth": 277,
+          "font": "",
+          "canvasFontUsed": "500 26px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "26px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": false,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      ],
+      "geometryViolations": [],
+      "exactCluster": true,
+      "exactNode": true,
+      "technicalSummaryRows": 74,
+      "omissionNotice": "10 additional capacity or allocatable fields omitted from this summary. See Exact Kubernetes Node record; its display reports any truncation.",
+      "passiveRefresh": {
+        "readerRetained": true,
+        "readerFocus": true,
+        "open": "true"
+      },
+      "localSelectionBackendCallDelta": 0,
+      "contextChange": {
+        "namespace": "synthetic-namespace-1-longvalidlabellongvalidlabellongvalidlabe",
+        "lastRequest": {
+          "context": "synthetic-context-1-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+          "namespace": "synthetic-namespace-1-longvalidlabellongvalidlabellongvalidlabe",
+          "query": "worker-3-",
+          "limit": 50
+        }
+      },
+      "namespaceChange": {
+        "lastRequest": {
+          "context": "synthetic-context-1-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+          "namespace": "synthetic-namespace",
+          "query": "worker-3-",
+          "limit": 50
+        },
+        "selected": 0
+      },
+      "pendingLatestContext": "synthetic-context-2-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-segment-inventory",
+      "closedPendingContexts": {
+        "cards": 0,
+        "browseVisible": null,
+        "contentHidden": true
+      }
+    }
+  ],
+  "positive": {
+    "reportSHA256": "0a190ac695bb8bd70b451642f9d843a0fb9e46fda6bcb777303277e24554abc5",
+    "observedExitCode": 0,
+    "runnerElapsedMS": 62375,
+    "cleanup": {
+      "actualReadCaptureAndRelease": true,
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    },
+    "sessions": 4,
+    "forbiddenCalls": 0,
+    "activeReadsAtCapture": 0,
+    "pendingReadsAtCapture": 0,
+    "externalRequests": 0,
+    "realSockets": 0,
+    "pageErrors": 0,
+    "clipboardAttempts": 0,
+    "operationCounts": {
+      "status": 20,
+      "subscribe": 8,
+      "mesh_operator_watch": 8,
+      "monitor_subscribe": 8,
+      "events": 8,
+      "messages": 20,
+      "agents": 20,
+      "node_list": 28,
+      "pool_list": 8,
+      "mesh_operator_list": 20,
+      "kube_contexts": 20,
+      "kube_nodes": 32
+    }
+  },
+  "isolatedK1Omission": {
+    "reportSHA256": "bdc466dad253c7eb7b4dee526222ee98377786da5f20f30acdafde162eab0827",
+    "observedExitCode": 0,
+    "runnerElapsedMS": 15752,
+    "cleanup": {
+      "actualReadCaptureAndRelease": true,
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverJoined": true
+    },
+    "omittedOnlyNewStackingRule": true,
+    "schemasAndOtherRulesPreserved": true,
+    "intendedFinding": "K1",
+    "observedLabelRegressions": [
+      {
+        "finding": "K1",
+        "label": "CPU allocatable",
+        "reason": "Avoidable ordinary fact label split",
+        "measurement": {
+          "text": "CPU allocatable",
+          "lineCount": 2,
+          "lineTops": [
+            -82.4375,
+            -62.9375
+          ],
+          "naturalWidth": 98.20458984375,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 70,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": true,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      },
+      {
+        "finding": "K1",
+        "label": "RAM allocatable",
+        "reason": "Avoidable ordinary fact label split",
+        "measurement": {
+          "text": "RAM allocatable",
+          "lineCount": 2,
+          "lineTops": [
+            -26.4375,
+            -6.9375
+          ],
+          "naturalWidth": 99.86767578125,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 70,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": true,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      },
+      {
+        "finding": "K1",
+        "label": "Disk allocatable",
+        "reason": "Avoidable ordinary fact label split",
+        "measurement": {
+          "text": "Disk allocatable",
+          "lineCount": 2,
+          "lineTops": [
+            29.5625,
+            49.0625
+          ],
+          "naturalWidth": 97.82373046875,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 70,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": true,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      },
+      {
+        "finding": "K1",
+        "label": "Architecture",
+        "reason": "Avoidable ordinary fact label split",
+        "measurement": {
+          "text": "Architecture",
+          "lineCount": 2,
+          "lineTops": [
+            85.5625,
+            105.0625
+          ],
+          "naturalWidth": 76.91136169433594,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 70,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": true,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      },
+      {
+        "finding": "K1",
+        "label": "CPU allocatable",
+        "reason": "Avoidable ordinary fact label split",
+        "measurement": {
+          "text": "CPU allocatable",
+          "lineCount": 2,
+          "lineTops": [
+            -82.9375,
+            -63.4375
+          ],
+          "naturalWidth": 98.20458984375,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 70,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": true,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      },
+      {
+        "finding": "K1",
+        "label": "RAM allocatable",
+        "reason": "Avoidable ordinary fact label split",
+        "measurement": {
+          "text": "RAM allocatable",
+          "lineCount": 2,
+          "lineTops": [
+            -26.9375,
+            -7.4375
+          ],
+          "naturalWidth": 99.86767578125,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 70,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": true,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      },
+      {
+        "finding": "K1",
+        "label": "Disk allocatable",
+        "reason": "Avoidable ordinary fact label split",
+        "measurement": {
+          "text": "Disk allocatable",
+          "lineCount": 2,
+          "lineTops": [
+            29.0625,
+            48.5625
+          ],
+          "naturalWidth": 97.82373046875,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 70,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": true,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      },
+      {
+        "finding": "K1",
+        "label": "Architecture",
+        "reason": "Avoidable ordinary fact label split",
+        "measurement": {
+          "text": "Architecture",
+          "lineCount": 2,
+          "lineTops": [
+            85.0625,
+            104.5625
+          ],
+          "naturalWidth": 76.91136169433594,
+          "availableLineWidth": 250,
+          "labelTrackWidth": 70,
+          "font": "",
+          "canvasFontUsed": "500 13px Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+          "letterSpacing": "normal",
+          "fitsFullLine": true,
+          "avoidableSplit": true,
+          "qualification": "Actual DOM Range line boxes; Canvas uses explicit computed font style/weight/size/family and spacing for full-row fit with 2px slack. No live DOM/style mutation. Not universal font/zoom acceptance."
+        }
+      }
+    ],
+    "effectiveAppSHA256": "e84e5915fcca4c9aee9f8695fef07192e5d28877dca123db7cee8fb3b4cdbfa3"
+  },
+  "affectedTests": {
+    "native": 27,
+    "module": 23,
+    "inputSHA256": {
+      "internal/server/web/semblance/app.ttl": "34fb46909b3d3ae9ec6333f0ca82226d8929f756c0d011d27fa5e368f93cce55",
+      "internal/server/web/semblance/mesh.mjs": "1b5faaeac90aa0b5f868f362310d7decf5537707fb0ff5bba93343a6ddf8f3bc",
+      "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+      "web/test/node-layout.test.mjs": "9d3dd6e8529da54ca3ef69888712e06b77cc29346eda8887c53a5817a1844256",
+      "web/test/graph-ui.test.mjs": "88f140346b9058430c0e045e615fb63a42ae1e87c4d15d98870c51351adc9de7",
+      "web/test/native-select-parity.test.mjs": "3a6419ce46355283955ffcc7122da34cd980dbf58641584c123204e21b49eefe",
+      "internal/server/web/semblance/mesh.test.mjs": "6331f7730ad12f69235f070b44306bf19fdb4bae2b43df1b85fdc676624b35fb",
+      "internal/server/web/semblance/host-name-refresh.test.mjs": "c2b57a0e34aa5a3d942df399e972dbe2be0794b394efe446772d25fce15b6cbc"
+    },
+    "nativeLogSHA256": "0030fede6d6c0944660e38fb2d4893003d34c406626c54f13b365f869ca46cac",
+    "moduleLogSHA256": "5371bd995c815cc08c3649857fe4b512c3e05342fba2af79d6ca31351c046f70",
+    "qualification": "Tests ran on this exact product/test/module source. Subsequent change affected only the browser evidence runner font oracle; no native/module input changed."
+  },
+  "earlierMeasurementFailure": {
+    "candidates": [
+      "positive",
+      "without-primary-stacking"
+    ],
+    "reportSHA256": [
+      "c34fe906dd89933a2fc23e509962bbc60d01301450c680e5f052db3de97dc8d8",
+      "f57a72fbb5d36a7ce4468fe8a8642b9e786116b5af2bb7f4532b598402ffd145"
+    ],
+    "qualification": "Empty computed font shorthand made Canvas use its default font; those widths are not acceptance evidence. Actual prior DOM line counts remain historical observations. Frozen inputs, reports and captures are retained. Final explicit-component font cohorts supersede them."
+  },
+  "artifacts": {
+    "privateFiles": 142,
+    "manifestSHA256": "126c38ac6f2db0231597bae09dd13a0c1904b5f0d97ab573bad021f2e11e0312",
+    "savedReceiptsSHA256": "d1904a66199342548d98e582eb66b1e2991e308f736207e5d286b7300768564f",
+    "priorEvidence": [
+      {
+        "set": "activity-host",
+        "files": 142,
+        "manifestSHA256": "ca8bd4805f6fa150900ec85d558efd9a56bcab3f13f8031e5fb7bea07fcc51a2",
+        "unchanged": true
+      },
+      {
+        "set": "activity-host-layout",
+        "files": 505,
+        "manifestSHA256": "064e0ac36dd902b8bf8f08bff2ef652ee833a75a51f4d13879073cbb9f9f25e5",
+        "unchanged": true
+      },
+      {
+        "set": "shared-dialogs",
+        "files": 164,
+        "manifestSHA256": "5b89c88e07f6246f7d10b2bfe95b968fd9fa37e87b9d1accd3e9fcef723adbdf",
+        "unchanged": true
+      },
+      {
+        "set": "shared-dialog-layout",
+        "files": 256,
+        "manifestSHA256": "8970817eddeae32bbff4b60bc67c172b3c4f1ad8e32f15ecf9b5db2a261bee24",
+        "unchanged": true
+      },
+      {
+        "set": "shared-dialog-audit",
+        "files": 4,
+        "manifestSHA256": "9c584fbbb5105a180e256221d82a8f6b6d7d1ce63a58df1db9796630ac712d20",
+        "unchanged": true
+      },
+      {
+        "set": "node-inventory",
+        "files": 138,
+        "manifestSHA256": "dbd434cea249693d06453251f7c85835847a404a07b2d8849755f1eda644f2ce",
+        "unchanged": true
+      },
+      {
+        "set": "node-layout",
+        "files": 450,
+        "manifestSHA256": "995587e9774eee4547e309fd8e5906bc129515a7bf70cc8a20561f20431ec5ff",
+        "unchanged": true
+      }
+    ]
+  },
+  "limitations": [
+    "Runner wall-clock intervals include Vite transforms, collection and awaited original API closes; initial static imports/source hashing and FIFO wait are excluded. No queue override; CPU/memory target not kernel-enforced or measured by fixture.",
+    "Selected root/text-token2x is not universal zoom; fixed native fonts and native input/select glyph/popup limitations remain qualified.",
+    "Actual read capture/release and awaited original context/browser/server close promises are recorded; no OS group-exit/reap or live transport cleanup claim.",
+    "No backend/live/remote/operator/availability write, new setup, asset/Go build/install, ARM lease assertion, independent merge/push or full UX acceptance. Older owner/central evidence remains historical and source-bound."
+  ]
+}

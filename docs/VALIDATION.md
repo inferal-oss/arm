@@ -9381,6 +9381,105 @@ every theme/language/viewport, real auth/transport and broader UX/TUI remain ope
 Independent current composition and central rebuilding are recorded above.
 
 
+## Nodes and Kubernetes owner inventory evidence
+
+The [source-bound record](validation/ux-node-inventory-2026-10-29.json) binds
+two final four-case cohorts to identical fixture/product hashes: desktop, two
+phone heights and selected-token 2x tablet. Original FIFO runner intervals are
+about 38 seconds for Nodes and 51 seconds for Kubernetes, including Vite/browser
+collection and awaited original API closes. Static Node import/source hashing
+and FIFO wait are outside those recorded intervals; CPU/memory are not measured
+or kernel-enforced by the fixture. No allocation override or broad suite/build.
+
+Four captured sessions per final cohort have zero active/pending reads, forbidden
+calls, external requests, real sockets, page errors and clipboard attempts. Each
+original cohort records actual read capture/release and awaited context/browser/
+server closure; flags are not unconditional cleanup assignments. They establish
+API promise completion, not stronger OS process-group exit/reap facts.
+
+Dense/empty, pending/read-error, stale/unverified/unavailable and disconnected
+Node states; unchanged roster/detail refresh; Escape/focus restoration and late
+reply closure; Kubernetes contexts/queries/namespace changes, disabled selection
+conditions, exact records, stale request rejection and pending-context closure
+are scoped observations. Native field captions and physical select cancel keys
+are measured separately from unavailable native glyph/popup bounds. Selected
+text tokens are not universal zoom. Tall exact JSON requiring vertical scroll
+is not itself a failure. Four layout P2s and any independent acceptance stay open.
+
+Earlier locator-failed and weaker global-End measurement candidates remain
+preserved with hash-matched frozen inputs. All 142 Activity/Host inventory, 505
+prior correction, 164 shared-dialog inventory, 256 shared-dialog correction and
+four recovered-audit artifacts rehash unchanged. No cleanup credit transfers
+from later fixtures to earlier failures. Real auth/transport/discovery/cluster,
+operator actions, maximum cases, other themes/locales and full UX/TUI remain open.
+
+
+## Nodes and Kubernetes correction evidence
+
+The [final-source record](validation/ux-node-layout-2026-10-29.json) binds identical
+source hashes to two four-case cohorts (desktop, both phone heights and selected
+text-token 2x tablet). Original FIFO runner intervals are about 44 and 62 seconds,
+including Vite transforms, collection and original awaited API closes; initial
+static imports/source hashing and FIFO wait are outside those intervals. No
+overrides, broad suite, setup, owner asset/Go build, install or activation. CPU
+and memory are not measured or kernel-enforced by this fixture.
+
+Complete titles/trust/prose/description text fit their own allocation and true
+clips; scoped audits show no horizontal overflow or text overlap, and native
+controls are individually reachable. Native grid creation arguments and factory
+source remain exact. All four Node header/close allocations include the native
+negative margins with unchanged close declarations and native overlay hash.
+
+Exact reader first/middle/final text ranges are verified through actual native
+scrollers and keys, with screenshots and exact text hashes. Dialog End can move
+past a reader and alone proves no unreachable tail. The original observation
+and inventory remain frozen; tall content is allowed to scroll vertically.
+Four isolated declaration omissions retain every schema and unrelated rule and
+reproduce their intended N1/N2/K1/K2 observations. The technical omission also
+exposes intrinsic descendant overflow in card audits; no zero cross-observation
+claim is made.
+
+Twenty-seven real native RDF/DOM/EventBus and 23 module request-boundary tests
+pass on final source. Connected refresh/focus and normal/degraded Escape, late
+reply/reconnect and exact context/namespace/UID/local selection checks remain
+positive. Disconnected Escape closes but does not focus its disabled opener,
+matching the frozen inventory in all four cases; focus policy is unchanged. Every final
+original browser cohort captures zero active/pending reads and forbidden calls
+and awaits its original context/browser/server close promises. This is API
+completion evidence, not OS process-group exit/reap proof. Earlier header audit,
+Linkedom select setup failures and shadowed-rule candidates remain distinct.
+
+All prior 142/505/164/256/four-audit/138 inventory artifacts rehash unchanged.
+Native input/select painted glyph and popup bounds, universal zoom, other themes
+and maximum cases, real auth/transport/discovery/cluster and broader UX/TUI remain
+open. Independent current-main review/composition and central rebuild against
+newer Go remain required.
+
+
+## Kubernetes primary-label review evidence
+
+The [focused record](validation/ux-kube-primary-labels-2026-10-29.json) binds final
+source hashes to four Kube cases and a K1 control omitting only the new primary
+stacking rule. Forty ordinary primary labels occupy one line; the omission
+reproduces two-line fragmentation, including Architecture. Captures cover narrow
+and selected-token sizes. The technical rule retains its separate scope; its
+prior omission evidence remains historical rather than newly rerun.
+
+Twenty-seven native and 23 module checks pass on this exact product/test source.
+The subsequent font fix changes only the browser evidence runner. An initial
+empty font shorthand caused Canvas default-font widths; those candidate inputs,
+reports and images are preserved as measurement failures. Final cohorts use and
+record explicit computed font components and the accepted Canvas font.
+
+Original FIFO runner intervals are about 62 and 16 seconds, including transforms,
+collection and awaited original API closes; initial static imports/source hashing
+and FIFO wait are excluded. Actual capture/release is recorded with zero pending/
+active reads or forbidden effects. API closure does not prove OS group/reap facts.
+Native glyphs, selected tokens versus universal zoom, real runtime/cluster work
+and independent current-main acceptance remain qualified. No setup, asset build,
+install, live operation or ARM lease assertion. Older evidence rehashes unchanged.
+
+
 ## Private manifest — independent composed validation
 
 The [composed record](validation/resident-worker-package-manifest-composed-2026-10-29.json)
@@ -9396,3 +9495,26 @@ bounds, invalid decoded keys/types/numbers/paths/digests and manual oversized
 encoding have scoped positive/refusal evidence. This proves no native bytes,
 provenance, approval, compatibility, filesystem/staging/admission or execution.
 No CLI/build/browser/Linux/full-suite or actual upgrade acceptance is inferred.
+
+
+## Nodes/Kubernetes — independent final composed validation
+
+The [composed record](validation/ux-node-layout-composed-2026-10-29.json) records
+454 JavaScript tests and 48 native tests in nine files, zero failures/skips,
+two byte-identical dashboard builds and a current native CLI build. The core
+cohort completed in 15.849s. Exact final Node and Kubernetes four-case
+cohorts completed in 44.074s and 61.970s; all 40 sampled primary labels
+occupy one DOM line where the full row fits them. Final primary-only and
+technical-only omissions reproduce their independent layout failures. Earlier
+four-control receipts remain bound to their prior source.
+
+Full labels/units, exact capped record bytes and first/middle/final ranges,
+physical native keys, retained selection/readers, degraded/pending/disconnect
+and stale replies have scoped synthetic read-only evidence. Capture/release
+and original context/browser/server API closes are awaited. This is no OS
+group/reap, real transport/authentication/cluster/host action or full UX proof.
+Disconnected Escape still cannot focus a disabled opener. Selected token
+scaling and explicit-font Canvas estimates are qualified; actual line boxes
+are authoritative. Initial default-font measurement captures stay excluded.
+Direct FIFO evidence grants no ARM adoption/lease/backend or hard RSS claim.
+No installation, Linux/full-Go/new-TUI or live runtime acceptance is inferred.

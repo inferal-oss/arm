@@ -3920,6 +3920,61 @@ central deterministic assets/native build and fresh browser controls are in the
 and installed/live-runtime acceptance remain open.
 
 
+## Nodes and Kubernetes inventory fixture boundary
+
+The new fixture pair loads the actual main/graph/native ontology and substitutes
+only a strict synthetic Backend import. It refuses unexpected operations and
+argument keys. View node and current-declaration reads bind exact known hosts;
+Kubernetes reads bind known contexts, namespace/query/limit and distinct stable
+namespace UIDs. Select this Node remains local and issues no backend call.
+
+Source-reviewed DTOs preserve int64 metadata/event values through BigInt and
+exact quantity strings. The healthy availability revision is a safe integer
+admitted by the actual UI validator, with no unsafe cast or fake validation.
+Go/wire/cluster validation is outside this browser fixture. The
+[normalized inventory](validation/ux-node-inventory-2026-10-29.json) proposes
+app-owned layout boundaries; this step implements no production correction.
+
+
+## Nodes and Kubernetes app-owned reading allocation
+
+Existing roster Cards/Grid, Node inner/outer body and trust/grant/foot containers,
+Kubernetes inventory/Cards and technical DescriptionList carry noninteractive
+app-owned scopes. Full titles, facts, prose and raw identifiers wrap within their
+allocation. Technical descriptions stack at compact/medium widths; native Grid
+columns and minimum-width parameters remain exact after removing shadowed rules.
+No wrapper or interactive subtype is introduced.
+
+The existing native Node Dialog is addressed only through its unique body marker.
+Its panel width is bounded by 72rem and existing viewport gutters. The header
+reserves the native close button's unchanged negative margins; title/body/footer
+allocation stays bounded. Native close size/margin/behavior, Dialog height,
+overflow, anchor and animation rules remain unchanged. Generic modal/row/grant
+helpers and all other workflow surfaces remain exact.
+
+The [source guard](validation/ux-node-layout-2026-10-29.json) restores the entire
+mesh source byte-for-byte to the inventory base after removing only scoped type
+hooks and equivalent construction-variable changes. Callbacks, request/unit
+arguments, IDs, selection/cardByUID, stale-context, pending, disposal and focus
+logic are unchanged. Raw quantity strings, BigInt display, 64-field quantity
+summary/omission notice and exact JSON cap/truncation remain intact.
+
+
+## Kubernetes primary-fact label allocation
+
+One compact/medium rule targets only the existing DescriptionList directly inside
+the Node Card body Stack. Labels and values take separate rows, keeping ordinary
+labels such as Architecture whole when the complete card line has room. Native
+Grid, technical disclosure/list rules, hooks, callbacks, text, units and bindings
+are unchanged; deleting only this rule restores the frozen app source exactly.
+
+The [focused record](validation/ux-kube-primary-labels-2026-10-29.json) adds an
+actual DOM Range line-count oracle beyond fullTextFits. A label that fits the
+full available row under explicit computed-font Canvas measurement must occupy
+one line. Canvas width is an estimate; native line boxes are authoritative and
+the fixture fit margins are ample. No universal font/zoom claim is made.
+
+
 ## Private worker package codec — composed scope
 
 The independently reviewed private codec parses bounded untrusted declarations,
@@ -3929,3 +3984,16 @@ limits refuse invalid input. No approval, native content/identity/compatibility,
 resource capability or runtime route is created. All current Go/module/CLI
 behavior is preserved; no production package imports the codec. See the
 [composed record](validation/resident-worker-package-manifest-composed-2026-10-29.json).
+
+
+## Nodes/Kubernetes — composed reading and lifecycle boundary
+
+Independent review accepts existing-container layout markers and scoped native
+parts for roster/detail/inventory/technical reading. A focused compact/medium
+primary-list rule keeps ordinary Kubernetes labels whole without reaching the
+technical disclosure. Whole mesh source reconstructs the inventory byte-for-byte
+after removing layout hooks and equivalent creation variables; callbacks, units,
+identity and lifecycle code remain exact. Native Grid, Dialog/close policies,
+all current Go/modules/pinned engine/main/graph and resource authority are
+unchanged. Assets are centrally rebuilt over current main. See the
+[composed record](validation/ux-node-layout-composed-2026-10-29.json).

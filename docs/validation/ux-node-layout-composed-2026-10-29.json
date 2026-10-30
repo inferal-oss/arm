@@ -1,0 +1,251 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "status": "Independent scoped Node/Kubernetes source, visual and composed acceptance; full UX remains open",
+  "owner_inventory": "ac3230c37f976f6283a16b3b50423cf807fd9cc4",
+  "focused_owner_commits": [
+    "ffe8b6e6448d6664b812214c88fc0cf101855c6a",
+    "79e4e7c87e9ae2400f1a4056220dc1d30d03800f",
+    "36d62f61c41c410955be1ba8fa6b3c7eac45f392",
+    "4b3a1baae7f85742dc059ef13f695f8426e8d099"
+  ],
+  "composed_on": "4cd024c0b53b3fbb42104bb4e8b5742a37684002",
+  "composed_source": "7f9b7e35eec1bf9662d6dcba129115765a8c6059",
+  "sourceSHA256": {
+    "internal/server/web/semblance/main.mjs": "0a3a5f476882a9bbad1634a419ca8d4cf41fb65a03242f6279edddb4a805260d",
+    "internal/server/web/semblance/app.ttl": "34fb46909b3d3ae9ec6333f0ca82226d8929f756c0d011d27fa5e368f93cce55",
+    "internal/server/web/semblance/graph-ui.mjs": "03ce84d7c94aa53af25d4f86155fa98f84330a4d6cf8cab30719ce23a3f11f4f",
+    "internal/server/web/semblance/mesh.mjs": "1b5faaeac90aa0b5f868f362310d7decf5537707fb0ff5bba93343a6ddf8f3bc",
+    "internal/server/web/semblance/node-availability.mjs": "e365c195bcb48b9c2a3a78624489b151c800a5e9598b7c03f3940f26186246b6",
+    "internal/server/web/semblance/kube-quantity.mjs": "6ddb9f7203ac26e32df9f7919396c0058c7008950023df3e784a2bd6d972980c",
+    "internal/server/web/mesh-model.mjs": "adae955089af54733dc4e2e639f2a2a99f6681bcd906f43d522d2234e79b67a6",
+    "internal/server/web/core.mjs": "9f4a762231a49aedf1c82ffbc48c57d0f7c6656728e631f3563c9a7c0b130d31",
+    "internal/server/web/semblance/backend.mjs": "22b3550d9ca7afd1a12f8fcef02ff47bbf9817d00dd7a363226c86382b42227e",
+    "internal/model/node_registry.go": "41da35e98ac72453c53a0d27b1276af375c592826c8c493d19569a5b89d5666b",
+    "internal/model/node_metadata.go": "37f47880669571a310d5e0a84df56097c60c7e8fcfb94b7a234769872f526441",
+    "internal/server/node_registry.go": "e226c631e5d63c4243be3d1a0df6dd59dc25930b3a49c733cf22d034dcabb957",
+    "internal/server/node_availability.go": "80d7471d4a8132c1bc5ffaa7135381d7cca2cf3fd44b5438fc2483842d99b7bc",
+    "internal/nodeavailability/inspection.go": "64ecdba07ad213901b750a0157ada8c47fcc765fd5bbbc6258b77e2f01e9e4ae",
+    "internal/nodeavailability/profile.go": "eeef6b99237a7a9aeef39137bb15bc675884b5318ab0269a9eaff617f90db4bc",
+    "internal/server/kubernetes_inventory.go": "55a6743e18fec0749c7b649c8b7439ce14fcf2a73f44242f8f21013a5c8482f4",
+    "internal/kubeprovision/types.go": "7ca78b6352f490b4555b73522645db1eebd75f36d76325ef518f81d1a6938c8e",
+    "internal/kubeprovision/clientgo.go": "936ba2414414cdb311eadaa12c825f2d4b0814bc2fc351830bc30f973dae00d8",
+    "web/third_party/semblance/ontology/components/inputs.ttl": "e9ab0af176ef77101f4a6b35000990c5ec870cc4c0eff9c46192e589520f2b04",
+    "web/third_party/semblance/ontology/components/controls.ttl": "b1cbc7649bb46988b4ed633f8e1df338465e05e78b281f7070db6c496ef3f2f4",
+    "web/third_party/semblance/ontology/components/textfield.ttl": "884f18336b9f123868972937cae65fb73d0e5044b7c17ddd4c164c02a9e1f688",
+    "web/third_party/semblance/ontology/theme/default.ttl": "71ea06da39dd4d23b736a355b970c3586ffa6f85b48c0c388ac60a8ef398162d",
+    "web/third_party/semblance/ontology/theme/overlays.ttl": "2d53a5cb6f1a92c03dd21cf50eda2d1ef196d1bc5f528b7d93e0565b2b5e59f6",
+    "web/third_party/semblance/ontology/theme/data.ttl": "5dfefcfb38b77459150851b67a386faf419f9c4f0eb26cb681b5997007fbaeff",
+    "web/third_party/semblance/ontology/theme/type.ttl": "f16c55be3075ff8a8330a2a13b96b1e6d32038c1c303b00c902babbc01759fd9",
+    "web/third_party/semblance/ontology/theme/layout.ttl": "98266af464b2c80f239fa2ebaf946199bb023204bebedcf7cb096531fec43b71",
+    "web/third_party/semblance/ontology/components/layout.ttl": "8b828351304d6bcada709fc1753b45d9f63e46fe9ed7a359c26c048b28ebdcc4",
+    "web/third_party/semblance/ontology/components/type.ttl": "80bc0082a1cecab49f7f68cccf7f42c0f6cb356416b353d94fa4346f960d6ad0",
+    "web/third_party/semblance/ontology/components/overlays.ttl": "1d03565bc798fa30f68132c9ec7ec609eeafc2429a22fc27a60540da63263685",
+    "web/third_party/semblance/ontology/layers/position.ttl": "21888ee3fa30c614f9cea40043604579f37578261c927386e15747e928e06956",
+    "internal/server/web/resource-names.mjs": "93aa60c673d19be3718e58d78a49110e605f658c9041d07529fb58bd428151a1",
+    "web/test/node-layout.test.mjs": "9d3dd6e8529da54ca3ef69888712e06b77cc29346eda8887c53a5817a1844256",
+    "scripts/dashboard-screenshots/ux-node-layout.mjs": "ac88226d3de24e7ee3e2ac53d25a41840d16a08f52569a29892cd1749ac6c0fd",
+    "scripts/dashboard-screenshots/ux-node-inventory-backend.mjs": "40302e3bc8d00894f1c3fb8ae2cb3cfb2b97ef3ac2e3a41437c8d4c3b19772f9"
+  },
+  "owner_records_sha256": {
+    "docs/validation/ux-node-inventory-2026-10-29.json": "2835e2a7f2756fbf3d489b2f389888a2356f2e11ce9e354b202c49359336cb4d",
+    "docs/validation/ux-node-layout-2026-10-29.json": "a650bb048e8fb6d9b90f4f348371fe3f2abeea9169f9199266361506ea5ae6c5",
+    "docs/validation/ux-kube-primary-labels-2026-10-29.json": "4c51721200a49172bf5365e7e20815f4fd20090ca2363f5f5d7256d3b03ad305"
+  },
+  "source_review": {
+    "whole_mesh_reconstructs_inventory_by_removing_layout_hooks_and_equivalent_creation_variables": true,
+    "mesh_sha256_unchanged_by_primary_fix": true,
+    "removing_only_primary_rule_restores_frozen_app": true,
+    "technical_rule_independent": true,
+    "native_grid_parameters_and_dialog_close_height_overflow_anchor_animation_policies_unchanged": true,
+    "all_go_modules_pinned_engine_main_and_graph_same_as_current_main": true,
+    "body_markers_noninteractive_no_new_wrappers": true,
+    "exact_labels_units_bigints_summary_cap_omissions_and_json_bytes_caps_unchanged": true,
+    "callbacks_requests_bindings_selection_stale_pending_disposal_focus_logic_unchanged": true
+  },
+  "core": {
+    "seconds": 15.849,
+    "node_tests": 454,
+    "native_tests": 48,
+    "native_files": 9,
+    "failed_or_skipped": 0,
+    "deterministic_dashboard_builds": 2,
+    "bundle_sha256": "7071a977144ddd21c34b6bdd3ef0f6e50e717fc2be165f89348f07c309489243",
+    "native_cli_build": "pass before asset/evidence commit; hash-bound input manifest, no clean-VCS binary attestation",
+    "native_binary_sha256": "e0323a2aac075cefd2581581cd8d9f048e66c27c35385baeb98119b5734ac311"
+  },
+  "cohorts": [
+    {
+      "phase": "nodes",
+      "command_seconds": 44.074,
+      "runner_elapsed_ms": 43706,
+      "cases": 4,
+      "sessions": 4,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "forbidden_calls": 0,
+      "active_reads_at_capture": 0,
+      "pending_reads_at_capture": 0,
+      "external_requests": 0,
+      "real_sockets": 0,
+      "page_errors": 0,
+      "clipboard_attempts": 0,
+      "cases_geometry": [
+        {
+          "width": 1440,
+          "height": 900,
+          "selected_text_scale": 1,
+          "violations": 0
+        },
+        {
+          "width": 390,
+          "height": 900,
+          "selected_text_scale": 1,
+          "violations": 0
+        },
+        {
+          "width": 390,
+          "height": 320,
+          "selected_text_scale": 1,
+          "violations": 0
+        },
+        {
+          "width": 768,
+          "height": 600,
+          "selected_text_scale": 2,
+          "violations": 0
+        }
+      ]
+    },
+    {
+      "phase": "kube",
+      "command_seconds": 61.97,
+      "runner_elapsed_ms": 61601,
+      "cases": 4,
+      "sessions": 4,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "forbidden_calls": 0,
+      "active_reads_at_capture": 0,
+      "pending_reads_at_capture": 0,
+      "external_requests": 0,
+      "real_sockets": 0,
+      "page_errors": 0,
+      "clipboard_attempts": 0,
+      "cases_geometry": [
+        {
+          "width": 1440,
+          "height": 900,
+          "selected_text_scale": 1,
+          "violations": 0
+        },
+        {
+          "width": 390,
+          "height": 900,
+          "selected_text_scale": 1,
+          "violations": 0
+        },
+        {
+          "width": 390,
+          "height": 320,
+          "selected_text_scale": 1,
+          "violations": 0
+        },
+        {
+          "width": 768,
+          "height": 600,
+          "selected_text_scale": 2,
+          "violations": 0
+        }
+      ],
+      "ordinary_primary_labels": {
+        "checked": 40,
+        "one_dom_line": 40,
+        "computed_font_explicit": true
+      }
+    },
+    {
+      "phase": "without-primary-stacking",
+      "command_seconds": 15.865,
+      "runner_elapsed_ms": 15459,
+      "cases": 1,
+      "sessions": 1,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "forbidden_calls": 0,
+      "active_reads_at_capture": 0,
+      "pending_reads_at_capture": 0,
+      "external_requests": 0,
+      "real_sockets": 0,
+      "page_errors": 0,
+      "clipboard_attempts": 0,
+      "expected_layout_failure": "K1",
+      "isolated_app_override": true
+    },
+    {
+      "phase": "without-technical",
+      "command_seconds": 15.918,
+      "runner_elapsed_ms": 15541,
+      "cases": 1,
+      "sessions": 1,
+      "cleanup": {
+        "actualReadCaptureAndRelease": true,
+        "contextClosed": true,
+        "browserClosed": true,
+        "serverJoined": true
+      },
+      "forbidden_calls": 0,
+      "active_reads_at_capture": 0,
+      "pending_reads_at_capture": 0,
+      "external_requests": 0,
+      "real_sockets": 0,
+      "page_errors": 0,
+      "clipboard_attempts": 0,
+      "expected_layout_failure": "K2",
+      "isolated_app_override": true
+    }
+  ],
+  "historical_prior_source_controls": {
+    "source": "8a6e6c3",
+    "positive_cases": 8,
+    "four_isolated_omissions": {
+      "without-roster": 11.344,
+      "without-detail": 11.476,
+      "without-kube": 16.261,
+      "without-technical": 16.26
+    },
+    "qualification": "Passed the original layout checks before independent visual review found avoidable ordinary-label fragmentation. These receipts remain historical, not final-source browser acceptance."
+  },
+  "preserved_owner_artifacts": [
+    {
+      "count": 450,
+      "manifest_sha256": "995587e9774eee4547e309fd8e5906bc129515a7bf70cc8a20561f20431ec5ff"
+    },
+    {
+      "count": 142,
+      "manifest_sha256": "126c38ac6f2db0231597bae09dd13a0c1904b5f0d97ab573bad021f2e11e0312"
+    }
+  ],
+  "validation_boundary": "Separate sequential original normal shared FIFO commands, <=115s including fixture API cleanup; static initial module imports/source hashes and FIFO wait excluded from browser runner interval. Allocated CPU/memory settings are cooperative targets, not measured/kernel enforced. No ARM grant/backend/enrollment claim.",
+  "limits": [
+    "Synthetic read-only Backend only; no real transport/authentication, host/operator mutation, cluster operation, installation or runtime activation.",
+    "Native PageDown plus actual scrollBy on existing scrollable elements proves first/middle/final record reach. Dialog End alone is not the reachability oracle.",
+    "Disconnected Escape closes but cannot focus the disabled opener, matching baseline. Focus policy is unchanged.",
+    "Only selected root/text tokens are scaled; no universal zoom/font/platform/native-popup or maximum-density acceptance.",
+    "Earlier default-font Canvas width receipts are excluded; final explicit-font width is an estimate and actual DOM Range line boxes are authoritative.",
+    "Cleanup is actual read capture/release and awaited original context/browser/server APIs, not an OS process-group reaping proof.",
+    "No full Go suite, Linux runtime, new TUI, live backend or full UX acceptance. Broader Mesh/operator/forwarding/destination/screen/shell/terminal gates remain open."
+  ]
+}
