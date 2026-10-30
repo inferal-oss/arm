@@ -9717,3 +9717,17 @@ is API evidence, not OS process-group exit/reap or memory-wiping proof. All ten
 prior private evidence sets rehash unchanged; runtime identities/values/captures
 stay private. No full200/max-cap, universal zoom/native glyph, runtime RDF/LDES,
 TUI/Linux/upgrade/live/full UX or remediation acceptance is claimed.
+
+
+## Destination inventory — current-main review
+
+The [composed
+record](validation/ux-destination-inventory-composed-2026-10-29.json) binds the
+source/evidence review to current main: 37 input hashes match, 34 protected
+inputs are unchanged, and all 192 original artifact hashes verify. Actual
+fixture/factory/parent inspection and narrow dialog imagery support D1–D4 as
+inventory findings. The two completed owner cohorts took 30.990s and 31.664s;
+the failed 2.069s first cohort earns no completed-case credit. Amount-selector
+exclusions remain explicit. No new runtime suite/build was needed for this
+inventory-only composition; API cleanup is not OS group/reap proof, and no
+remediation, actual remote authority or full UX acceptance follows.

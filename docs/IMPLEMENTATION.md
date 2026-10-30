@@ -4114,3 +4114,15 @@ bridge closure. Native UI selection/disclosure/close and backend callbacks
 provide the other observations. The
 [inventory record](validation/ux-destination-inventory-2026-10-29.json) proposes
 existing noninteractive banner/Card/detail-body scopes only; none is implemented.
+
+
+## Destination inventory — accepted scope
+
+Independent [composition
+review](validation/ux-destination-inventory-composed-2026-10-29.json) accepts
+the native destination inventory and its four layout findings. Production source
+and generated assets remain unchanged. Fixtures preserve the actual
+parent/factory API and substitute only strict synthetic reads plus transparent
+API retention; they establish presentation observations, not live remote
+permission, lifecycle or upgrade authority. Banner/Card/detail containment
+remediation remains pending.

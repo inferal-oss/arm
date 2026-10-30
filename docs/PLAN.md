@@ -2462,3 +2462,15 @@ Banner names, resource/lease Cards and lease Dialog title/close allocation need
 independent review before any app-owned scope correction. No remediation,
 product acceptance, merge/push, build/install, actual destination operation or
 full UX/TUI/live acceptance is included in this inventory cut.
+
+
+## Destination inventory — independent composition accepted
+
+Owner `7d9717b` is accepted as inventory only. The [composed
+record](validation/ux-destination-inventory-composed-2026-10-29.json) verifies
+all 37 input hashes, all 34 protected inputs against current main, all 192
+private artifacts and the actual fixture/factory/parent source. Narrow detail
+imagery confirms the title/close finding. Failed initial collection and excluded
+amount selectors retain their qualifications; no product source or built assets
+change. D1–D4 are accepted review findings, with remediation and composed
+validation still required.
