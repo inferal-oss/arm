@@ -35,6 +35,7 @@ import (
 )
 
 type Server struct {
+	resident              *residentServerPending // original root-owned Server; never an API/UI worker
 	responses             responseTracking
 	callers               residentCallers
 	peerCacheMu           sync.RWMutex

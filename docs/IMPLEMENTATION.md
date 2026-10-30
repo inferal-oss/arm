@@ -1,5 +1,23 @@
 # Backend and CLI implementation
 
+## Original Server binding and borrower validation — unconnected source
+
+The private pending Server retains its actual object before native claim,
+same-issuer Manager binding and original loop launch. It records partial and
+abnormal operations outside its publication mutex, retains first errors and
+never enters the legacy Serve close/unlock path. The resident ingress branch
+validates an actual nonretiring native claim plus the same original Manager
+pointer; copied or mixed legacy/resident proofs refuse. Native descriptors and
+Close authority are not lent to a Server or worker.
+
+The shared issuer bounds queued validation at 64 callers. Each waits on the
+actual original operation's normal-completion notification, then performs its
+own fresh native check. Cancellation removes only a queued waiter. It cannot
+interrupt a native syscall or replace an abnormal retained operation. Inspection
+remains responsive. No helper goroutine or polling loop is created by the gate.
+Selected normal/race/vet and maintained causal controls pass; this is still
+unconnected to production root, funding, listener, public start or workers.
+
 ## Original Manager assembly — unconnected implementation
 
 `manager.ResidentManagerPending` retains the actual Manager before claiming its

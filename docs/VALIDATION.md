@@ -1,5 +1,46 @@
 # Validation record
 
+## Original Server and native borrower validation — complementary scopes
+
+The [source-bound record](validation/resident-original-server-2026-10-30.json)
+records 20 normal and 20 race roots, all pass: five new pending/concurrency/
+genuine-binding roots and 15 affected existing native/ingress/reporting/job-
+lifetime regressions. Three affected packages pass default vet. These tests do
+not establish an actual resident network path or worker replacement.
+
+Maintained controls qualify actual paused validation, responsive inspection,
+64 queued callers/65th refusal, queued cancellation retaining the original,
+fresh validation after normal wake and retained panic/Goexit without replacement.
+The held-mutex negative and two armed omitted-guard negatives reach their exact
+intended assertions; pending positive also passes under race. A test-only generator
+fix preserves original setup defers and changes no production or test Go bytes.
+
+The ordinary/initial-control phase stopped overall at a wrong-stage negative
+fixture setup failure, after its completed scopes. It authenticated 69 actual
+referenced official modules before execution; it never performed post-auth.
+A focused complementary phase ran only the four remaining controls, verified
+current-before equals that actual prior-before and current-after for all 69
+modules, and passed. This does not rewrite the earlier failure or invent its
+missing post-auth. The real graph has 782 packages; no module replacement,
+acquisition, repair or fallback was used. Original fixture/helper/Go/FIFO joins
+and empty actual temporary directories were checked. A prior numeric-loopback
+sandbox parser rejection occurred before Go and remains a separate failed scope.
+The corrected profile allows only TCP localhost IPv4/IPv6 for selected owned
+fixtures, while dependency-cache writes and other networking remain denied.
+
+Generate maintained controls from the repository root:
+
+```sh
+python3 internal/server/internal/nativeowner/testdata/validation_controls.py --package-dir internal/server/internal/nativeowner --output /path/to/new-private-controls
+```
+
+Use each generated manifest's exact root, overlay and expected exit/assertion in
+a fresh `go test -vet=off -count=1 -overlay=/path/to/case/overlay.json -run=^ROOT$ ./internal/server/internal/nativeowner`.
+Positive cases expect exit 0; deliberate negatives expect exit 1 and the exact
+named assertion. Add `-race` for pending positive. Generated maps/Go/control
+receipts belong outside version control. No product native/pool/task Closed,
+standing funding, public-start or original-job upgrade continuity is proved.
+
 ## Original Manager assembly — selected native scope qualified
 
 The six Manager sources retain the reviewed ordinary sync2 selection and match

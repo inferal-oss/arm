@@ -1,5 +1,18 @@
 # ARM delivery plan
 
+## Original Server and native validation gate — selected scope qualified
+
+Owner: `codex/resident-original-server-ingress`, based on `ed32fed`.
+The pending actual Server now binds the original native Server claim and same
+Manager borrower before loop startup. Its new ingress branch uses that private
+binding; legacy Directory validation remains exclusive. A shared bounded gate
+queues native borrower validation without holding inspection across native work.
+Selected normal/race each pass 20 roots, affected default vet passes, and causal
+pending/cancellation/capacity/fresh-wake/panic/Goexit controls qualify across two
+explicitly scoped phases. Prior parser and wrong-stage harness failures remain
+preserved. See the [source-bound limits](validation/resident-original-server-2026-10-30.json).
+No listener, root/start, funding, worker or job-upgrade activation is supplied.
+
 ## Original Manager assembly — actual source, qualification pending
 
 Owner: `codex/resident-standard-manager-assembly`, based on `ccf4c509`.
