@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "status": "COMPLETE NATIVE READING SOURCE PREPARATION ONLY. New Go is formatter-parsed but uncompiled; capture/replay never imported/executed. Separate source/build/PTY/browser allocations required.",
-  "branch": "codex/ux-terminal-lease-reading-fixture",
+  "status": "DETAIL PAGEDOWN HARNESS CORRECTION SOURCE ONLY. Original9b compile passed and first capture failed; corrected source has not been compiled or executed. New source/build/runtime review required.",
+  "branch": "codex/ux-terminal-lease-detail-pgdown",
   "parentDiagnosticEvidenceCommit": "2f0920bc02a4c5183943873bf8bdde85229e7f93",
   "mainConstraintCommit": "757033706fed1767ac84a143b61bf20f78c19194",
   "mainComparison": "57 relevant classified/original-helper/diagnostic source files exact, no active-work rebase. Product TUI/protocol/pins unchanged.",
@@ -12,8 +12,8 @@
       "lines": 315
     },
     "scripts/dashboard-screenshots/ux-terminal-lease-capture.py": {
-      "sha256": "262e6768b7671c25221a32ab591e880b30af9e3f6ddd78712fb12a34b4ff028b",
-      "bytes": 18106,
+      "sha256": "9e2b5b726582217821d244d9bbf0185cbf26aefa07ee25fa8e954efee38ce409",
+      "bytes": 18109,
       "lines": 286
     },
     "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs": {
@@ -200,9 +200,9 @@
   },
   "captureDriver": {
     "reuse": "Import exact SHA980fc761382c0de2854f43decb854658c69462ac05ad5b899105585eac8231d6 support script definitions under non-main name; hash guard BEFORE import. Inherit reviewed Session wait/settle/checkpoint/final Popen/slave-close/termios/EOF cleanup. Copy constructor changes only selector/env plus explicit retained inputs; copy drain changes combined budget with128KiB receipt reserve. No source/module mutation.",
-    "genuineInput": "Original owned PTY SGR press/release at fully visible original cells, End for needed first/tail reads, bounded actual Down/Enter record expansion, literal bracketed-paste framing and exact filter content, original Enter/Esc and n-decline. No host viewport/selection assignment, native clipboard or synthetic model-text terminal data. Record selection/expansion waits for the exact published selection/path effect, not merely a generic input counter.",
+    "genuineInput": "Original owned PTY SGR press/release at fully visible original cells, one supported PageDown for each overflowing detail tail, explicit End only for the overflowing release-review tail; both wait for actual offset==total-height, bounded actual Down/Enter record expansion, literal bracketed-paste framing and exact filter content, original Enter/Esc and n-decline. No host viewport/selection assignment, native clipboard or synthetic model-text terminal data. Record selection/expansion waits for the exact published selection/path effect, not merely a generic input counter.",
     "coverage": "Union actual captured viewport logical-row offsets must cover complete original detail/review contents; no redundant middle/wide copy. Exact per-grid roster checked before continuing. No old failed wide whole-line-border helper is replaced/rerun; whole original frames and source viewport metadata retained.",
-    "buildGuard": "Fresh separately reviewed native compile binary/receipt required; old binary cannot supply selector. Validate binary digest and exact62-entry source map before/after; preserve original50 classifier values and support/helper guards. No implicit build, install/backend or test selection widening.",
+    "buildGuard": "New clean62-source compile receipt required after capture-input and plan changes, despite unchanged Go source/test selector. Never relabel or reuse the original9b build receipt as this source cut. Validate fresh binary digest and exact62-entry before/after source map; original50/helper/support guards unchanged. No implicit build/install/backend or selection widening.",
     "PopenCleanup": "Original child inherits FIFO group; no setsid/setpgid/group/PID lookup. Local terminate/kill/wait retained original only. Saved termios comparison before parent slave close and bounded final EOF/EIO versus quiet; forced/truncated/timed-out/unknown cleanup fails. Existing70s capture/25sProgram/35schild/<=9s teardown targets retained.",
     "cumulativeBudget": "Four explicit canonical private disjoint roots bind111direct/29originalruntime/47acceptedreplay/15diagnostic manifests; mapped artifact hashes checked before and after capture. They and new native capture share16MiB, with128KiB reserve and<=4MiB stream/grid. Check before child launch and before every data block, including cleanup. Fresh output never reused. Old allocated build binaries remain separately retained.",
     "failures": "Retain original partial streams/checkpoints/child receipts; stop first error/no replacement. Future outer wrapper must verify all old111/64/29/47/15 source/artifact scopes even after failure."
@@ -281,9 +281,9 @@
       "scripts/dashboard-screenshots/ux-terminal-loop-capture.py",
       "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs"
     ],
-    "meaning": "New source cut/new selector/new receipt, not a forged or updated old57 receipt. Source plan itself is a receipt member but has no self-hash field. Future build owner freezes exact before/after maps and binary/original command/env/exit/log; no source changes during compile/capture/replay.",
+    "meaning": "Fresh correction source cut and exact62-map/compile receipt, same test selector. Capture and this source plan change; other60 receipt inputs stay exact. Preserve original9b62 map/binary and its failed runtime unchanged. This plan remains a receipt member with no self-hash; normalized failure inventory is review evidence outside the62 runtime membership.",
     "testSelector": "^TestUXTerminalLeaseReadingFixture$",
-    "proposedCompile": "env SEMBLANCE_RUN_LIMIT=115 GOMAXPROCS=2 GOMEMLIMIT=1536MiB GOENV=off GOFLAGS= GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off \"$SHARED_FIFO\" go test -mod=readonly -c -p 1 -trimpath -o \"$NEW_OWNED_LEASE_BINARY\" ./internal/tui",
+    "proposedCompile": "env SEMBLANCE_RUN_LIMIT=115 GOMAXPROCS=2 GOMEMLIMIT=1536MiB GOENV=off GOWORK=off GOFLAGS= GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off \"$SHARED_FIFO\" go test -mod=readonly -c -p 1 -trimpath -o \"$NEW_OWNED_LEASE_BINARY\" ./internal/tui",
     "notAllocated": true
   },
   "proposedCLI": {
@@ -298,23 +298,50 @@
     "bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510"
   ],
   "sourceValidation": [
-    "gofmt formatter parse only; no Go compile/typecheck/test invocation",
-    "Python AST/static key/SGR/paste literal parsing only; support/new capture not imported",
-    "node --check only; native replay never invoked",
-    "Original source/helper/plans/inventories and111/64/29/47/15 raw artifacts rehashed exact; added-content privacy/diff checks"
+    "Python AST parse and exact one-line detail-key diff review; original offset acknowledgment unchanged",
+    "Source inspection of pinned Bubbles DefaultKeyMap/Update/PageDown/clamping plus original detail/review/direct-helper callsites",
+    "Exact compiled-map comparison: capture and plan are the only changed members; other60 inputs/classified50/Go fixture/replay/product/dependencies unchanged",
+    "Original111/64/29/47/15/71/23 artifacts retained and rehashed; normalized evidence and added-content privacy/diff review",
+    "No new compile, test executable, PTY, browser, backend, install or retry in this source step"
   ],
   "actualResults": {
-    "compiled": false,
-    "nativeProgramOrPTY": false,
-    "nativeReplayBrowser": false,
-    "sourceOnly": true,
-    "diagnosticAlreadySeparate": "Completed accepted2fa/2f09 four-case diagnostic does not compile or validate this native source."
+    "correctedCut": {
+      "compiled": false,
+      "nativeProgramOrPTY": false,
+      "nativeReplayBrowser": false,
+      "sourceOnly": true
+    },
+    "original9bCut": {
+      "compiled": true,
+      "compileExitCode": 0,
+      "firstCaptureFailed": true,
+      "checkpoints": 1,
+      "replayInvoked": false,
+      "readingOrPaintAccepted": false,
+      "evidence": "docs/validation/ux-terminal-lease-first-failure-2026-10-30.json"
+    },
+    "diagnosticAlreadySeparate": "Prior provider-only evidence does not validate this corrected native source."
   },
   "remainingGates": [
-    "Independent closed-key/paste/frame/Cmd/typed-number/source/cleanup/byte-bound review",
-    "Separate offline native compile allocation and exact62receipt; no old binary reuse",
-    "Separate single native capture/replay allocation before any actual21frames",
-    "Actual readability/precision/decline/filter/restore and glyph/cleanup findings; report first failure before correction",
-    "No product remediation or full-UX acceptance implied by source prep"
-  ]
+    "Independent source correction/normalized evidence review",
+    "New clean62-source before/after map, source commit and compile receipt; never relabel the accepted original62 receipt/binary",
+    "Separately reviewed fresh outer orchestration must preserve the first23-entry failure set and account it with all other runtime evidence under16MiB; original four-root driver guards are unchanged by this correction",
+    "Separate compile and single capture/replay allocations; none granted by this source step",
+    "Full21 capture/browser/reading/precision/filter/decline/restore/cleanup and separate paint review remain open"
+  ],
+  "continuationOfSourceCommit": "9b6b560de0580d2801e254019b5f54f9b1de5c10",
+  "firstFailureInventory": {
+    "file": "docs/validation/ux-terminal-lease-first-failure-2026-10-30.json",
+    "sha256": "1bff0a3c129fc8b3b407249870d65806e765acb89fc2a4505cdd562d794f5612"
+  },
+  "correctionLineage": {
+    "originalSourceCommit": "9b6b560de0580d2801e254019b5f54f9b1de5c10",
+    "originalPlanSHA256": "9462701e2dd1c67b4ba359d421cf27880efe1f2b4c975c1524f89268d04cb652",
+    "originalCaptureSHA256": "262e6768b7671c25221a32ab591e880b30af9e3f6ddd78712fb12a34b4ff028b",
+    "detailInput": "pgdown",
+    "detailOffsetPredicate": "offset == total - height",
+    "reviewTailInput": "end",
+    "freshRuntimeRootRequired": true,
+    "runtimeBudget": "All prior runtime containers, including the preserved23-entry first failure, plus entire new runtime output/metadata must share16MiB. Both build containers/binaries retained separately. New outer review/allocation remains required; four-root capture/replay source guards are not expanded in this one-line correction."
+  }
 }

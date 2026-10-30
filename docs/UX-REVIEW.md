@@ -807,3 +807,30 @@ receipt and separate source/build/capture allocations are required; original57
 receipts/binaries and111/64/29/47/15 scopes stay untouched. Existing deadlines,
 Popen/Program/browser ownership and cumulative16MiB gates remain. Overall UX
 and any product fix still depend on concrete findings and independent review.
+
+
+## Native lease detail PageDown correction — source only
+
+The [first-failure inventory](validation/ux-terminal-lease-first-failure-2026-10-30.json)
+records the accepted original62-source compile and first capture failure: one
+72x28 detail-first checkpoint, then the End predicate timed out at offset0 of
+33 rows with height18. The original child exited1 and semantic gates failed;
+Program/PTY cleanup observations passed. No replay/browser/PNG or full native
+reading acceptance followed, and the original failure remains preserved.
+
+Source review traces unhandled detail keys to the pinned viewport, whose default
+bindings support PageDown and have no End binding. Review scrolling explicitly
+supports End. The direct helper had already paged down before its End checkpoint,
+so that checkpoint did not establish End movement. The continuation branch
+`codex/ux-terminal-lease-detail-pgdown` changes only the detail-tail input to
+PageDown while retaining its exact observed-offset acknowledgment, review End,
+21-frame roster, coverage, cleanup and byte/time gates. Go/product/dependencies
+and replay remain unchanged; this is a harness correction with no product fix.
+
+The [updated source plan](validation/ux-terminal-lease-reading-plan-2026-10-30.json)
+requires a fresh clean62-source map/build receipt for this cut: capture and plan
+are the only changed members; the other60 stay exact. Original source/binaries/
+receipts are preserved. Corrected source is AST-reviewed only, uncompiled and
+unexecuted. Separate source/compile/outer-orchestration/runtime review remains;
+future orchestration must also preserve/count the first23-entry failure set under
+the cumulative16MiB runtime cap. No new execution window is implied.

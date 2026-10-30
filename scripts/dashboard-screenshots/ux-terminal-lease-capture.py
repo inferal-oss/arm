@@ -239,7 +239,7 @@ def main():
                 start=len(checkpoints);v=session.load()['viewport']
                 session.checkpoint('lease-detail-first' if v['total']>v['height'] else 'lease-detail-fit',checkpoints)
                 if v['total']>v['height']:
-                    session.key('end',lambda s:s['viewport']['offset']==s['viewport']['total']-s['viewport']['height'])
+                    session.key('pgdown',lambda s:s['viewport']['offset']==s['viewport']['total']-s['viewport']['height'])
                     session.checkpoint('lease-detail-tail',checkpoints)
                 coverage['detail']=covered(checkpoints[start:])
                 session.key('i',lambda s:s['recordOpen'])
