@@ -11488,3 +11488,18 @@ This lands the pending Manager, original-pool initialization and genuine-claim
 fixtures only. Production Server/root/worker activation, partial initialization
 and cancellation, named format-4 persistence and existing-job continuity remain
 open as recorded in the normalized validation file.
+
+## Original Server and native validation — composed review accepted
+
+Independent review accepts this focused, unconnected Server layer and bounded
+borrower-validation queue. All eleven source hashes match the reviewed cut. The
+only Go differences from its qualification tree are four terminal UI paths absent
+from the actual 782-package graph. Original normal/race/vet and complementary
+control receipts were inspected; the two earlier overall failures remain failures
+with the exact scopes recorded in the normalized validation file. The completion
+phase authenticates the same prior dependency inputs before and after, without
+claiming that the earlier phase reached post-authentication.
+
+The source preserves the legacy ingress path and supplies no production listener,
+startup, funding grant or worker activation. Actual resident network reporting and
+existing run/proxy child continuity remain required end-to-end acceptance gates.
