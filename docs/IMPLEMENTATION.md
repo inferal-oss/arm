@@ -4202,3 +4202,29 @@ is independently reviewed with production source unchanged. The existing viewer
 accepts loadRFB/navigator dependencies; a future inventory may substitute only
 those effect boundaries while preserving native parents/private inputs/API.
 This implements no new authentication, clipboard, connection or layout behavior.
+
+
+## Screen inventory fixture implementation boundary
+
+The inventory changes only new fixtures and documentation. Actual main, Screen
+factory, native parent, GraphUI, Islands, fullViewport, private inputs and backend/
+protocol/Go/pins remain unchanged. The fixture intercepts main's Screen import,
+reexports originals, invokes the actual factory and intentionally replaces only
+its supported loadRFB and navigator dependencies. Original UI/root/token/context/
+location/window references and returned public API are retained. This is an
+explicit dependency substitution, not unchanged-argument transparency.
+
+A strict fake checks constructor URL/subprotocol/options, known events/properties
+and bounded in-memory mode/clipboard methods, and hard-refuses credentials and
+unknown client operations. Real socket/clipboard/default protocol-import paths
+are separately refused/counted. No fake framebuffer DOM or input handler is
+added; only the original host geometry is measured. Static nonsecret account
+text is constructor-seed/trim/clear only; all auth prompts stay empty. Approved
+clipboard sentinels remain at most 4KiB and fake outcomes are not native transfers.
+
+The [inventory record](validation/ux-screen-inventory-2026-10-29.json) proposes
+review of existing showCredentials/showClipboard versus fullView/viewport local
+presentation ordering. It does not change dialog, private-input or authentication ownership or
+engine/main behavior. Prompt dismissal/Cancel differences, cached clipboard
+reopen, late-result guards and disconnect/public dispose retain their original
+source. No private cleanup, RDF/GC/auth-reset or live transport acceptance is added.

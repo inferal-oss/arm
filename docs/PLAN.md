@@ -2622,3 +2622,22 @@ parent/references/API. Nonsecret separate-account seeds and bounded clipboard
 sentinels<=4KiB are allowed; populated auth submission and all real
 screen/clipboard/network/input/native effects are forbidden. Product
 source/build/setup and further execution remain unallocated.
+
+
+## Screen Sharing synthetic inventory owner handoff
+
+The existing `codex/ux-screen-inventory` branch preserves source-only commit
+`f0f0922d7f81b89b20f623e4fb874944e25bdc99` and continues with the explicitly
+approved loader/navigator fixture seam. The
+[native UI inventory](validation/ux-screen-inventory-2026-10-29.json) records
+two original cohorts/four geometries with 42 matching inputs and 39 prior inputs
+byte-exact to the selected product base. No product or accepted private-field/
+footer change occurs. All completed branches/evidence remain frozen.
+
+Candidate S1 concerns native auth/Clipboard dialogs opened while Screen's stock
+fullViewport popover is active: fitting allocations but failed modal control
+center hits and sampled screenshots support obscuration. Exact hit winners,
+complete focus/pixel coverage and real client behavior remain unknown. Existing
+app dialog-open/fullView presentation arbitration is the smallest proposed review
+boundary; no correction or new runtime window is assigned. Central composition/
+review and any separately allocated remediation/live acceptance remain open.

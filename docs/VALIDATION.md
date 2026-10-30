@@ -9894,3 +9894,59 @@ The [Screen source composition](validation/ux-screen-source-composed-2026-10-29.
 verifies all 26 current inputs and the real viewer/native parent/effect boundaries.
 It accepts source classification only; the next two synthetic inventory cohorts
 are allocated but no rendered Screen Sharing acceptance is claimed here.
+
+
+## Screen Sharing no-effect native UI inventory
+
+The [source-bound inventory](validation/ux-screen-inventory-2026-10-29.json)
+records two original normal-FIFO browser cohorts: A 28,522ms for 1440×900 and
+390×900; B 22,551ms for 390×320 and 768×600 with selected root/text tokens 2×.
+All 42 input hashes match across cohorts, including 39 unchanged prior inputs
+and all 26 accepted classification inputs. No failed cohort, replacement,
+product edit, unit/native/PTY/build/install/setup or additional runtime occurs.
+Static fixture syntax parsing is distinct from application validation. Original
+commands use the allocated 115-second bound; runner intervals include transforms/
+collection/API closes and exclude initial imports/hash/frozen copies/FIFO wait.
+CPU ≤2 and memory target ≤2GiB are cooperative, not measured hard limits or ARM
+resource claims.
+
+Actual native UI configuration, empty auth, original fullViewport and clipboard
+controls run with the two approved inert dependencies. Constructor seed/trim/
+switch-clear uses only the static dummy account; every auth field stays empty
+and credential submission attempts remain zero. Clipboard read/write/send/get
+outcomes are strictly in-memory, with bounded dummy text, view-only/generic
+refusals, missing/denied/pending-close and stale-client/cache guards. An actual
+six-second waiting timer is sampled once on A; no fake clock. Pending loader/
+cancel, late prompts, source-defined failures and public disconnect/dispose are
+scoped observations, not main authentication/bridge reset or live cleanup proof.
+
+Candidate S1 has native fullViewport/popover-open evidence, one CSS-visible
+role=dialog, fitting title/control boxes, modal controls outside any popover-open
+ancestor and failed center hits for all sampled controls. Clipboard reproduces
+at all four geometries; empty password-only auth is sampled on desktop. Original
+PNGs support obscuration, while equivalent non-full controls have positive center
+hits. First Escape dismisses the dialog with full view retained; second exits
+full view. The auth password field focus flag is captured true; exact Clipboard
+active target, post-Escape focus-return targets, complete focus traversal and
+the original element winning each failed hit were not collected. No exhaustive
+entire-area/pixel occlusion or live client claim follows. Source desktop/dialog
+ownership is identified separately from the captured DOM ancestry flags.
+
+Inherited sticky app-bar/footer subtraction produces invalid inferred clips for
+top-layer full-view controls/frame. Those raw flags are retained as excluded,
+never defect/pass conclusions; actual viewport boxes, top-layer flags, positive
+center hits and screenshots remain separate. Checkbox/Desktop accessible names
+and control rectangles do not establish separate caption/selected-value glyph
+paint. Private field captions/controls, value lengths/empty flags and textarea
+selection/scroll are distinct; native glyph paint is unavailable. Explanatory
+first/middle/final text ranges are reached without an End-only oracle. Tall
+content need not be simultaneously visible, and width caps alone are not defects.
+
+All four sessions finish with zero forbidden/genuine-effect/credential calls,
+active/pending reads or facades, loaders/clipboard promises, real WebSockets,
+external requests or page errors. Original read/mock capture/release and awaited
+context/browser/server API closes complete. All twelve earlier artifact sets
+rehash unchanged; raw values/identities/captures stay private. No genuine noVNC/ARD
+evaluation, canvas rendering, remote input/clipboard/auth, server grant/resource
+transport, heap/RDF/LDES/GC or OS process-reap acceptance is claimed. Central
+review/composition and any remediation/full UX/live gates remain open.
