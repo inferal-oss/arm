@@ -9741,7 +9741,8 @@ review rechecks both receipt/artifact hashes and all twelve frozen input hashes.
 Neither artifact was executed; no native ABI, SQLite destruction, original child
 teardown, installed backend or upgrade acceptance follows. The source-only
 no-signal waiter proposal leaves unresolved deadline custody explicit and has
-not been implemented or run. Native execution awaits a reviewed, explicitly
-authorized disposable-fixture exhaustion policy; actual active product jobs
-are outside that policy. First/repeated/concurrent `arm start`, real distinct B
+not been implemented or run. Bounded exhaustion teardown is now authorized for
+new disposable proof fixtures only; its actual source revision still requires
+review before recompilation or execution. Actual active product jobs and other
+children are outside that policy. First/repeated/concurrent `arm start`, real distinct B
 API/UI and native active-job preservation remain mandatory composed gates.

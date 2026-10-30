@@ -2412,10 +2412,13 @@ native execution, fault injection, forced teardown or startup allowance is
 allocated. The existing process waiter can signal on cancellation or uncertain
 terminal-group state. The source-only no-signal waiter proposal retains one
 original Wait and both original drains, but establishes no finite disposition
-for a child/drain/close still pending at deadline. Native execution remains
-blocked pending an explicit disposable-fixture exhaustion policy and review of
-its actual implementation; that policy cannot authorize stopping product jobs.
-No acknowledgment flag authorizes terminating an active child.
+for a child/drain/close still pending at deadline. Bounded teardown is now
+explicitly authorized only for newly created, task-owned disposable proof
+fixtures. The owner may prepare a private source revision for review; native
+execution and recompilation remain unallocated until its actual original-child
+authority, sole Wait, drains and exhaustion paths are reviewed. This fixture
+policy cannot authorize stopping product jobs or unrelated children.
+An acknowledgment flag alone never authorizes terminating an active child.
 
 Remaining resident-upgrade work is implementation and composed acceptance:
 
