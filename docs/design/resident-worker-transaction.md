@@ -129,6 +129,11 @@ operator/evidence contract; lookup itself never performs it.
 
 ## Shared source and bootstrap origin
 
+The [private native primitive](../../internal/authoritylifetime/README.md) now
+provides only unexported, unbound acquisition/validation/retirement, with no
+production caller or borrowers. It does not implement the exported proposed
+interfaces below, Manager/Server binding, local stop revision or bootstrap.
+
 Proposed future `internal/authoritylifetime` owns opening/validating the private
 directory and acquiring/retaining the actual exclusive daemon lock. Its opaque
 `Lifetime` is created only by that native operation; no exported constructor wraps

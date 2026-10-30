@@ -1,5 +1,41 @@
 # Backend and CLI implementation
 
+## Native lifetime — reviewed unbound primitive
+
+Private native construction/validation/retirement plus the separate pre-normalization
+path-bound correction are independently composed and validated on current main.
+There are no exported factory/type/validation/retirement APIs, production callers
+or borrowers. The [composed record](validation/resident-native-lifetime-composed-2026-10-29.json)
+distinguishes actual FD/lock closure from any future Manager/Server/task/resource
+join. Concrete borrower/retirement and local stop binding remain a source-contract
+gate; this primitive does not implement worker startup or live upgrades.
+
+## Native path-bound review correction
+
+The private lifetime constructor rejects byte excess before filepath normalization
+or other whole-input work. Tests create actual legal-component directory chains
+and private final locks via fd-relative native setup, with a real within-limit
+prefix acquisition/retirement. Excess bytes/parts independently refuse before a
+native ownership interval; accidentally returned handles are retired before test
+failure and fixture cleanup. This changes no original ownership, sticky refusal,
+close accounting, borrowers or production entry points.
+
+## Unbound native directory/lock owner — private primitive
+
+The new [private package](../internal/authoritylifetime/README.md) has no exported
+construction/validation/retirement surface or production callers. It opens only
+an explicit existing canonical path and existing daemon.lock with native
+no-follow component checks, private owner/mode/type/link validation and original
+exclusive flock. Validation compares original held handles and path identities;
+it cannot reacquire a lost lock or adopt replacement paths. A small original
+pointer registry rejects copied/foreign receivers; failures remain sticky.
+
+Native retirement withdraws the original, counts actual successful closes and
+retains uncertain close objects without retry. It is not a Manager/Server/task
+join or resource release proof. Four simultaneous FD slots and finite path bounds
+do not supply native-call deadlines or CPU/RSS admission. There are no borrowers,
+stop revision, bootstrap constructor, worker role/launch or `arm start` integration.
+
 ## Reserved worker state — refusal-only source
 
 The [workspace guard](../internal/database/workspace_format.go) rejects physical

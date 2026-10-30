@@ -35,6 +35,71 @@ are not universal zoom; native fixed fonts and tall-form scrolling are qualified
 See the [composed record](validation/ux-shared-dialog-composed-2026-10-29.json).
 Private native build is not installed/executed. No maximum-density/every-theme/
 language, full-Go/Linux runtime, real auth/transport, TUI or complete UX claim.
+Integration `99c4fc8` passes its [public source workflow](https://github.com/inferal-oss/arm/actions/runs/40974056506).
+
+## Native path bounds — meaningful correction qualification
+
+The [separate correction record](validation/resident-native-path-bounds-2026-10-29.json)
+binds corrected source after `222155b`. Normal/race each pass seven roots / 39
+nodes, zero skips/failures; package vet and Linux test compilation pass. Actual
+byte witnesses exceed 4096 bytes with 22 components, while the component witness
+has 65 legal short components below 4096 bytes; both execute on this host. Each
+refuses before acquisitionFailure/native ownership. A real within-limit prefix
+first acquires and retires through the implementation.
+
+Private single-predicate overlay controls fail each matching test as expected:
+without its cap the actual oversized path acquires, the unexpected original
+retires positively, and fd-relative fixture cleanup completes. Qualified and
+overlay source hashes, original command exits, native/fixture closure logs and
+all 42 protected unchanged inputs are recorded. Original/earlier receipts remain
+private and preserved. No huge-allocation benchmark or native Close-error/account
+fault fixture is added; Linux remains compile-only. No production/borrower/
+bootstrap/worker or `arm start`/A-to-B completion follows.
+
+Independent composition of `222155b` / `de743a7` on `99c4fc8` preserves all 42
+protected inputs and verifies the two corrected files. Additive documentation
+conflicts retain accepted UI and native records. Review finds no blocking issue
+in private original receivers, account/path/type/link checks, exclusive-lock
+custody, four-slot accounting, sticky failure or successful-close-only retirement.
+The byte cap precedes normalization; meaningful native fixtures isolate both caps.
+
+Fresh sequential original-FIFO normal/race each pass seven roots / 39 nodes,
+zero failures/skips, in 0.683 s / 1.731 s. Each has 26 complete native closure and
+two complete fixture cleanup receipts, opened equals closed and zero unknowns.
+Package vet passes in 0.216 s; Linux amd64 test compilation in 0.548 s, unexecuted.
+Hash-matched byte-only/component-only overlays each reproduce the intended failed
+test after actual acquisition in 0.589 s / 0.713 s, then retire both originals and
+remove their fixtures positively. The first reviewer overlay reconstruction lacks
+canonical whitespace and fails its hash check before any test; retained privately,
+then corrected with gofmt to the exact independently verified overlay bytes.
+No worktree source changes during validation.
+
+The [composed record](validation/resident-native-lifetime-composed-2026-10-29.json)
+qualifies these queued commands, not ARM grants. There is no production factory/
+caller/borrower or initializer; private error Error/Unwrap methods expose no native
+authority. Foreign-owner/native-close faults remain source-reviewed, Linux runtime
+unverified, and filesystem calls have no claimed deadline or RSS guarantee.
+No worker/bootstrap/format activation, installed change, `arm start` integration
+or actual API/UI replacement is accepted from this primitive.
+
+## Private native lifetime — focused synthetic native qualification
+
+The [record](validation/resident-native-lifetime-2026-10-29.json) binds two new Go
+source hashes and all 42 protected baseline source hashes against accepted
+`b065f222a387b2b1f43cc94fd5be398eccc72319`. Final normal/race each pass six roots /
+38 nodes with no skips or failures; original native cleanup-count logs report
+all opened FDs closed, zero unknowns, actual independent-open contention and
+release. Partial acquisition uses the implementation's real native path, without
+FD/positive ownership wrappers or forged future joins. Original native receipts
+are retained privately. Vet and Linux package test compilation pass separately;
+the Linux binary is not executed or installed.
+
+These sequential original-FIFO commands use the bounded existing allocation and
+are not ARM leased-run evidence. Actual Manager/Server/CLI/module/schema/runtime
+sources remain unchanged. Privilege-dependent wrong-owner fixtures and platform
+Close-error faults are unexercised, with sticky refusal/unknown retention only
+source-reviewed. There is no live/default home, backend/worker launch, enrollment,
+borrower/bootstrap/stop attachment or `arm start`/A-to-B acceptance implied.
 
 ## Worker refusal guards — focused source qualification
 
