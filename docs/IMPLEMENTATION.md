@@ -4658,3 +4658,14 @@ through exception-safe original-handle teardown/join and bounded metadata
 handoff. Acquisition is confined to exact module metadata/archives/checksums in
 private scratch. It executes no candidate code, changes no ARM dependency or live
 process, and cannot authorize the later normal/race/control or resident phases.
+
+
+## Native lease reading first-attempt diagnosis
+
+The first capture could not satisfy its detail-tail End predicate. Source
+inspection follows the original detail key branch to the pinned Bubbles v2.2.1
+viewport, which binds Page Down but does not bind End. The prior direct fixture
+had already used Page Down before that checkpoint. A focused harness correction
+will use the supported input and require the same actual tail/reading coverage;
+this finding does not call for changing the product's key handling. Original
+compiled source, binary and failed receipts stay preserved.

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "scope": "one native lease reading compile and first failed capture; no rendered acceptance",
+  "source_commit": "9b6b560de0580d2801e254019b5f54f9b1de5c10",
+  "compile": {
+    "passed": true,
+    "elapsed_ms": 5693,
+    "verified_artifact_entries": 71,
+    "source_inputs": 62,
+    "binary_sha256": "7fe620abf013f0ea332effa045168adbcafd770de73ac69968b23289e3a23120",
+    "receipt_sha256": "859d3a472daa706c2c76e409420059ceb765db80033ca2ad4438578c3d378c3f"
+  },
+  "runtime": {
+    "result": "failed at first detail tail End predicate",
+    "original_fifo_exit_code": 1,
+    "elapsed_ms": 7287,
+    "checkpoints": 1,
+    "grid": [
+      72,
+      28
+    ],
+    "viewport": {
+      "total": 33,
+      "height": 18,
+      "offset": 0
+    },
+    "browser_or_replay_invoked": false,
+    "png_count": 0,
+    "verified_artifact_entries": 23,
+    "manifest_sha256": "2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177",
+    "capture_receipt_sha256": "d41796aa4b99b8ae3144ffa39dd120a256a976fef70836d22fdc1bff08da09bf",
+    "combined_retained_bytes": 9044068,
+    "cap_bytes": 16777216
+  },
+  "cleanup": {
+    "original_child_exit_code": 1,
+    "original_child_waited": true,
+    "program_returned": true,
+    "same_original_model_and_wrapper": true,
+    "termios_restored": true,
+    "pty_descriptors_closed": true,
+    "final_master_eof_observed": true,
+    "forced_termination_requested": false,
+    "fake_closed_and_no_active_calls": true,
+    "tool_tmp_empty": true,
+    "source_and_preserved_artifacts_unchanged": true,
+    "universal_native_closed_claim": false
+  },
+  "source_diagnosis": {
+    "detail_branch": "unhandled End delegates to viewport.Update",
+    "dependency": "charm.land/bubbles/v2 v2.2.1",
+    "default_viewport_end_binding": false,
+    "default_page_down_binding": true,
+    "keymap_source_sha256": "0e01274491b38e97c69bee33ad77750538577f354816cfbf80202bb645edbf93",
+    "prior_direct_fixture": "Page Down preceded its End-named tail checkpoint",
+    "correction": "supported detail Page Down with same tail predicate; source preparation only",
+    "product_key_change_required": false
+  },
+  "retry_performed": false,
+  "runtime_21_frame_or_readability_acceptance": false
+}

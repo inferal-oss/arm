@@ -10753,3 +10753,22 @@ then verifies exact original module/checksum inputs; a difference stops before
 archives without rewriting pins. No compilation, tests, native proof replay or
 product activation is accepted. First normal requires its own later allocation,
 positive original cleanup/cache evidence and the complete source guard.
+
+
+## Native lease reading first runtime — failed capture, positive scoped cleanup
+
+The [normalized first-attempt record](validation/ux-terminal-lease-first-attempt-2026-10-30.json)
+separates successful compile from failed runtime. Compile-only passed in 5.693
+seconds with exact 62-input maps, uninvoked new binary and positive original FIFO
+exit. The later single runtime exited one after 7.287 seconds: only the first
+72-column detail frame was captured before the End-tail state deadline. No
+replay/browser/PNG was produced. Independent review verifies every 23-file failed
+attempt artifact and the actual progress/child/capture receipts.
+
+Original Program/fake/context cleanup, original child exit/wait, restored termios,
+closed PTY descriptors and final EOF were positive, without forced termination.
+Both inner/outer preserved-source/artifact checks passed; the original failure
+remains immutable. Source inspection finds no End binding in the delegated
+viewport and returns a supported-Page-Down harness correction. No retry or
+rendered acceptance follows. The independent driver dependency attempt was
+refused before process creation; no FIFO, Go, network or test failure is claimed.
