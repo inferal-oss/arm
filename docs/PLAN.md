@@ -2434,10 +2434,15 @@ fixed disposable cases, one original child at a time, CPU <=2, memory target
 drain/descriptor/log outcomes and bounded-error records are required. The four
 R cases now pass scoped independent review: matching original reaps, EOF/drain/
 close results and paired observed file/map records, with no teardown attempted.
-One separate D cohort is allocated for the two fixed normal/constructor cases
-under the same exact binaries and limits; no further action is allocated.
-Attempted teardown or unknown outcomes fail the cohort; no SQLite Closed,
-resource credit or product resident/active-job policy is implied.
+The separate D normal/constructor cases now also pass scoped independent review:
+matching original reaps and drains, expected constructor API failure and paired
+12/4 observed native file events, with no teardown attempted. None of these
+partial observations establishes opaque driver/TLS cleanup or product Closed.
+No further native action is allocated. The upgrade owner next prepares a
+source-only concrete production-integration packet tied to actual first/repeated
+`arm start`, pending original custody and explicit cold-start admission/exhaustion
+and older-writer fences. No fork/new binding/module change, production bootstrap
+policy or active-job termination is authorized by the proof-fixture approval.
 
 Remaining resident-upgrade work is implementation and composed acceptance:
 
@@ -2583,3 +2588,37 @@ source classification and a proposed faithful synthetic no-effect inventory
 seam only: no browser/PTY/runtime/build/setup, credentials, real connection,
 clipboard/input/native effect or product/auth/cleanup change. Review the exact
 effect boundary and bounded state/viewport proposal before any collection.
+
+
+## Remaining Screen Sharing source classification
+
+The existing full-UX owner continues on `codex/ux-screen-inventory` from
+`85d85eaa0ddd121737123a459a95b85c6c88b9f1`. The
+[source-only classification](validation/ux-screen-source-classification-2026-10-29.json)
+binds 26 unchanged inputs to actual main/native parent, mode/account, auth-state,
+viewport and clipboard-control contracts. Existing accepted stacked private
+fields/native footer remain unchanged; this is neither a duplicate repair nor
+a new visual finding.
+
+Next gate is review/allocation of a fixture-only replacement for the existing
+loadRFB dependency and a separate inert navigator clipboard facade. Proposed
+four viewports and bounded state groups are explicit, but no fixture, runtime,
+browser/PTY/native/build/setup, synthetic input/effect or remediation window is
+allocated or used here. Preserve all completed branches/evidence. No new task,
+subagent, peer monitoring, merge/push, real Screen Sharing or full UX acceptance.
+
+
+## Screen source boundary — independently accepted
+
+Owner `f0f0922` passes [source-only
+composition](validation/ux-screen-source-composed-2026-10-29.json); all 26
+protected inputs match current main. Actual native
+parent/viewer/private-input/clipboard paths were inspected. No visual defect or
+product correction follows yet. Two normal-FIFO browser cohorts now cover the
+four established geometries, each <=115s including collection/original cleanup,
+CPU<=2/memory target<=2GiB. Only actual viewer loadRFB/navigator dependencies
+may be replaced by strict inert synthetic facades, keeping original
+parent/references/API. Nonsecret separate-account seeds and bounded clipboard
+sentinels<=4KiB are allowed; populated auth submission and all real
+screen/clipboard/network/input/native effects are forbidden. Product
+source/build/setup and further execution remain unallocated.

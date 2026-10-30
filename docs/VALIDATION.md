@@ -2761,7 +2761,7 @@ Two real-tool regressions inject TERM or final-KILL denial. Both reproduce maski
 
 The clean publication runtime composition separately passed focused manager race27.187s, full sharelease race6.454s, broader all-share manager race44.132s and affected vet. Actual Linux full sharelease, selected publication/fault cases and direct-host observation-denial checks passed without skips; private PID-namespace results remain distinct from host observation coverage. Actual `make tla-check` and `make tla-traces` passed all three families: preparation950 states/18 scenarios/93 observations, publication6,098 states plus798 capacity states/18 scenarios/five actual negatives/288 actual capacity cases, and polling2,971 states/15 scenarios/103 observations. The clean composition's59 owned inputs and871 Go/module files were independently bound and rehashed. These are runtime/finite-trace checkpoints, not full publication proof acceptance or full consumer acceptance; product integration and public file access remain withheld.
 
-A subsequent bounded whole-Restart diagnostic terminated with strict TLAPM failure136/137 in136.480s, stopping before all later modules. It exposed a real inductiveness gap: the old invariant admitted offline/reserved/handle=preparation/native-never; Restart produced unknown while retaining that handle, violating PhaseEvidence. Producer and independent coordinator TLC both reproduced the exact two-state violation against the unchanged model. This is a counterexample to induction from an invariant-admitted prestate, not a counterexample reachable from real Init. The next candidate adds only offline=>handle none to PhaseEvidence, preserving all old conjuncts and every Init/Spec/Next/transition byte. Isolated fresh finite6,098+798 states and18 actual scenarios/five actual negatives/288 capacity cases passed; the corrected whole-Restart diagnostic subsequently passed137/137 strict/no-fingerprint obligations in38.446s (40.598s wrapper total), with all33 sources and35 actual backend artifacts independently rehashed. An initial preflight attempt refused inherited PATH differences before any proof; the reviewed child-only deterministic environment binder re-captures the exact configuration/backend closure before exec without changing shell settings or weakening equality. Fresh independent current-HEAD conformance passed again (actual Go17.959s), binding59 owned inputs/879 Go-module inputs and both33-file formal copies. The fresh complete27-module run then failed after793.857 monotonic seconds: all26 dependency modules/2,926 obligations passed, but the final global module failed one of29 obligations in StutterSafety. Independent review checked every raw parser/terminal count and all33 captured sources. Unfolding only vars leaves the state-dependent invariant opaque; a proof-body correction is pending. The reported NextSafety/temporal leaves depend on that unresolved theorem and do not establish complete acceptance. No source retry or runtime integration is accepted until the corrected diagnostic and fresh whole27 gate pass. All old module receipts are historical under the changed definition. Process-local handle loss never proves native process absence, cleanup or released budget.
+A subsequent bounded whole-Restart diagnostic terminated with strict TLAPM failure136/137 in136.480s, stopping before all later modules. It exposed a real inductiveness gap: the old invariant admitted offline/reserved/handle=preparation/native-never; Restart produced unknown while retaining that handle, violating PhaseEvidence. Producer and independent coordinator TLC both reproduced the exact two-state violation against the unchanged model. This is a counterexample to induction from an invariant-admitted prestate, not a counterexample reachable from real Init. The next candidate adds only offline=>handle none to PhaseEvidence, preserving all old conjuncts and every Init/Spec/Next/transition byte. Isolated fresh finite6,098+798 states and18 actual scenarios/five actual negatives/288 capacity cases passed; the corrected whole-Restart diagnostic subsequently passed137/137 strict/no-fingerprint obligations in38.446s (40.598s wrapper total), with all33 sources and35 actual backend artifacts independently rehashed. An initial preflight attempt refused inherited PATH differences before any proof; the reviewed child-only deterministic environment binder re-captures the exact configuration/backend closure before exec without changing shell settings or weakening equality. Fresh independent current-HEAD conformance passed again (actual Go17.959s), binding59 owned inputs/879 Go-module inputs and both33-file formal copies. The fresh complete27-module run then failed after793.857 monotonic seconds: all 26 dependency modules/2,926 obligations passed, but the final global module failed one of29 obligations in StutterSafety. Independent review checked every raw parser/terminal count and all33 captured sources. Unfolding only vars leaves the state-dependent invariant opaque; a proof-body correction is pending. The reported NextSafety/temporal leaves depend on that unresolved theorem and do not establish complete acceptance. No source retry or runtime integration is accepted until the corrected diagnostic and fresh whole27 gate pass. All old module receipts are historical under the changed definition. Process-local handle loss never proves native process absence, cleanup or released budget.
 
 ## October 22, 2026: modular publication proof and B4 API checkpoints
 
@@ -9845,3 +9845,52 @@ The destination layout commit `85d85ea` also passes the public
 [Pages workflow](https://github.com/inferal-oss/arm/actions/runs/41006115170).
 This is the website/dashboard capture and publication scope; it does not
 establish a full Go suite, installed native backend or upgrade acceptance.
+
+
+## Screen Sharing source-only inventory preflight
+
+The [classification record](validation/ux-screen-source-classification-2026-10-29.json)
+contains static anchors and hashes for 26 inputs, each byte-exact to the selected
+base. Source reads cover actual main/GraphUI/Islands/fullViewport ownership,
+Screen/ephemeral-input lifecycle, clipboard helpers and real RFB/ARD/server
+effect boundaries. No new application runtime, browser, PTY, native command,
+test, build, setup, connection, credential or clipboard input is executed; no
+geometry, screenshot or visual-defect evidence is produced. Existing accepted
+private-field/footer styling is preserved. Width caps alone establish no finding.
+
+Connect can load/construct the real RFB client and cause server transport
+reservation/dial. View-only and connected setup can emit mode bytes and change
+keyboard bindings. Sign in submits the ephemeral authentication object. Clipboard
+read/write invoke browser OS APIs; send/request invoke remote protocol. Native
+canvas key/pointer/touch/wheel/gesture handling is also effectful. None is treated
+as a passive read or authorized by having a synthetic status/grant observation.
+
+A proposed no-effect seam uses only existing loadRFB/navigator factory injection
+with native UI/main/parent geometry retained. Its fake must block unknown calls,
+real imports/endpoints/sockets, credential submission and real clipboard/input
+paths; a fake connected event provides UI state only. Any dummy account or
+clipboard values need explicit future allowance and private evidence handling.
+The source roster proposes 1440×900, 390×900, 390×320 and 768×600 selected text
+tokens 2×, with local configuration, synthetic connection/auth, fullViewport and
+clipboard groups. Proposed grouping/timing is not an execution allocation.
+
+Actual framebuffer rendering/scaling, native input/clipboard effects, RFB/ARD
+authentication and server grant/resource/close enforcement remain separate live
+gates. Source clear/destroy paths do not establish heap wiping, runtime RDF/LDES
+absence or OS cleanup. Existing screen tests are read as contracts only and not
+rerun. Source-only scope, any later visual inventory and full UX/live acceptance
+remain distinct.
+
+
+The two fixed driver cases also complete naturally with matching original child
+reaps, EOF/drain/log/descriptor outcomes and no attempted teardown. Independent
+review verifies 12/4 completed vector events and paired observed file identities.
+The constructor's expected SQL error is an API outcome, not a helper failure;
+vector events lack timestamps and cannot independently assign hidden cleanup
+to that API interval. Full failed-constructor destruction, TLS/global quiescence
+and product Closed remain unproved. No further native action is allocated.
+
+The [Screen source composition](validation/ux-screen-source-composed-2026-10-29.json)
+verifies all 26 current inputs and the real viewer/native parent/effect boundaries.
+It accepts source classification only; the next two synthetic inventory cohorts
+are allocated but no rendered Screen Sharing acceptance is claimed here.
