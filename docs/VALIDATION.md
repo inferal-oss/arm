@@ -10380,3 +10380,17 @@ conflicting transaction terminal-operation refusal and consistent sticky errors.
 These are review findings, not reproduced runtime failures. The original source
 candidate is preserved and remains unaccepted pending the corrected source and
 separate bounded validation. No previous SQLite proof supplies these results.
+
+
+## Terminal loop fixture — independent compile receipt review
+
+Frozen source `8d1039a` compiled once through the normal FIFO with exit zero:
+22.264s original FIFO wall and 22.383s wrapper through receipt preparation.
+Independent checks verify 64 private artifact hashes and exact 57-file source
+membership/equality before and after. The owned test binary is 68,270,946 bytes,
+SHA-256 `956f8b767a4c728ed323363493239de3dd31f2c4fdf575594c7cd132f4b3bc60`.
+The compiler log is empty; sampled scratch stayed below allocation and is empty
+after compiler cleanup. Samples are not an every-instant aggregate quota or
+measured RSS guarantee. No binary/test/Program/PTY/browser execution follows
+from this build receipt. A separately allocated capture/replay attempt must
+provide its own source-bound results and original lifecycle evidence.

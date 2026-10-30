@@ -2977,3 +2977,21 @@ after and retain the original build/exit/binary receipt. No test binary, Program
 PTY, browser or ARM backend may execute under this build allocation. Review
 that original result before any separate capture/replay window. Preserve every
 failed/partial result; no automatic replacement or dependency changes.
+
+
+## Terminal loop fixture — build accepted, one runtime window
+
+The one offline compile for frozen owner `8d1039a` exited zero in 22.264s
+including FIFO overhead. Independent checks verify all 64 private artifact
+hashes, the exact 57-file before/after source set, the 68,270,946-byte owned
+test binary and empty compiler scratch. This establishes compilation only.
+
+The same owner receives one normal-FIFO capture/replay attempt using the
+unchanged binary/receipt/scripts: 115s overall, two CPU and 2 GiB memory targets,
+three exact grids, 36 checkpoints under the existing 48 cap, 4 MiB per PTY
+stream and 16 MiB retained evidence. Replay proceeds only after positive
+original-child/Program/PTY cleanup gates. Existing pinned terminal/browser tools
+and a private loopback control connection are permitted; page/native-app
+networking and real backend/lease/job effects remain refused. Stop on the
+first failure, bound or cleanup uncertainty; preserve all original evidence
+before any correction. Actual cells, log-tail reach and cleanup remain pending.
