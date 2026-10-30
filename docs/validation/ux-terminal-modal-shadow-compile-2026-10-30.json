@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "scope": "Fresh compile-only evidence for the reviewed fixed72 modal-shadow source binding; no native fixture or paint execution.",
+  "sourceCommit": "7e58c97d40081c1d89806779aac6937b51ab34b7",
+  "selector": "^TestUXTerminalModalShadowFixture$",
+  "sourceBinding": {
+    "manifest": "docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json",
+    "sha256": "c6c6858e9b97dd4a71bc54f05ab1c22a1856b5ef730c3c92e7c51019965b532d",
+    "entries": 63,
+    "beforeAfterExact": true,
+    "sourceMapSHA256": "0402c3fa93964f26fde5596198f5b47a103e0e156fc5b69a071ad0acc727c9e5"
+  },
+  "build": {
+    "compilerFlags": [
+      "-mod=readonly",
+      "-c",
+      "-p",
+      "1",
+      "-trimpath",
+      "-o",
+      "OWNED_NEW_BINARY"
+    ],
+    "package": "./internal/tui",
+    "attempts": 1,
+    "commands": 1,
+    "offlineLocalToolchain": true,
+    "sharedFIFOUnchanged": true,
+    "allARM_TUIEnvironmentRemoved": true,
+    "compilerExitCode": 0,
+    "FIFOExitCode": 0,
+    "originalCompilerHandleJoined": true,
+    "originalFIFOHandleJoined": true,
+    "helperVerified": true,
+    "logBytes": 0,
+    "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "FIFOWallMS": 6376,
+    "cumulativeExecutionThroughCleanupMS": 6679,
+    "totalIncludingPreparationCleanupMS": 7039,
+    "binary": {
+      "bytes": 68428098,
+      "sha256": "97ea9d0015a6916dc6b967a94bf8acf94994ac0625f22d085fe2194b4a523fa0",
+      "mode": "0o700",
+      "invoked": false
+    },
+    "failures": [],
+    "forcedTermination": false,
+    "unknownOutcomes": false,
+    "resourceWindowReleased": true
+  },
+  "preservation": {
+    "priorArtifactSets": 12,
+    "manifestCounts": [
+      111,
+      64,
+      29,
+      47,
+      15,
+      71,
+      23,
+      71,
+      22,
+      78,
+      62,
+      84
+    ],
+    "allManifestRostersFilesBinariesExactBeforeAfter": true,
+    "ownedTemporaryFilesEmpty": true,
+    "historicalClassifierAndPlanUnchanged": true
+  },
+  "resourceEvidence": {
+    "cooperativeCPU": 2,
+    "cooperativeMemoryBytes": 2147483648,
+    "ownedScratchLimitBytes": 1073741824,
+    "sampledMarginBytes": 33554432,
+    "perFileAndBinaryLimitBytes": 268435456,
+    "sampledPeaks": {
+      "logicalBytes": 80153463,
+      "allocatedBytes": 80322560,
+      "files": 83,
+      "binaryBytes": 68428098
+    },
+    "qualification": "Disk bytes are sampled; CPU and memory are cooperative promises rather than kernel or every-instant limits."
+  },
+  "opaqueEvidence": {
+    "build-receipt.json": {
+      "bytes": 23490,
+      "sha256": "01ed10d1532b1209df807b92cddcc1de00f7f943494e1408c53675ff53b9a982"
+    },
+    "artifact-manifest.json": {
+      "bytes": 8547,
+      "sha256": "7751c640f86f54f783742c9fdda8adaf370880b882fb53bff176b855e59b82d6"
+    },
+    "before-source.json": {
+      "bytes": 7000,
+      "sha256": "0402c3fa93964f26fde5596198f5b47a103e0e156fc5b69a071ad0acc727c9e5"
+    },
+    "after-source.json": {
+      "bytes": 7000,
+      "sha256": "0402c3fa93964f26fde5596198f5b47a103e0e156fc5b69a071ad0acc727c9e5"
+    },
+    "preserved-before.json": {
+      "bytes": 2299,
+      "sha256": "3a647fcc855c3ed83cdbf8a9f4e858170df3ab4ea85ecfbb15c2dc4f0ff61538"
+    },
+    "after-preserved.json": {
+      "bytes": 2299,
+      "sha256": "3a647fcc855c3ed83cdbf8a9f4e858170df3ab4ea85ecfbb15c2dc4f0ff61538"
+    },
+    "original-compile-helper.json": {
+      "bytes": 376,
+      "sha256": "dcc280fafc94b7b677dc5f9f1a8afec9b1c63e7916833978131fa88c77e69cce"
+    },
+    "original-compile.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "remainingGates": [
+    "Actual binary/build/manifest-bound outer source review with13 preserved artifact sets and seven historical runtime inputs.",
+    "Separate native serial allocation: one72x28 capture retaining eight interaction checkpoints, three modal replay images and84 row comparisons.",
+    "Positive original cleanup and returned receipt marker, intact actual border/control geometry and original PNG inspection.",
+    "No production startup/full-UX or universal physical-terminal/font/Unicode acceptance is established."
+  ]
+}

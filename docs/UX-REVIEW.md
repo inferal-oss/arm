@@ -989,3 +989,24 @@ The product's earlier29-case ordinary cohort remains scoped to its frozen
 product/regression source. This new fixture source is uncompiled/unexecuted.
 Independent source review, fresh compile allocation, actual binary/receipt-bound
 outer review and a separate native window remain required before paint review.
+
+
+## P2 modal shadow binding — fresh compile-only evidence
+
+The [normalized compile result](validation/ux-terminal-modal-shadow-compile-2026-10-30.json)
+binds prepared source `7e58c97d40081c1d89806779aac6937b51ab34b7` and all63
+source inputs. One original offline/local/readonly/p1 compile-only command exited0
+and produced a fresh68,428,098-byte test binary with SHA256
+`97ea9d0015a6916dc6b967a94bf8acf94994ac0625f22d085fe2194b4a523fa0`.
+Original compiler and FIFO handles joined normally, all12 prior artifact sets
+and binaries/source63 remained exact, and owned temporaries were empty. Total
+time including preparation and cleanup was7,039ms; the window is released.
+
+The binary was never invoked. This establishes compilation of the reviewed
+fixture source only. An actual-binary/build/manifest-bound runtime outer must
+separately preserve13 artifact sets and budget seven immutable historical runtime
+inputs plus new output/metadata under16MiB. Independent outer review, a separate
+72x28 native window, eight interaction checkpoints, three modal images/84 rows,
+original lifecycle/receipt-return gates and PNG inspection remain pending.
+Historical positive/failed evidence remains unchanged; native paint, production
+startup and full-UX acceptance are not claimed.
