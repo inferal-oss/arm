@@ -1,5 +1,25 @@
 # Validation record
 
+## Original native issuer leaf — scoped native qualification
+
+The [source-bound record](validation/resident-native-issuer-leaf-2026-10-30.json)
+covers five normal roots and the same five under race, an actual registered-FD
+paused-effect positive, a held-mutex expected assertion failure, the paused-effect
+positive under race, and native/alias vet. All selected outcomes are observed;
+compiler failure is not accepted as the negative assertion. The paused original
+method is released and joined before its owned fixture retirement.
+
+The initial native normal attempt failed four roots because fixture setup did
+not establish exact private-directory mode. Only the owned fixture leaf was
+corrected to 0700; production identity checks stayed unchanged. That failed scope
+is retained, and no numeric mode of an already cleaned fixture is inferred.
+The same six commands also passed against the actual unchanged project module,
+offline with its existing authenticated dependency pin. All original commands
+joined, and source checks passed before and after. Linux amd64 and arm64 native
+test-binary and alias compilation also passed; foreign artifacts were never
+executed. Linux runtime execution, native abnormal/close-fault execution, full borrower closure,
+production startup and active-job worker-upgrade acceptance remain open.
+
 ## Resident bootstrap allocation contract — source review only
 
 The [next cut](design/resident-start-bootstrap-cut.md) inspects accepted `4328297`

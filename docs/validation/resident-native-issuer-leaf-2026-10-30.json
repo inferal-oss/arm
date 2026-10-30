@@ -1,0 +1,141 @@
+{
+  "scope": "original-native-issuer-and-nonretiring-views",
+  "status": "scoped-native-and-linux-cross-compilation-checks-pass",
+  "source_sha256": {
+    "internal/server/internal/nativeowner/native.go": "119e2d19d4fa2c14add3ef175bdda67aa0aa8bf8b5bae9a8223110a94986d7d5",
+    "internal/server/internal/nativeowner/native_test.go": "4734a21d1045abfe2a94f80dfeabe2e7cac80a0ec1a291685e3ec98d7af0903e",
+    "internal/server/internal/nativeowner/owner.go": "8a8bbd7a1fe5f0863ef1afe9bd305439812592c342bc8d75897dcb6dc1b69b4e",
+    "internal/server/internal/nativeowner/pending_effect_test.go": "300fa9888163c4586a5a6cbaa9cffc5cfce751c2ee75c8ab9e8b2a6be85fcc0f",
+    "internal/server/internal/nativeowner/views.go": "53746166dce882565aa2f66e1d7d858fd16ad8390328cd77ffcfe5c661005a12",
+    "internal/server/lifetimeview/view.go": "b9de553998c511a0ab03f699c8b018ee4c455da153573868ab575dc6e8dc5006"
+  },
+  "dependency": "Existing project pin golang.org/x/sys v0.49.0; archive and expanded source authenticated against project go.sum. No dependency change.",
+  "qualification": {
+    "normal": {
+      "roots": [
+        "TestPendingExistsBeforeNativeOpenAndOneAttempt",
+        "TestPartialOpenRetainsActualDirectoryAndFirstError",
+        "TestOriginalViewsClaimsAndStopTickets",
+        "TestForeignIssuerAndStickyPathChange",
+        "TestPendingBorrowerClaimRetainsNativeValidationFailure"
+      ],
+      "passed": 5
+    },
+    "race": {
+      "roots": [
+        "TestPendingExistsBeforeNativeOpenAndOneAttempt",
+        "TestPartialOpenRetainsActualDirectoryAndFirstError",
+        "TestOriginalViewsClaimsAndStopTickets",
+        "TestForeignIssuerAndStickyPathChange",
+        "TestPendingBorrowerClaimRetainsNativeValidationFailure"
+      ],
+      "passed": 5,
+      "reported_data_races": 0
+    },
+    "pending_original_effect": {
+      "root": "TestPendingOriginalNativeEffectAllowsInspectAndSeal",
+      "positive": "pass",
+      "positive_race": "pass",
+      "held_mutex_control": "expected assertion failure",
+      "exact_negative_assertion": "inspection blocked behind original native effect",
+      "original_fixture_release_and_join": "observed"
+    },
+    "vet": {
+      "packages": [
+        "getarm.org/internal/server/internal/nativeowner",
+        "getarm.org/internal/server/lifetimeview"
+      ],
+      "result": "pass"
+    }
+  },
+  "preserved_failed_qualification": {
+    "normal_roots_failed": 4,
+    "normal_roots_passed": 1,
+    "cause": "Fixture did not explicitly prepare the exact private-directory precondition; corrected only owned fixture setup to 0700. Production checks unchanged.",
+    "later_commands_not_run": 5,
+    "past_cleaned_fixture_mode_not_inferred": true
+  },
+  "reproducible_controls": {
+    "generator": "internal/server/internal/nativeowner/testdata/pending_effect_overlay.py",
+    "generated_Go_sources_byte_equal_to_qualified_controls": true,
+    "source_mutation_or_Go_execution_by_generator": false
+  },
+  "limitations": [
+    "Actual project-module checks pass for these selected packages, including Linux amd64/arm64 cross-compilation. Foreign binaries were not executed. No full-project build or test suite is claimed.",
+    "Native FD closure applies only to original issuer descriptors; no Manager/Server/image/SQLite/service/resource Closed authority is supplied.",
+    "No production caller, borrower retirement permit, standing service profile/grant, bootstrap or public arm start integration is implemented.",
+    "Abnormal native-effect and native-close-failure paths are source-reviewed without targeted runtime fault qualification.",
+    "Private fixture execution does not establish Linux runtime support or full active-job upgrade continuity."
+  ],
+  "completion_gate": "Real first/repeated/concurrent arm start and genuinely different compatible API/HTML/assets with original supervised run and CLI-owned proxy jobs, logs, heartbeat/finish, renewal, cancellation, expiry and completion preserved.",
+  "qualification_contexts": [
+    {
+      "module": "isolated proof module",
+      "dependency": "project-pinned golang.org/x/sys v0.49.0",
+      "same_selected_roster": true,
+      "commands": 6,
+      "expected_exits": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "module": "actual unchanged project go.mod and go.sum",
+      "dependency": "project-pinned golang.org/x/sys v0.49.0; offline existing authenticated cache",
+      "same_selected_roster": true,
+      "commands": 6,
+      "expected_exits": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "original_commands_joined": true,
+      "source_checked_before_and_after": true
+    }
+  ],
+  "cross_compilation": {
+    "linux-amd64": {
+      "packages": [
+        "getarm.org/internal/server/internal/nativeowner",
+        "getarm.org/internal/server/lifetimeview"
+      ],
+      "actual_unchanged_project_module": true,
+      "CGO_ENABLED": "0",
+      "commands": 2,
+      "exits": [
+        0,
+        0
+      ],
+      "native_test_artifact_bytes": 4931748,
+      "native_test_artifact_sha256": "8b72d8f5d458543189c08861ba0780afa3b4b7a5420fe5bd03363f58dc9adfc0",
+      "foreign_artifact_executed": false,
+      "original_commands_joined": true,
+      "source_checked_before_and_after": true
+    },
+    "linux-arm64": {
+      "packages": [
+        "getarm.org/internal/server/internal/nativeowner",
+        "getarm.org/internal/server/lifetimeview"
+      ],
+      "actual_unchanged_project_module": true,
+      "CGO_ENABLED": "0",
+      "commands": 2,
+      "exits": [
+        0,
+        0
+      ],
+      "native_test_artifact_bytes": 4726674,
+      "native_test_artifact_sha256": "b07b3a030afc79a31844cd5b925bdc308777dc1e8bcfe1e993f6fd695f028aa4",
+      "foreign_artifact_executed": false,
+      "original_commands_joined": true,
+      "source_checked_before_and_after": true
+    }
+  }
+}
