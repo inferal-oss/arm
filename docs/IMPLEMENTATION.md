@@ -3918,3 +3918,14 @@ failed candidates and source-bound evidence. Independent current-main review,
 central deterministic assets/native build and fresh browser controls are in the
 [composed record](validation/ux-shared-dialog-composed-2026-10-29.json). Broader UX
 and installed/live-runtime acceptance remain open.
+
+
+## Private worker package codec — composed scope
+
+The independently reviewed private codec parses bounded untrusted declarations,
+revalidates canonical encoding, sorts a copy and hashes deterministic declared
+bytes. Exact decoded fields, integer spelling, paths, conflicts and aggregate
+limits refuse invalid input. No approval, native content/identity/compatibility,
+resource capability or runtime route is created. All current Go/module/CLI
+behavior is preserved; no production package imports the codec. See the
+[composed record](validation/resident-worker-package-manifest-composed-2026-10-29.json).

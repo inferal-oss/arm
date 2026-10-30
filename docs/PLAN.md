@@ -2162,3 +2162,16 @@ case gains retention or new authority. Changed snapshots keep existing fresh
 selection behavior. Naming mutations/CAS/persistence/replay remain byte-exact.
 Independent current-source composition and central asset/native builds are
 recorded above. No owner build/install/push/activation or full UX acceptance.
+
+
+## Private worker package metadata — independent acceptance
+
+Focused owner `632cf482a9167b1d09ab00c1600fbff6c540b4fa` is composed and
+independently reviewed. The unexported pure codec has no production callers.
+The [composed record](validation/resident-worker-package-manifest-composed-2026-10-29.json)
+binds 71 protected inputs and final codec hashes to normal/race 6-root,
+101-node passes and package vet. This accepts declared metadata parsing only.
+Trusted local approval/actual bytes verification and admitted immutable staging
+remain next dependencies; borrower/controller/API/assets, first/repeated
+`arm start` and distinct-version active-job preservation are still mandatory
+unimplemented completion gates. No installed backend or runtime is changed.
