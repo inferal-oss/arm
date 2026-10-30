@@ -1,5 +1,15 @@
 # Backend and CLI implementation
 
+## Composed native ownership review
+
+The unconnected component from `cafd0f1`, composed as `8c9bc66`, retains exactly
+the six Go inputs qualified against the real project module. The surrounding
+Go/module tree is source-equivalent to that tested composition. The overlay
+generator retains the previously qualified positive/negative control bodies.
+No existing startup, Manager, storage, worker or job-reporting caller changes.
+The next database adapter remains a source-only checkpoint; it has no compiled
+or runtime acceptance, and its pool must stay private to the original Manager.
+
 ## Original native issuer and nonretiring views — unconnected leaf
 
 `server/internal/nativeowner` now contains an actual pure pending holder before

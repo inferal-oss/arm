@@ -1,5 +1,16 @@
 # ARM delivery plan
 
+## Coordinator review — native ownership component accepted
+
+Focused owner commit `cafd0f1` is composed as `8c9bc66`. The six qualified Go
+inputs and the complete Go/module tree match the tested actual-project source;
+current-main differences outside this component are documentation only. Native
+normal/race, paused-original controls and scoped vet were independently checked.
+Linux amd64/arm64 artifacts were hash- and architecture-checked without execution.
+The component has no production caller. Database/Manager/service construction,
+worker replacement and original-job continuity remain open; no live activation
+or full native/borrower closure is accepted.
+
 ## Resident native ownership leaf — native scope qualified; integration pending
 
 Owner: `codex/resident-native-owner-delivery`, based on accepted `c1937e4`.

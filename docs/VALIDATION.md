@@ -1,5 +1,25 @@
 # Validation record
 
+## Coordinator verification — native component and retained driver
+
+For `cafd0f1` composed as `8c9bc66`, independent receipt/raw-event review confirms
+five normal and five race roots, two positive paused-original outcomes and one
+exact held-mutex assertion failure, plus native/alias vet. Original commands
+and queue wrappers joined; temporary work directories were empty afterward.
+Both Linux compile-only artifacts match their recorded hashes and ELF target
+architectures. All six component source hashes and the entire Go/module tree
+match the actual-project validation source; documentation-only composition
+does not extend those checks to production startup or Linux execution.
+
+Separately, the private retained SQLite driver v4 source passed 35 selected roots
+and 64 named cases in both normal and race runs. Twelve causal controls produced
+three positive passes and nine exact expected assertion failures. Actual default
+vet still fails with 64 unsafe-pointer diagnostics; independent function and
+expression comparison matches the executed pristine-upstream multiset. A separate
+command with only the unsafe-pointer analyzer disabled passes the other analyzers.
+No clean default-vet result, dependency activation, pool/native closure or public
+upgrade-continuity acceptance follows. The driver delivery decision remains open.
+
 ## Original native issuer leaf — scoped native qualification
 
 The [source-bound record](validation/resident-native-issuer-leaf-2026-10-30.json)
