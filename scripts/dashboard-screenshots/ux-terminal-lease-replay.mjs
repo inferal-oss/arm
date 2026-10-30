@@ -13,11 +13,11 @@ const now=()=>performance.now();
 const started=now(),workDeadline=started+20000,totalDeadline=started+30000;
 const ownSource=fileURLToPath(import.meta.url),here=dirname(ownSource);
 const root=resolve(process.argv[2]||''),output=resolve(process.argv[4]||'');
-const retainedRoots=[6,8,10,12,14,16].map(i=>resolve(process.argv[i]||'')),repo=resolve(here,'../..');
+const retainedRoots=[6,8,10,12,14,16,18].map(i=>resolve(process.argv[i]||'')),repo=resolve(here,'../..');
 const outsideOf=(parent,path)=>{const rel=relative(parent,path);return rel==='..'||rel.startsWith('..'+sep);};
 const normalizeRow=text=>text.replace(/\u0020+$/u,'');
 const result={complete:false,failure:null,cases:[],operations:[],cleanup:{},
- retainedBudget:{limitBytes:16777216,scope:'All six immutable retained input roots plus fresh native capture/output; future wrapper metadata also shares this cap.'},
+ retainedBudget:{limitBytes:16777216,scope:'All seven immutable retained input roots plus fresh native capture/output; future wrapper metadata also shares this cap.'},
  rowComparison:{normalization:'Trailing ASCII U+0020 only, applied equally to expected and actual comparison text.',rawExpected:'cases[].expectedRawRows',rawActual:'cases[].actual.text',perRowResults:'cases[].rowMatches',qualification:'Leading/internal spaces and every other Unicode whitespace or character remain significant.'},
  limits:['Pinned xterm emulator of actual owned PTY bytes; not every physical terminal/font/platform.',
  'Original model row/text comparator is separate from actual emulator cells. No OS descendant-reap or production Run startup/auth claim.',
@@ -102,16 +102,16 @@ const hardStop=setTimeout(()=>{
  }
  process.exit(1);
 },Math.max(1,totalDeadline-now()));
-const exactGrid=(cols,rows)=>[[72,28],[100,35],[160,50]].some(([c,r])=>cols===c&&rows===r);
+const exactGrid=(cols,rows)=>[[72,28]].some(([c,r])=>cols===c&&rows===r);
 const digest=b=>createHash('sha256').update(b).digest('hex');
 async function retained(path){let bytes=0;for(const e of await readdir(path,{withFileTypes:true})){const p=join(path,e.name);if(e.isSymbolicLink())throw Error('Unexpected artifact link');bytes+=e.isDirectory()?await retained(p):(await stat(p)).size;}return bytes;}
-// Budget the native capture, all six immutable prior runtime containers and this fresh replay.
+// Budget the native capture, all seven immutable prior runtime containers and this fresh replay.
 // Input and output are disjoint; every write below targets output exclusively.
 async function retainedTotal(){return await retained(root)+(await Promise.all(retainedRoots.map(retained))).reduce((a,b)=>a+b,0)+await retained(output);}
 try{
- assert(process.argv.length===17&&process.argv[3]==='--output'&&[5,7,9,11,13,15].every(i=>process.argv[i]==='--retained-input-root'));
- assert(process.argv[2]===root&&process.argv[4]===output&&[6,8,10,12,14,16].every((i,j)=>process.argv[i]===retainedRoots[j]));
- const inputs=[root,...retainedRoots];assert(new Set(inputs).size===7);
+ assert(process.argv.length===19&&process.argv[3]==='--output'&&[5,7,9,11,13,15,17].every(i=>process.argv[i]==='--retained-input-root'));
+ assert(process.argv[2]===root&&process.argv[4]===output&&[6,8,10,12,14,16,18].every((i,j)=>process.argv[i]===retainedRoots[j]));
+ const inputs=[root,...retainedRoots];assert(new Set(inputs).size===8);
  assert(inputs.every(p=>outsideOf(repo,p)&&outsideOf(p,output)&&outsideOf(output,p))&&outsideOf(repo,output));
  assert(inputs.every((a,i)=>inputs.every((b,j)=>i===j||(outsideOf(a,b)&&outsideOf(b,a)))));
  for(const p of inputs){const info=await work('private native input',()=>lstat(p));assert(info.isDirectory()&&!info.isSymbolicLink()&&(info.mode&0o077)===0);assert(await work('canonical native input',()=>realpath(p))===p);}
@@ -120,16 +120,39 @@ try{
  assert(await work('receipt reserve',()=>retainedTotal())+131072<16*1024*1024);deadlineReceiptAllowed=true;
  stage='capture receipt';
  const captureRaw=await work('capture receipt',()=>readFile(join(root,'capture-receipt.json')));const receipt=JSON.parse(captureRaw);assert(receipt.complete===true);
- const casesRaw=await work('checkpoint receipt',()=>readFile(join(root,'checkpoints.json')));const cases=JSON.parse(casesRaw);assert(cases.length===21&&cases.length<=48);
- const roster={'72x28':['lease-detail-first','lease-detail-tail','lease-record-exact-number','release-review-first','release-review-tail','filter-draft','leases-filter-empty','leases-restored'],'100x35':['lease-detail-first','lease-detail-tail','lease-record-exact-number','release-review-fit','filter-draft','leases-filter-empty','leases-restored'],'160x50':['lease-detail-fit','lease-record-exact-number','release-review-fit','filter-draft','leases-filter-empty','leases-restored']};
+ const casesRaw=await work('checkpoint receipt',()=>readFile(join(root,'checkpoints.json')));const cases=JSON.parse(casesRaw);assert(cases.length===8);
+ const roster={'72x28':["lease-detail-first", "lease-detail-tail", "lease-record-exact-number", "release-review-first", "release-review-tail", "filter-draft", "leases-filter-empty", "leases-restored"]};
  assert.deepEqual(cases.map(c=>[c.grid,c.name]),Object.entries(roster).flatMap(([grid,names])=>names.map(name=>[grid,name])));
  const buildRaw=await work('original build receipt',()=>readFile(join(root,'build-receipt.json')));const build=JSON.parse(buildRaw);
- assert(typeof build.sourceCommit==='string'&&build.sourceCommit.length===40&&build.testSelector==='^TestUXTerminalLeaseReadingFixture$'&&Object.keys(build.sourceSHA256).length===62);
- const preservedExpected=new Map([["60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d",111],["01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce",29],["bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510",47],["17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67",15],["2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177",23],["ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e",22]]);
+ assert(typeof build.sourceCommit==='string'&&build.sourceCommit.length===40&&build.testSelector==='^TestUXTerminalModalShadowFixture$'&&Object.keys(build.sourceSHA256).length===63);
+ const bindingRaw=await work('modal sibling binding',()=>readFile(join(repo,"docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json")));
+ assert(digest(bindingRaw)==="c6c6858e9b97dd4a71bc54f05ab1c22a1856b5ef730c3c92e7c51019965b532d");const binding=JSON.parse(bindingRaw);
+ const classifierRaw=await work('historical classifier',()=>readFile(join(repo,'docs/validation/ux-terminal-source-classification-2026-10-29.json')));
+ assert(digest(classifierRaw)==='574c62ed1e2d66828082880beeaa4d706b7690cf4f38b1ff3a229aa1165cae5d');
+ const classified=JSON.parse(classifierRaw).sourceEntries;
+ assert(Object.keys(classified).length===50&&binding.schema===1);
+ const overrides={"internal/tui/presentation.go": "5c06dca64d42f7c8f27905fe2e4b7f2125671eabcc2dbf9a5c895c8697ccc466", "internal/tui/polish_test.go": "04ff15993dbdac1a7d7866aaa429587df6f3364e5730e61d4c9374a204d90a34"};
+ assert.deepEqual(binding.sourceOverrides,overrides);assert(Object.keys(overrides).every(f=>Object.hasOwn(classified,f)));
+ const effective=Object.fromEntries(Object.entries(classified).map(([f,item])=>[f,overrides[f]??item.sha256]));
+ assert.deepEqual(binding.effectiveSourceSHA256,effective);
+ const required=[...new Set([...Object.keys(classified),...["docs/validation/ux-terminal-direct-fixture-plan-2026-10-30.json", "docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json", "docs/validation/ux-terminal-loop-fixture-plan-2026-10-30.json", "docs/validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json", "docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json", "docs/validation/ux-terminal-source-classification-2026-10-29.json", "internal/tui/ux_terminal_direct_fixture_test.go", "internal/tui/ux_terminal_lease_reading_fixture_test.go", "internal/tui/ux_terminal_loop_fixture_test.go", "scripts/dashboard-screenshots/ux-terminal-lease-capture.py", "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs", "scripts/dashboard-screenshots/ux-terminal-loop-capture.py", "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs"]])].sort();
+ assert(required.length===63&&binding.sourceBinding.requiredEntries===63&&binding.sourceBinding.testSelector==='^TestUXTerminalModalShadowFixture$');
+ assert.deepEqual(binding.sourceBinding.members,required);assert.deepEqual(Object.keys(build.sourceSHA256).sort(),required);
+ for(const [file,sha] of Object.entries(effective))assert(build.sourceSHA256[file]===sha);
+ for(const file of required)assert(digest(await work('fresh63 source member',()=>readFile(join(repo,file))))===build.sourceSHA256[file]);
+ assert(digest(await work('historical native plan',()=>readFile(join(repo,'docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json'))))==='10c195a224dd78573bf11320efa32e559f09635a7431a03fa232cc1a2b5746f9');
+ const preservedExpected=new Map([["60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d",111],["01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce",29],["bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510",47],["17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67",15],["2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177",23],["ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e",22],["fb8ee961d2618708c672bfeb7bb2c96feda582be72f4f2712325135390b13055",62]]);
  const preservedSeen=new Set();
- for(const p of retainedRoots){const raw=await work('preserved manifest',()=>readFile(join(p,'artifact-manifest.json')));const h=digest(raw);assert(preservedExpected.has(h)&&!preservedSeen.has(h));assert(Object.keys(JSON.parse(raw)).length===preservedExpected.get(h));preservedSeen.add(h);}
+ for(const p of retainedRoots){
+  const raw=await work('preserved manifest',()=>readFile(join(p,'artifact-manifest.json')));const h=digest(raw);
+  assert(preservedExpected.has(h)&&!preservedSeen.has(h));const entries=JSON.parse(raw);assert(Object.keys(entries).length===preservedExpected.get(h));preservedSeen.add(h);
+  async function roster(dir){let names=[];for(const e of await work('preserved artifact roster',()=>readdir(dir,{withFileTypes:true}))){assert(!e.isSymbolicLink());const path=join(dir,e.name);if(e.isDirectory())names.push(...await roster(path));else{assert(e.isFile());names.push(relative(p,path));}}return names;}
+  assert.deepEqual((await roster(p)).sort(),[...Object.keys(entries),'artifact-manifest.json'].sort());
+  for(const [file,hash] of Object.entries(entries)){const path=resolve(p,file);assert(outsideOf(repo,path)&&relative(p,path)!==''&&!outsideOf(p,path));assert(digest(await work('preserved artifact bytes',()=>readFile(path)))===hash);}
+ }
+ assert(preservedSeen.size===7);
  const ownSHA=digest(await work('native replay source',()=>readFile(ownSource)));assert(build.sourceSHA256['scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs']===ownSHA);
- assert(receipt.receipts.length===3);
+ assert(receipt.receipts.length===1&&receipt.receipts[0].grid==='72x28');
  for(const entry of receipt.receipts){
   const c=entry.cleanup,child=entry.originalChild;
   const positive=['programStarted','programReturned','sameWrapperReturned','sameModel','restored','quitRequested','initSuppressed','sawExactNumber','sawReview','declined','fakeClosed','contextCanceled'];
@@ -151,9 +174,28 @@ try{
   assert(c.childExitCode===0&&c.childWaited&&c.finalDrainAfterChildJoin&&c.termiosRestored&&c.slaveClosed&&c.masterClosed&&(c.finalMasterEOFObserved||c.finalMasterEIOObserved)&&!c.finalDrainTimedOut&&!c.ownedChildTerminationRequested&&!c.cleanupErrors.length&&!c.cleanupOutputTruncated);
   assert(['detail','review'].every(k=>entry.readingCoverage[k].totalLogicalRows===entry.readingCoverage[k].coveredLogicalRows));
  }
- result.sourceLineage={nativeCompiledCapture:{sourceCommit:build.sourceCommit,sourceEntries:62,binarySHA256:build.binarySHA256,buildReceiptSHA256:digest(buildRaw),captureReceiptSHA256:digest(captureRaw),checkpointsSHA256:digest(casesRaw)},nativeReplay:{sourceFile:relative(repo,ownSource),sourceSHA256:ownSHA,role:'Same reviewed native62-source compile/capture cut; never an updated original57 receipt.'}};
+ result.sourceLineage={nativeCompiledCapture:{sourceCommit:build.sourceCommit,sourceEntries:63,binarySHA256:build.binarySHA256,buildReceiptSHA256:digest(buildRaw),captureReceiptSHA256:digest(captureRaw),checkpointsSHA256:digest(casesRaw)},nativeReplay:{sourceFile:relative(repo,ownSource),sourceSHA256:ownSHA,role:'Fresh fixed72 modal-shadow native63 compile/capture cut; historical native evidence remains unchanged.'}};
  result.readingCoverage=receipt.receipts.map(entry=>({grid:entry.grid,...entry.readingCoverage}));
- result.retainedBudget.scope='Six preserved runtime input containers, including both original native failures, plus new native capture/output and future wrapper metadata share16MiB; old allocated binaries remain separate.';
+ result.retainedBudget.scope='Seven preserved runtime input containers, including both original native failures, plus new native capture/output and future wrapper metadata share16MiB; old allocated binaries remain separate.';
+ stage='all eight checkpoint semantics';
+ const originalStream=await work('original72 full stream',()=>readFile(join(root,'72x28.pty')));
+ let previousPrefix=0;
+ for(const c of cases){
+  assert(c.grid==='72x28'&&exactGrid(c.cols,c.rows)&&c.stream==='72x28.pty');
+  assert(Number.isInteger(c.bytesThrough)&&c.bytesThrough>=previousPrefix&&c.bytesThrough<=originalStream.length&&c.bytesThrough<=4*1024*1024);previousPrefix=c.bytesThrough;
+  const prefix=originalStream.subarray(0,c.bytesThrough);assert(digest(prefix)===c.prefixSHA256&&!prefix.includes(Buffer.from('\x1b]52;')));
+  assert(c.resizes.every(r=>exactGrid(r.cols,r.rows)&&Number.isInteger(r.offset)&&r.offset>=0&&r.offset<=c.bytesThrough));
+  const state=c.state;assert(state.sameModel&&!state.pending&&state.unknownEmpty&&state.defaultLeases&&state.defaultRuns&&state.initSuppressed&&state.readClosures===1&&state.calls.length===1&&state.calls[0].Operation==='inspect'&&state.mouseActive===0&&state.mouseProduced===state.mouseDelivered);
+  const modelRows=state.viewContent.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,'').split('\n');assert(modelRows.length===28);
+  if(c.name.startsWith('lease-detail-'))assert(state.detailOpen&&!state.recordOpen&&!state.reviewOpen&&state.viewport.total>state.viewport.height&&state.viewport.offset===(c.name.endsWith('tail')?state.viewport.total-state.viewport.height:0));
+  if(c.name==='lease-record-exact-number')assert(state.recordOpen&&state.detailOpen&&state.recordValueType==='json.Number'&&typeof state.recordValueDecimal==='string'&&state.recordValueDecimal==='9007199254740993'&&state.recordPath==='["request","resources","memory_bytes"]'&&modelRows.join('\n').includes('9007199254740993'));
+  if(c.name.startsWith('release-review-'))assert(state.reviewOpen&&state.detailOpen&&!state.recordOpen&&state.reviewAction==='release'&&state.reviewID===state.detailID&&state.reviewRevision===state.detailRevision&&state.viewport.total>state.viewport.height&&state.viewport.offset===(c.name.endsWith('tail')?state.viewport.total-state.viewport.height:0));
+  if(c.name==='filter-draft')assert(state.inputMode==='filter'&&state.inputValue==='no-synthetic-match'&&!state.reviewOpen&&!state.detailOpen&&!state.recordOpen);
+  if(c.name==='leases-filter-empty')assert(state.filter==='no-synthetic-match'&&state.visibleLeaseIDs.length===0&&state.inputMode==='');
+  if(c.name==='leases-restored')assert(state.restored&&state.filter===''&&state.inputMode===''&&state.visibleLeaseIDs.length===8);
+ }
+ result.checkpointSemantics={checked:8,roster:cases.map(c=>c.name),exactRecordTypeAndDecimalObserved:true,qualification:'All eight original interaction/checkpoint states and prefix hashes verified; only the three modal targets below receive new actual emulator-cell and PNG comparison.'};
+ const targets=cases.filter(c=>['release-review-first','release-review-tail','filter-draft'].includes(c.name));assert(targets.length===3);
  stage='browser initialization';
  // Public BrowserServer exposes the original ChildProcess for observation and
  // bounded fallback. Never record wsEndpoint() or credentials/error messages.
@@ -165,7 +207,7 @@ try{
  await work('native path refusal',()=>context.addInitScript(()=>{window.__loopForbidden=[];window.WebSocket=class{constructor(){window.__loopForbidden.push('WebSocket');throw Error('Native socket refused');}};Object.defineProperty(navigator,'clipboard',{value:{readText(){window.__loopForbidden.push('clipboard-read');throw Error('Native clipboard refused');},writeText(){window.__loopForbidden.push('clipboard-write');throw Error('Native clipboard refused');}}});}));
  await work('initialize page',()=>context.newPage(),value=>{page=value;lateClose('late page close',value,()=>value.close({runBeforeUnload:false}));});
  page.setDefaultTimeout(4000);
- for(const [index,c] of cases.entries()){
+ for(const [index,c] of targets.entries()){
   assert(exactGrid(c.cols,c.rows)&&c.grid===`${c.cols}x${c.rows}`&&c.stream===c.grid+'.pty');assert(Number.isInteger(c.bytesThrough)&&c.bytesThrough>=0&&c.bytesThrough<=4*1024*1024);
   stage='original stream hash';const full=await work('read original stream',()=>readFile(join(root,c.stream)));const bytes=full.subarray(0,c.bytesThrough);assert.equal(digest(bytes),c.prefixSHA256);assert(!bytes.includes(Buffer.from('\x1b]52;')));
   stage='terminal initialize';
@@ -179,7 +221,15 @@ try{
   await write(bytes.subarray(offset));
   await work('terminal evaluate',()=>page.evaluate(()=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('layout deadline')),1000);requestAnimationFrame(()=>requestAnimationFrame(()=>{clearTimeout(timer);resolve();}));})));
   stage='actual cells and model comparator';
-  const actual=await work('terminal evaluate',()=>page.evaluate(regions=>{const t=window.__terminal,b=t.buffer.active;return{cols:t.cols,rows:t.rows,alternate:b.type==='alternate',text:Array.from({length:t.rows},(_,i)=>b.getLine(i)?.translateToString(true)??''),wideSamples:(()=>{const a=[];for(let y=0;y<t.rows;y++)for(let x=0;x<t.cols;x++){const c=b.getLine(y)?.getCell(x);if(c&&(c.getWidth()!==1||c.getChars().length>1)&&a.length<96)a.push({row:y,col:x,chars:c.getChars(),width:c.getWidth()});}return a;})(),rightEdgeSamples:Array.from({length:Math.min(32,t.rows)},(_,y)=>{const c=b.getLine(y)?.getCell(t.cols-1);return{row:y,col:t.cols-1,chars:c?.getChars()??'',width:c?.getWidth()??null};}),cellSampleQualification:'At most96 wide/multi-character cells and32 right-edge cells; no exhaustive glyph-paint proof',ownedRegionRows:regions.filter(r=>r.key==='n').map(r=>{const visible=r.x>=0&&r.y>=0&&r.width>0&&r.height>0&&r.x+r.width<=t.cols&&r.y+r.height<=t.rows;return{key:r.key,visible,rows:visible?Array.from({length:r.height},(_,i)=>b.getLine(r.y+i)?.translateToString(true,r.x,r.x+r.width)??''):[]};}),forbidden:window.__loopForbidden??[]};},c.state.regions));
+  const modal={x:0,y:4+Math.floor((20-(c.state.viewport.height+2))/2),width:72,height:c.state.viewport.height+2};
+  assert(Number.isInteger(modal.height)&&modal.height>=9&&modal.height<=20&&modal.y>=4&&modal.y+modal.height<=24);
+  const actual=await work('terminal evaluate',()=>page.evaluate(({regions,modal})=>{
+   const t=window.__terminal,b=t.buffer.active;
+   const cell=(x,y)=>{const c=b.getLine(y)?.getCell(x);return{chars:c?.getChars()??'',width:c?.getWidth()??null};};
+   return{cols:t.cols,rows:t.rows,alternate:b.type==='alternate',text:Array.from({length:t.rows},(_,i)=>b.getLine(i)?.translateToString(true)??''),
+    modal:{...modal,borderRows:Array.from({length:modal.height},(_,row)=>({row,left:cell(modal.x,modal.y+row),right:cell(modal.x+modal.width-1,modal.y+row)}))},
+    ownedRegionRows:regions.filter(r=>['y','n','enter','esc'].includes(r.key)).map(r=>{const visible=r.x>=0&&r.y>=0&&r.width>0&&r.height>0&&r.x+r.width<=t.cols&&r.y+r.height<=t.rows;return{...r,visible,rows:visible?Array.from({length:r.height},(_,i)=>b.getLine(r.y+i)?.translateToString(true,r.x,r.x+r.width)??''):[]};}),forbidden:window.__loopForbidden??[]};
+  },{regions:c.state.regions,modal}));
 
   const expectedRaw=c.state.viewContent.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,'').split('\n');
   const rowMatches=actual.text.map((s,i)=>i<expectedRaw.length&&normalizeRow(s)===normalizeRow(expectedRaw[i]));
@@ -187,6 +237,24 @@ try{
   const reviewLast=['release-review-fit','release-review-tail'].includes(c.name);
   const keepVisible=actual.ownedRegionRows.some(r=>r.visible&&r.rows.join('\n').includes('Keep lease'));
   const item={grid:c.grid,name:c.name,sourcePrefixSHA256:c.prefixSHA256,bytes:c.bytesThrough,actual,expectedRawRows:expectedRaw,rowMatches,modelRowsMatch:rowMatches.every(Boolean)&&expectedRaw.length===c.rows,typedRecordDecimal:c.state.recordValueDecimal??null,typedRecordType:c.state.recordValueType??null,recordPath:c.state.recordPath??null,exactDecimalVisible:visible.includes('9007199254740993'),filterDraftVisible:visible.includes('no-synthetic-match'),keepVisible,readingState:{detailID:c.state.detailID,detailRevision:c.state.detailRevision,reviewID:c.state.reviewID,reviewRevision:c.state.reviewRevision,reviewAction:c.state.reviewAction,inputMode:c.state.inputMode,filter:c.state.filter,restored:c.state.restored,visibleLeaseIDs:c.state.visibleLeaseIDs,viewport:c.state.viewport},resizeTimeline:c.resizes};
+  for(const edge of actual.modal.borderRows){
+   const left=edge.row===0?'╔':edge.row===modal.height-1?'╚':'║',right=edge.row===0?'╗':edge.row===modal.height-1?'╝':'║';
+   assert(edge.left.chars===left&&edge.right.chars===right&&edge.left.width===1&&edge.right.width===1,'actual modal border/corner clipped');
+  }
+  const modalControls=actual.ownedRegionRows.filter(r=>r.y>=modal.y&&r.y<modal.y+modal.height);
+  if(filter){
+   assert(modalControls.length===0&&visible.includes('[Enter] Apply filter')&&visible.includes('[Esc] Back')&&item.filterDraftVisible);
+   const controls=actual.ownedRegionRows.filter(r=>r.y===25);assert.deepEqual(controls.map(r=>r.key),['enter','esc']);
+   assert(controls.every(r=>r.visible&&r.rows.join('\n').includes('['+r.key+']')));
+  }else{
+   const lastVisible=c.state.viewport.total-1-c.state.viewport.offset<c.state.viewport.height;
+   assert(modalControls.length===(lastVisible?2:0));
+   if(lastVisible){
+    assert.deepEqual(modalControls.map(r=>r.key),['y','n']);
+    for(const r of modalControls)assert(r.visible&&r.height===1&&r.x>=modal.x+1&&r.x+r.width<=modal.x+modal.width-1&&r.y>=modal.y+1&&r.y<modal.y+modal.height-1&&r.rows.join('\n').includes(r.key==='n'?'[n/Esc] Keep lease':'[y] Release lease'));
+   }
+  }
+  item.modalFrameAndControlGeometryAccepted=true;
   stage='native lease PNG';const png=await work('native lease PNG',()=>page.locator('#terminal').screenshot({animations:'disabled'}));const reserve=Buffer.byteLength(JSON.stringify({...result,cases:[...result.cases,item]}))+131072;
   assert(await work('combined retained native bytes',()=>retainedTotal())+png.length+reserve<=16*1024*1024);
   item.png=`${index+1}-${c.grid}-${c.name}.png`;await work('retain native lease PNG',()=>writeFile(join(output,item.png),png,{mode:0o600,flag:'wx'}));result.cases.push(item);
@@ -199,7 +267,8 @@ try{
   if(restored)assert(c.state.restored&&c.state.filter===''&&c.state.inputMode===''&&c.state.visibleLeaseIDs.length===8&&c.state.defaultLeases&&c.state.defaultRuns);
   item.terminalDisposeReturned=await work('terminal dispose',()=>page.evaluate(()=>{window.__terminal.dispose();window.__terminal=null;return true;}));
  }
- assert(result.cases.length===21);
+ assert(result.cases.length===3&&result.cases.every(c=>c.modalFrameAndControlGeometryAccepted));
+ result.comparedRows=result.cases.reduce((sum,c)=>sum+c.rowMatches.length,0);assert(result.comparedRows===84);
  assert.deepEqual(result.externalRequests,[]);result.complete=true;
 }catch(error){result.failure??=stage;result.failureErrorName=errorName(error);result.complete=false;}
 finally{
