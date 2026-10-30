@@ -3498,6 +3498,26 @@ new source/validation bindings; it cannot inherit this capture's acceptance.
 No new runtime or corrective run is authorized by this evidence record.
 
 
+## Resident retained driver — initial normal qualification
+
+The private additive candidate against exact `modernc.org/sqlite v1.60.1` now
+has one successful scoped normal run: 34 test roots, 60 named passes, two
+packages, no failures or skips. Its full 1,902-file source inventory was checked
+before and after. Exact dependency acquisition verified the observed 26-module
+graph; the two modules absent from the initial static estimate were authenticated
+through the official Go checksum database without changing dependency versions.
+The initial graph-mismatch stop, pre-Go sandbox refusal and storage-threshold
+interruption remain separate preserved outcomes, not test failures or passes.
+
+This qualifies only the initial private driver cohort. Causal controls, affected
+race/vet, delivery/provenance and actual ARM dependency composition remain open.
+Concrete retained native/root/service-birth ownership and public startup wiring
+continue in the existing upgrade task. No deployed backend or live jobs were
+restarted. Public first/repeated/concurrent startup and genuinely different
+worker replacement with both supervised and CLI-owned producers surviving are
+still required; no positive native-closure or completed-upgrade claim is made.
+
+
 ## P2 narrow modal shadow containment — source correction prepared
 
 Owner branch `codex/ux-terminal-modal-shadow` bounds only the offset shadow layer
@@ -3520,3 +3540,23 @@ and polish_test.go intentionally differ from the original classifier/source map;
 old native fixture guards must continue to reject them. Separate source review,
 ordinary regression allocation and explicitly reviewed updated source/classifier/
 helper/build/capture bindings are required before any fixed-source native run.
+
+
+## Narrow modal shadow — coordinator ordinary-test acceptance
+
+The focused `bf43a87` correction now passes its ordinary causal and affected
+regression gates on byte-identical composed inputs. Restoring only the original
+presentation source through a compiler overlay executes all 24 new subcases and
+reproduces 15 border-assertion failures, including every targeted 72-column case.
+The corrected five-root cohort passes all 29 named cases with no failure or skip.
+The actual original helper/compiler and FIFO handles were joined normally; no
+forced teardown occurred. Source, overlay, prior artifacts and temporary cleanup
+checks passed. The 84-artifact commitment is
+`6842f86647115192626c5ef5f3d8b1189bfd688d1d4c27413896d2944a41245b`.
+
+The fix bounds only the offset shadow; modal content geometry, wrapping and
+trusted mouse coordinates remain unchanged. Native paint acceptance still needs
+the separately reviewed fresh source binding/build and three narrow dialog
+images. Earlier native captures remain evidence of their original source, not
+this later correction. No full-suite, race, physical-terminal or full-UX claim
+is inferred from these ordinary tests.

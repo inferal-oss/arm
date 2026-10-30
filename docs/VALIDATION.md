@@ -10960,6 +10960,26 @@ new source/validation bindings; it cannot inherit this capture's acceptance.
 No new runtime or corrective run is authorized by this evidence record.
 
 
+## Retained driver — scoped first-normal result
+
+Candidate manifest SHA-256
+`6d5951477495218c1ba90a332304a57a591a16ce662f543b97da3068ac6a518e`
+passed 34 exact test roots (19 main-package and 15 isolated), 60 named cases
+and two package results with zero failures/skips. Original test/FIFO processes
+were joined successfully; active elapsed time was 2.488 seconds. Sampled owned
+build-cache and retained/fresh temporary allocation peaked at 2,040,377,344 bytes
+under a 4 GiB ceiling. These are sampled/cooperative bounds, not hard OS limits.
+The original event-roster commitment is
+`0581a4799cccf351ecb6b3d377c1462e0986c5d0c7da36c4830fae4d9c4bf012`.
+
+Independent review checked the source/receipt identities and exact passed roster.
+Earlier attempts stopped at graph comparison, sandbox inspection or the smaller
+storage threshold; none is counted as a test failure or successful qualification.
+All original evidence remains preserved. Race/vet/causal controls, delivery and
+composed ARM-graph checks are pending. No public startup, native closure, live
+upgrade or child-process continuity result is inferred from this driver cohort.
+
+
 ## P2 narrow modal shadow containment — source correction prepared
 
 Owner branch `codex/ux-terminal-modal-shadow` bounds only the offset shadow layer
@@ -10982,3 +11002,23 @@ and polish_test.go intentionally differ from the original classifier/source map;
 old native fixture guards must continue to reject them. Separate source review,
 ordinary regression allocation and explicitly reviewed updated source/classifier/
 helper/build/capture bindings are required before any fixed-source native run.
+
+
+## Narrow modal shadow — coordinator ordinary-test acceptance
+
+The focused `bf43a87` correction now passes its ordinary causal and affected
+regression gates on byte-identical composed inputs. Restoring only the original
+presentation source through a compiler overlay executes all 24 new subcases and
+reproduces 15 border-assertion failures, including every targeted 72-column case.
+The corrected five-root cohort passes all 29 named cases with no failure or skip.
+The actual original helper/compiler and FIFO handles were joined normally; no
+forced teardown occurred. Source, overlay, prior artifacts and temporary cleanup
+checks passed. The 84-artifact commitment is
+`6842f86647115192626c5ef5f3d8b1189bfd688d1d4c27413896d2944a41245b`.
+
+The fix bounds only the offset shadow; modal content geometry, wrapping and
+trusted mouse coordinates remain unchanged. Native paint acceptance still needs
+the separately reviewed fresh source binding/build and three narrow dialog
+images. Earlier native captures remain evidence of their original source, not
+this later correction. No full-suite, race, physical-terminal or full-UX claim
+is inferred from these ordinary tests.

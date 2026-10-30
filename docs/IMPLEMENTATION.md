@@ -4848,6 +4848,23 @@ new source/validation bindings; it cannot inherit this capture's acceptance.
 No new runtime or corrective run is authorized by this evidence record.
 
 
+## Retained driver candidate — initial validation boundary
+
+The source candidate retains the exact upstream module and additive changes in
+a separate private tree; no project replacement, fork, vendoring or installation
+is activated by its first passing cohort. Acquisition uses a private module
+cache and official proxy/checksum verification. The observed dependency graph
+retains all existing versions. The original 24 expected checksum pairs remain
+checked, with two additional transitive modules authenticated by ordinary signed
+checksum-database verification. All 26 archive/source pairs were then verified
+against the actual graph.
+
+A successful 34-root normal cohort exercises the retained connection, child
+lifetimes, abnormal completion, long-lived bounded records, terminal errors and
+legacy connector/column behavior. It does not establish full database/native
+closure, service ownership, worker replacement or live-job continuity.
+
+
 ## P2 narrow modal shadow containment — source correction prepared
 
 Owner branch `codex/ux-terminal-modal-shadow` bounds only the offset shadow layer
@@ -4870,3 +4887,23 @@ and polish_test.go intentionally differ from the original classifier/source map;
 old native fixture guards must continue to reject them. Separate source review,
 ordinary regression allocation and explicitly reviewed updated source/classifier/
 helper/build/capture bindings are required before any fixed-source native run.
+
+
+## Narrow modal shadow — coordinator ordinary-test acceptance
+
+The focused `bf43a87` correction now passes its ordinary causal and affected
+regression gates on byte-identical composed inputs. Restoring only the original
+presentation source through a compiler overlay executes all 24 new subcases and
+reproduces 15 border-assertion failures, including every targeted 72-column case.
+The corrected five-root cohort passes all 29 named cases with no failure or skip.
+The actual original helper/compiler and FIFO handles were joined normally; no
+forced teardown occurred. Source, overlay, prior artifacts and temporary cleanup
+checks passed. The 84-artifact commitment is
+`6842f86647115192626c5ef5f3d8b1189bfd688d1d4c27413896d2944a41245b`.
+
+The fix bounds only the offset shadow; modal content geometry, wrapping and
+trusted mouse coordinates remain unchanged. Native paint acceptance still needs
+the separately reviewed fresh source binding/build and three narrow dialog
+images. Earlier native captures remain evidence of their original source, not
+this later correction. No full-suite, race, physical-terminal or full-UX claim
+is inferred from these ordinary tests.
