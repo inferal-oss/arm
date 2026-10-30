@@ -11571,3 +11571,43 @@ all three typed mouse frames are recorded; and replay checks exact action order
 and monotonic source-prefix offsets. These changes affect only the additive
 native45 fixture/drivers/binding. The existing product and accepted72 sources
 remain byte-exact. No compile/native or browser execution has occurred.
+
+
+## Native45 filter lifecycle — actual compile, runtime and paint accepted
+
+The [normalized native45 result](validation/ux-terminal-filter-shell-native-2026-10-30.json)
+binds exact owner source `5f8dbb353c364f66cdb245c8a712e55f8776e370`, the
+69-member native binding and a fresh original binary (`d306abd5…`). One
+compile-only command returned0 with normal original compiler/helper/FIFO joins;
+no test or native entry ran in that compilation window. The subsequent separately
+allocated original native45 capture and conditional replay both returned0.
+
+All eight actual PTY prefixes and112emulator rows passed. All eight original
+410x256PNGs were inspected at original resolution, and independent review
+accepted the selected paint scope. The carried list offset4 becomes filter
+field offset0; wheel offset4 exposes all8form rows across the two reading
+prefixes; typing q restores the visible field as probe-draftq. Apply, discarded
+draft, cancel-retained filter and reopen behavior are visible. The actual
+ctrl+c Exit footer is readable and its single original press returns the
+original named Quit, observed QuitMsg and normal Program result.
+
+Original Program/child/inside/FIFO and browser process handles joined normally;
+no forced, cancelled, truncated, pending or unknown cleanup was accepted.
+Original terminal mode restoration, slave/master closure and actual final EOF
+were positive; fake calls/reads/active/forbidden operations stayed zero and
+owned fake/context cleanup completed. All18prior artifact sets, source69 plus
+preparation guards, metadata/telemetry and package/tool bindings remained exact;
+tool/capture temporaries are empty. Outer time was12564ms. Eight historical
+runtime containers plus the whole new runtime output total14324481bytes;
+with6793bytes of paint-review metadata and131072reserve the combined14462346
+remains below16MiB. The window is released and original50manifest artifacts
+remain immutable. Earlier959/973failed scopes and accepted72native evidence
+remain unchanged and source-scoped.
+
+This evidence establishes the exact owner revision and selected fixed45filter
+lifecycle. It does not assert that every owner dependency matches a later
+integration revision; composed-source dependency review and appropriate
+validation remain separate. Physical terminal/font/cursor/platform/Unicode,
+production startup/auth/backend, broader routes/states and full UX acceptance
+are not implied. Source-only records above describe preparation history; the
+new normalized record is the completed outcome for this bounded scope.
