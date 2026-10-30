@@ -4467,3 +4467,28 @@ are required for acceptance. All outputs remain under the existing 16MiB cap.
 The Go wrapper/admitted commands contain no subprocess launcher in the reviewed
 paths; this is not a full transitive package-init audit. No Go/source-oracle
 change, build, Program/PTY/browser run or replacement helper occurs here.
+
+
+## Terminal loop original attempt and replay oracle boundary
+
+Reviewed source `8d1039a` compiled once offline without source changes; the owned
+binary was used only by the subsequently allocated capture. One original FIFO
+attempt captured 36 checkpoints through original Program/PTY input, two mouse
+callbacks per grid and controlled stale callback rejection across resize. End
+scheduled one original empty read closure per invocation with zero transport
+rereads and unchanged original buffer/cursor/reader. The 3,165-byte cached log
+reached nonzero lower viewport offsets; this is distinct from actual emulator
+visibility of LOG FIRST/MIDDLE/FINAL, which remains untested.
+
+The original replay retained its first PNG and cell/text facts, then stopped on
+two trailing-space row differences. Its expected-row trimEnd and actual xterm
+row extraction treat one printed U+0020 differently. No product or oracle
+source changed, and the original failure was not rerendered or replaced.
+
+Original terminal dispose/page/context/connection/BrowserServer close returned;
+the retained original browser process exit event reported code zero and no
+signal. Original Program/fake/context retirement, child waits, saved-mode/slave
+close/final EOF and descriptor facts are positive scoped observations. They do
+not imply universal descendant/goroutine reap or production startup coverage.
+The [inventory](validation/ux-terminal-loop-inventory-2026-10-30.json) records
+normalized results; raw evidence stays private and immutable.

@@ -10489,3 +10489,40 @@ request original-owned cleanup but are not universal reap evidence. All
 previous geometry/data/checkpoint/byte/time ceilings remain. Actual browser/PTY
 cleanup, tail/cells/input and timing remain untested and require independent
 review followed by allocated execution; no replacement or additional proof ran.
+
+
+## Terminal loop capture/replay — one failed original attempt
+
+The [normalized inventory](validation/ux-terminal-loop-inventory-2026-10-30.json)
+records the once-only offline compile and subsequent source-bound attempt. The
+compile exited zero; the original capture exited zero and passed all 36 exact-
+grid checkpoints and owned cleanup gates. The FIFO attempt exited one after
+11.934 seconds because replay failed its original first-frame row comparator.
+Raw streams were 75,054, 103,711 and 228,032 bytes; total retained original
+evidence was 1,416,235 bytes, below existing bounds. No replacement/retry ran.
+
+The first actual alternate buffer was 72x28. Zero-based rows 1 and 25 each
+contain the full saved expected text followed by one U+0020. Expected-row
+trimEnd removes that space; actual extraction preserves it. The original
+modelRowsMatch=false and saved PNG remain unchanged. Inspection supports an
+oracle whitespace asymmetry, not a product rendering defect or broader glyph
+acceptance. The remaining 35 frames and all actual visible log markers were
+not replayed. No revised comparison was used to turn this result into a pass.
+
+All three children exited zero with original Program/model/reader identity,
+context/fake retirement, zero active/forbidden fake calls and callback delivery.
+Saved termios comparison (with source PENDIN normalization), parent slave close,
+final master EOF and master/slave closes passed without forced termination,
+truncation or cleanup errors. Browser cleanup API returns and original process
+exit code zero were observed; no forced/pending cleanup or page network request
+was recorded. The separate receipt-write marker confirms the original write
+returned while retaining complete=false. These are scoped observations, not
+universal OS/framework cleanup proof.
+
+Exactly 57 source inputs and the original binary remained unchanged before and
+after; all 111 direct and 64 build artifact hashes stayed exact. Existing npm
+cache tarball integrity and every installed regular package member matched
+locked xterm/Playwright dependencies without extraction/install/download. The
+selected BrowserServer implementation/types and xterm source pins were checked
+before browser execution and afterward. Independent evidence/oracle review and
+separate authorization are required before any further execution.

@@ -661,3 +661,20 @@ This corrects source only. The Go fixture, old helpers/evidence and all existing
 bounds remain unchanged. Syntax/hash review supplies no native tail, paint,
 input, timing or teardown acceptance. Independent source review and separate
 build/PTY/browser allocation are still required; overall UX acceptance is open.
+
+
+## Terminal first replay failure — acceptance remains partial
+
+One source-bound attempt passed native Program/PTY capture and scoped original
+cleanup gates at all three exact grids, then stopped on the first replay PNG.
+The [inventory](validation/ux-terminal-loop-inventory-2026-10-30.json) separates
+those observations from the failed model-row comparator: two rows differ only
+by a trailing printed space treated asymmetrically by expected and actual row
+extraction. This is an oracle limitation, not a demonstrated product defect.
+
+The original PNG/cells, failure and positive original browser close/process
+exit facts are preserved. No corrected oracle, replacement render or retry
+ran. Actual visible log first/middle/tail and remaining emulator/glyph frames
+remain unaccepted despite genuine captured lower model viewport offsets.
+Source-only oracle review and a separate future execution window are gates;
+terminal and overall UX acceptance remain open.

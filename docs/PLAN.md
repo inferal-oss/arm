@@ -3056,3 +3056,25 @@ checkpoint/byte/time ceilings and all old evidence remain unchanged; the Go
 wrapper is unchanged and still uncompiled. Independent corrected-source review
 and separately allocated build/PTY/browser windows remain gates. No execution
 or additional proof was allocated or performed.
+
+
+## Terminal loop attempt — capture passed, first replay oracle failed
+
+The terminal owner froze normalized evidence on `codex/ux-terminal-loop-evidence`
+from reviewed source `8d1039a`. One offline compile produced the retained owned
+test binary, then one allocated FIFO attempt captured all 36 checkpoints on
+the three exact grids. Original child waits, termios comparison, parent slave
+close/final master EOF, descriptor closes and Program/fake cleanup gates passed.
+
+Replay stopped after its first saved 72x28 lease PNG. Two rows differ only by
+one trailing printed space: expected model rows use trimEnd while actual xterm
+rows preserve it. The original comparator remains false; no correction or retry
+ran. This is an oracle asymmetry, not a demonstrated product defect. Original
+browser API/process exit observations succeeded; overall attempt exit was one.
+The [normalized inventory](validation/ux-terminal-loop-inventory-2026-10-30.json)
+keeps capture, first-frame facts, cleanup and missing replay coverage separate.
+
+All frozen source/binary, 111 direct and 64 build artifacts remain unchanged.
+Independent evidence review and a separately reviewed source-only oracle change
+are pending; no further execution window remains. Visible log markers and all
+remaining emulator/cell/glyph frames are unaccepted. Overall UX remains open.
