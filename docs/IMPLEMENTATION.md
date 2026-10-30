@@ -5092,3 +5092,115 @@ geometry, broader terminal routes and states, and outstanding web route/state/
 density/focus/transport qualifications in the coverage matrix. A source-only
 review of the shared shell/action hints at45x14 is the next proposed bounded
 step; no implementation expansion or resource window is started by this record.
+
+
+## Minimum shell/filter — ordinary evidence and focused source remediation
+
+Owner branch `codex/ux-shell-filter-focus-fix` continues reviewed
+`3b82941d02e594aeefa6a1a5966e598febb9bb89`. It preserves the separate
+`6a1e6624f90125bb6a59eadb2fbb1d8a8dc3aa35` counterexample and all prior accepted
+native bindings. The [source and evidence record](validation/ux-shell-filter-focus-source-2026-10-30.json)
+distinguishes the original failed wrapper from an independent offline review.
+The original ordinary test failed its visible footer Exit contract; typed q and
+outside-editor q controls passed. Its wrapper failed while decoding a long Go
+JSON Output chunk, so that wrapper's causal gate remains failed. Offline review
+concatenated captured Output in order per package/test before decoding logical
+lines, recovered ten states, two dispatches and one counterexample, and verified
+all 959 original manifest entries unchanged before and after. No command was
+rerun or original artifact relabelled.
+
+The actual model observations show an unhandled q footer click during filter
+focus. They also show list offset 4 carried into the eight-row filter viewport
+(height 4), and wheel offset 3 retained when subsequent typing edited an unseen
+focused field. These are ordinary model/render observations, without native
+45-column, physical cursor, font or paint acceptance.
+
+The prepared product change derives the footer label and mouse key from one
+control: text-entry modes (including the separate name editor) advertise and
+send the existing global ctrl+c exit; other dashboard states retain q. The
+minimum-size message offers Ctrl+C. No global keyboard binding changes. For the
+local filter only, original key/paste/resize updates restore the field's top
+viewport after syncing content. Wheel scrolling can still expose help and
+controls; unrelated clock receipts preserve that reading position. Enter trim/
+apply and Escape discard/return behavior remain the existing code paths.
+
+Permanent regression source drives original Update and View.OnMouse, without
+Init/Program or scheduling backend/focus/cursor commands. It covers footer text/
+hit action at 45x14, 72x28, 100x35 and 160x50; q text and outside-editor exits;
+explicit keyboard exit; the below-minimum message; the name-editor footer;
+opening after list scroll; editing/pasting/cursor movement/resizing after reading
+help; retained help across a clock receipt; apply/cancel/reopen; and rejection
+of a footer click invalidated by resize. Only the recognized named Quit command
+is executed as a pure message control; private fixture cleanup checks zero
+transport calls.
+
+This is source preparation, not an accepted fix or green result. Formatting,
+diff and privacy checks are scoped source evidence only. Independent final-diff/
+binding review and a separately allocated original ordinary test execution are
+required before acceptance; any new native rendering claim needs its own
+reviewed binding and window. Earlier C-query preparation qualifications and
+retained owned telemetry remain preserved. Full UX coverage remains open.
+
+
+## Minimum shell/filter — canonical naming fixture correction prepared
+
+The first normal green attempt ran all 102 selected outcomes on test source
+`07028beb…`: 100 passed, while `name-editor-footer` and its parent failed. Its
+precondition reported that the name editor did not open. The original naming
+path correctly validates authority and lease bindings; the general list-scroll
+fixture uses noncanonical IDs and was unsuitable for this naming-only child.
+All eight existing affected roots and their children passed (83 outcomes), but
+the overall green gate failed. Original Go/FIFO handles joined normally;
+source, preservation, metadata, compiler and temporary-cleanup checks passed.
+The original 973-entry manifest, receipts, log and pre-correction source/plan
+bytes remain preserved and are not relabelled as a green result.
+
+The corrected child uses the existing canonical naming fixture, sizes through
+original WindowSize Update, opens through original Ctrl+N Update and leaves its
+returned name-read command unexecuted. It still requires the editor and read
+command, actual rendered footer/callback/Update, original named Quit, private
+fixture setup, zero fake calls and owned transport cleanup. No nameUI is
+fabricated and no binding, open or quit guard is relaxed. The three product
+files remain byte-identical to the reviewed remediation. The corrected test
+source is unrun; a fresh reviewed one-shot proposal retains the same 13 roots/
+102 required outcomes and preserves all 16 original artifact sets. No resource
+window or native45 acceptance follows from this source-only correction.
+
+
+## Minimum shell/filter — corrected ordinary green complete
+
+The [normalized ordinary result](validation/ux-shell-filter-focus-green-2026-10-30.json)
+binds owner source commit `d156d1066a754174f0b1f02d13e8a9e91b218171` to the exact reviewed product and
+canonical-fixture test bytes. The original invocation ran before that commit on
+base `3b82941…` plus nine reviewed owned changes; no later-commit rerun is
+claimed. All 13 selected roots and 89 children passed (102 outcomes), with one
+original package pass and no failures/skips. This covers the working editing
+footer, q text, filter field/help/edit lifecycle, apply/cancel/reopen and stale
+click behavior, plus the eight affected existing roots. Independent raw receipt
+review accepted the scoped ordinary gate.
+
+Original Go/helper/FIFO handles joined normally with exit0; no cancellation or
+forced/unknown join occurred. Source, all16prior artifact sets, metadata,
+telemetry, posthoc/failure/source/proposal and compiler/tool guards stayed exact;
+all911frozen copies match and TMP/GOTMP are empty. Whole wrapper time was6284ms.
+Fresh owned peak logical88880026/allocated91078656 bytes and final
+logical28458076/allocated30650368 bytes remain within the reviewed cap. Retained
+owned metadata is charged/manifested; shared compiler-cache growth and complete
+SDK/compiler-input closure remain outside those claims. The window is released.
+
+The earlier959-entry parser-failed wrapper and973-entry fixture-failed green
+remain unchanged failures, with their own source/plan/test scopes. Source-only
+preparation records above are historical; the completed outcome is the new
+normalized result. This closes the selected ordinary remediation gate only.
+Native45 Program/PTY/rendering/physical cursor/font and full-UX gates remain open;
+accepted historical72 evidence and selectors/plans/classifier are not relabelled.
+
+## Shell/filter remediation — composed review accepted
+
+The focused source and ordinary validation are accepted for integration. The
+composed checkout matches all 870 project input hashes from the passed run and
+has no Go or module differences from the reviewed owner cut. Independent final
+diff and receipt review found no remaining blocking finding in this scope.
+The 102 passing model/render/input outcomes are source-equivalent evidence,
+not a new native terminal execution. Fresh 45-column native validation and the
+broader UX review remain open.

@@ -190,7 +190,8 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 		return regions
 	}
 	_, regions := m.controlBar()
-	regions = append(regions, mouseRegion{x: 0, y: m.height - 1, width: 10, height: 1, key: "q", row: -1})
+	exit := m.exitControl()
+	regions = append(regions, mouseRegion{x: 0, y: m.height - 1, width: ansi.StringWidth(keycap(exit.key, exit.label, "quiet")), height: 1, key: exit.key, row: -1})
 	if x := strings.Index(ansi.Strip(m.exitFooter()), "[u] Recovery"); x >= 0 && m.canOpenRecovery() {
 		regions = append(regions, mouseRegion{x: x, y: m.height - 1, width: len("[u] Recovery"), height: 1, key: "u", row: -1})
 	}

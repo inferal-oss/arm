@@ -1,0 +1,282 @@
+{
+  "acceptedOrdinaryContracts": [
+    "Filter footer text and original mouse Exit action agree at45x14/72x28/100x35/160x50; typed q remains unapplied filter text.",
+    "Outside-editor q/footer exit, editing Ctrl+C, below-minimum exit guidance and the original canonical name-editor footer path pass.",
+    "Filter opens visibly after list scroll; help remains wheel-readable and survives a clock receipt; typing, paste, cursor movement and resize restore its focused field.",
+    "Enter applies the trimmed local filter; Escape discards the draft; reopen restores the applied value; a resize-invalidated footer click is rejected.",
+    "All eight selected existing affected roots and75children pass, covering queued scrolling, mouse/frame/focus/layout/modal/naming interactions."
+  ],
+  "behavior": [
+    "The shared footer renders and dispatches the existing global ctrl+c exit while a text editor or the separate name editor is open; otherwise it retains q.",
+    "Typed q remains local filter text. The below-minimum terminal message offers the available Ctrl+C exit.",
+    "Focused local filter key, paste and resize updates bring its field back into view after content synchronization. Wheel scrolling and unrelated clock receipts retain the help-reading position.",
+    "Existing filter Enter trim/apply, Escape discard/return, modal geometry and stale mouse-frame validation paths are retained."
+  ],
+  "boundedExecution": {
+    "CPUCooperative": 2,
+    "existingGraceSeconds": 5,
+    "finalAllocatedBytes": 30650368,
+    "finalLogicalBytes": 28458076,
+    "freshScratchCapBytes": 1073741824,
+    "memoryCooperativeBytes": 2147483648,
+    "normalFIFOSeconds": 45,
+    "originalFIFOWallMS": 4358,
+    "originalThroughPostchecksMS": 5227,
+    "perFileCapBytes": 268435456,
+    "phaseLimitSeconds": 50,
+    "qualification": "CPU/memory are cooperative claims. Shared compiler-cache growth is outside the fresh-root storage claim; no global OS hard-limit/write-enforcement or full SDK/linker/kernel/generated-cgo closure is asserted.",
+    "sampledMarginBytes": 33554432,
+    "sampledPeakAllocatedBytes": 91078656,
+    "sampledPeakLogicalBytes": 88880026,
+    "totalLimitSeconds": 65,
+    "wholeWrapperWallMS": 6284
+  },
+  "canonicalFixture": {
+    "bindingAndOpenQuitGuardsUnchanged": true,
+    "noDirectNameUIConstruction": true,
+    "originalNameReadCommandReturnedButUnexecuted": true,
+    "originalWindowSizeAndCtrlNUpdate": true,
+    "syntheticCanonicalAuthorityAndLeaseIDs": true,
+    "test": "TestShellFilterQuitControls/name-editor-footer",
+    "usesExistingNameFixture": true,
+    "zeroFakeCallsAndOwnedTransportCloseRequired": true
+  },
+  "guards": {
+    "TMPAndGOTMPEmpty": true,
+    "allFrozenCopiesExact": true,
+    "allSixteenPriorArtifactSetsUnchanged": true,
+    "allSourceAndNineOwnedStatusHashesUnchanged": true,
+    "compilerToolBindingsUnchanged": true,
+    "metadataTelemetryPosthocFailureSourceAndProposalBindingsUnchanged": true,
+    "ownedHomeMetadataRetained": {
+      "bytes": 759282,
+      "chargedAndManifested": true,
+      "files": 54
+    }
+  },
+  "limitations": [
+    "Ordinary selected model/render/interaction validation only. No Init, native Program, PTY, browser, physical terminal cursor/font or new native45 paint acceptance.",
+    "Accepted historical72-column native selector/classifier/plans/artifacts are unchanged and remain bound to their original source; they do not certify this new product source.",
+    "Old generated testmain is excluded from the5874source projection. Normal compiler-generated inputs remain runtime temporaries, not a frozen hermetic closure.",
+    "Earlier preparatory compiler-query uncertainty and retained owned metadata remain preserved and qualified; those preparations are not ordinary green evidence.",
+    "Broader terminal/web routes and states, native45 lifecycle/rendering and full UX acceptance remain separate gates."
+  ],
+  "normalizedArtifactCommitments": {
+    "eventRosterSHA256": "1ac7221f1a68a17a01d62285a4463d60d06aa110d4da0eae86ed7de64af4fefa",
+    "frozenCopies": {
+      "entries": 911,
+      "manifestSHA256": "6352df94b699e7850fdae462dc2db116fd89e5efea6f966ce1d531df9e9c04e1"
+    },
+    "gateSHA256": "7199ca02817eedaa4e1ff987047ea3957427a0cc8afd440df85504d64a6c6772",
+    "helperReceiptSHA256": "5254b5c559707f07459bd57064645d6dde12eece1d1fd115bd48cbfe548c3056",
+    "manifest": {
+      "entries": 984,
+      "sha256": "4d27a2a5fec267b7055e96b3b421d6b744ad07afedfe6f1fece22bb05944df4f"
+    },
+    "outcomeSHA256": "f5000449450d8c79ab065c9dbc1431ab4f5d38b6e22f42ed1adf1c3c8083a6f4",
+    "rawLog": {
+      "bytes": 94463,
+      "sha256": "122f3d1926c0762e7fb240de106391221edc139d920e11077a241a1b56f5493d"
+    },
+    "receiptSHA256": "5eb5683f551f816c06f34be43054da771e34c130c669ee78f853ff157b88dd3f",
+    "reviewedPlanSHA256": "2bf65e0bc397d757618e099e605a701c43188cbe1821979ea1b1452faafe91f5",
+    "reviewedWrapperSHA256": "72701d5b03f0d60a4b97e97ebbd3aed4b430de49d95af3659df10cbad3de293e",
+    "sourceBeforeAndAfterSHA256": "4ab339f89b97a0edf671e07eb379d1814f00e9aed3d68939aa8963fa9b4c48b6"
+  },
+  "originalOrdinaryOutcome": {
+    "cancellationOrForcedTeardown": false,
+    "childCount": 89,
+    "childrenByRoot": {
+      "TestCompactNavigationLabelsAndMouseRegionsStayAligned": [],
+      "TestCustomNamingTUIMouseAndNarrowFormKeepExactTarget": [
+        "45",
+        "70",
+        "140"
+      ],
+      "TestFrameScrollPositionAndModalViewportRemainBounded": [],
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry": [
+        "45x14/review-first",
+        "45x14/review-tail",
+        "45x14/filter",
+        "70x24/review-first",
+        "70x24/review-tail",
+        "70x24/filter",
+        "72x28/review-first",
+        "72x28/review-tail",
+        "72x28/filter",
+        "88x28/review-first",
+        "88x28/review-tail",
+        "88x28/filter",
+        "89x28/review-first",
+        "89x28/review-tail",
+        "89x28/filter",
+        "100x35/review-first",
+        "100x35/review-tail",
+        "100x35/filter",
+        "110x35/review-first",
+        "110x35/review-tail",
+        "110x35/filter",
+        "160x50/review-first",
+        "160x50/review-tail",
+        "160x50/filter"
+      ],
+      "TestMouseNavigationRowsRecordsAndBounds": [],
+      "TestMouseScrollFeedResizeAndContentInvalidation": [],
+      "TestQueuedMouseWheelDeltasAccumulateButNavigationInvalidates": [],
+      "TestShellFilterApplyCancel": [],
+      "TestShellFilterFieldVisibility": [
+        "open-from-scrolled-list",
+        "typing-after-help",
+        "paste-after-help",
+        "cursor-after-help",
+        "resize-after-help"
+      ],
+      "TestShellFilterFooterExit": [
+        "45x14",
+        "72x28",
+        "100x35",
+        "160x50"
+      ],
+      "TestShellFilterQuitControls": [
+        "outside-editor-q",
+        "outside-editor-footer",
+        "name-editor-footer",
+        "editing-keyboard-ctrl-c",
+        "below-minimum-while-editing"
+      ],
+      "TestShellFilterStaleFooterClick": [],
+      "TestWindowedDashboardViewportAndFocusAtWideAndCompactSizes": [
+        "160x46/Monitor",
+        "160x46/Resources",
+        "160x46/Leases",
+        "160x46/Messages",
+        "160x46/Activity",
+        "160x46/Host",
+        "160x46/Mesh",
+        "160x46/Runs",
+        "140x42/Monitor",
+        "140x42/Resources",
+        "140x42/Leases",
+        "140x42/Messages",
+        "140x42/Activity",
+        "140x42/Host",
+        "140x42/Mesh",
+        "140x42/Runs",
+        "110x32/Monitor",
+        "110x32/Resources",
+        "110x32/Leases",
+        "110x32/Messages",
+        "110x32/Activity",
+        "110x32/Host",
+        "110x32/Mesh",
+        "110x32/Runs",
+        "100x30/Monitor",
+        "100x30/Resources",
+        "100x30/Leases",
+        "100x30/Messages",
+        "100x30/Activity",
+        "100x30/Host",
+        "100x30/Mesh",
+        "100x30/Runs",
+        "70x24/Monitor",
+        "70x24/Resources",
+        "70x24/Leases",
+        "70x24/Messages",
+        "70x24/Activity",
+        "70x24/Host",
+        "70x24/Mesh",
+        "70x24/Runs",
+        "45x14/Monitor",
+        "45x14/Resources",
+        "45x14/Leases",
+        "45x14/Messages",
+        "45x14/Activity",
+        "45x14/Host",
+        "45x14/Mesh",
+        "45x14/Runs"
+      ]
+    },
+    "failed": 0,
+    "originalFIFOExitCode": 0,
+    "originalFIFOHandleJoined": true,
+    "originalGoExitCode": 0,
+    "originalGoHandleJoined": true,
+    "originalHelperComplete": true,
+    "originalHelperFailures": [],
+    "originalOutputParsing": "Full original outer Go JSON event stream with exact unique run/pass lifecycles; nested Output payloads are not JSON-decoded.",
+    "outerJSONEvents": 412,
+    "packagePassCount": 1,
+    "rootCount": 13,
+    "roots": [
+      "TestShellFilterFooterExit",
+      "TestShellFilterQuitControls",
+      "TestShellFilterFieldVisibility",
+      "TestShellFilterApplyCancel",
+      "TestShellFilterStaleFooterClick",
+      "TestMouseNavigationRowsRecordsAndBounds",
+      "TestMouseScrollFeedResizeAndContentInvalidation",
+      "TestQueuedMouseWheelDeltasAccumulateButNavigationInvalidates",
+      "TestCustomNamingTUIMouseAndNarrowFormKeepExactTarget",
+      "TestCompactNavigationLabelsAndMouseRegionsStayAligned",
+      "TestFrameScrollPositionAndModalViewportRemainBounded",
+      "TestModalShadowPreservesBordersAndTrustedMouseGeometry",
+      "TestWindowedDashboardViewportAndFocusAtWideAndCompactSizes"
+    ],
+    "runCount": 102,
+    "skipped": 0,
+    "testPassCount": 102,
+    "windowReleased": true
+  },
+  "preservedPriorScopes": [
+    {
+      "independentOfflineReviewSHA256": "aebea7f7bdfa772e630dcb3d35f538fd06b55182acbdf5449e6e5f12e23b7b24",
+      "manifestSHA256": "7e81d41617a13010be168096c9812f6bac0a9b7d4ede870f6cc301fa7fe9478c",
+      "originalManifestEntries": 959,
+      "qualification": "Independent reassembly of captured Output recovered actual ordinary observations; it did not repair or rerun the original wrapper.",
+      "receiptSHA256": "12f6be952ed383d7686f24f68c60fb5be1c0fb457ec0c3eb87afaf1540ba8d62",
+      "scope": "original footer/filter counterexample",
+      "sourceCommit": "6a1e6624f90125bb6a59eadb2fbb1d8a8dc3aa35",
+      "status": "original expected contract red; original wrapper JSON-fragment parser failed and remains failed"
+    },
+    {
+      "manifestSHA256": "305b316200f855ed4fe753b14e365aa9d640be1221374c55cc7488cfe9dcf4b4",
+      "originalManifestEntries": 973,
+      "qualification": "Original naming ValidateBinding correctly rejected noncanonical list-fixture IDs. Only the child fixture changed for the fresh passing source; product guards were not weakened.",
+      "receiptSHA256": "3498bbea0ce240341e395d2cbf861c4ba3294977e4afa24d87aa886db8b4c278",
+      "scope": "first normal green attempt with noncanonical naming fixture",
+      "sourceTestSHA256": "07028beb1e5ce046381d86cb3738d071b55ddd1cdbcc06845a4ef9d41eb625d7",
+      "status": "failed;102runs/100testpasses; name-editor-footer precondition and parent fail"
+    }
+  ],
+  "schema": 1,
+  "source": {
+    "externalSourceCount": 5004,
+    "ownerCommit": "d156d1066a754174f0b1f02d13e8a9e91b218171",
+    "ownerCommitCreatedAfterValidation": true,
+    "projectSourceProjectionCanonicalSHA256": "0d5f17fa52ba90ff9c0c2fff6a55c399bb5fcaadb478bbe06f8726aa06f4ce0d",
+    "projectSourceProjectionCount": 870,
+    "qualification": "The original invocation ran on the validation base plus nine reviewed owned changes. The owner commit contains exactly the four source/test file contents listed here. Documentation is recorded separately; this is a source-content correspondence, not a rerun of the later commit or a hermetic binary proof.",
+    "sourceFiles": {
+      "internal/tui/mouse.go": {
+        "bytes": 15654,
+        "sha256": "9a75ed40429cf6966e5ecd9002debd53168d92775e8470f9f7349efc39721211"
+      },
+      "internal/tui/presentation.go": {
+        "bytes": 18078,
+        "sha256": "bb759cc27ae78618cc9bc08953405cd75f3c4626dfde7f918ddaf833b72b9e11"
+      },
+      "internal/tui/shell_filter_test.go": {
+        "bytes": 10281,
+        "sha256": "f55cbfdff1f9c02dde1bf693f6a7233f8d6af9b97d1e57ed9117d19e32cf6179"
+      },
+      "internal/tui/tui.go": {
+        "bytes": 25585,
+        "sha256": "b5a86e52d9226475732f4cd4f51db455a8b9871bbaf65bc84758d1ef7863a255"
+      }
+    },
+    "sourceInputCount": 5874,
+    "sourcePlanDuringValidationSHA256": "c3d6136f1ee3e604e6b1e432e7bd37b45a9d9bdcb81348229c51d89487b27df2",
+    "validationBaseCommit": "3b82941d02e594aeefa6a1a5966e598febb9bb89"
+  },
+  "status": "reviewed-source-ordinary-green-observed-native-and-full-ux-open"
+}

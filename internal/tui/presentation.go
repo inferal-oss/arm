@@ -299,7 +299,7 @@ func (m *dashboardModel) View() tea.View {
 		return m.runFullscreenView()
 	}
 	if m.width < 45 || m.height < 14 {
-		view := tea.NewView(fitBlock("ARM dashboard\n\nEnlarge the terminal to at least 45 × 14.\nq or Ctrl+C exits; leases keep running.", m.width, m.height))
+		view := tea.NewView(fitBlock("ARM dashboard\n\nEnlarge the terminal to at least 45 × 14.\nCtrl+C exits; leases keep running.", m.width, m.height))
 		view.AltScreen = true
 		return view
 	}
@@ -408,9 +408,19 @@ func (m *dashboardModel) feedCaption(item feedItem) (string, string) {
 	return label, detail
 }
 
+// Text-entry modes consume q as ordinary input. The footer must use the
+// existing global exit shortcut while an editor is open.
+func (m *dashboardModel) exitControl() mouseControl {
+	if m.inputMode != "" || m.nameUI != nil {
+		return mouseControl{"ctrl+c", "Exit"}
+	}
+	return mouseControl{"q", "Exit"}
+}
+
 func (m *dashboardModel) exitFooter() string {
+	exit := m.exitControl()
 	if m.nodeUI != nil {
-		return " [q] Exit · [7/Esc] LOCAL Mesh · leases keep running"
+		return " [" + exit.key + "] Exit · [7/Esc] LOCAL Mesh · leases keep running"
 	}
 	right := "Local operator · [u] Recovery · [f] Feed "
 	if m.width < 82 {
@@ -419,7 +429,7 @@ func (m *dashboardModel) exitFooter() string {
 	if m.meshOwnsUninstallShortcut() {
 		right = strings.Replace(right, " · [u] Recovery", "", 1)
 	}
-	return fitBlock(align(keycap("q", "Exit", "quiet")+muted.Render(" leases keep running"), muted.Render(right), m.width), m.width, 1)
+	return fitBlock(align(keycap(exit.key, exit.label, "quiet")+muted.Render(" leases keep running"), muted.Render(right), m.width), m.width, 1)
 }
 
 func (m *dashboardModel) runFullscreenView() tea.View {

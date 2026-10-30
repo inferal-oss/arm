@@ -1,0 +1,169 @@
+{
+  "baseCommit": "3b82941d02e594aeefa6a1a5966e598febb9bb89",
+  "behavior": [
+    "Footer display and click dispatch share one exit control: ctrl+c in text-entry modes/name editor; q otherwise.",
+    "Existing global ctrl+c and q-outside-editor semantics are retained; q remains filter text.",
+    "Minimum-size guidance offers Ctrl+C, which remains available while editing.",
+    "Filter key, paste and resize updates restore the field after content sync; wheel and unrelated clock receipts may retain help-reading offsets.",
+    "Existing Enter apply/trim and Escape discard paths are unchanged."
+  ],
+  "counterexampleCommit": "6a1e6624f90125bb6a59eadb2fbb1d8a8dc3aa35",
+  "execution": {
+    "InitOrProgramCalled": false,
+    "PTYOrBrowserRun": false,
+    "downloadOrInstall": false,
+    "newTestOrCompileRun": false
+  },
+  "failedGreenAttempt": {
+    "acceptedGreen": false,
+    "assertion": "name editor did not open",
+    "cause": "The list-scroll fixture uses noncanonical naming IDs. Original selectedNameReference calls ValidateBinding and original openNameEditor correctly refuses the fixture before constructing nameUI.",
+    "existingAffectedPassingOutcomes": 83,
+    "failingChild": "TestShellFilterQuitControls/name-editor-footer",
+    "failingPackage": true,
+    "failingTestOutcomes": 2,
+    "helperSHA256": "4602445671ea5ba81f29fbbb639d00c43987b23db7d52163d9ff29eb20b94038",
+    "logSHA256": "61141b9a482d04955f98bb6437c4c4cf11323cc3dd7604cbae01c3fdb233f00e",
+    "manifestEntries": 973,
+    "manifestSHA256": "305b316200f855ed4fe753b14e365aa9d640be1221374c55cc7488cfe9dcf4b4",
+    "normalOriginalJoins": true,
+    "originalGoAndFIFOExit": 1,
+    "outerEvents": 413,
+    "passingTestOutcomes": 100,
+    "qualification": "Raw original ordinary outcomes scoped to the pre-correction test bytes. No green gate, native45 acceptance or correction execution. Original receipts, source snapshots and all artifacts remain immutable.",
+    "receiptSHA256": "3498bbea0ce240341e395d2cbf861c4ba3294977e4afa24d87aa886db8b4c278",
+    "runTestOutcomes": 102,
+    "skips": 0,
+    "sourcePreservationMetadataCompilerUnchanged": true,
+    "sourceTestSHA256": "07028beb1e5ce046381d86cb3738d071b55ddd1cdbcc06845a4ef9d41eb625d7",
+    "status": "failed-or-unknown-no-retry",
+    "temporaryDirectoriesEmpty": true,
+    "wholeWrapperWallMS": 8765
+  },
+  "fixtureOnlyCorrection": {
+    "bindingValidationRelaxed": false,
+    "cleanup": "Own transport is closed; private fixture setup and zero fake calls are required.",
+    "correctedSourceExecuted": false,
+    "directNameUIFabrication": false,
+    "originalPathsRetained": [
+      "WindowSize Update",
+      "Ctrl+N Update",
+      "returned name-read command observed but unexecuted",
+      "View.OnMouse exact footer command and Update",
+      "named Quit-only message assertion"
+    ],
+    "quitOrOpenAssertionsRelaxed": false,
+    "sameFutureChildren": 89,
+    "sameFutureRequiredOutcomes": 102,
+    "sameFutureRoots": 13,
+    "scope": "Only the name-editor-footer child uses existing nameFixture with canonical synthetic32hex authority and lease IDs. Three product files and official naming validation remain unchanged."
+  },
+  "independentOfflineReview": {
+    "counterexampleFragmentUTF8Bytes": [
+      1024,
+      209
+    ],
+    "counterexampleRecords": 1,
+    "dispatchRecords": 2,
+    "manifestSHA256": "3248ff96ab41d80553cdfcc5eb824f45d912172b645552d3bdcdf450902064b9",
+    "method": "Concatenate captured Output in original order by (Package, Test), then decode complete logical marker lines; preserve contributing event indices.",
+    "newGoOrNativeExecution": false,
+    "originalArtifactWrites": false,
+    "originalEntriesVerifiedBeforeAndAfter": 959,
+    "outerJSONEvents": 47,
+    "reviewSHA256": "aebea7f7bdfa772e630dcb3d35f538fd06b55182acbdf5449e6e5f12e23b7b24",
+    "stateRecords": 10,
+    "status": "complete-independent-review-not-wrapper-repair"
+  },
+  "limitations": [
+    "Source formatting/review does not establish typechecking or green execution.",
+    "New source requires independent review and an allocated ordinary test window; native acceptance needs separate binding and execution.",
+    "Historic accepted native selectors, classifier, plans, artifacts and source evidence remain unchanged; they do not certify this new source.",
+    "Earlier C-query compiler-probe uncertainty and all retained owned telemetry remain qualified and preserved.",
+    "No complete SDK/linker/kernel/generated-cgo input closure or full UX acceptance is claimed."
+  ],
+  "ordinaryObservations": {
+    "carriedListOffset": 4,
+    "draftAfterTyping": "probe-draftz",
+    "draftVisibleAfterCarriedOffset": false,
+    "draftVisibleAfterTyping": false,
+    "filterOffsetAfterOpen": 4,
+    "filterTotalRows": 8,
+    "filterViewportHeight": 4,
+    "focusedAfterTyping": true,
+    "footerCommand": "nil",
+    "footerFrameMatched": true,
+    "footerKey": "q",
+    "grid": [
+      45,
+      14
+    ],
+    "outsideEditorQQuits": true,
+    "typedQIsText": true,
+    "wheelOffsetAfterTyping": 3,
+    "wheelOffsetBeforeTyping": 3
+  },
+  "originalOrdinaryEvidence": {
+    "assertion": "visible footer Exit returned nil instead of named Quit while filter draft remained unchanged",
+    "failingPackage": true,
+    "failingTests": 2,
+    "helperAndFIFOJoinedNormally": true,
+    "helperSHA256": "8f18a54de146b41d61d8c27476ce3f8784dcbfed0b80231294111d5202c1067f",
+    "manifestEntries": 959,
+    "manifestSHA256": "7e81d41617a13010be168096c9812f6bac0a9b7d4ede870f6cc301fa7fe9478c",
+    "originalExitCode": 1,
+    "passingTests": 5,
+    "rawLogSHA256": "03f01127b89a34590b1d6aebb0d3ad4051b6885f8909b6d26f59a9564a8f9419",
+    "receiptSHA256": "12f6be952ed383d7686f24f68c60fb5be1c0fb457ec0c3eb87afaf1540ba8d62",
+    "skipped": 0,
+    "soleFailingChild": "TestShellFilterFooterExitContract/footer-exit-quits",
+    "sourcePreservationCompilerMetadataChecksPassed": true,
+    "temporaryDirectoriesEmpty": true,
+    "wrapperError": "JSONDecodeError: Unterminated string starting at: line 1 column 913 (char 912)",
+    "wrapperGateAccepted": false,
+    "wrapperStatus": "failed-or-unknown-no-retry"
+  },
+  "ownerBranch": "codex/ux-shell-filter-focus-fix",
+  "productSource": {
+    "internal/tui/mouse.go": {
+      "bytes": 15654,
+      "sha256": "9a75ed40429cf6966e5ecd9002debd53168d92775e8470f9f7349efc39721211"
+    },
+    "internal/tui/presentation.go": {
+      "bytes": 18078,
+      "sha256": "bb759cc27ae78618cc9bc08953405cd75f3c4626dfde7f918ddaf833b72b9e11"
+    },
+    "internal/tui/shell_filter_test.go": {
+      "bytes": 10281,
+      "sha256": "f55cbfdff1f9c02dde1bf693f6a7233f8d6af9b97d1e57ed9117d19e32cf6179"
+    },
+    "internal/tui/tui.go": {
+      "bytes": 25585,
+      "sha256": "b5a86e52d9226475732f4cd4f51db455a8b9871bbaf65bc84758d1ef7863a255"
+    }
+  },
+  "proposedOrdinarySelector": "^(TestShellFilterFooterExit|TestShellFilterQuitControls|TestShellFilterFieldVisibility|TestShellFilterApplyCancel|TestShellFilterStaleFooterClick)$",
+  "proposedRootTests": 5,
+  "proposedSubtests": 14,
+  "proposedTotalTestOutcomes": 19,
+  "regressionGrids": [
+    [
+      45,
+      14
+    ],
+    [
+      72,
+      28
+    ],
+    [
+      100,
+      35
+    ],
+    [
+      160,
+      50
+    ]
+  ],
+  "schema": 1,
+  "status": "fixture-corrected-source-prepared-unrun-pending-review-and-fresh-test-window"
+}
