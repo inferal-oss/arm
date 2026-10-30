@@ -10411,3 +10411,192 @@ both comparison rows while preserving raw arrays, actual PTY bytes and all
 other oracles. Original evidence `48aa1c1`, 56 unchanged inputs and original
 artifact sets remain exact. A separately allocated replay-only attempt must
 supply its own changed-source result; no original build receipt is rewritten.
+
+
+## Shared terminal loop/replay — prepared review boundary
+
+The [source plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+freezes the new Go adapter, PTY driver and terminal-only replay hashes. Static
+work reads selected pinned Bubble Tea lifecycle/command/filter source and
+performs new-source formatting, Python AST and JavaScript syntax parsing,
+plus hash/privacy/diff checks. No Go compilation, test execution, Program,
+PTY, browser, native backend/session, install/setup or product correction is
+part of this source cut. Prepared assertions are not passing evidence.
+
+The original fifty classified files remain exact to accepted current source;
+original direct fixture/plan/evidence and all 111 artifacts are unchanged. The
+wide helper failure and original offset-zero/log-tail gap stay unaccepted. No
+new helper was executed on that attempt to fill either gap.
+
+A future compile window must produce an owned test binary plus before/after
+57-file source/binary receipt. The capture driver requires that exact receipt
+and selector and never compiles implicitly. A separate proposed shared-FIFO
+capture/replay command retains the original two-CPU/1536MiB targets, exact grids
+and data bounds, at most 48 checkpoints and 16MiB retained artifacts. The owned
+compiler scratch binary is outside retained evidence and needs explicit scope;
+no shared cache is deleted. Missing local prerequisites fail without download.
+These commands are proposals with no runtime allocation or timing evidence.
+
+The new roster has twelve checkpoints per grid, 36 total: native default lists,
+inline follow/pause/first/middle/End-tail, folded reader, full first/middle/End-
+tail and restored folded state. Lower log reach uses genuine keys. End must be
+counted as one original empty read closure with zero transport calls for the
+drained cached reader; its actual deltas and buffer/cursor/identity must be
+measured, not assumed. A controlled held OnMouse callback must be rejected after
+an actual reviewed-grid resize. No new Home reset or duplicate log reread is
+part of the proposed tail test.
+
+Future replay requires actual active alternate-buffer rows at exact dimensions,
+visible LOG FINAL in inline/full tail checkpoints and LOG FIRST/MIDDLE in the
+full reader. It keeps row text, a bounded sample of cell widths, PNGs and model
+comparisons separate; these do not accept every physical terminal/font/glyph.
+Actual PTY byte prefixes and resize timing are retained, not reconstructed from
+model text. Source-only helpers have not proved native rendering or reach.
+
+Original Program Run/Kill/Wait, context/fake/reader retirement, callback delivery,
+owned child wait, terminal-mode comparison and PTY descriptor closes each have
+separate fields/gates. Failure cleanup targets only the original owned child
+group and keeps partial evidence; no replacement is automatic. Program/API
+returns and callback acknowledgments are not OS descendant-reap or universal
+framework-goroutine proof. Browser context/terminal/browser handles close in
+finally. Independent source review and explicit build/PTY/browser windows remain
+gates before native findings or remediation.
+
+
+## Terminal loop cleanup correction — source evidence only
+
+Frozen `f46ce4b` remains available unchanged. Its corrected continuation on
+`codex/ux-terminal-loop-cleanup` changes only Python/JS cleanup source, the
+[plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json) and four project
+documents. Python AST and JS syntax parsing pass; no compiler or runtime was
+invoked. The Go loop fixture, all 50 classified inputs, old direct fixtures/
+plans/evidence and 111 original private artifact hashes remain exact.
+
+Review covers inherited FIFO process group, retained original Popen-only
+termination/wait, saved termios before parent slave close and final master
+EOF/EIO versus quiet/timeout/truncation. Replay source budgets initialization
+through cleanup inside the original 30 seconds; original API promises and
+bounded wait outcomes remain distinct. Selected pinned BrowserServer launcher/
+types inspection supports immediate original ChildProcess observation and
+private CONTROL connection ownership; it does not prove every launch failure,
+descendant exit or OS cleanup path. Page/native-app networking stays refused.
+
+Forced, timed-out, pending, unknown or abnormal original teardown fails even
+when a later API returns. Normal receipt acceptance requires its separate
+digest-bound original-write-return marker, tool exit zero and no deadline
+receipt. Missing/partial output is not success. Deadline/forced-exit fallbacks
+request original-owned cleanup but are not universal reap evidence. All
+previous geometry/data/checkpoint/byte/time ceilings remain. Actual browser/PTY
+cleanup, tail/cells/input and timing remain untested and require independent
+review followed by allocated execution; no replacement or additional proof ran.
+
+
+## Terminal loop capture/replay — one failed original attempt
+
+The [normalized inventory](validation/ux-terminal-loop-inventory-2026-10-30.json)
+records the once-only offline compile and subsequent source-bound attempt. The
+compile exited zero; the original capture exited zero and passed all 36 exact-
+grid checkpoints and owned cleanup gates. The FIFO attempt exited one after
+11.934 seconds because replay failed its original first-frame row comparator.
+Raw streams were 75,054, 103,711 and 228,032 bytes; total retained original
+evidence was 1,416,235 bytes, below existing bounds. No replacement/retry ran.
+
+The first actual alternate buffer was 72x28. Zero-based rows 1 and 25 each
+contain the full saved expected text followed by one U+0020. Expected-row
+trimEnd removes that space; actual extraction preserves it. The original
+modelRowsMatch=false and saved PNG remain unchanged. Inspection supports an
+oracle whitespace asymmetry, not a product rendering defect or broader glyph
+acceptance. The remaining 35 frames and all actual visible log markers were
+not replayed. No revised comparison was used to turn this result into a pass.
+
+All three children exited zero with original Program/model/reader identity,
+context/fake retirement, zero active/forbidden fake calls and callback delivery.
+Saved termios comparison (with source PENDIN normalization), parent slave close,
+final master EOF and master/slave closes passed without forced termination,
+truncation or cleanup errors. Browser cleanup API returns and original process
+exit code zero were observed; no forced/pending cleanup or page network request
+was recorded. The separate receipt-write marker confirms the original write
+returned while retaining complete=false. These are scoped observations, not
+universal OS/framework cleanup proof.
+
+Exactly 57 source inputs and the original binary remained unchanged before and
+after; all 111 direct and 64 build artifact hashes stayed exact. Existing npm
+cache tarball integrity and every installed regular package member matched
+locked xterm/Playwright dependencies without extraction/install/download. The
+selected BrowserServer implementation/types and xterm source pins were checked
+before browser execution and afterward. Independent evidence/oracle review and
+separate authorization are required before any further execution.
+
+
+## Replay comparison correction — source checks only
+
+First-attempt normalized evidence `48aa1c1` and all raw artifacts remain frozen.
+The source-only [correction plan](validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json)
+records changed replay hash independently of original compiled/capture `8d1039a`.
+JS syntax parsing, focused diff/privacy/path-write review and immutable input
+hash checks are complete; no corrected rendering/runtime result exists.
+
+Only trailing ASCII U+0020 is normalized symmetrically. Raw expected/actual rows
+and per-row results remain retained; no arbitrary Unicode whitespace removal,
+terminal byte rewrite, screenshot replacement or marker weakening is proposed.
+Fresh replay output is outside immutable inputs; recursive byte accounting
+includes original attempt artifacts under the unchanged 16MiB cap. All original
+resize/hash/OSC52/alternate-buffer/marker/cleanup/deadline/write-return gates
+remain. Future wrapper must verify original manifest and positive capture
+cleanup before browser and recheck inputs afterward. No old57-source receipt
+is updated to claim the new JS; original56 other inputs/binary,111 direct,64
+build and29 runtime artifacts are unchanged. Independent source review and a
+separate replay-only allocation remain prerequisites.
+
+
+## Corrected replay-only attempt — assertion pass with glyph qualification
+
+The [corrected inventory](validation/ux-terminal-corrected-replay-inventory-2026-10-30.json)
+records one frozen `13ab228` invocation: original FIFO exit0 in 6.209 seconds,
+Node exit0 and original replay elapsed 5.446 seconds. All 36 cases/1,356 rows
+passed the reviewed ASCII U+0020-only normalization; all 312 raw differences
+were trailing spaces only. Actual LOG FINAL appeared in all 12 required
+inline/full tail cases, LOG FIRST in all three full-first cases and LOG MIDDLE
+in all three full-middle-resize cases. Six original narrow/wide PNGs were
+visually inspected. No renderer replacement or second capture was used.
+
+Scoped cleanup passed: all original terminal/page/context/connection/server
+close APIs returned without timeout; the retained original browser exit event
+reported code0/no signal at 5.441 seconds. No pending/forced cleanup, page
+network/native path request or deadline receipt was present. Original
+digest-bound write-return marker complete=true was observed. Original29 plus
+new47-entry containers retained 6,868,809 bytes, below16MiB; browser/tool temp
+leftovers were empty. Additional owned preparation metadata is separately
+counted in the inventory and also remains below the same cap.
+
+Cell/text acceptance remains distinct from glyph paint: inspected glyph lines
+show a clipped 🙂, and saved xterm cells report width1 at column33 while 界
+occupies width2 plus its continuation. Text rows match despite that paint/cell
+observation. No emulator Unicode/font/root-cause attribution or ARM product
+defect is established. Glyph and broader physical terminal acceptance remain
+open; no remedial source change or extra rendering occurred.
+
+Original57 frozen source copies,56 other current inputs, corrected JS/plan,
+111 direct/64 build/29 first-runtime artifacts and the original failed PNG/
+receipts remain exact. Five selected package/source pins and all installed
+regular package members matched locked offline cache content before/after.
+Separate original8d and corrected13ab source stages are retained. No compiler,
+test binary, Program, native client/backend or PTY ran in this window.
+
+
+## Terminal loop inventory — independent composed review
+
+The [composed record](validation/ux-terminal-loop-composed-2026-10-30.json)
+verifies 64 build, 29 original-runtime and 47 corrected-replay artifact hashes,
+57 original inputs and the separately bound corrected replay. Three original
+Program/model/reader/mouse/resize checks and six cached-End/no-transport-reread
+checks agree. All 36 replay cases and 1,356 normalized rows pass, with 312 raw
+trailing-ASCII-space differences retained. Twelve tail and three each first/
+middle marker cases pass; original process/API/write-marker outcomes agree.
+
+Independent PNG review confirms readable markers and clipped emoji at sampled
+width one. The original replay oracle failure remains preserved. This accepts
+scoped synthetic input/read/scroll/cleanup evidence, not glyph paint, physical
+terminal behavior, production startup/auth or full UX. Composition source/syntax/
+privacy/whitespace checks pass; exact unchanged inputs required no duplicate
+fixture/browser execution.

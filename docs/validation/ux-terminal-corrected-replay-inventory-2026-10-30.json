@@ -1,0 +1,5021 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "status": "ONE corrected replay-only attempt PASSED all36 original assertion/cleanup/write-marker gates. Glyph paint remains qualified by a concrete clipped-emoji/cell-width observation; no universal terminal/full-UX acceptance.",
+  "scope": "Replay existing immutable synthetic Program/PTY capture only. No new compile, test executable, Program, PTY capture, production CLI/backend/auth/session or actual job/lease. No replacement/retry after this attempt.",
+  "sourceLineage": {
+    "originalCompiledCapture": {
+      "sourceCommit": "8d1039a71ffc401bca3405ee7b49228eea9012e9",
+      "sourceEntries": 57,
+      "binarySHA256": "956f8b767a4c728ed323363493239de3dd31f2c4fdf575594c7cd132f4b3bc60",
+      "buildReceiptSHA256": "b7ae0ac8ac02c17ade163bf1df4f58d7f5a86f3935da10153e03659463c86944",
+      "captureReceiptSHA256": "dc43ea6cf92e01a2c30a7753ff8667aca2b3f7e0c7c366e0052e4b1ae85a776f",
+      "checkpointsSHA256": "83383251937903bf4bcb102b9ca3319f63de43356c3836ae8b8e44c1ded67296",
+      "originalReplaySourceSHA256": "0a429ef2ecd1f230d75a04dee500827a42d5712e1e4e458b6f2bf98fccb32ee6"
+    },
+    "correctedReplay": {
+      "sourceCommit": "13ab228e331ec38c3ffd4602ac9ceb0fb1b68052",
+      "sourceFile": "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs",
+      "sourceSHA256": "c0fce1a63511f464bee46f367ed11d006b2ddf6415e550a6d0044d29c66b82be",
+      "sourcePlanFile": "docs/validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json",
+      "sourcePlanSHA256": "a79c1ddd8cfd7c720c8b71906874b93bed0b080ac8519cf80eb322a7468116da",
+      "otherOriginalInputsUnchanged": 56
+    },
+    "firstAttemptEvidence": {
+      "commit": "48aa1c1dba18a2c9a255d6def58fdee73cd3d249",
+      "file": "docs/validation/ux-terminal-loop-inventory-2026-10-30.json",
+      "sha256": "9ac1b2d5013c930cacff12c2d5005c1b7bafedddcb312060e74d677133b9fbda",
+      "originalFailurePreserved": true,
+      "qualification": "First attempt remains capture pass/first replay oracle failure. This separate corrected source/output stage does not relabel or modify it."
+    }
+  },
+  "attempt": {
+    "originalFIFOExitCode": 0,
+    "originalFIFOWallMS": 6209,
+    "originalNodeExitCode": 0,
+    "originalNodeWallMS": 5653,
+    "originalReplayElapsedMS": 5446,
+    "receiptWrittenMarkerElapsedMS": 5450,
+    "wrapperThroughPostchecksMS": 6076,
+    "beforeAfterStageIdentitiesExact": true,
+    "originalCaptureCleanupReverifiedBeforeAfter": true,
+    "pinsReverifiedBeforeAfter": true
+  },
+  "bounds": {
+    "grids": [
+      [
+        72,
+        28
+      ],
+      [
+        100,
+        35
+      ],
+      [
+        160,
+        50
+      ]
+    ],
+    "cases": 36,
+    "caseCap": 48,
+    "sourceStreamCapBytes": 4194304,
+    "retainedCapBytes": 16777216,
+    "originalInputContainerBytes": 1416235,
+    "newReplayAndWrapperContainerBytes": 5452574,
+    "combinedEvidenceContainerBytes": 6868809,
+    "additionalOwnedPreparationMetadataBytes": 45973,
+    "combinedIncludingPreparationMetadataBytes": 6914782,
+    "browserToolTempLeftovers": 0,
+    "replayWorkSeconds": 20,
+    "replayTotalSeconds": 30,
+    "outerRunLimitSeconds": 115,
+    "GOMAXPROCS": 2,
+    "GOMEMLIMIT": "1536MiB",
+    "memoryTargetBytes": 2147483648,
+    "qualification": "Settings/source deadlines and observed retained bytes; no kernel CPU/memory hard-limit or exhaustive process-reap claim. Existing separately allocated build binary is retained unchanged outside this evidence cap."
+  },
+  "rowComparison": {
+    "policy": {
+      "normalization": "Trailing ASCII U+0020 only, applied equally to expected and actual comparison text.",
+      "rawExpected": "cases[].expectedRawRows",
+      "rawActual": "cases[].actual.text",
+      "perRowResults": "cases[].rowMatches",
+      "qualification": "Leading/internal spaces and every other Unicode whitespace or character remain significant."
+    },
+    "rowsCompared": 1356,
+    "normalizedRowsMatched": 1356,
+    "rawDifferentRows": 312,
+    "allRawDifferencesOnlyTrailingASCII32": true,
+    "perGrid": {
+      "72x28": {
+        "cases": 12,
+        "rows": 336,
+        "rawDifferentRows": 82,
+        "requiredTailCases": 4,
+        "requiredTailFinalVisible": 4,
+        "requiredFullFirstVisible": 1,
+        "requiredFullMiddleVisible": 1
+      },
+      "100x35": {
+        "cases": 12,
+        "rows": 420,
+        "rawDifferentRows": 97,
+        "requiredTailCases": 4,
+        "requiredTailFinalVisible": 4,
+        "requiredFullFirstVisible": 1,
+        "requiredFullMiddleVisible": 1
+      },
+      "160x50": {
+        "cases": 12,
+        "rows": 600,
+        "rawDifferentRows": 133,
+        "requiredTailCases": 4,
+        "requiredTailFinalVisible": 4,
+        "requiredFullFirstVisible": 1,
+        "requiredFullMiddleVisible": 1
+      }
+    },
+    "qualification": "Raw expected/actual arrays stay privately retained. ASCII normalization is only a row-text comparison rule; it does not validate glyph cell width or paint."
+  },
+  "requiredMarkers": {
+    "LOG_FINAL": {
+      "requiredCases": 12,
+      "passed": 12,
+      "states": [
+        "inline-follow-tail",
+        "inline-paused-tail",
+        "inline-end-tail",
+        "full-end-tail"
+      ],
+      "grids": 3
+    },
+    "LOG_FIRST": {
+      "requiredCases": 3,
+      "passed": 3,
+      "state": "full-first"
+    },
+    "LOG_MIDDLE": {
+      "requiredCases": 3,
+      "passed": 3,
+      "state": "full-middle-resize"
+    },
+    "meaning": "Actual xterm active-buffer text from original PTY byte prefixes, with saved original PNGs. Does not imply a new native Program/PTY run."
+  },
+  "cases": [
+    {
+      "grid": "72x28",
+      "name": "leases-native",
+      "prefixBytes": 5920,
+      "prefixSHA256": "3cb62d36fb3ef29bb00591b2e275f647bb982f6287bd49313a0106bc4f3c34e2",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 96848,
+      "PNGSHA256": "a89ddb916e70e71579b6473a289060d406f026f31f2eb7c2686aa6eecdf4e261",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": null
+    },
+    {
+      "grid": "72x28",
+      "name": "runs-native",
+      "prefixBytes": 8122,
+      "prefixSHA256": "ab7254e1cabb5f2036f4779dd73974897a91b1fa4f0978148843723139dd1e06",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 100828,
+      "PNGSHA256": "afb4b15a1fb528be154faca3dc7c33c5efbb57f82afb682193f5e1e7853bb981",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 0,
+        "bufferSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "busy": false,
+        "cursor": 0,
+        "done": false,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 0,
+        "id": ""
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "inline-follow-tail",
+      "prefixBytes": 9653,
+      "prefixSHA256": "561569947272776a831236626924321a8bc67f464457e2dfee016d7cbf8e2384",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 10,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 48296,
+      "PNGSHA256": "e9ba48585f54fb09df4fb057cba3c11e19617d983aa2823a1b86fa8f31a01154",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": true,
+        "full": false,
+        "generation": 1,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "inline-paused-tail",
+      "prefixBytes": 9653,
+      "prefixSHA256": "561569947272776a831236626924321a8bc67f464457e2dfee016d7cbf8e2384",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 10,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 48296,
+      "PNGSHA256": "e9ba48585f54fb09df4fb057cba3c11e19617d983aa2823a1b86fa8f31a01154",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 2,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "inline-first",
+      "prefixBytes": 24702,
+      "prefixSHA256": "f43f48070fe1df0b02deef48f652021c6824c49cb06c90c63e0ea1263448d960",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 10,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 83771,
+      "PNGSHA256": "bbeea1e40177400ea2883ff192ade8a23be2aa43148fe73f547b81567cd1cfc2",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 2,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "inline-middle",
+      "prefixBytes": 42298,
+      "prefixSHA256": "16975cd63c17ab439e51e5abd2ba4015b1c99134fdd525ebc031da2fdf2e55c8",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 10,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": true,
+      "wideOrMultiCharacterCellSamples": 51,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 43769,
+      "PNGSHA256": "5dcfd04d96e22c5a9ddf4ec4c40b2e6190e020e46f1d28c230440c7e7a072c94",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 2,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "inline-end-tail",
+      "prefixBytes": 45826,
+      "prefixSHA256": "de13c5782887d3ff11532c32c8f15efa678a441075aa4a3fc363825114f73ddb",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 10,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 48180,
+      "PNGSHA256": "0f3421342506bbb34e602493069509eb62de274601c5fb529514d19b3b232127",
+      "originalPNGVisuallyInspected": true,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": true,
+        "full": false,
+        "generation": 3,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "folded",
+      "prefixBytes": 47248,
+      "prefixSHA256": "a139c787861e6b26cc1ea8e25d8bc4eef3a991750e153546892e16b227e4a085",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 10,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 80778,
+      "PNGSHA256": "c6ad52218319bd1af7ae7b1c1ad703eefd7a45dce040ca6981a3bc8c2bd0bd17",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": true,
+        "following": false,
+        "full": false,
+        "generation": 4,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "full-first",
+      "prefixBytes": 54295,
+      "prefixSHA256": "896b72f52f09075e129df5780636f6328a413ea11a852d716b0cd669c11b6312",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 38,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 27,
+          "expectedTrailingASCII32": 31,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": true,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 75,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 19202,
+      "PNGSHA256": "6da0c1fa5997e31d73ff1be69aa854cba17d18e4bfb34528ff4a715396d416d2",
+      "originalPNGVisuallyInspected": true,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": true,
+        "generation": 4,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "full-middle-resize",
+      "prefixBytes": 68114,
+      "prefixSHA256": "4531bf4ddb837024930d7873025733065881c46945b55b0d4d1c69729b74d415",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 38,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 7,
+          "expectedTrailingASCII32": 62,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 15,
+          "expectedTrailingASCII32": 64,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 18,
+          "expectedTrailingASCII32": 13,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 19,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 20,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 21,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 22,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 23,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 26,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 27,
+          "expectedTrailingASCII32": 31,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": true,
+      "wideOrMultiCharacterCellSamples": 18,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 33263,
+      "PNGSHA256": "b8928582a31ab2d4a38ab2c36f6fb407573a8ae0d4d7774885942b9bac5e9b69",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [
+        {
+          "offset": 62000,
+          "cols": 100,
+          "rows": 35
+        },
+        {
+          "offset": 65412,
+          "cols": 72,
+          "rows": 28
+        }
+      ],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": true,
+        "generation": 4,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "full-end-tail",
+      "prefixBytes": 69941,
+      "prefixSHA256": "d86b07c5ae064679591f71ec00b966ba84d83ac89ebe213c310ab6869be284d4",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 7,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 8,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 9,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 10,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 11,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 12,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 13,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 14,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 15,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 16,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 17,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 18,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 19,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 20,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 21,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 22,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 23,
+          "expectedTrailingASCII32": 45,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 19,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 63,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 26,
+          "expectedTrailingASCII32": 72,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 27,
+          "expectedTrailingASCII32": 31,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 22005,
+      "PNGSHA256": "15ec3a3e476d62a985189ab64df16e443eef529e48e9cfa87f0543060ce254e4",
+      "originalPNGVisuallyInspected": true,
+      "resizeTimeline": [
+        {
+          "offset": 62000,
+          "cols": 100,
+          "rows": 35
+        },
+        {
+          "offset": 65412,
+          "cols": 72,
+          "rows": 28
+        }
+      ],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": true,
+        "full": true,
+        "generation": 5,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "72x28",
+      "name": "return-folded",
+      "prefixBytes": 74950,
+      "prefixSHA256": "7366e20a7391b6d45003fe698a044f3d6a20fcf5cd78134b36a345c861fff26c",
+      "actualCols": 72,
+      "actualRows": 28,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 6,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 10,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 28,
+      "PNGBytes": 80883,
+      "PNGSHA256": "db0f940eb38e10a517dd3bb8cfa57dd0c57b43fa4c4f96afa00a6ca4f7593b23",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [
+        {
+          "offset": 62000,
+          "cols": 100,
+          "rows": 35
+        },
+        {
+          "offset": 65412,
+          "cols": 72,
+          "rows": 28
+        }
+      ],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": true,
+        "following": false,
+        "full": false,
+        "generation": 6,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "leases-native",
+      "prefixBytes": 8652,
+      "prefixSHA256": "11b6268abd3655f395acb0bfbad4a73eccbece1a56d827b54211f697e76512e5",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 12,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 23,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 145738,
+      "PNGSHA256": "67ccdbe734f2f1a798572fd718426d48d5b9acaa0f63f89dea2135935f90b1d9",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": null
+    },
+    {
+      "grid": "100x35",
+      "name": "runs-native",
+      "prefixBytes": 11036,
+      "prefixSHA256": "b7ea96ea2e19c2953a241beebaa56fee907734335abf434023df575f5e2c2e89",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 11,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 23,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 126452,
+      "PNGSHA256": "ab53b067c6343caaf7710a4624bafd3519235bea90d7e60cced8b73d51169ef3",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 0,
+        "bufferSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "busy": false,
+        "cursor": 0,
+        "done": false,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 0,
+        "id": ""
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "inline-follow-tail",
+      "prefixBytes": 13169,
+      "prefixSHA256": "09e8dd70f88d3b8bd842bdba51a2dc763d025a4d26f712da4d507f2d60ae023b",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 11,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 131351,
+      "PNGSHA256": "f2d8d2605008287496ad703626fcd6c40024155dbf3a56e514b77173fa245f93",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": true,
+        "full": false,
+        "generation": 1,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "inline-paused-tail",
+      "prefixBytes": 13169,
+      "prefixSHA256": "09e8dd70f88d3b8bd842bdba51a2dc763d025a4d26f712da4d507f2d60ae023b",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 11,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 131351,
+      "PNGSHA256": "f2d8d2605008287496ad703626fcd6c40024155dbf3a56e514b77173fa245f93",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 2,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "inline-first",
+      "prefixBytes": 32437,
+      "prefixSHA256": "0e9c6f7e11ba6ea0596651d86e2759d5bd31bb434a97424a6af569a66519f491",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 11,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 128818,
+      "PNGSHA256": "4d2820d633d4e8fbce20c22e7f3e6bf8d272ee969211bc68616014aea7a60e82",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 2,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "inline-middle",
+      "prefixBytes": 56834,
+      "prefixSHA256": "6db74d68bd6abf738b104aac48bfba6534d8e60383d69ef3f44202ef57a777cb",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 11,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": true,
+      "wideOrMultiCharacterCellSamples": 57,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 147454,
+      "PNGSHA256": "50ad7c76e1715e48bfe6f744f52857428f1577601510d71cfda14878d7557524",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 2,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "inline-end-tail",
+      "prefixBytes": 61662,
+      "prefixSHA256": "358d612689a0b644a08076f3f95862e6d99d8a6c2af37f4c1fa4b0c20b82196b",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 11,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 131296,
+      "PNGSHA256": "9433e3de77aa5fef07af6bb2ff42b8a1ff24c9f14521687f4126ef0acbfa0b98",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": true,
+        "full": false,
+        "generation": 3,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "folded",
+      "prefixBytes": 63706,
+      "prefixSHA256": "5b8b15b4da65a230acf81139dffe89930e059dd454f241373268cb9ce2502cbb",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 11,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 122879,
+      "PNGSHA256": "ee64c769260c1a365432d060e369cae0787e3926f7b0f8847eda4ec866bb1fc2",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": true,
+        "following": false,
+        "full": false,
+        "generation": 4,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "full-first",
+      "prefixBytes": 74691,
+      "prefixSHA256": "d1974cd295408f41c88aaa2a4b3ab941a7ad024b16417e7c5efa35c5d2b6f09a",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 66,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 59,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": true,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 96,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 136043,
+      "PNGSHA256": "fd941dc5fdd1743c7ba4a95d47d38e55fec018fc32f25a23e6e8d378a8c8f80f",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": true,
+        "generation": 4,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "full-middle-resize",
+      "prefixBytes": 94217,
+      "prefixSHA256": "f621408a1cd1caa863283304a0ee8557d91bed42763b14aa1b89c3347064eb91",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 66,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 12,
+          "expectedTrailingASCII32": 90,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 18,
+          "expectedTrailingASCII32": 88,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 21,
+          "expectedTrailingASCII32": 97,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 22,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 23,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 26,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 27,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 28,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 29,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 30,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 33,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 59,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": true,
+      "wideOrMultiCharacterCellSamples": 33,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 136200,
+      "PNGSHA256": "0709f63c26902f9aa50ff392f9bb412131615c160417b06c2b8a87bc0e6753b2",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [
+        {
+          "offset": 87292,
+          "cols": 72,
+          "rows": 28
+        },
+        {
+          "offset": 90327,
+          "cols": 100,
+          "rows": 35
+        }
+      ],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": true,
+        "generation": 4,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "full-end-tail",
+      "prefixBytes": 96878,
+      "prefixSHA256": "7bb0b33aa7dbe952a2fd8b63536ea63327317e881e52d946b7f39e6d28811330",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 63,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 12,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 13,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 14,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 15,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 16,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 17,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 18,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 19,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 20,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 21,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 22,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 23,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 26,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 27,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 28,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 29,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 30,
+          "expectedTrailingASCII32": 73,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 47,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 91,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 33,
+          "expectedTrailingASCII32": 100,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 59,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 125415,
+      "PNGSHA256": "8a00881db6c17eb893fab907deacde3d773ebcf95117ffa8976d1b390e8462a6",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [
+        {
+          "offset": 87292,
+          "cols": 72,
+          "rows": 28
+        },
+        {
+          "offset": 90327,
+          "cols": 100,
+          "rows": 35
+        }
+      ],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": true,
+        "full": true,
+        "generation": 5,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "100x35",
+      "name": "return-folded",
+      "prefixBytes": 103607,
+      "prefixSHA256": "2e9e502c8dc1099a7b8e452a6f117dd78cf27b4b0f52a687e07bdb5b27959f63",
+      "actualCols": 100,
+      "actualRows": 35,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 11,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 35,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 7,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 122965,
+      "PNGSHA256": "545996c083e1102f3d6fbd353cc4801b01f36a5dfb2f062601298ba5fecdff0e",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [
+        {
+          "offset": 87292,
+          "cols": 72,
+          "rows": 28
+        },
+        {
+          "offset": 90327,
+          "cols": 100,
+          "rows": 35
+        }
+      ],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": true,
+        "following": false,
+        "full": false,
+        "generation": 6,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "leases-native",
+      "prefixBytes": 15782,
+      "prefixSHA256": "d2550fee2f9b35efb7aa0c22f0df1d43ba9b5c4934563938ac8ed6aabd04ca1c",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 72,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 95,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 83,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 172508,
+      "PNGSHA256": "4504f35e7713f85dd52550af98a0fde662515e407e7db4b1c2933fbda3010e7c",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": null
+    },
+    {
+      "grid": "160x50",
+      "name": "runs-native",
+      "prefixBytes": 18206,
+      "prefixSHA256": "3d2c285345a221dfd27db31dc081caa3cce129a3354fc8ecf6b2daf4de9c1546",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 71,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 95,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 83,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 147932,
+      "PNGSHA256": "3561ab5c76442c0b5caf133ecf32e27ecbed17d6902c7b007dd1f422bdf9638b",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 0,
+        "bufferSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "busy": false,
+        "cursor": 0,
+        "done": false,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 0,
+        "id": ""
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "inline-follow-tail",
+      "prefixBytes": 21561,
+      "prefixSHA256": "4fbb1fd909e6a599a778260477a6eba68fdce49df3eb43d7e40946774ae37365",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 71,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 95,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 54,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 215455,
+      "PNGSHA256": "998cd31826be42f07dd8adafa4b2ce45ad680a446b2ad7fb28730ee9e0e15de2",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": true,
+        "full": false,
+        "generation": 1,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "inline-paused-tail",
+      "prefixBytes": 21561,
+      "prefixSHA256": "4fbb1fd909e6a599a778260477a6eba68fdce49df3eb43d7e40946774ae37365",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 71,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 95,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 54,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 215455,
+      "PNGSHA256": "998cd31826be42f07dd8adafa4b2ce45ad680a446b2ad7fb28730ee9e0e15de2",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 2,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "inline-first",
+      "prefixBytes": 50030,
+      "prefixSHA256": "e02002b86c767f29ccb0de292521f4f59096789d37cba454583dcbced966b438",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 71,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 95,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 54,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": true,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 42,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 212800,
+      "PNGSHA256": "73478b70b0fad29b87e670712f3049e8f375434f1566554f7df00e60ff24aa10",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 2,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "inline-middle",
+      "prefixBytes": 140138,
+      "prefixSHA256": "c502b206aca9846283869a42074cc8c9d48ac93d0c3d3b2ea45a678afeb5ad16",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 71,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 95,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 54,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": true,
+      "wideOrMultiCharacterCellSamples": 84,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 235689,
+      "PNGSHA256": "361f94c08ea848858b5a088dbe41ea33f3c13dfccc698a093c723bed37c27c9a",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": false,
+        "generation": 2,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "inline-end-tail",
+      "prefixBytes": 151493,
+      "prefixSHA256": "d011aa5cce7fe99c3161b13e32eb63201cb7ce54d6effd5ac306ef2e3a2df7aa",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 71,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 95,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 54,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 215424,
+      "PNGSHA256": "62b742b82a4cdedea3e610f11e338f704ab8400c1359e86db88774f1dfa51f6b",
+      "originalPNGVisuallyInspected": true,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": true,
+        "full": false,
+        "generation": 3,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "folded",
+      "prefixBytes": 154327,
+      "prefixSHA256": "cd27fcbf60de186bada9d5d5895267cf80f800b63ad76b3352598b771d9582d8",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 71,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 2,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 95,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 54,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 157908,
+      "PNGSHA256": "2a2d6326f65f4a9cfe7af5f13ace42343becf81affe4fcde9577b5c09b85bde1",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": true,
+        "following": false,
+        "full": false,
+        "generation": 4,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "full-first",
+      "prefixBytes": 163729,
+      "prefixSHA256": "f350dd5bf04712bdef2e8817aad961c0252730624bab03dffd811e682b7c84e3",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 126,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 151,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 37,
+          "expectedTrailingASCII32": 150,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 41,
+          "expectedTrailingASCII32": 128,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 43,
+          "expectedTrailingASCII32": 117,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 44,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 45,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 48,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 119,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": true,
+      "logMiddleVisible": true,
+      "wideOrMultiCharacterCellSamples": 96,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 206468,
+      "PNGSHA256": "5f22dad14b630d33ac9ea2bf6b30c0c24024f8c7ec1da2b62dc31899e13dffae",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": true,
+        "generation": 4,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "full-middle-resize",
+      "prefixBytes": 211325,
+      "prefixSHA256": "b8da770133df57abcb4b81b794393021dbd37178114dac42de7b20749965a9c9",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 126,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 21,
+          "expectedTrailingASCII32": 150,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 128,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 27,
+          "expectedTrailingASCII32": 117,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 28,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 29,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 30,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 33,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 35,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 36,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 37,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 38,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 39,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 40,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 41,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 42,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 43,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 44,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 45,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 48,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 119,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": true,
+      "wideOrMultiCharacterCellSamples": 60,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 205000,
+      "PNGSHA256": "3a21082b0dbfcee8402ac0826fbcfc22976e362bafb38855a6bb5946b7732730",
+      "originalPNGVisuallyInspected": true,
+      "resizeTimeline": [
+        {
+          "offset": 200804,
+          "cols": 72,
+          "rows": 28
+        },
+        {
+          "offset": 204261,
+          "cols": 160,
+          "rows": 50
+        }
+      ],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": false,
+        "full": true,
+        "generation": 4,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "full-end-tail",
+      "prefixBytes": 213213,
+      "prefixSHA256": "e8844c0835c9f9a6dc94bb94db6aad341768e329afeb11c17aff60be3319a46a",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 123,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 4,
+          "expectedTrailingASCII32": 150,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 8,
+          "expectedTrailingASCII32": 128,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 10,
+          "expectedTrailingASCII32": 117,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 11,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 12,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 13,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 14,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 15,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 16,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 17,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 18,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 19,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 20,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 21,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 22,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 23,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 24,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 25,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 26,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 27,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 28,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 29,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 30,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 31,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 32,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 33,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 34,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 35,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 36,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 37,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 38,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 39,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 40,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 41,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 42,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 43,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 44,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 45,
+          "expectedTrailingASCII32": 133,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 107,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 151,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 48,
+          "expectedTrailingASCII32": 160,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 119,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": true,
+      "logFinalVisible": true,
+      "logFirstVisible": false,
+      "logMiddleVisible": true,
+      "wideOrMultiCharacterCellSamples": 9,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 196252,
+      "PNGSHA256": "f7dbde8c76891876f943441d6f28398c17f224e1b04b65b41079df818796b0a7",
+      "originalPNGVisuallyInspected": true,
+      "resizeTimeline": [
+        {
+          "offset": 200804,
+          "cols": 72,
+          "rows": 28
+        },
+        {
+          "offset": 204261,
+          "cols": 160,
+          "rows": 50
+        }
+      ],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": false,
+        "following": true,
+        "full": true,
+        "generation": 5,
+        "id": "00000000000000000000000000000081"
+      }
+    },
+    {
+      "grid": "160x50",
+      "name": "return-folded",
+      "prefixBytes": 227964,
+      "prefixSHA256": "fc945494bbc4b5e65a5f97370fde4065b4ee501510f81a8891d6ef24080d2f89",
+      "actualCols": 160,
+      "actualRows": 50,
+      "actualAlternateBuffer": true,
+      "normalizedModelRowsMatch": true,
+      "perRowMatches": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "rawDifferences": [
+        {
+          "row": 0,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 1,
+          "expectedTrailingASCII32": 71,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 46,
+          "expectedTrailingASCII32": 95,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 47,
+          "expectedTrailingASCII32": 54,
+          "actualTrailingASCII32": 1,
+          "onlyTrailingASCII32Difference": true
+        },
+        {
+          "row": 49,
+          "expectedTrailingASCII32": 1,
+          "actualTrailingASCII32": 0,
+          "onlyTrailingASCII32Difference": true
+        }
+      ],
+      "tailRequired": false,
+      "logFinalVisible": false,
+      "logFirstVisible": false,
+      "logMiddleVisible": false,
+      "wideOrMultiCharacterCellSamples": 0,
+      "rightEdgeCellSamples": 32,
+      "PNGBytes": 157808,
+      "PNGSHA256": "10e3d5ecb8546bab296c750474694dd34f92988c5b2237102f9d08c071997172",
+      "originalPNGVisuallyInspected": false,
+      "resizeTimeline": [
+        {
+          "offset": 200804,
+          "cols": 72,
+          "rows": 28
+        },
+        {
+          "offset": 204261,
+          "cols": 160,
+          "rows": 50
+        }
+      ],
+      "originalCapturedReader": {
+        "bufferBytes": 3165,
+        "bufferSHA256": "a680140b13066bb89003528815163de486830b6f738a9bfb8cf990dfa1e69a9b",
+        "busy": false,
+        "cursor": 3165,
+        "done": true,
+        "folded": true,
+        "following": false,
+        "full": false,
+        "generation": 6,
+        "id": "00000000000000000000000000000081"
+      }
+    }
+  ],
+  "visualInspection": {
+    "inspectedPNGs": [
+      {
+        "grid": "160x50",
+        "name": "full-end-tail"
+      },
+      {
+        "grid": "160x50",
+        "name": "full-middle-resize"
+      },
+      {
+        "grid": "160x50",
+        "name": "inline-end-tail"
+      },
+      {
+        "grid": "72x28",
+        "name": "full-end-tail"
+      },
+      {
+        "grid": "72x28",
+        "name": "full-first"
+      },
+      {
+        "grid": "72x28",
+        "name": "inline-end-tail"
+      }
+    ],
+    "markersAndLayout": "Narrow/wide inline/fullscreen tail markers and full-first/full-middle markers are readable in inspected original PNGs. Wide inline feed/layout remains present.",
+    "glyphFinding": {
+      "kind": "Unresolved emulator cell/paint compatibility observation",
+      "observation": "The emoji sample appears clipped on the right at its one-cell boundary in inspected full-first/full-middle PNGs. Saved xterm cells report 🙂 width1, while 界 occupies width2 with a width0 continuation. Row strings still match original model text.",
+      "samples": [
+        {
+          "grid": "72x28",
+          "name": "full-first",
+          "zeroBasedRow": 2,
+          "rawRowText": "Synthetic line · glyph sample 界 🙂                                     ",
+          "sampledCells": [
+            {
+              "row": 2,
+              "col": 30,
+              "chars": "界",
+              "width": 2
+            },
+            {
+              "row": 2,
+              "col": 31,
+              "chars": "",
+              "width": 0
+            },
+            {
+              "row": 2,
+              "col": 33,
+              "chars": "🙂",
+              "width": 1
+            }
+          ],
+          "PNGSHA256": "6da0c1fa5997e31d73ff1be69aa854cba17d18e4bfb34528ff4a715396d416d2",
+          "rowTextMatchesOriginalModel": true
+        },
+        {
+          "grid": "160x50",
+          "name": "full-middle-resize",
+          "zeroBasedRow": 1,
+          "rawRowText": "Synthetic line · glyph sample 界 🙂                                                                                                                             ",
+          "sampledCells": [
+            {
+              "row": 1,
+              "col": 30,
+              "chars": "界",
+              "width": 2
+            },
+            {
+              "row": 1,
+              "col": 31,
+              "chars": "",
+              "width": 0
+            },
+            {
+              "row": 1,
+              "col": 33,
+              "chars": "🙂",
+              "width": 1
+            }
+          ],
+          "PNGSHA256": "3a21082b0dbfcee8402ac0826fbcfc22976e362bafb38855a6bb5946b7732730",
+          "rowTextMatchesOriginalModel": true
+        }
+      ],
+      "rootCauseEstablished": false,
+      "possibleAttribution": "Emulator Unicode-width/font/paint compatibility seam requires separate review; these facts do not establish an ARM product defect or physical terminal behavior.",
+      "productDefectDemonstrated": false,
+      "glyphRenderingAccepted": false,
+      "changedFontsProvidersSourceOrRerendered": false
+    }
+  },
+  "cleanup": {
+    "originalBrowserOutcomes": {
+      "originalProcess": {
+        "handleRetained": true,
+        "exitObserved": true,
+        "observation": "original-exit-event",
+        "exitCode": 0,
+        "signalCode": null,
+        "observedMS": 5441
+      },
+      "lastTerminalDisposeReturned": true,
+      "pageCloseReturned": true,
+      "contextCloseReturned": true,
+      "connectionCloseReturned": true,
+      "serverCloseReturned": true,
+      "pendingInitialization": [],
+      "pendingCleanup": [],
+      "accepted": true,
+      "ownExitRequested": false
+    },
+    "originalCleanupAPIOutcomes": [
+      {
+        "name": "last terminal dispose",
+        "originalStatus": "returned",
+        "waitTimedOut": false,
+        "startedMS": 5426,
+        "settledMS": 5427
+      },
+      {
+        "name": "page close",
+        "originalStatus": "returned",
+        "waitTimedOut": false,
+        "startedMS": 5427,
+        "settledMS": 5429
+      },
+      {
+        "name": "context close",
+        "originalStatus": "returned",
+        "waitTimedOut": false,
+        "startedMS": 5429,
+        "settledMS": 5430
+      },
+      {
+        "name": "browser connection close",
+        "originalStatus": "returned",
+        "waitTimedOut": false,
+        "startedMS": 5430,
+        "settledMS": 5431
+      },
+      {
+        "name": "BrowserServer close",
+        "originalStatus": "returned",
+        "waitTimedOut": false,
+        "startedMS": 5431,
+        "settledMS": 5446
+      }
+    ],
+    "originalWriteMarker": {
+      "originalWriteReturned": true,
+      "digestBoundToReplayReceipt": "01b55b612070920429eb8af6457df20e7e6a153c46e73db54b0387d0ecb217a6",
+      "complete": true,
+      "deadlineReceiptAbsent": true
+    },
+    "externalPageRequests": [],
+    "nativePageCallsAllEmpty": true,
+    "qualification": "Original API returns/process exit/write marker observed, no forced/pending cleanup. No blanket OS descendant/framework goroutine or production startup cleanup claim."
+  },
+  "originalCaptureFactsReused": {
+    "sourceCommit": "8d1039a71ffc401bca3405ee7b49228eea9012e9",
+    "newCaptureRun": false,
+    "perGrid": [
+      {
+        "grid": "72x28",
+        "endEffects": [
+          {
+            "readClosureDelta": 1,
+            "transportCallDelta": 0,
+            "cursorSame": true,
+            "bufferSame": true,
+            "sameReader": true
+          },
+          {
+            "readClosureDelta": 1,
+            "transportCallDelta": 0,
+            "cursorSame": true,
+            "bufferSame": true,
+            "sameReader": true
+          }
+        ],
+        "controlledStaleCallbackRejected": true,
+        "sameOriginalModel": true,
+        "sameReader": true,
+        "mouseProduced": 2,
+        "mouseDelivered": 2,
+        "originalProgramReturned": true,
+        "originalChildWaited": true,
+        "savedTermiosCompared": true,
+        "finalMasterEOF": true,
+        "parentSlaveClosed": true,
+        "masterClosed": true,
+        "fakeClosed": true,
+        "activeFakeCalls": 0
+      },
+      {
+        "grid": "100x35",
+        "endEffects": [
+          {
+            "readClosureDelta": 1,
+            "transportCallDelta": 0,
+            "cursorSame": true,
+            "bufferSame": true,
+            "sameReader": true
+          },
+          {
+            "readClosureDelta": 1,
+            "transportCallDelta": 0,
+            "cursorSame": true,
+            "bufferSame": true,
+            "sameReader": true
+          }
+        ],
+        "controlledStaleCallbackRejected": true,
+        "sameOriginalModel": true,
+        "sameReader": true,
+        "mouseProduced": 2,
+        "mouseDelivered": 2,
+        "originalProgramReturned": true,
+        "originalChildWaited": true,
+        "savedTermiosCompared": true,
+        "finalMasterEOF": true,
+        "parentSlaveClosed": true,
+        "masterClosed": true,
+        "fakeClosed": true,
+        "activeFakeCalls": 0
+      },
+      {
+        "grid": "160x50",
+        "endEffects": [
+          {
+            "readClosureDelta": 1,
+            "transportCallDelta": 0,
+            "cursorSame": true,
+            "bufferSame": true,
+            "sameReader": true
+          },
+          {
+            "readClosureDelta": 1,
+            "transportCallDelta": 0,
+            "cursorSame": true,
+            "bufferSame": true,
+            "sameReader": true
+          }
+        ],
+        "controlledStaleCallbackRejected": true,
+        "sameOriginalModel": true,
+        "sameReader": true,
+        "mouseProduced": 2,
+        "mouseDelivered": 2,
+        "originalProgramReturned": true,
+        "originalChildWaited": true,
+        "savedTermiosCompared": true,
+        "finalMasterEOF": true,
+        "parentSlaveClosed": true,
+        "masterClosed": true,
+        "fakeClosed": true,
+        "activeFakeCalls": 0
+      }
+    ],
+    "meaning": "Accepted original captured model/reader/buffer/cursor/input/cleanup observations only; no new native input execution in this replay-only window."
+  },
+  "privateEvidence": {
+    "rawPathsEnvironmentControlOrProcessHandlesPublished": false,
+    "newManifestEntries": 47,
+    "newManifestSHA256": "bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510",
+    "originalAttemptReceiptSHA256": "661ed9d3552d82d4b4d38074a8a743653a4d26f45aa891f40489d5462d1c865d",
+    "originalReplayReceiptSHA256": "01b55b612070920429eb8af6457df20e7e6a153c46e73db54b0387d0ecb217a6",
+    "originalWriteMarkerSHA256": "1c12859b4d7b2130192fd735399c0b337f44fda8a720a9f28cfb3e0712ff9e5d",
+    "unchangedDirectArtifacts": 111,
+    "unchangedBuildArtifacts": 64,
+    "unchangedFirstRuntimeArtifacts": 29,
+    "controlEndpointLogged": false,
+    "qualification": "Original raw PTYs/PNGs/receipts/profiles and command metadata remain private. Only normalized project-specific evidence is published."
+  },
+  "remainingGates": [
+    "Independent review of corrected replay pass, normalized evidence and bounded original cleanup outcomes.",
+    "Attribute/resolve clipped emoji and sampled width1 in emulator/font/Unicode seam before glyph acceptance; no source or runtime correction is authorized by this result alone.",
+    "Physical terminal/font/platform/focus/native application behavior and universal descendant/framework cleanup remain outside this fixture scope.",
+    "Overall full-UX acceptance remains open. No further execution window is implied."
+  ]
+}

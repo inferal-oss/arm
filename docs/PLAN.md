@@ -3013,3 +3013,125 @@ source lineage. Independent hashes, 56 unchanged other inputs and all original
 115s outer with unchanged 20s work/30s replay total, two CPU/2 GiB targets and
 16 MiB combined retained inputs/new evidence. No rebuild, test binary, Program
 or PTY recapture is allocated. Preserve the first new failure before any retry.
+
+
+## Shared terminal loop/PTY/replay — source-only continuation
+
+The terminal owner continues on `codex/ux-terminal-loop-fixture` from frozen
+direct evidence `60c65a3`. The [new source plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+prepares a package-local Bubble Tea wrapper, owned-PTY capture driver and
+terminal-only pinned replay. The original fixture/plan/evidence and all 111
+private artifacts remain exact. No product or old capture-helper change.
+
+The proposed native roster is 36 checkpoints across the same exact grids, below
+the existing 48 cap. It replaces redundant detail copies with real inline/full
+log first/middle/tail, pause/fold/return and mouse/resize observations. This
+targets the frozen buffer-versus-visible-tail gap; it does not silently accept
+all old states as native-loop coverage. End closure and transport-call deltas
+are explicit. Original readers, defaults and data bounds remain intact.
+
+Source formatting/parsing and hash/privacy checks only are complete. The new
+Go wrapper is uncompiled; no Program/PTY/browser ran. Review must bind an owned
+test binary and exact 57-file build receipt before separately allocated compile
+and capture/replay windows. Native rows/tail/glyph/input/cleanup findings and
+any product correction remain pending. Overall terminal UX work continues.
+
+
+## Terminal loop cleanup review correction — source only
+
+The terminal owner continues on `codex/ux-terminal-loop-cleanup` from frozen
+`f46ce4b`. The [corrected plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+replaces that cut's Python private-session cleanup with inherited FIFO group
+ownership and original Popen-only fallback. Saved termios precedes parent slave
+close and bounded actual master EOF/EIO drain; quiet polls remain distinct.
+
+Replay now includes initialization through cleanup in its existing 30-second
+budget. Public pinned BrowserServer retains the original process handle and
+immediate exit observation; its private loopback CONTROL endpoint is never
+logged. Page/native-app network refusal remains. Bounded original close/kill
+promises, forced/unknown failure and receipt-write evidence are separate.
+
+Only source correction, parsing and hash review are complete. Exact grids, data,
+checkpoint/byte/time ceilings and all old evidence remain unchanged; the Go
+wrapper is unchanged and still uncompiled. Independent corrected-source review
+and separately allocated build/PTY/browser windows remain gates. No execution
+or additional proof was allocated or performed.
+
+
+## Terminal loop attempt — capture passed, first replay oracle failed
+
+The terminal owner froze normalized evidence on `codex/ux-terminal-loop-evidence`
+from reviewed source `8d1039a`. One offline compile produced the retained owned
+test binary, then one allocated FIFO attempt captured all 36 checkpoints on
+the three exact grids. Original child waits, termios comparison, parent slave
+close/final master EOF, descriptor closes and Program/fake cleanup gates passed.
+
+Replay stopped after its first saved 72x28 lease PNG. Two rows differ only by
+one trailing printed space: expected model rows use trimEnd while actual xterm
+rows preserve it. The original comparator remains false; no correction or retry
+ran. This is an oracle asymmetry, not a demonstrated product defect. Original
+browser API/process exit observations succeeded; overall attempt exit was one.
+The [normalized inventory](validation/ux-terminal-loop-inventory-2026-10-30.json)
+keeps capture, first-frame facts, cleanup and missing replay coverage separate.
+
+All frozen source/binary, 111 direct and 64 build artifacts remain unchanged.
+Independent evidence review and a separately reviewed source-only oracle change
+are pending; no further execution window remains. Visible log markers and all
+remaining emulator/cell/glyph frames are unaccepted. Overall UX remains open.
+
+
+## Terminal replay oracle correction — source only
+
+Normalized first-attempt evidence is frozen at `48aa1c1`; source continuation
+`codex/ux-terminal-loop-replay-correction` changes only replay JS behavior. The
+[correction plan](validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json)
+prepares symmetric trailing ASCII U+0020-only comparison, raw expected/actual
+rows and per-row results. Leading/internal spaces and other Unicode whitespace
+remain significant. Original failed PNG/receipt and all inputs remain exact.
+
+Replay-only CLI requires a fresh external output and an explicit immutable
+input-attempt budget root. Original retained inputs plus new evidence share
+the existing 16MiB cap. Original compiled/capture source `8d1039a` and changed
+replay self-digest are distinct stages; the old build receipt is never changed.
+No new Go build or PTY capture is proposed. All previous byte/resize/marker/
+cleanup/time gates remain. Source review is pending before any separately
+allocated replay-only attempt; no corrected replay/browser has run.
+
+
+## Corrected replay — scoped pass, glyph paint remains open
+
+One separately allocated replay-only attempt at frozen `13ab228` consumed the
+original capture read-only. All 36 exact-grid cases and 1,356 rows passed the
+reviewed symmetric trailing-ASCII-space rule; all required first/middle/final
+log markers were visible in actual emulator rows. Original browser API/process
+exit, digest-bound receipt-write marker and no-deadline gates passed. No build,
+test executable, Program or PTY capture ran again.
+
+The [corrected inventory](validation/ux-terminal-corrected-replay-inventory-2026-10-30.json)
+keeps this pass separate from the frozen first failure. Narrow/wide PNG review
+found clipped emoji paint with sampled xterm width1 for 🙂, versus width2 for
+界. Text equality therefore does not accept glyph rendering. Emulator/font/
+Unicode attribution and broader physical-terminal UX remain open. No product
+fix or further execution is authorized by the result.
+
+All original inputs/artifacts and both source stages remain exact. Original
+plus new evidence containers total 6,868,809 bytes, including new wrapper logs/
+receipts and empty browser temporary state, below the existing 16MiB cap.
+Independent normalized evidence/glyph review remains before integration or
+overall acceptance; no further execution window is implied.
+
+
+## Terminal loop inventory — coordinator scoped acceptance
+
+The five focused owner cuts through `d311cb1` are composed and independently
+reviewed. Exact build/source/artifact hashes, original three Program/model/reader/
+mouse/resize outcomes, six End/no-reread effects and corrected 36-case marker
+replay agree. The original whitespace-oracle failure remains failed. No
+production UI code changed and no duplicate native/browser run was needed.
+
+Scoped acceptance covers the recorded input, reading, scrolling and original
+cleanup facts. It excludes glyph paint: sampled smiley width one is visibly
+clipped despite matching row text. The same owner continues read-only pinned
+width/font diagnosis and the remaining lease-detail/modal/filter inventory
+proposal. Overall UX and physical-terminal acceptance remain open; no new
+runtime window is allocated.

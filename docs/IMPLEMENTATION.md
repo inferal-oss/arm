@@ -4411,3 +4411,141 @@ No product behavior changed and no defect follows from these fixture/oracle
 gaps. The next reviewed source proposal must use a wrapper that returns itself
 after Update and actual owned Program/PTY bytes for terminal-only replay,
 retaining the original model, data, readers and command gates.
+
+
+## Shared terminal native-loop proposal — prepared source
+
+The new test-only wrapper retains the original dashboardModel and runsDashboard
+identity and returns itself after Update. Its Init is empty; production
+Init/connect/reconnect/clock/stream paths remain unreachable. A closed filter
+runs before the framework's internal Raw/exec/clipboard/Batch dispatch. Original
+read closures remain synchronous through the frozen strict fake; unclassified
+library/timer commands are uninvoked. Only audited original typed OnMouse and
+quit delivery reach framework command handling. Fixed TrueColor/static terminal
+environment and the wrapper/filter are explicit test options, not production
+Run startup/authentication coverage.
+
+The [prepared plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+records the pinned framework lifecycle/command audit. Its general command runner
+does not join every worker, so pure callback counters and Program returns cannot
+be generalized into all-goroutine cleanup. Actual SGR cell clicks will use the
+original parser/renderer/callback path. F12 is a disclosed test-only controlled
+delay of an original callback across native resize; it is not a general OS queue
+race proof. Original model/reader/buffer/cursor and default invariants remain.
+
+The Python source consumes a separately built reviewed test binary and receipt;
+it never builds ARM or starts a backend. It owns each child/session/PTY/stream,
+uses genuine keys and exact-grid SIGWINCH, and records original wait/mode/FD
+outcomes. The new terminal-only renderer replays actual pre-exit PTY prefixes
+and resize byte offsets into pinned xterm. Model View.Content is only a separate
+row comparator; it is never substituted as terminal or DOM text. Browser
+network/clipboard/socket paths are refused; old live capture/render/geometry
+helpers are untouched. This is source preparation only, not executed behavior.
+
+
+## Terminal loop cleanup source correction
+
+The source continuation of `f46ce4b` supersedes its cleanup proposal above.
+Python no longer detaches the original test child from the FIFO group. Local
+TERM/KILL/wait uses only retained original Popen; no group/PID lookup. After
+original child wait it compares saved termios, closes the parent slave, then
+bounds final master drain to actual EOF/EIO. Quiet polls, timeout, dropped bytes
+and unknown/partial closes remain explicit failures.
+
+Replay's existing 30-second ceiling now covers launch/context/page setup, work,
+cleanup and receipt writes: 20 seconds for work, 10 reserved for cleanup. The
+pinned public BrowserServer owns a private loopback CONTROL connection and
+exposes its original ChildProcess. Exit observation attaches immediately,
+including already-exited fields; no endpoint is logged. Page/native-app sockets,
+network and clipboard remain refused. Original close/kill promises and wait
+timeouts are recorded separately. Forced/unknown cleanup fails; own kill/exit
+fallback bounds the tool without claiming universal OS reaping.
+
+The normal receipt honestly leaves its own write pending. A separate digest-
+bound write-return marker, successful tool exit and no deadline-failure receipt
+are required for acceptance. All outputs remain under the existing 16MiB cap.
+The Go wrapper/admitted commands contain no subprocess launcher in the reviewed
+paths; this is not a full transitive package-init audit. No Go/source-oracle
+change, build, Program/PTY/browser run or replacement helper occurs here.
+
+
+## Terminal loop original attempt and replay oracle boundary
+
+Reviewed source `8d1039a` compiled once offline without source changes; the owned
+binary was used only by the subsequently allocated capture. One original FIFO
+attempt captured 36 checkpoints through original Program/PTY input, two mouse
+callbacks per grid and controlled stale callback rejection across resize. End
+scheduled one original empty read closure per invocation with zero transport
+rereads and unchanged original buffer/cursor/reader. The 3,165-byte cached log
+reached nonzero lower viewport offsets; this is distinct from actual emulator
+visibility of LOG FIRST/MIDDLE/FINAL, which remains untested.
+
+The original replay retained its first PNG and cell/text facts, then stopped on
+two trailing-space row differences. Its expected-row trimEnd and actual xterm
+row extraction treat one printed U+0020 differently. No product or oracle
+source changed, and the original failure was not rerendered or replaced.
+
+Original terminal dispose/page/context/connection/BrowserServer close returned;
+the retained original browser process exit event reported code zero and no
+signal. Original Program/fake/context retirement, child waits, saved-mode/slave
+close/final EOF and descriptor facts are positive scoped observations. They do
+not imply universal descendant/goroutine reap or production startup coverage.
+The [inventory](validation/ux-terminal-loop-inventory-2026-10-30.json) records
+normalized results; raw evidence stays private and immutable.
+
+
+## Replay-only comparison/output correction prepared
+
+The new source proposal compares both row-text sides after removing only
+trailing U+0020, preserving raw expected rows (existing CSI removal only), raw
+xterm rows and every per-row result. It keeps leading/internal/other Unicode
+whitespace significant and leaves actual PTY bytes, terminal writes, PNGs and
+marker checks unchanged. Assertion stage now identifies dimensions/rows/markers
+after item/PNG retention instead of reporting the preceding PNG operation.
+
+Replay source requires fresh `--output` and explicit `--retained-input-root`,
+disjoint from the read-only capture input. Canonical/private input checks and
+exclusive output creation prevent reuse/nesting; every evidence write targets output.
+Budget checks include the entire original attempt container plus new replay.
+Original build/capture receipt identities and source commit are recorded
+separately from corrected replay self-digest; no old receipt is edited/copied
+as a new build claim. Cleanup/timeout/write-marker gates remain unchanged.
+
+This is source preparation only, described by the
+[plan](validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json).
+The original compiled Go fixture/binary, Python capture, source plan and first
+failure stay exact. No compiler, capture, corrected browser or replay ran.
+
+
+## Corrected replay original result
+
+Frozen `13ab228` replay consumed the existing `8d1039a` capture without copying
+or changing its receipts/streams/checkpoints. Its one allocated invocation
+passed all 36 cases and required first/middle/final marker gates. The raw row
+arrays retain 312 trailing-ASCII-space-only differences across 1,356 matching
+normalized rows. Exact-grid alternate buffers, byte-prefix hashes, resize
+timelines, saved PNGs and separate source lineage remain recorded in the
+[normalized inventory](validation/ux-terminal-corrected-replay-inventory-2026-10-30.json).
+Original End empty-read, reader/cursor/buffer and mouse/stale-resize facts are
+reused from accepted capture; they were not executed again.
+
+Original terminal/page/context/connection/BrowserServer close APIs returned;
+the original browser exit event reported code zero/no signal. No forced or
+pending teardown occurred; the digest-bound write-return marker confirms the
+original receipt write. These scoped observations do not prove universal
+descendant/framework cleanup or native production startup behavior.
+
+Visual inspection exposed a separate glyph seam: 🙂 appears clipped and has
+sampled cell width1; 界 has width2/continuation. Original row text still matches.
+This qualifies emulator/font/Unicode paint compatibility, not an established
+ARM product defect or physical-terminal result. No provider/font/source change,
+rerender, build or PTY recapture occurred.
+
+
+## Terminal loop fixture — independently composed
+
+The reviewed test-only wrapper/capture/replay source retains original model and
+reader identity with explicit command and local-effect gates. The replay-only
+ASCII-space comparison correction preserves raw rows and original failed
+evidence. Production UI, transport and dependency behavior are unchanged.
+Recorded marker/scroll checks pass; clipped-emoji paint remains unsupported.

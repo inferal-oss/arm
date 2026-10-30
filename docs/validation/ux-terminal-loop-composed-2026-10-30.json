@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "scope": "Independent composition of test-only terminal loop/capture/replay and scoped evidence; production UI unchanged",
+  "ownerCommits": [
+    "f46ce4b8a2360b9e63cdeac52a4b450fd5981665",
+    "8d1039a71ffc401bca3405ee7b49228eea9012e9",
+    "48aa1c1dba18a2c9a255d6def58fdee73cd3d249",
+    "13ab228e331ec38c3ffd4602ac9ceb0fb1b68052",
+    "d311cb183859c6507dee565bbc42d68e1bc545b7"
+  ],
+  "composedCommits": [
+    "93e4273",
+    "a6f3d14",
+    "ee28ed0",
+    "aeb3d48",
+    "684ce86"
+  ],
+  "stageLineage": {
+    "compiledAndCaptured": "8d1039a",
+    "correctedReplay": "13ab228",
+    "originalBuildReceiptNotRewritten": true,
+    "noRecaptureOrRebuildForOracleCorrection": true
+  },
+  "independentChecks": {
+    "compiledArtifactHashes": 64,
+    "originalRuntimeArtifactHashes": 29,
+    "correctedReplayArtifactHashes": 47,
+    "originalCompileInputs": 57,
+    "unchangedOtherInputsForCorrectedReplay": 56,
+    "correctedSourceAndPlanHashes": true,
+    "exactGrids": [
+      [
+        72,
+        28
+      ],
+      [
+        100,
+        35
+      ],
+      [
+        160,
+        50
+      ]
+    ],
+    "captureCheckpoints": 36,
+    "normalizedRows": 1356,
+    "rawTrailingASCIIOnlyDifferences": 312,
+    "tailMarkerCases": 12,
+    "firstMarkerCases": 3,
+    "middleMarkerCases": 3,
+    "originalProgramModelReaderMouseResizeChecks": 3,
+    "EndEmptyReadNoTransportRereadChecks": 6,
+    "positiveOriginalChildAndBrowserOutcomes": true,
+    "receiptWriteReturnMarkerAndDigest": true,
+    "syntaxScopePrivacyWhitespace": true,
+    "noDuplicateRuntime": true
+  },
+  "originalResults": {
+    "offlineCompile": "pass",
+    "originalCapture": "pass",
+    "originalReplay": "failed whitespace-asymmetric comparator; preserved",
+    "correctedReplay": "pass within scoped oracles",
+    "glyphPaint": "unaccepted: smiley clipped at sampled width1"
+  },
+  "independentVisualReview": [
+    "Original first narrow lease-list PNG",
+    "Corrected narrow fullscreen first PNG, including clipped emoji",
+    "Corrected narrow fullscreen tail PNG",
+    "Corrected wide inline tail PNG"
+  ],
+  "evidenceSHA256": {
+    "first": "9ac1b2d5013c930cacff12c2d5005c1b7bafedddcb312060e74d677133b9fbda",
+    "corrected": "2d1380ee64e946421c8ce6b1e0470713cb0b58cdbf540ba21173693fa27eece2"
+  },
+  "limits": [
+    "Original synthetic model wrapper suppresses native Init/connect/reconnect and unclassified commands.",
+    "No production Run/auth/default backend or real job/lease effects.",
+    "Row and marker agreement does not establish glyph painting or physical terminal behavior.",
+    "No universal goroutine/OS descendant-reap or full UX acceptance."
+  ],
+  "remaining": "Existing owner investigates pinned emulator width/font compatibility and proposes remaining native lease-detail/modal/filter inventory; no further runtime allocated."
+}

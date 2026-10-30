@@ -627,3 +627,82 @@ effect gates in a test-only Bubble Tea wrapper, capture owned PTY output and
 replay actual bytes with pinned terminal assets at the exact grids. It must
 replace redundant checkpoints with visible inline/fullscreen tail checks and
 measure original handles/cleanup without broadening current runtime authority.
+
+
+## Shared terminal — native-loop/replay source proposed
+
+The [next source cut](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+targets actual visible log tail through original model/readers/layout on an
+owned Bubble Tea Program/PTY, then pinned terminal-only byte replay. It retains
+strict fake reads, audited commands, exact grids/defaults/data bounds and a
+smaller 36-checkpoint roster. Source-prepared End accounting, same-buffer/reader
+checks, pause/fold/return and original mouse/resize paths do not imply runtime
+results. The original 46 model frames and failed wide helper remain frozen.
+
+No product fix, compilation, Program/PTY or browser execution occurs in this
+cut. Independent wrapper/filter/owned-cleanup review and a bound binary/source
+receipt precede any new execution window. Native rows/glyphs/tail/input/cleanup
+and concrete terminal findings remain open; the terminal/overall UX task is
+not complete at source preparation.
+
+
+## Terminal cleanup proposal corrected after source review
+
+The [source plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json) now
+retains FIFO group inheritance and original Popen ownership, drains the master
+after child wait and parent slave close, and distinguishes quiet from EOF/EIO.
+Replay initialization through cleanup fits its existing proposed 30-second
+ceiling with bounded original API waits and immediate original browser process
+exit observation. Private loopback CONTROL is separate from refused page/
+native-app network; its endpoint is never logged. Forced/unknown cleanup and
+missing receipt-write confirmation remain failures.
+
+This corrects source only. The Go fixture, old helpers/evidence and all existing
+bounds remain unchanged. Syntax/hash review supplies no native tail, paint,
+input, timing or teardown acceptance. Independent source review and separate
+build/PTY/browser allocation are still required; overall UX acceptance is open.
+
+
+## Terminal first replay failure — acceptance remains partial
+
+One source-bound attempt passed native Program/PTY capture and scoped original
+cleanup gates at all three exact grids, then stopped on the first replay PNG.
+The [inventory](validation/ux-terminal-loop-inventory-2026-10-30.json) separates
+those observations from the failed model-row comparator: two rows differ only
+by a trailing printed space treated asymmetrically by expected and actual row
+extraction. This is an oracle limitation, not a demonstrated product defect.
+
+The original PNG/cells, failure and positive original browser close/process
+exit facts are preserved. No corrected oracle, replacement render or retry
+ran. Actual visible log first/middle/tail and remaining emulator/glyph frames
+remain unaccepted despite genuine captured lower model viewport offsets.
+Source-only oracle review and a separate future execution window are gates;
+terminal and overall UX acceptance remain open.
+
+
+## Source-only replay correction proposed
+
+The [narrow correction](validation/ux-terminal-loop-replay-correction-plan-2026-10-30.json)
+prepares symmetric trailing ASCII-space comparison with both raw row arrays
+and per-row results. Original first-frame failure stays frozen. Fresh external
+replay output and combined original-input/new-output accounting preserve the
+byte budget; original compiled/capture lineage stays distinct from new replay
+source. No corrected browser run, replacement render or native acceptance is
+implied. Independent review and separate replay-only allocation are pending;
+visible log markers and remaining frame/glyph checks remain open.
+
+
+## Corrected replay coverage and remaining glyph seam
+
+One corrected replay-only attempt passed all 36 synthetic emulator cases and
+visible first/middle/tail markers with original cleanup/write-return gates.
+The [inventory](validation/ux-terminal-corrected-replay-inventory-2026-10-30.json)
+keeps this result separate from the unchanged first oracle failure and from
+original captured native-input/model facts. No new Program/PTY capture ran.
+
+Narrow/wide tail/fullscreen PNG review also found clipped emoji paint with a
+sampled width1 cell for 🙂; CJK 界 occupied width2. Row equality does not accept
+that glyph seam. Emulator/font/Unicode attribution and physical-terminal UX
+remain unverified; no ARM product defect is established by this evidence.
+Independent review and any separately authorized next step remain gates.
+Overall full-UX acceptance is open; no further execution window is implied.
