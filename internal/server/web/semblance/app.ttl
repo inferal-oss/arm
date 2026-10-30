@@ -833,3 +833,28 @@ arm:KubeTechnicalFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slu
               [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
 [] a sty:StyleRule ; sty:appliesTo arm:KubeTechnicalFacts ; sty:atWidth sty:CompactWidth, sty:MediumWidth ;
  sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+
+
+# Prepared forwarding information only; native dialog, controls and private leaf stay intact.
+arm:ForwardPreparedReview a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-forward-prepared-review" .
+[] a sty:StyleRule ; sty:appliesTo arm:ForwardPreparedReview ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ForwardPreparedReview ; sty:part "> header, > .sem-card-body, > .sem-card-body > [data-sem-c=\"stack\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ForwardPreparedReview ; sty:part "> header h2" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ForwardPreparedReview ; sty:part "[data-sem-c=\"description-list\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr) minmax(0, 2fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ForwardPreparedReview ; sty:part "[data-sem-c=\"description-list\"] dt, [data-sem-c=\"description-list\"] dd" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "white-space" ; sty:raw "break-spaces" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:ForwardPreparedReview ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part "[data-sem-c=\"description-list\"]" ;
+ sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .

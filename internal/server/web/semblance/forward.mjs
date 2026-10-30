@@ -79,13 +79,25 @@ function createForwardConsole({ ui, root, call, connected, cryptoAPI = globalThi
         }
       }
     }, { emphasis: "Strong" });
-    review.replace(ui.card("Exact source review", [
-      ui.text(`Key ${request.key} \xB7 ${request.workspace} \u2192 ${request.target} / ${request.service} \xB7 grant ${request.grant_revision} \xB7 bind ${request.bind}`),
+    const card = ui.card("Exact source review", [
+      ui.descriptions([
+        ["Listener key", request.key],
+        ["Workspace ID", request.workspace],
+        ["Destination host ID", request.target],
+        ["Destination service name", request.service],
+        ["Destination grant revision", request.grant_revision],
+        ["Local loopback bind", request.bind],
+        ["Listener lifetime", `${request.ttl_ns} ns (${request.ttl_ns / 60000000000} minutes)`],
+        ["Resource reservation reason", request.reason]
+      ]),
+      ui.text("Form edits do not update this prepared review."),
       ui.text("This token is a local bearer credential. Save the key and token privately. The token cannot be recovered from ARM status."),
       tokenDisplay,
       saved,
       start
-    ]));
+    ]);
+    ui.put?.(card.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#ForwardPreparedReview", true);
+    review.replace(card);
   }
   const statusLine = (row) => `${row.state} \xB7 ${row.key} \xB7 ${row.bind} \u2192 ${row.target}/${row.service} \xB7 grant ${row.grant_revision}${row.failure ? " \xB7 " + row.failure : ""}`;
   function render(rows) {
