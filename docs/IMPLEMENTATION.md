@@ -3984,3 +3984,16 @@ limits refuse invalid input. No approval, native content/identity/compatibility,
 resource capability or runtime route is created. All current Go/module/CLI
 behavior is preserved; no production package imports the codec. See the
 [composed record](validation/resident-worker-package-manifest-composed-2026-10-29.json).
+
+
+## Nodes/Kubernetes — composed reading and lifecycle boundary
+
+Independent review accepts existing-container layout markers and scoped native
+parts for roster/detail/inventory/technical reading. A focused compact/medium
+primary-list rule keeps ordinary Kubernetes labels whole without reaching the
+technical disclosure. Whole mesh source reconstructs the inventory byte-for-byte
+after removing layout hooks and equivalent creation variables; callbacks, units,
+identity and lifecycle code remain exact. Native Grid, Dialog/close policies,
+all current Go/modules/pinned engine/main/graph and resource authority are
+unchanged. Assets are centrally rebuilt over current main. See the
+[composed record](validation/ux-node-layout-composed-2026-10-29.json).

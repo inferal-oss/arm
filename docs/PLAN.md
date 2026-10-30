@@ -2220,3 +2220,16 @@ Trusted local approval/actual bytes verification and admitted immutable staging
 remain next dependencies; borrower/controller/API/assets, first/repeated
 `arm start` and distinct-version active-job preservation are still mandatory
 unimplemented completion gates. No installed backend or runtime is changed.
+
+
+## Nodes/Kubernetes — independent composed acceptance
+
+The focused inventory, Node/Kubernetes layout corrections and primary-label
+review fix `4b3a1ba` pass independent source/visual and current-main composition.
+The [composed record](validation/ux-node-layout-composed-2026-10-29.json) binds
+454 JavaScript tests, 48 native tests, deterministic assets/native CLI build,
+eight final browser cases and primary/technical isolated omissions. Initial
+geometry-only acceptance missed avoidable Architecture fragmentation; the
+scoped primary-list correction and actual line-box oracle now pass all 40
+sampled labels. Older source evidence and failed measurement candidates remain
+qualified and preserved. No full UX, live backend, Linux or new TUI claim.

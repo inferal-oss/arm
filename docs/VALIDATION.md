@@ -9495,3 +9495,26 @@ bounds, invalid decoded keys/types/numbers/paths/digests and manual oversized
 encoding have scoped positive/refusal evidence. This proves no native bytes,
 provenance, approval, compatibility, filesystem/staging/admission or execution.
 No CLI/build/browser/Linux/full-suite or actual upgrade acceptance is inferred.
+
+
+## Nodes/Kubernetes — independent final composed validation
+
+The [composed record](validation/ux-node-layout-composed-2026-10-29.json) records
+454 JavaScript tests and 48 native tests in nine files, zero failures/skips,
+two byte-identical dashboard builds and a current native CLI build. The core
+cohort completed in 15.849s. Exact final Node and Kubernetes four-case
+cohorts completed in 44.074s and 61.970s; all 40 sampled primary labels
+occupy one DOM line where the full row fits them. Final primary-only and
+technical-only omissions reproduce their independent layout failures. Earlier
+four-control receipts remain bound to their prior source.
+
+Full labels/units, exact capped record bytes and first/middle/final ranges,
+physical native keys, retained selection/readers, degraded/pending/disconnect
+and stale replies have scoped synthetic read-only evidence. Capture/release
+and original context/browser/server API closes are awaited. This is no OS
+group/reap, real transport/authentication/cluster/host action or full UX proof.
+Disconnected Escape still cannot focus a disabled opener. Selected token
+scaling and explicit-font Canvas estimates are qualified; actual line boxes
+are authoritative. Initial default-font measurement captures stay excluded.
+Direct FIFO evidence grants no ARM adoption/lease/backend or hard RSS claim.
+No installation, Linux/full-Go/new-TUI or live runtime acceptance is inferred.

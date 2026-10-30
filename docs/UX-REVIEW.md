@@ -75,12 +75,12 @@ states; no principal view is declared complete from source inspection.
 | Messages | `messages.mjs`; composer, recipient/reply review, conversation, deliveries, saved-send recovery | Corrected slice: 320/390/768/1440/1920 widths, 768 at actual doubled text-token coverage (15px/30px); long/unbroken values, stale/disconnected review, held focus, restored unknown/offline, empty and validation error | Message product source accepted in c830982; corrected text-scale evidence accepted with Pools composition; broader broadcast density and recorded-result visual states |
 | Activity | `main.mjs`; history pages, timeline, event picker/detail, live drawer | Four-case selected-reader refresh/focus and two-case context/selection/cap checks pass independent composition | Live drawer/transport, broader states and full acceptance remain open |
 | Host | `main.mjs` `renderHost`; local authority, identity, capabilities, infrastructure | Four-case exact metadata/line/scroll/freshness retention and scoped header/menu/tooltip checks pass independent composition | Real transport, broader states and full acceptance remain open |
-| Mesh | `mesh.mjs`; roster, node detail, connect/reconnect, installation, stop, uninstall, handoff, operations | Source inventory only | Dense nodes, every draft/review/unknown/cancel/error state, exact pins/revisions and control visibility |
-| Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Source inventory only | Dense inventory, unverified/stale/unavailable states; no cluster operations |
+| Mesh | `mesh.mjs`; roster, node detail and separate operator workflows | Read-only roster/detail layout, exact metadata/grants/trust and degraded/pending lifecycle pass independent four-case composition | Connect/reconnect/install/stop/uninstall/handoff/recovery review, exact pins/revisions and broader workflow states remain open |
+| Kubernetes | `mesh.mjs` `createKubeInventory`; context/node inventory and detail | Four-case read-only inventory, primary/technical/exact-record reading, ordinary-label line boxes and local UID/context selection pass independent composition | Real transport/cluster validation, broader states/density/fonts and complete route acceptance; no cluster operations exercised |
 | Forwarding | `forward.mjs`; preparation/review, tunnel list and retained operations | Source inventory only | Long endpoints, narrow dialogs, uncertainty and cleanup warnings; no real forwarding |
 | Destination read-only | `remote.mjs`; scoped resources, leases, metadata, lease inspection | Source inventory only | Scope/staleness/unknown values, long records and unsupported mutation visibility |
 | Screen Sharing | `screen.mjs`, `ephemeral-inputs.mjs`; mode/account, credentials, viewport, clipboard | Stacked private fields/native footer accepted in c830982 with synthetic desktop/narrow evidence | Remaining mode/view/clipboard states; no real VNC sign-in |
-| Resource naming | `resource-names.mjs`; exact reference, name editor, preserved reservations | Source inventory only | Long references, dense options, modal width, stale selection and focus |
+| Resource naming | `resource-names.mjs`; exact reference/name editor/reservations | Scoped native naming body/caption/dirty-draft and palette focus/help corrections pass independent composition | Broader reservations/recorded-result/density/state/live mutation and complete route acceptance remain open |
 
 ## Terminal inventory
 
@@ -371,3 +371,15 @@ whole ordinary labels against a complete available line and their actual native
 line boxes. A stacking-only omission reproduces the defect. Technical facts and
 native Grid retain their independent rules and parameters. Prior owner/central
 evidence stays historical; independent final-source acceptance remains open.
+
+
+## Nodes/Kubernetes independent acceptance
+
+The [composed record](validation/ux-node-layout-composed-2026-10-29.json) accepts
+scoped roster/detail/inventory/technical reading and native lifecycle at the four
+allocated geometries, including ordinary primary labels beyond geometric fit.
+The direct primary-list correction leaves technical rules independent. Exact
+source, deterministic assets, current CLI build, native/module/browser checks
+and isolated controls pass. Disconnected disabled-opener focus remains baseline
+behavior. Operator workflows, forwarding/destination, live transport, wider
+state/density/font/platform coverage and terminal UX remain open.
