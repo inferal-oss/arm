@@ -4411,3 +4411,33 @@ No product behavior changed and no defect follows from these fixture/oracle
 gaps. The next reviewed source proposal must use a wrapper that returns itself
 after Update and actual owned Program/PTY bytes for terminal-only replay,
 retaining the original model, data, readers and command gates.
+
+
+## Shared terminal native-loop proposal — prepared source
+
+The new test-only wrapper retains the original dashboardModel and runsDashboard
+identity and returns itself after Update. Its Init is empty; production
+Init/connect/reconnect/clock/stream paths remain unreachable. A closed filter
+runs before the framework's internal Raw/exec/clipboard/Batch dispatch. Original
+read closures remain synchronous through the frozen strict fake; unclassified
+library/timer commands are uninvoked. Only audited original typed OnMouse and
+quit delivery reach framework command handling. Fixed TrueColor/static terminal
+environment and the wrapper/filter are explicit test options, not production
+Run startup/authentication coverage.
+
+The [prepared plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+records the pinned framework lifecycle/command audit. Its general command runner
+does not join every worker, so pure callback counters and Program returns cannot
+be generalized into all-goroutine cleanup. Actual SGR cell clicks will use the
+original parser/renderer/callback path. F12 is a disclosed test-only controlled
+delay of an original callback across native resize; it is not a general OS queue
+race proof. Original model/reader/buffer/cursor and default invariants remain.
+
+The Python source consumes a separately built reviewed test binary and receipt;
+it never builds ARM or starts a backend. It owns each child/session/PTY/stream,
+uses genuine keys and exact-grid SIGWINCH, and records original wait/mode/FD
+outcomes. The new terminal-only renderer replays actual pre-exit PTY prefixes
+and resize byte offsets into pinned xterm. Model View.Content is only a separate
+row comparator; it is never substituted as terminal or DOM text. Browser
+network/clipboard/socket paths are refused; old live capture/render/geometry
+helpers are untouched. This is source preparation only, not executed behavior.

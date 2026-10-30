@@ -10411,3 +10411,53 @@ both comparison rows while preserving raw arrays, actual PTY bytes and all
 other oracles. Original evidence `48aa1c1`, 56 unchanged inputs and original
 artifact sets remain exact. A separately allocated replay-only attempt must
 supply its own changed-source result; no original build receipt is rewritten.
+
+
+## Shared terminal loop/replay — prepared review boundary
+
+The [source plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+freezes the new Go adapter, PTY driver and terminal-only replay hashes. Static
+work reads selected pinned Bubble Tea lifecycle/command/filter source and
+performs new-source formatting, Python AST and JavaScript syntax parsing,
+plus hash/privacy/diff checks. No Go compilation, test execution, Program,
+PTY, browser, native backend/session, install/setup or product correction is
+part of this source cut. Prepared assertions are not passing evidence.
+
+The original fifty classified files remain exact to accepted current source;
+original direct fixture/plan/evidence and all 111 artifacts are unchanged. The
+wide helper failure and original offset-zero/log-tail gap stay unaccepted. No
+new helper was executed on that attempt to fill either gap.
+
+A future compile window must produce an owned test binary plus before/after
+57-file source/binary receipt. The capture driver requires that exact receipt
+and selector and never compiles implicitly. A separate proposed shared-FIFO
+capture/replay command retains the original two-CPU/1536MiB targets, exact grids
+and data bounds, at most 48 checkpoints and 16MiB retained artifacts. The owned
+compiler scratch binary is outside retained evidence and needs explicit scope;
+no shared cache is deleted. Missing local prerequisites fail without download.
+These commands are proposals with no runtime allocation or timing evidence.
+
+The new roster has twelve checkpoints per grid, 36 total: native default lists,
+inline follow/pause/first/middle/End-tail, folded reader, full first/middle/End-
+tail and restored folded state. Lower log reach uses genuine keys. End must be
+counted as one original empty read closure with zero transport calls for the
+drained cached reader; its actual deltas and buffer/cursor/identity must be
+measured, not assumed. A controlled held OnMouse callback must be rejected after
+an actual reviewed-grid resize. No new Home reset or duplicate log reread is
+part of the proposed tail test.
+
+Future replay requires actual active alternate-buffer rows at exact dimensions,
+visible LOG FINAL in inline/full tail checkpoints and LOG FIRST/MIDDLE in the
+full reader. It keeps row text, a bounded sample of cell widths, PNGs and model
+comparisons separate; these do not accept every physical terminal/font/glyph.
+Actual PTY byte prefixes and resize timing are retained, not reconstructed from
+model text. Source-only helpers have not proved native rendering or reach.
+
+Original Program Run/Kill/Wait, context/fake/reader retirement, callback delivery,
+owned child wait, terminal-mode comparison and PTY descriptor closes each have
+separate fields/gates. Failure cleanup targets only the original owned child
+group and keeps partial evidence; no replacement is automatic. Program/API
+returns and callback acknowledgments are not OS descendant-reap or universal
+framework-goroutine proof. Browser context/terminal/browser handles close in
+finally. Independent source review and explicit build/PTY/browser windows remain
+gates before native findings or remediation.

@@ -3013,3 +3013,25 @@ source lineage. Independent hashes, 56 unchanged other inputs and all original
 115s outer with unchanged 20s work/30s replay total, two CPU/2 GiB targets and
 16 MiB combined retained inputs/new evidence. No rebuild, test binary, Program
 or PTY recapture is allocated. Preserve the first new failure before any retry.
+
+
+## Shared terminal loop/PTY/replay — source-only continuation
+
+The terminal owner continues on `codex/ux-terminal-loop-fixture` from frozen
+direct evidence `60c65a3`. The [new source plan](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+prepares a package-local Bubble Tea wrapper, owned-PTY capture driver and
+terminal-only pinned replay. The original fixture/plan/evidence and all 111
+private artifacts remain exact. No product or old capture-helper change.
+
+The proposed native roster is 36 checkpoints across the same exact grids, below
+the existing 48 cap. It replaces redundant detail copies with real inline/full
+log first/middle/tail, pause/fold/return and mouse/resize observations. This
+targets the frozen buffer-versus-visible-tail gap; it does not silently accept
+all old states as native-loop coverage. End closure and transport-call deltas
+are explicit. Original readers, defaults and data bounds remain intact.
+
+Source formatting/parsing and hash/privacy checks only are complete. The new
+Go wrapper is uncompiled; no Program/PTY/browser ran. Review must bind an owned
+test binary and exact 57-file build receipt before separately allocated compile
+and capture/replay windows. Native rows/tail/glyph/input/cleanup findings and
+any product correction remain pending. Overall terminal UX work continues.

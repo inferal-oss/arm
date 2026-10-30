@@ -627,3 +627,20 @@ effect gates in a test-only Bubble Tea wrapper, capture owned PTY output and
 replay actual bytes with pinned terminal assets at the exact grids. It must
 replace redundant checkpoints with visible inline/fullscreen tail checks and
 measure original handles/cleanup without broadening current runtime authority.
+
+
+## Shared terminal — native-loop/replay source proposed
+
+The [next source cut](validation/ux-terminal-loop-fixture-plan-2026-10-30.json)
+targets actual visible log tail through original model/readers/layout on an
+owned Bubble Tea Program/PTY, then pinned terminal-only byte replay. It retains
+strict fake reads, audited commands, exact grids/defaults/data bounds and a
+smaller 36-checkpoint roster. Source-prepared End accounting, same-buffer/reader
+checks, pause/fold/return and original mouse/resize paths do not imply runtime
+results. The original 46 model frames and failed wide helper remain frozen.
+
+No product fix, compilation, Program/PTY or browser execution occurs in this
+cut. Independent wrapper/filter/owned-cleanup review and a bound binary/source
+receipt precede any new execution window. Native rows/glyphs/tail/input/cleanup
+and concrete terminal findings remain open; the terminal/overall UX task is
+not complete at source preparation.

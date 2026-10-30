@@ -1,0 +1,191 @@
+{
+  "schema": 1,
+  "status": "SOURCE PREPARATION ONLY; new Go test, PTY driver and replay have not been compiled/executed. Separate review/build/PTY/browser allocations required.",
+  "branch": "codex/ux-terminal-loop-fixture",
+  "parentFrozenDirectEvidenceCommit": "60c65a3f66bfd21a973b48712fdf4abf17d4a4fe",
+  "originalDirectSourceCommit": "a79462d478b6c81057977d69c9d5e782e6b6c70b",
+  "currentComparisonCommit": "738ad54ee4fa9e98a17e64d2e2a7aee4847b3acb",
+  "sourceFiles": {
+    "internal/tui/ux_terminal_loop_fixture_test.go": {
+      "sha256": "1dce0f1852791781f941eff7086c3cb6420c7d1305f87868182ae3f0a0ded168",
+      "bytes": 13349,
+      "lines": 327
+    },
+    "scripts/dashboard-screenshots/ux-terminal-loop-capture.py": {
+      "sha256": "3821630bccc6b7fa78dd700671c1ef5ed3ac73596ce34b5e76b86970db962c42",
+      "bytes": 19208,
+      "lines": 397
+    },
+    "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs": {
+      "sha256": "354ea37ad731c6d3d914e1f8b1049b9881b7e20fafda406b170b764ca473d95d",
+      "bytes": 8345,
+      "lines": 65
+    }
+  },
+  "preservedOriginal": {
+    "classifiedFiles": 50,
+    "allCurrentBytesExact": true,
+    "originalFixtureSHA256": "ef37d0bdf89bce2dcd68ae7b2de2961f046c57f868edcb9d2e8ccc5952e37420",
+    "originalSourcePlanSHA256": "75b9ad26b4c82e9f16cc1fdde1861c692049e09c3ceb0dc954c337effd6622e2",
+    "directEvidenceSHA256": "02998735605eff0567fdeab39d7cece06759ea50bdbf68c1570182cac8a23940",
+    "originalPrivateArtifacts": 111,
+    "originalArtifactManifestSHA256": "60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d",
+    "allOriginalArtifactsRehashedUnchanged": true,
+    "wideHelperAndTailGap": "Remain exactly as frozen; this new source does not rerun/replace the old helper or promote old tail coverage."
+  },
+  "reviewedPinnedFrameworkSources": {
+    "tea.go": {
+      "module": "charm.land/bubbletea/v2",
+      "version": "v2.1.0",
+      "relativeFile": "tea.go",
+      "sha256": "c8b3eb6783de644c4422f87ba446bf8652869de72574b6fa5649248fd18a878d"
+    },
+    "options.go": {
+      "module": "charm.land/bubbletea/v2",
+      "version": "v2.1.0",
+      "relativeFile": "options.go",
+      "sha256": "471e565161da961989dd429bf8259bbc8c4fc5281655e0ad3a82ce613e6c5b26"
+    },
+    "input.go": {
+      "module": "charm.land/bubbletea/v2",
+      "version": "v2.1.0",
+      "relativeFile": "input.go",
+      "sha256": "29d670f3e9f050d8b93c7e49a0a913b448073b045c05ad726ec0a53094fda478"
+    },
+    "signals_unix.go": {
+      "module": "charm.land/bubbletea/v2",
+      "version": "v2.1.0",
+      "relativeFile": "signals_unix.go",
+      "sha256": "3954426922ae0a399a29769ed8e85ace7c451f33bb835b7009336ed086e65bf3"
+    },
+    "tty.go": {
+      "module": "charm.land/bubbletea/v2",
+      "version": "v2.1.0",
+      "relativeFile": "tty.go",
+      "sha256": "c3743d7918200d348fab872b6f587bece41602605dd6cd3350ac13c0f1d624cb"
+    },
+    "renderer.go": {
+      "module": "charm.land/bubbletea/v2",
+      "version": "v2.1.0",
+      "relativeFile": "renderer.go",
+      "sha256": "7ce950bf69f89f7b261b38af583425c5b363231fb91cdb7e3bbbfc6e99e2ef80"
+    }
+  },
+  "frameworkAudit": {
+    "tea.go:577": "Original Quit closure returns QuitMsg only.",
+    "tea.go:722": "General Cmd runner spawns workers without joining every worker. No generic library/Batch Cmd is returned by this wrapper.",
+    "tea.go:767": "WithFilter executes before internal Raw/clipboard/exec/Batch handling. Closed allowed-message set filters those paths before side effects. Original View.OnMouse may spawn a pure typed-event closure via framework; produced/delivered/active counters qualify those callbacks, not all framework goroutines.",
+    "tea.go:1018": "Original Program reads owned TTY size, starts renderer/input/resize handlers, calls WRAPPER Init, runs loop and shuts down native renderer/input/terminal on normal return. Fixed TrueColor and two static framework environment entries are disclosed test options.",
+    "tea.go:1285": "Owned Program shutdown cancels, waits registered handlers, closes input/renderer and restores terminal state. Program Run/Kill/Wait outcomes and independent PTY termios/child wait are reported; no descendant-reap proof.",
+    "qualification": "Read-only inspection of selected pinned cache files, not full transitive framework audit or compile/runtime validation. No cache modification/download."
+  },
+  "design": {
+    "wrapper": "terminalLoopFixture holds the exact original dashboardModel and original runsDashboard pointer. Every Update returns the wrapper; Init returns nil, never original Init/connect/clock/stream. Existing strict fake/data/direct helper remains byte-exact.",
+    "filter": "A closed pre-framework filter allows exact-grid WindowSize, fixed startup ColorProfile/Env, reviewed keys/clicks, original dashboardMouseMsg and armed QuitMsg. Other framework messages are counted/dropped before internal Raw/exec/clipboard/Batch dispatch. Unreviewed keys/cells stop the attempt. Environment payloads are not recorded or passed to the original model.",
+    "commands": "Original reads execute synchronously through existing audited direct fixture helpers; original bounded drain retained. Library input/timer/Batch Cmds remain uninvoked. Only audited original typed OnMouse closure and original Quit result can reach framework command delivery. Native Run/endpoint/backend never invoked.",
+    "reader": "Original model identity/reader pointer retained. No Home reset/re-read. Pause/real key scrolling/fold/fullscreen/return reuse original buffer/cursor. End is expected to schedule one original empty read closure when done, with zero transport calls, same buffer hash/cursor and original reader; actual deltas must be recorded and checked.",
+    "mouse": "Actual SGR press travels from owned PTY through original Program input parser/renderer OnMouse and original typed event Update. F12 is an explicit test-only control to hold the original fullscreen-exit callback across an actual reviewed-grid SIGWINCH; callback delivery must be rejected without changing full state/reader. This controlled delay is not a general OS input-queue race proof.",
+    "program": "Original tea.NewProgram on os.Stdin/Stdout owned PTY, original view including AltScreen/Mouse mode. WithContext25s/WithoutSignalHandler/TrueColor/staticTERM+COLORTERM/WithFilter are explicit test options. No production tui.Run startup/auth/unknown-receipt cleanup coverage.",
+    "parent": "Python starts only the separately built reviewed test binary with exact selector, fresh per-grid homes,35s child test timeout,70s overall capture deadline, owned process session/group and PTY descriptors. It never builds ARM or starts a backend.",
+    "replay": "Node uses existing pinned xterm6.0.0/Playwright assets, static terminal container and actual pre-exit PTY byte prefixes. Source Model.View.Content is a separate comparator, never inserted as terminal text or DOM. Per-prefix resize byte offsets are replayed in order. No live web URL/backend/build pipeline."
+  },
+  "bounds": {
+    "grids": [
+      [
+        72,
+        28
+      ],
+      [
+        100,
+        35
+      ],
+      [
+        160,
+        50
+      ]
+    ],
+    "checkpoints": 36,
+    "cap": 48,
+    "perGrid": 12,
+    "reason": "Replaces redundant direct detail copies with targeted tail/loop snapshots; does not silently widen the original checkpoint budget. This next stage does not reproduce all earlier lease/modal states in a native loop.",
+    "data": "Existing<=12leases/10runs/8KiBlog/2KiB reason/256B labels/64KiB DTO; actual original fixture log3165B reused.",
+    "PTYBytesPerGrid": 4194304,
+    "retainedArtifactsBytes": 16777216,
+    "cellSamplesPerFrame": "Up to96 wide/multi-character cells plus32 right-edge cells, with complete active-buffer row text and PNG. No exhaustive glyph-paint proof.",
+    "scroll": "At most64 genuine key steps per seek; no host SetYOffset or invented terminal text."
+  },
+  "checkpointRoster": [
+    "leases-native",
+    "runs-native",
+    "inline-follow-tail",
+    "inline-paused-tail",
+    "inline-first (header/start)",
+    "inline-middle",
+    "inline-end-tail",
+    "folded",
+    "full-first",
+    "full-middle-resize",
+    "full-end-tail",
+    "return-folded"
+  ],
+  "requiredReplayObservations": [
+    "Actual alternate buffer at exact cols/rows, complete native buffer row text versus original model rows",
+    "LOG FINAL visible in original inline follow/pause/end and fullscreen end captures at genuine lower offsets",
+    "LOG FIRST in full-first and LOG MIDDLE in full-middle after original scroll",
+    "Same original reader/buffer/cursor through pause/fold/full/return; End closure count versus zero transport reread",
+    "Actual original OnMouse callback acknowledgment and controlled stale resize rejection",
+    "PNG and bounded actual cell/width samples; no universal physical terminal/font/focus claim"
+  ],
+  "buildBoundary": {
+    "automaticBuild": "None. Capture consumes a separately reviewed test binary and explicit build receipt; it does not run go/npm/build/setup.",
+    "proposedBuildCommand": "env SEMBLANCE_RUN_LIMIT=115 GOMAXPROCS=2 GOMEMLIMIT=1536MiB GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off GOENV=off GOFLAGS= \"$SHARED_FIFO\" go test -c -p 1 -trimpath -o \"$OWNED_TEST_BINARY\" ./internal/tui",
+    "sourceBinding": "Build owner snapshots before and after exact compiler command. Receipt schema below must bind binary digest and exact57-file source set; no source change allowed during compilation/capture. This source cut supplies no binary/receipt and claims no build.",
+    "receiptSchema": {
+      "binarySHA256": "Digest of the original owned output binary",
+      "testSelector": "^TestUXTerminalLoopFixture$",
+      "sourceSHA256": "Exact map:50 classified files plus frozen direct helper, frozen direct plan, source-classification record, new loop Go, capture Python, replay JS and THIS plan (57 entries); hashes verified before/after build by build owner."
+    },
+    "binaryRetention": "Owned scratch binary outside retained evidence root; not installed/nativeCLI/default tool. Record digest, retain only if explicitly required; remove only that owned scratch binary after all consumers stop. No shared cache deletion. The16MiB evidence budget excludes separately allocated compiler scratch/cache; its scope must be explicit in a future build window."
+  },
+  "proposedCaptureAndReplay": {
+    "authorization": "NOT RUN. Requires reviewed binary/receipt and separate bounded PTY/browser allocation.",
+    "cwd": "repository root",
+    "commands": [
+      "python3 scripts/dashboard-screenshots/ux-terminal-loop-capture.py --binary \"$OWNED_TEST_BINARY\" --build-receipt \"$REVIEWED_BUILD_RECEIPT\" --output \"$NEW_ABSOLUTE_PRIVATE_OUTPUT\"",
+      "node scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs \"$NEW_ABSOLUTE_PRIVATE_OUTPUT\""
+    ],
+    "outerInvocation": "Use unchanged shared FIFO<=115s with2CPU/1536MiB target and offline/local GOENVoff/emptyGOFLAGS settings. Build is a distinct proposed original command; capture+replay share one proposed original window. No slots/worker overrides.",
+    "deadlines": "Capture70s, per Program context25s/child test35s, owned failure teardown<=9s, replay30s plus collection within115s target. No claim compilation or execution fits until allocated/measured.",
+    "output": "New resolved private directory outside checkout, never reused. Fresh synthetic-home pending-only effects, raw append-only PTY streams, resize timelines, metadata/model comparator, captured prefixes/hashes, original handle outcomes, bounded PNGs and receipts. No real account/native endpoint/session state."
+  },
+  "cleanup": {
+    "GoChild": "Defer cleanup on original Program even on Goexit: original Kill/Wait, owned context cancel, original peer/run retirement and strict fake Close. Record Run return, same wrapper/model/reader, callback acknowledgments, active/forbidden state and test failure. Normal returns and forced cleanup remain distinct.",
+    "PTYParent": "Retain exact Popen/master/slave/stream handles. Send q, wait/drain; on timeout target only that child session/group with TERM then KILL and bounded original wait. Independent saved termios comparison and explicit FD closes; record unknown/error outcomes. Failure must not abandon owned handle cleanup.",
+    "browser": "Original context/browser close in finally, bounded timer; screenshots/cell facts retained before oracle assertion failures, no automatic replacement.",
+    "qualifications": [
+      "Pure mouse Cmd produced/delivered counters are not a join proof for all framework goroutines.",
+      "Program Run/Kill/Wait and actual child wait/FD/termios facts do not prove every OS descendant reaped or production native Run behavior.",
+      "No frame/Close return alone is cleanup acceptance. Keep every failure and original handle outcome; no replacement without report."
+    ]
+  },
+  "sourcePreparationValidation": [
+    "New Go source formatter parse only, Python AST parse and JS syntax check; none compiles/executes the fixture/capture/replay",
+    "All50 classified inputs compare to accepted current738ad54 source; old fixture/plans/evidence and111 private artifacts rehashed unchanged",
+    "New source/privacy/diff review and frozen hashes only"
+  ],
+  "remainingGates": [
+    "Independent review of adapter/filter/actual Cmd callsites/owned cleanup and complete57-file build receipt",
+    "Explicit offline compile window and own binary receipt",
+    "Explicit single owned PTY/capture and terminal-only browser window; no runtime allocation now",
+    "Actual visible tail/native rows/glyph/callback/resize/cleanup outcomes; report any failure before replacement",
+    "Product remediation only after concrete terminal findings; overall UX acceptance remains open"
+  ],
+  "actualResults": {
+    "compiled": false,
+    "programOrPTYRun": false,
+    "browserRun": false,
+    "nativeTailVisible": null,
+    "runtimeAssertionsPassed": null,
+    "sourceOnly": true
+  }
+}
