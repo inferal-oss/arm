@@ -1,0 +1,103 @@
+{
+  "scope": "unconnected original resident database owner around the official public Connector/pool",
+  "status": "selected-normal-race-and-owned-wrapper-causal-controls-pass-further-gates-pending",
+  "source_sha256": {
+    "internal/database/resident_connector.go": "355580019211158a3e9563150ee7b94edf52e2ba19bc4f27e6bec9ef396b1534",
+    "internal/database/resident_connector_test.go": "e367be58916263f517cbaf92c046adb88995e4b5017450ac6a35666a186831f6",
+    "internal/database/resident_files.go": "e5831a21044f38ea333776480ef4b49c78f80e0d71cef6448df32dd03f388a2e",
+    "internal/database/resident_open.go": "33af9e665f93cc69c01145e3327f10eb77b1c214a50e76eae8fef55bc250a175",
+    "internal/database/resident_open_test.go": "9118f34d858d44725f84c82a1304f16b30e510301628e232569010b499fd75d4",
+    "internal/database/testdata/resident_connector_controls.go.txt": "76228e075dd7198464b06cedff9e7f727ee268dc93c8dd8a65600bc3f72090ae",
+    "internal/database/testdata/resident_connector_controls.py": "ffcb7321000432aeed4fb837c59048b1883cddb67f2ada16e5e6ad2cbe1438ee"
+  },
+  "official_driver": "modernc.org/sqlite v1.60.1",
+  "driver_or_dependency_or_import_namespace_change": false,
+  "guarantees": {
+    "original_pending_holder_before_effects": true,
+    "actual_pool_retained_before_Ping_and_schema": true,
+    "original_claim_generation_pool_binding": true,
+    "physical_Connect_attempt_limit": 1,
+    "max_open_and_idle_connections": 1,
+    "connection_age_and_idle_expiry": 0,
+    "actual_raw_Conn_and_optional_interfaces_unchanged": true,
+    "official_Driver_Backup_Error_identity_unchanged": true,
+    "canonical_file_code_preserved_from_reviewed_source": true,
+    "partial_error_and_abnormal_state_retained": true
+  },
+  "visibility_limits": [
+    "Only public original Connector/Connect/returned-Conn/pool API state is visible.",
+    "Failure-created private connection/TLS/native objects, internal pool tasks/watchers/statements and their cleanup remain opaque.",
+    "Retaining a returned Conn does not prove it remains live after database/sql discard.",
+    "Pool.Close attempt/return never proves native/pool/task Closed or authorizes resource release."
+  ],
+  "connection_failure_policy": "Subsequent physical Connect/reconnect is refused. Independent database failure can degrade queries/renewal/cancellation/settlement; successful worker upgrade must leave the healthy original pool untouched.",
+  "prepared_roots_unrun": 0,
+  "normal_race_pending_abnormal_positive_claim_and_legacy_qualification": "selected normal/race owner and legacy controls plus owned-wrapper pending/panic/Goexit causal controls pass; positive native-claim/pool/schema/Manager and product composition remain pending",
+  "fresh_abort_enabled": false,
+  "standing_service_grant_or_charge_settlement_supplied": false,
+  "root_native_or_resource_Closed_supplied": false,
+  "production_caller_or_start_worker_activation": false,
+  "completion_gate": "Actual first/repeated/concurrent arm start; distinct compatible B executable/API/HTML/assets; original run/proxy children, logs, empty heartbeat/finish, renewal, cancellation, expiry and completion across replacement.",
+  "normal_qualification": {
+    "new_owner_roots_passed": 8,
+    "legacy_control_roots_passed": 10,
+    "total_roots_passed": 18,
+    "named_results_passed": 205,
+    "failed_or_skipped": 0,
+    "actual_consumer_package_graph_packages": 742,
+    "actually_referenced_external_modules": 63,
+    "official_SQLite": "v1.60.1",
+    "selected_x_sys": "v0.49.0",
+    "replacements": 0,
+    "actual_referenced_mod_zip_and_expanded_source_Hash1_against_project_go_sum_before_and_after": "pass",
+    "all_started_original_command_envelopes_and_FIFO_joined": true,
+    "source_and_module_inputs_checked_before_and_after": "unchanged",
+    "read_only_shared_module_cache_and_network_deny": "enforced on actual Go commands",
+    "acquisition_or_cache_repair_or_fallback": false
+  },
+  "preserved_failed_attempt": {
+    "stage": "additional validation sandbox denied required process-lineage command before any Go invocation",
+    "Go_or_tests_run": 0,
+    "inner_elapsed_peak_cleanup_metrics": "unknown; not inferred",
+    "later_scope": "separately reviewed validation envelope changed only placement of unchanged read-only fence; original failure preserved"
+  },
+  "race_qualification": {
+    "new_owner_roots_passed": 8,
+    "legacy_control_roots_passed": 10,
+    "total_roots_passed": 18,
+    "named_results_passed": 205,
+    "failed_or_skipped": 0,
+    "actual_consumer_package_graph_packages": 743,
+    "actually_referenced_external_modules": 63,
+    "official_SQLite": "v1.60.1",
+    "selected_x_sys": "v0.49.0",
+    "replacements": 0,
+    "actual_referenced_mod_zip_and_expanded_source_Hash1_against_project_go_sum_before_and_after": "pass",
+    "all_started_original_command_envelopes_and_FIFO_joined": true,
+    "source_and_module_inputs_checked_before_and_after": "unchanged",
+    "read_only_shared_module_cache_and_network_deny": "enforced on actual Go commands",
+    "acquisition_or_cache_repair_or_fallback": false
+  },
+  "owned_wrapper_effect_controls": {
+    "normal_positive_cases": [
+      "pending",
+      "panic",
+      "Goexit"
+    ],
+    "expected_causal_negatives": {
+      "held_observation_mutex": "inspection blocked behind original public Connect",
+      "panic_omitted_original_guard": "original public Connect abnormal state was forgotten",
+      "Goexit_omitted_original_guard": "original public Connect abnormal state was forgotten"
+    },
+    "pending_positive_race": "pass",
+    "unexpected_failure_skip_race_or_timeout": false,
+    "original_process_envelopes_and_FIFO_joined": true,
+    "actual_official_modules_authenticated_before_and_after": 63,
+    "overlay_location": "ARM public wrapper after actual operation registration and before official Connect only",
+    "production_Go_bytes_unchanged": true,
+    "delivered_generator_reproduced_all_qualified_Go_bytes": true,
+    "template": "internal/database/testdata/resident_connector_controls.go.txt",
+    "generator": "internal/database/testdata/resident_connector_controls.py",
+    "limits": "No kernel-blocked native cancellation or private driver visibility; no positive native claim, pool binding, service grant or Closed witness."
+  }
+}

@@ -1,5 +1,22 @@
 # ARM delivery plan
 
+## Original official-driver database owner — selected normal and race scope qualified
+
+Owner: `codex/resident-standard-driver-owner`, based on reviewed `891689b`.
+The unconnected owner retains its actual pending operation, native Manager claim,
+canonical fresh-ledger files, official Connector, original pool and binding.
+A wrapper records one original physical Connect attempt and returns the actual
+connection unchanged; no driver fork, module or import-namespace change is used.
+The actual consumer graph and eight new plus ten legacy source/backup/format
+controls passed in normal and race modes (18 roots/205 named results each). All
+63 actually referenced official modules were authenticated before and after
+against project checksums. Owned-wrapper pending/panic/Goexit positives and
+causal negative controls pass, including pending positive under race. Positive
+original claim/pool/schema/Manager composition remains required. The [source-bound record](validation/resident-standard-database-owner-2026-10-30.json)
+keeps opaque private-native/task closure and independent DB-failure degradation
+explicit. No service grant, closure credit, fresh abort or production/start/worker
+activation is supplied; original-job public-start/B-worker acceptance stays open.
+
 ## Resident database direction — official driver, same ownership layer
 
 Continue the existing upgrade implementation with the official SQLite driver and

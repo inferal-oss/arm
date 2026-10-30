@@ -1,0 +1,140 @@
+package database
+
+import (
+	"context"
+	"errors"
+	"testing"
+	"time"
+)
+
+// Explicit owned-wrapper compiler overlays ONLY. No official driver/cache
+// source is altered; these fixtures produce no real native claim/DB binding,
+// service grant, pool/task/native Closed or resource-release authority.
+func TestResidentStandardPendingOriginalConnectAllowsInspectionAndRefusesAdmission(t *testing.T) {
+	if residentConnectProofMode != "pending" {
+		t.Fatal("wrong explicit wrapper control mode")
+	}
+	o := standardConnectorFixture(t, ":memory:")
+	ctx, cancel := context.WithCancel(t.Context())
+	type outcome struct {
+		connection bool
+		err        error
+	}
+	done := make(chan outcome, 1)
+	go func() {
+		connection, err := o.connector.Connect(ctx)
+		if connection != nil {
+			// This unit primitive called Connect directly, outside sql.DB. It
+			// disposes ONLY its actual returned public fixture object, with no
+			// claim of native/pool/task completion or product close fallback.
+			err = errors.Join(err, connection.Close())
+		}
+		done <- outcome{connection != nil, err}
+	}()
+	var inspectJoined, admissionJoined <-chan struct{}
+	// Cancellation is BEFORE entry into the official Connector.Connect. This
+	// test does not claim to cancel a kernel-blocked SQLite open. Always release
+	// and join original wrapper and observation/admission helpers before fixture
+	// pool disposal, including a failed assertion.
+	defer func() {
+		cancel()
+		close(residentConnectProofContinue)
+		select {
+		case result := <-done:
+			if result.connection || !errors.Is(result.err, context.Canceled) {
+				t.Error("original pre-entry cancelled Connect outcome differs", result)
+			}
+		case <-time.After(2 * time.Second):
+			t.Error("original wrapper return still pending")
+		}
+		for _, joined := range []<-chan struct{}{inspectJoined, admissionJoined} {
+			if joined == nil {
+				continue
+			}
+			select {
+			case <-joined:
+			case <-time.After(2 * time.Second):
+				t.Error("original fixture observer/admission helper still pending")
+			}
+		}
+	}()
+	select {
+	case <-residentConnectProofReached:
+	case <-time.After(time.Second):
+		t.Fatal("original registered public Connect pause not reached")
+	}
+	inspected := make(chan ResidentDatabaseInspection, 1)
+	inspectDone := make(chan struct{})
+	inspectJoined = inspectDone
+	go func() { defer close(inspectDone); inspected <- o.InspectOriginal() }()
+	select {
+	case seen := <-inspected:
+		if !seen.PoolRetained || !seen.Connector.ConnectAttempted || !seen.Connector.ConnectPending || seen.Connector.ConnectAbnormal || !seen.Connector.PrivateNativeStateOpaque || seen.Close.NativeOutcome != "unknown" {
+			t.Fatal("pending original public Connect custody hidden", seen)
+		}
+	case <-time.After(500 * time.Millisecond):
+		t.Fatal("inspection blocked behind original public Connect")
+	}
+	refused := make(chan error, 1)
+	admissionDone := make(chan struct{})
+	admissionJoined = admissionDone
+	go func() {
+		defer close(admissionDone)
+		_, err := o.connector.Connect(t.Context())
+		refused <- err
+	}()
+	select {
+	case err := <-refused:
+		if !errors.Is(err, ErrResidentConnectionAttempted) {
+			t.Fatal("pending original admitted replacement Connect", err)
+		}
+	case <-time.After(500 * time.Millisecond):
+		t.Fatal("replacement admission blocked behind original public Connect")
+	}
+}
+
+func assertOriginalConnectAbnormalRetained(t *testing.T, o *ResidentOpen, expected any) {
+	t.Helper()
+	seen := o.InspectOriginal()
+	original := o.connect
+	if original == nil || !original.abnormal || original.finished || original.cause != expected || original.resultErr == nil || seen.FirstError != original.resultErr || !seen.Connector.ConnectPending || !seen.Connector.ConnectAbnormal || seen.Connector.FirstConnectError != original.resultErr || !seen.Connector.PrivateNativeStateOpaque || seen.Close.NativeOutcome != "unknown" {
+		t.Fatal("original public Connect abnormal state was forgotten", seen)
+	}
+	if _, err := o.connector.Connect(t.Context()); !errors.Is(err, ErrResidentConnectionAttempted) {
+		t.Fatal("abnormal original admitted a new physical attempt", err)
+	}
+	if o.connect != original {
+		t.Fatal("abnormal original call object replaced")
+	}
+}
+
+func TestResidentStandardOriginalConnectPanicRetainsCauseAndRefusesAdmission(t *testing.T) {
+	if residentConnectProofMode != "panic" {
+		t.Fatal("wrong explicit wrapper control mode")
+	}
+	o := standardConnectorFixture(t, ":memory:")
+	var cause any
+	func() {
+		defer func() { cause = recover() }()
+		_, _ = o.connector.Connect(t.Context())
+	}()
+	if cause != "original public Connect fixture panic" {
+		t.Fatal("owned original wrapper panic did not run", cause)
+	}
+	assertOriginalConnectAbnormalRetained(t, o, cause)
+}
+
+func TestResidentStandardOriginalConnectGoexitRetainsCallAndRefusesAdmission(t *testing.T) {
+	if residentConnectProofMode != "goexit" {
+		t.Fatal("wrong explicit wrapper control mode")
+	}
+	o := standardConnectorFixture(t, ":memory:")
+	done := make(chan struct{})
+	go func() { defer close(done); _, _ = o.connector.Connect(t.Context()) }()
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("original wrapper Goexit goroutine did not end")
+	}
+	assertOriginalConnectAbnormalRetained(t, o, nil)
+}

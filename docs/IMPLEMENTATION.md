@@ -1,5 +1,31 @@
 # Backend and CLI implementation
 
+## Original official-driver database owner — unconnected source
+
+`database.ResidentOpen` is a pure pending holder registered before effects. It
+retains the actual original Manager claim, canonical fresh-ledger descriptors,
+official `modernc.org/sqlite v1.60.1` Connector, `sql.OpenDB` pool before Ping,
+and exact generation/pool binding for the private Manager. Native file checks
+precede SQL; mode=rw provides no implicit ledger creation or legacy fallback.
+One registered wrapper Connect attempt runs outside the observation mutex and
+keeps its actual returned connection/error/abnormal outcome. The connection is
+passed through unchanged, preserving optional and concrete APIs and registered
+Driver/Backup/Error types. Existing dependencies/imports remain unchanged.
+
+One physical attempt total explicitly forbids database/sql discard/reconnect;
+max-open1/idle1/no expiry alone would not. Independent DB failure can degrade
+availability and settlement. Worker replacement must leave the healthy original
+pool untouched. Public pool Close is an original-stop-only API observation after
+required actual DB-user joins; hidden failed-native allocations and internal
+pool/task closure remain opaque. The root must keep unresolved custody funded;
+this leaf supplies no funding, complete Closed, resource credit or fresh abort.
+The actual consumer graphs and selected 18-root normal and race owner/legacy
+cohorts pass. Wrapper pending/panic/Goexit and causal negative controls pass,
+including pending under race. Original positive claim/schema/Manager and product
+gates remain open.
+No Manager/Server/root/public-start/worker production caller is supplied. See the
+[source and qualification limits](validation/resident-standard-database-owner-2026-10-30.json).
+
 ## Official-driver resident database owner — source checkpoint only
 
 The no-fork source design keeps the database ownership layer around the existing
