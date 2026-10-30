@@ -10795,3 +10795,18 @@ No correction is implemented and all compiled62 inputs remain exact77467.
 Future work must explicitly add the new22-entry failure as sixth retained runtime
 input in both drivers and every budget path, under the same16MiB cap. The source
 proposal requires review before any implementation or compile/runtime allocation.
+
+
+## Native readiness proposal — independent source review
+
+The exact proposal digest `8d000be1f5027ece5779bc6196f44527fc9507b42922657e5c0050da8c2a30a7`,
+nine project and nine pinned dependency sources, retained 6,018-byte PTY stream
+and all 62 compiled inputs were independently verified. Review follows terminal
+file detection, input/scanner/filter, renderer mutex/write/last-view ordering and
+original callback/command delivery. A model revision or query output alone is
+insufficient readiness evidence. The proposed observer is unimplemented, and an
+instrumented future success cannot establish the cause of the old failure.
+
+Focused fixture composition remains isolated and unmerged pending corrected
+source, meaningful pass-through checks and separately allocated native evidence.
+No new compile, PTY, browser or product activation occurred in this review.

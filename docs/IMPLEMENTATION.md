@@ -4692,3 +4692,14 @@ No correction is implemented and all compiled62 inputs remain exact77467.
 Future work must explicitly add the new22-entry failure as sixth retained runtime
 input in both drivers and every budget path, under the same16MiB cap. The source
 proposal requires review before any implementation or compile/runtime allocation.
+
+
+## Native output observer — reviewed implementation boundary
+
+The observer must retain the same terminal-file Read/Write/Close/Fd and Name
+behavior without promoted fast paths bypassing observation. It forwards original
+bytes once, serializes range attribution consistently, and preserves original
+write results and panic behavior. Observation failure remains unknown and cannot
+replace the write result. No model/callback call while holding its lock; no stdin
+wrapper, synthetic marker/message, forced renderer or dependency change. This
+source direction adds no observer or product code to the current implementation.

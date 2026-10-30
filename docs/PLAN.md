@@ -3340,3 +3340,14 @@ No correction is implemented and all compiled62 inputs remain exact77467.
 Future work must explicitly add the new22-entry failure as sixth retained runtime
 input in both drivers and every budget path, under the same16MiB cap. The source
 proposal requires review before any implementation or compile/runtime allocation.
+
+
+## Native input readiness — coordinator source disposition
+
+Proposal `c265f54` is composed as `cafe425`, documents only. Independent source/
+hash review accepts a minimal test-only output/readiness observer and bounded
+stage diagnostics for implementation. The original mouse-first failure remains
+unexplained; no success or product defect is inferred. Preserve original writes,
+terminal interfaces and results, match returned frame ranges to parent-drained
+bytes, then permit one native press. Six retained runtime roots must be counted
+explicitly. Source implementation is authorized; compile/runtime remain closed.
