@@ -11042,3 +11042,40 @@ a fresh63-input compile receipt/binary and a separately allocated72x28 capture
 with eight interaction checkpoints and three modal images. Historical classifier,
 plan, positive70c evidence and failed captures remain unchanged; no new native
 Program/PTY/browser, production startup or full-UX acceptance is claimed.
+
+
+## P2 modal shadow paint — minimal source binding prepared
+
+Owner branch `codex/ux-terminal-modal-shadow-binding` adds the
+[sibling binding](validation/ux-terminal-modal-shadow-binding-2026-10-30.json)
+with the original50 classified paths and exactly the two ordinary-validated
+presentation/regression overrides; the other48 digests remain unchanged. The
+original classifier and native plan remain byte exact. New selector
+`^TestUXTerminalModalShadowFixture$` admits only72x28 through this literal-digest
+guard; the historical test entry, typed observer and strict helper remain
+unchanged. The original guard continues to reject the product delta.
+
+A future fresh compile receipt must bind all original62 member paths plus the
+new manifest:63 actual digests, including current Go/capture/replay source. The
+manifest pins product digests and member paths without a helper/self-hash cycle.
+The parent preserves the full eight-checkpoint72x28 interaction, exact-number,
+inspect/review/decline/filter/restoration and original cleanup sequence. Replay
+validates all eight states/prefixes before browser launch and renders only
+review-first, review-tail and filter-draft:3 images and84 actual row comparisons.
+Each modal target must have intact actual corner/side cells and source-bound
+visible control geometry. No new100x35/160x50 or full-UX acceptance is implied.
+
+Both drivers require seven explicit immutable runtime inputs, including the
+historical positive capture:12,855,111 bytes before new output, leaving3,922,105
+bytes below16MiB. Replay requires eight input roots including the fresh capture
+and19 arguments; every combined write/PNG/cleanup budget includes the seven
+prior roots and the existing metadata reserve. The future bound outer must use
+the same seven-input identities/counts and additionally preserve ordinary-test
+and fresh-build evidence separately. Old binaries cannot be reused.
+
+Validation for this new binding is source-only: formatter/Python AST/JavaScript
+syntax, exact50/63 membership and unchanged helper/interaction/cleanup checks.
+The product's earlier29-case ordinary cohort remains scoped to its frozen
+product/regression source. This new fixture source is uncompiled/unexecuted.
+Independent source review, fresh compile allocation, actual binary/receipt-bound
+outer review and a separate native window remain required before paint review.

@@ -359,6 +359,109 @@ func TestUXTerminalLeaseReadingFixture(t *testing.T) {
 	}
 }
 
+// A fresh sibling binding admits only the reviewed product and regression delta.
+func TestUXTerminalModalShadowFixture(t *testing.T) {
+	root := os.Getenv("ARM_TUI_MODAL_SHADOW_ROOT")
+	if root == "" {
+		t.Skip("reviewed modal shadow source requires separate build/PTY allocation")
+	}
+	if !filepath.IsAbs(root) || filepath.Clean(root) != root {
+		t.Fatal("resolved private lease root required")
+	}
+	info, err := os.Lstat(root)
+	if err != nil || !info.IsDir() || info.Mode().Perm() != 0700 || info.Mode()&os.ModeSymlink != 0 {
+		t.Fatal("private lease root required")
+	}
+	if os.Getenv("ARM_TUI_MODAL_SHADOW_GRID") != "72x28" {
+		t.Fatal("exact modal shadow grid required")
+	}
+	grid := [2]int{72, 28}
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal("lease source cwd")
+	}
+	repo := filepath.Clean(filepath.Join(cwd, "..", ".."))
+	var guard struct {
+		SourceEntries map[string]struct {
+			SHA256 string `json:"sha256"`
+		} `json:"sourceEntries"`
+	}
+	raw, err := os.ReadFile(filepath.Join(repo, "docs/validation/ux-terminal-source-classification-2026-10-29.json"))
+	sum := sha256.Sum256(raw)
+	if err != nil || hex.EncodeToString(sum[:]) != "574c62ed1e2d66828082880beeaa4d706b7690cf4f38b1ff3a229aa1165cae5d" || json.Unmarshal(raw, &guard) != nil || len(guard.SourceEntries) != 50 {
+		t.Fatal("modal shadow original classification guard")
+	}
+	var binding struct {
+		Schema                int               `json:"schema"`
+		SourceOverrides       map[string]string `json:"sourceOverrides"`
+		EffectiveSourceSHA256 map[string]string `json:"effectiveSourceSHA256"`
+		SourceBinding         struct {
+			RequiredEntries int      `json:"requiredEntries"`
+			Members         []string `json:"members"`
+			TestSelector    string   `json:"testSelector"`
+		} `json:"sourceBinding"`
+	}
+	raw, err = os.ReadFile(filepath.Join(repo, "docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json"))
+	sum = sha256.Sum256(raw)
+	if err != nil || hex.EncodeToString(sum[:]) != "c6c6858e9b97dd4a71bc54f05ab1c22a1856b5ef730c3c92e7c51019965b532d" || json.Unmarshal(raw, &binding) != nil || binding.Schema != 1 || len(binding.SourceOverrides) != 2 || len(binding.EffectiveSourceSHA256) != 50 || binding.SourceBinding.RequiredEntries != 63 || len(binding.SourceBinding.Members) != 63 || binding.SourceBinding.TestSelector != "^TestUXTerminalModalShadowFixture$" {
+		t.Fatal("modal shadow sibling binding guard")
+	}
+	wantOverrides := map[string]string{
+		"internal/tui/presentation.go": "5c06dca64d42f7c8f27905fe2e4b7f2125671eabcc2dbf9a5c895c8697ccc466",
+		"internal/tui/polish_test.go":  "04ff15993dbdac1a7d7866aaa429587df6f3364e5730e61d4c9374a204d90a34",
+	}
+	for file, want := range wantOverrides {
+		if binding.SourceOverrides[file] != want {
+			t.Fatal("modal shadow override drift")
+		}
+	}
+	for file, item := range guard.SourceEntries {
+		want := item.SHA256
+		if override, ok := wantOverrides[file]; ok {
+			want = override
+		}
+		b, e := os.ReadFile(filepath.Join(repo, filepath.FromSlash(file)))
+		h := sha256.Sum256(b)
+		if e != nil || binding.EffectiveSourceSHA256[file] != want || hex.EncodeToString(h[:]) != want {
+			t.Fatal("modal shadow effective source drift")
+		}
+	}
+	for file, want := range map[string]string{"internal/tui/ux_terminal_direct_fixture_test.go": "ef37d0bdf89bce2dcd68ae7b2de2961f046c57f868edcb9d2e8ccc5952e37420", "internal/tui/ux_terminal_loop_fixture_test.go": "1dce0f1852791781f941eff7086c3cb6420c7d1305f87868182ae3f0a0ded168", "scripts/dashboard-screenshots/ux-terminal-loop-capture.py": "980fc761382c0de2854f43decb854658c69462ac05ad5b899105585eac8231d6", "docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json": "10c195a224dd78573bf11320efa32e559f09635a7431a03fa232cc1a2b5746f9"} {
+		b, e := os.ReadFile(filepath.Join(repo, filepath.FromSlash(file)))
+		h := sha256.Sum256(b)
+		if e != nil || hex.EncodeToString(h[:]) != want {
+			t.Fatal("lease frozen helper drift")
+		}
+	}
+	report := &directFixtureReport{Scope: "Fixed72x28 modal shadow Program/PTY wrapper; no mutation/native transport"}
+	f := prepareDirectFixture(t, root, grid, newDirectFixtureData(t), report)
+	a := &terminalLeaseReadingFixture{f: f, initial: f.m, progress: filepath.Join(root, f.grid, "progress.json"), grid: grid, expectedID: f.s.data.Leases[0].ID}
+	ctx, cancel := context.WithTimeout(f.m.ctx, 25*time.Second)
+	defer cancel()
+	a.diag = newLeaseReadiness(filepath.Join(root, f.grid, "readiness.json"))
+	observedOutput := &leaseObservedOutput{file: os.Stdout, diag: a.diag}
+	a.diag.descriptors(os.Stdout, observedOutput, grid)
+	p := tea.NewProgram(a, tea.WithContext(ctx), tea.WithInput(os.Stdin), tea.WithOutput(observedOutput), tea.WithoutSignalHandler(), tea.WithColorProfile(colorprofile.TrueColor), tea.WithEnvironment([]string{"TERM=xterm-256color", "COLORTERM=truecolor"}), tea.WithFilter(a.filter))
+	started := false
+	defer func() {
+		if started {
+			p.Kill()
+			p.Wait()
+		}
+		cancel()
+		f.close()
+		loopFixtureWrite(t, filepath.Join(root, f.grid, "child-final.json"), map[string]any{"testFailed": t.Failed(), "programStarted": started, "programReturned": a.returned, "sameWrapperReturned": a.sameWrapper, "sameModel": a.f.m == a.initial, "restored": a.restored(), "quitRequested": a.quitRequested, "initSuppressed": a.initSuppressed, "sawExactNumber": a.sawExactNumber, "sawReview": a.sawReview, "declined": a.declined, "pastes": a.pastes, "recordKeys": a.recordKeys, "mouseProduced": a.produced.Load(), "mouseDelivered": a.delivered, "mouseActive": a.active.Load(), "reads": f.reads, "calls": f.s.calls, "forbidden": f.s.forbidden, "activeFakeCalls": f.s.active, "fakeClosed": f.s.closed, "contextCanceled": f.m.ctx.Err() != nil, "diagnostics": a.diag.summary(), "cleanupQualification": "Original Program/fake/context/Popen/PTY observations only; no blanket goroutine/descendant reap or production startup/auth"})
+	}()
+	started = true
+	final, runErr := p.Run()
+	a.returned = true
+	a.diag.program(runErr)
+	a.sameWrapper = final == a
+	if !a.diag.healthy() || runErr != nil || !a.sameWrapper || !a.quitRequested || !a.restored() || !a.sawExactNumber || !a.sawReview || !a.declined || a.pastes != 1 || a.recordKeys > 64 || a.active.Load() != 0 || a.produced.Load() != 2 || a.delivered != 2 || f.reads != 1 || len(f.s.calls) != 1 || f.s.calls[0].Operation != "inspect" {
+		t.Error(fmt.Sprintf("lease reading original outcome incomplete: %T", runErr))
+	}
+}
+
 func (a *terminalLeaseReadingFixture) startupFrame(generation int, ids []string) leaseStartupFrame {
 	m := a.f.m
 	var region [4]int

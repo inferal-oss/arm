@@ -22,7 +22,7 @@ if hashlib.sha256(SUPPORT_FILE.read_bytes()).hexdigest() != '980fc761382c0de2854
 spec = importlib.util.spec_from_file_location('_arm_owned_pty_support', SUPPORT_FILE)
 support = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(support)  # Reviewed definitions only; __main__ not invoked.
-GRIDS, LIMIT = support.GRIDS, support.LIMIT
+GRIDS, LIMIT = ((72, 28),), support.LIMIT
 sha, retained, write_json = support.sha, support.retained, support.write_json
 FILTER = 'no-synthetic-match'
 KEYS = {'i': b'i', 'x': b'x', '/': b'/', 'enter': b'\r', 'esc': b'\x1b',
@@ -39,18 +39,20 @@ EXTRA_SOURCES = {
  'internal/tui/ux_terminal_lease_reading_fixture_test.go',
  'scripts/dashboard-screenshots/ux-terminal-lease-capture.py',
  'scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs',
- 'docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json'}
+ 'docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json',
+ 'docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json'}
 
 PRESERVED_MANIFESTS = {'60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d': 111,
  '01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce': 29,
  'bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510': 47,
  '17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67': 15,
  '2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177': 23,
- 'ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e': 22}
-ROSTER = {
- '72x28':['lease-detail-first','lease-detail-tail','lease-record-exact-number','release-review-first','release-review-tail','filter-draft','leases-filter-empty','leases-restored'],
- '100x35':['lease-detail-first','lease-detail-tail','lease-record-exact-number','release-review-fit','filter-draft','leases-filter-empty','leases-restored'],
- '160x50':['lease-detail-fit','lease-record-exact-number','release-review-fit','filter-draft','leases-filter-empty','leases-restored']}
+ 'ef54319ca16db0bda82c713c04f2687c61538232afe04b5954313dccd988fa6e': 22,
+ 'fb8ee961d2618708c672bfeb7bb2c96feda582be72f4f2712325135390b13055': 62}
+ROSTER = {'72x28': ['lease-detail-first', 'lease-detail-tail', 'lease-record-exact-number', 'release-review-first', 'release-review-tail', 'filter-draft', 'leases-filter-empty', 'leases-restored']}
+BINDING_FILE = 'docs/validation/ux-terminal-modal-shadow-binding-2026-10-30.json'
+BINDING_SHA256 = 'c6c6858e9b97dd4a71bc54f05ab1c22a1856b5ef730c3c92e7c51019965b532d'
+SOURCE_OVERRIDES = {'internal/tui/presentation.go': '5c06dca64d42f7c8f27905fe2e4b7f2125671eabcc2dbf9a5c895c8697ccc466', 'internal/tui/polish_test.go': '04ff15993dbdac1a7d7866aaa429587df6f3364e5730e61d4c9374a204d90a34'}
 
 class LeaseSession(support.Session):
     def __init__(self, root, binary, size, deadline, retained_inputs):
@@ -85,14 +87,14 @@ class LeaseSession(support.Session):
                    'GOMAXPROCS': '2', 'GOMEMLIMIT': '1536MiB',
                    'GOENV': 'off', 'GOFLAGS': '', 'GOTOOLCHAIN': 'local',
                    'GOPROXY': 'off', 'GOSUMDB': 'off',
-                   'TMPDIR': str(root / 'tmp'), 'ARM_TUI_LEASE_ROOT': str(root),
-                   'ARM_TUI_LEASE_GRID': self.grid}
+                   'TMPDIR': str(root / 'tmp'), 'ARM_TUI_MODAL_SHADOW_ROOT': str(root),
+                   'ARM_TUI_MODAL_SHADOW_GRID': self.grid}
             # Inherit the original disposable FIFO process group. Outer queue
             # termination therefore includes this child; no setsid/setpgid or
             # detached session can escape that group. Local fallback targets
             # only this retained original Popen handle.
             self.child = subprocess.Popen(
-                [str(binary), '-test.run=^TestUXTerminalLeaseReadingFixture$',
+                [str(binary), '-test.run=^TestUXTerminalModalShadowFixture$',
                  '-test.timeout=35s', '-test.count=1'],
                 cwd=REPO / 'internal/tui', env=env,
                 stdin=self.slave, stdout=self.slave, stderr=self.slave)
@@ -277,7 +279,7 @@ class LeaseSession(support.Session):
         raise RuntimeError('record path not reached')
 
     def checkpoint(self, name, checkpoints):
-        if len(checkpoints) >= 21:
+        if len(checkpoints) >= 8:
             raise RuntimeError('lease reading frame bound')
         super().checkpoint(name, checkpoints)
 
@@ -306,8 +308,8 @@ def main():
     if not root.is_absolute() or root.parent.resolve() != root.parent or root.resolve().is_relative_to(REPO):
         raise RuntimeError('fresh resolved private lease output required')
     inputs = args.retained_input_root
-    if len(inputs) != 6 or len(set(inputs)) != 6:
-        raise RuntimeError('six preserved runtime input containers required')
+    if len(inputs) != 7 or len(set(inputs)) != 7:
+        raise RuntimeError('seven preserved runtime input containers required')
     for p in inputs:
         if not p.is_absolute() or p.resolve() != p or not p.is_dir() or p.is_relative_to(REPO) or p.stat().st_mode & 0o077 or root.is_relative_to(p) or p.is_relative_to(root):
             raise RuntimeError('private disjoint retained input required')
@@ -319,20 +321,32 @@ def main():
     input_entries = {p: json.loads((p/'artifact-manifest.json').read_text()) for p in inputs}
     if any(len(entries) != PRESERVED_MANIFESTS[input_manifest_sha[p]] for p,entries in input_entries.items()):
         raise RuntimeError('preserved runtime manifest entry count mismatch')
+    if any({str(f.relative_to(p)) for f in p.rglob('*') if f.is_file() or f.is_symlink()} != set(entries)|{'artifact-manifest.json'} for p,entries in input_entries.items()):
+        raise RuntimeError('preserved runtime artifact roster changed')
     if any((p/f).is_symlink() or not (p/f).resolve().is_relative_to(p) or sha(p/f) != h for p,entries in input_entries.items() for f,h in entries.items()):
         raise RuntimeError('preserved runtime artifact changed')
     classification_path = REPO/'docs/validation/ux-terminal-source-classification-2026-10-29.json'
     if sha(classification_path) != '574c62ed1e2d66828082880beeaa4d706b7690cf4f38b1ff3a229aa1165cae5d':
         raise RuntimeError('original classification identity changed')
     build = json.loads(args.build_receipt.read_text())
-    classified = json.loads((REPO/'docs/validation/ux-terminal-source-classification-2026-10-29.json').read_text())['sourceEntries']
+    classified = json.loads(classification_path.read_text())['sourceEntries']
+    binding_path = REPO/BINDING_FILE
+    if sha(binding_path) != BINDING_SHA256:
+        raise RuntimeError('modal shadow sibling binding identity changed')
+    binding = json.loads(binding_path.read_text())
+    effective = {f: item['sha256'] for f,item in classified.items()}
+    effective.update(SOURCE_OVERRIDES)
     required = set(classified) | EXTRA_SOURCES
-    if len(required) != 62 or set(build['sourceSHA256']) != required or build['testSelector'] != '^TestUXTerminalLeaseReadingFixture$':
-        raise RuntimeError('new reviewed lease compile receipt required; old binary not reusable')
+    if len(classified)!=50 or binding['schema']!=1 or binding['sourceOverrides']!=SOURCE_OVERRIDES or set(SOURCE_OVERRIDES)-set(classified) or binding['effectiveSourceSHA256']!=effective:
+        raise RuntimeError('exact two-source modal shadow classification required')
+    if len(required)!=63 or binding['sourceBinding']['requiredEntries']!=63 or sorted(binding['sourceBinding']['members'])!=sorted(required) or set(build['sourceSHA256'])!=required or build['testSelector']!='^TestUXTerminalModalShadowFixture$':
+        raise RuntimeError('fresh63 modal shadow compile receipt required; old binary not reusable')
+    if sha(REPO/'docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json')!='10c195a224dd78573bf11320efa32e559f09635a7431a03fa232cc1a2b5746f9':
+        raise RuntimeError('historical native plan changed')
     if not args.binary.is_absolute() or sha(args.binary) != build['binarySHA256']:
-        raise RuntimeError('owned lease binary digest')
-    if any(sha(REPO/f) != digest for f,digest in build['sourceSHA256'].items()) or any(build['sourceSHA256'][f] != item['sha256'] for f,item in classified.items()):
-        raise RuntimeError('lease source cut changed')
+        raise RuntimeError('owned modal shadow binary digest')
+    if any(sha(REPO/f)!=digest for f,digest in build['sourceSHA256'].items()) or any(build['sourceSHA256'][f]!=digest for f,digest in effective.items()):
+        raise RuntimeError('modal shadow source cut changed')
     root.mkdir(mode=0o700);(root/'tmp').mkdir(mode=0o700);write_json(root/'build-receipt.json',build)
     checkpoints,receipts = [],[];failure=None;deadline=time.monotonic()+70
     try:
@@ -383,11 +397,12 @@ def main():
             positive=['testFailed','programStarted','programReturned','sameWrapperReturned','sameModel','restored','quitRequested','initSuppressed','sawExactNumber','sawReview','declined','fakeClosed','contextCanceled']
             if error or not child or not receipts[-1]['diagnostics']['accepted'] or child['diagnostics']['unknown'] or child['testFailed'] or not all(child[k] for k in positive if k!='testFailed') or child['pastes']!=1 or child['recordKeys']>64 or child['mouseProduced']!=2 or child['mouseDelivered']!=2 or child['mouseActive']!=0 or child['reads']!=1 or len(child['calls'])!=1 or child['calls'][0]['Operation']!='inspect' or child['activeFakeCalls']!=0 or child['forbidden'] or cleanup.get('childExitCode')!=0 or not all(cleanup[k] for k in ['childWaited','finalDrainAfterChildJoin','termiosRestored','slaveClosed','masterClosed']) or not(cleanup['finalMasterEOFObserved'] or cleanup['finalMasterEIOObserved']) or cleanup['finalDrainTimedOut'] or cleanup['ownedChildTerminationRequested'] or cleanup['cleanupErrors'] or cleanup.get('cleanupOutputTruncated'):
                 raise RuntimeError('original lease child/capture/cleanup failed; no replacement')
-        if len(checkpoints)!=21 or retained(root)+sum(retained(p) for p in inputs)>LIMIT:
+        if len(checkpoints)!=8 or retained(root)+sum(retained(p) for p in inputs)>LIMIT:
             raise RuntimeError('native lease roster/retention bound')
         if any(sha(REPO/f)!=h for f,h in build['sourceSHA256'].items()):raise RuntimeError('lease source changed during capture')
         if any(sha(p/'artifact-manifest.json')!=input_manifest_sha[p] for p in inputs):raise RuntimeError('preserved manifest changed during lease capture')
         if any(sha(p/f)!=h for p,entries in input_entries.items() for f,h in entries.items()):raise RuntimeError('preserved input changed during lease capture')
+        if any({str(f.relative_to(p)) for f in p.rglob('*') if f.is_file() or f.is_symlink()} != set(entries)|{'artifact-manifest.json'} for p,entries in input_entries.items()):raise RuntimeError('preserved runtime roster changed during capture')
     except Exception as exc:failure=type(exc).__name__+': '+str(exc)
     finally:write_json(root/'capture-receipt.json',{'complete':failure is None,'failure':failure,'receipts':receipts,'checkpoints':len(checkpoints),'qualification':'Original lease reading Program/PTY/fake only; no mutation/native transport/universal reap'})
     if failure:raise RuntimeError('original lease capture failed; inspect preserved receipt')
