@@ -4824,3 +4824,25 @@ dialog plus an offset shadow exceeds its pane before final clipping. The
 existing geometry tests bound final dimensions but do not ensure an intact right
 border. The correction must preserve trusted control and mouse geometry rather
 than merely accepting the clipped result.
+
+
+## Native lease reading — scoped evidence on frozen source
+
+The [normalized inventory](validation/ux-terminal-native-reading-inventory-2026-10-30.json)
+records source70c58fb: exact2 unit roots/7subcases pass with0fail/skip, then clean
+compile-only; cumulative8,720ms. One original instrumented capture/replay exits0
+in15,709ms, with21frames/769matching rows, full detail/review logical-row coverage,
+exact typed and visible9007199254740993, original inspect/decline/filter/default
+restoration and positive original Program/fake/PTY/browser/write-marker cleanup.
+All21original PNGs were inspected. Source62/pins/prior10artifact sets/binaries
+remain exact; original23/22failures stay unchanged and causes are not retroactively
+proven. Runtime containers plus explicit auxiliary metadata remain under16MiB.
+
+This is historical positive interaction/reading evidence for that frozen source,
+not production startup/auth, every physical terminal/font/Unicode or full-UX
+acceptance. The72x28 review-first/review-tail/filter panels visibly end in literal
+right-edge ellipses; original expected/actual cells agree. Required controls remain
+readable, but the modal compositor/shadow containment is a separate P2 product
+layout finding. A later product fix requires focused source/regression review and
+new source/validation bindings; it cannot inherit this capture's acceptance.
+No new runtime or corrective run is authorized by this evidence record.
