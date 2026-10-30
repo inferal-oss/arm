@@ -1,5 +1,17 @@
 # ARM delivery plan
 
+## Resident database direction — official driver, same ownership layer
+
+Continue the existing upgrade implementation with the official SQLite driver and
+the same pending database-owner layer. The source-only owner checkpoint retains
+the original connector/pool/claim binding before use and preserves raw connection
+interfaces; hidden native state remains unknown and charged. No driver fork,
+replacement or namespace adaptation is selected. The
+[bootstrap contract](design/resident-start-bootstrap-cut.md) supersedes the earlier
+driver-extension preparation direction and preserves versioned source installation.
+Normal/race/partial-failure/real-claim and Manager validation remain unrun gates;
+service/root/worker wiring and original run/proxy continuity remain incomplete.
+
 ## Coordinator review — native ownership component accepted
 
 Focused owner commit `cafd0f1` is composed as `8c9bc66`. The six qualified Go

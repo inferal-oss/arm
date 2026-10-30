@@ -1,5 +1,19 @@
 # Backend and CLI implementation
 
+## Official-driver resident database owner — source checkpoint only
+
+The no-fork source design keeps the database ownership layer around the existing
+official `NewConnector` and `sql.OpenDB` APIs. It retains the actual pool before
+Ping/schema and passes the returned driver connection through unchanged, keeping
+the original Driver, optional interfaces and Backup/Error types. One original
+Connect attempt is recorded; a later retry/discard can degrade availability and
+does not authorize replacing the resident database silently. Driver-private
+allocations and pool/task closure remain opaque and owned; no native closure or
+release credit is inferred. The module pin and installed behavior are unchanged.
+This checkpoint is uncompiled/unrun and has no production caller. It replaces
+the proposed driver modification, while retaining the original resident/Manager
+and no-worker-close architecture.
+
 ## Composed native ownership review
 
 The unconnected component from `cafd0f1`, composed as `8c9bc66`, retains exactly

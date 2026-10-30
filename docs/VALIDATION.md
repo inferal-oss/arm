@@ -1,5 +1,18 @@
 # Validation record
 
+## No-fork database layer — source inspection, runtime pending
+
+Official-driver owner checkpoint `9cce9a30e5ef58c535cfea1138ee36b3f60afcd93cd807944d7de8faa034d610`
+was source-reviewed against unchanged project module inputs and the pinned public
+Connector and standard-library SQL APIs. Its canonical file checks match the
+previous reviewed boundary; the new wrapper preserves the raw official connection
+and explicitly leaves hidden native/pool/task state unknown. Eight prepared roots
+remain unrun. No fork prototype normal/race/control result transfers to this
+implementation. Actual official-consumer normal/race, legacy compatibility,
+pending/abnormal calls, real native-claim/pool/Manager composition and public
+worker-upgrade/job-continuity validation remain required. No dependency, source
+installation, production activation or native-closure result is claimed here.
+
 ## Coordinator verification — native component and retained driver
 
 For `cafd0f1` composed as `8c9bc66`, independent receipt/raw-event review confirms
