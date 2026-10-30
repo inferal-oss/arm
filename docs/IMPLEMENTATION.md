@@ -5583,3 +5583,13 @@ data and refusal tests with the official driver intact. These unpublished
 source packets have not been applied to the product tree. There is still no
 accepted externally funded measurement-root construction or positive production
 service grant/root handoff. Existing installed processes are unchanged.
+
+
+## Terminal Monitor inventory follow-up source only
+
+One new four-case ordinary test file reuses exact accepted helper `76b62701…`
+without edits. It arranges visible focus and directly applies synthetic reorder/
+All-mode removal snapshots; no transport/timer/collector or post-update repair
+helper executes. The [focus/reveal policy](UX-TERMINAL-MONITOR-INVENTORY.md) keeps
+exact surviving IDs and deterministic replacements while avoiding poll-driven
+scroll snaps during deliberate reading. Product implementation is not changed.

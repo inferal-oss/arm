@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "status": "Source-only four-case inventory follow-up; no execution or product edit",
+  "base_commit": "0454567f455df2394f61fbad9d23353d99200671",
+  "branch": "codex/ux-terminal-monitor-inventory-followup",
+  "preserved_owner_branch_head": "5899f6702acb90f0f7fdcd9468d3d1df4220b3c8",
+  "source_files": [
+    {
+      "path": "internal/tui/monitor_picker_inventory_test.go",
+      "bytes": 3507,
+      "sha256": "48564e87c0485a9eea20dd333dd6ac827e9b25cff4e73590d85183e7c8e174f1"
+    },
+    {
+      "path": "internal/tui/monitor_picker_focus_test.go",
+      "bytes": 16345,
+      "sha256": "76b62701d9578acaf97dd83f53788fe31bf576f0e5897fc19cb8e86e553f2d7d"
+    },
+    {
+      "path": "internal/tui/io_picker.go",
+      "bytes": 7177,
+      "sha256": "f049eaac6565406740de5a7867afcbe1bd0e1884a3c03d88e9b6797c6a2ee052"
+    },
+    {
+      "path": "internal/tui/io_selection.go",
+      "bytes": 2569,
+      "sha256": "7ec2d60a8fcaa57e6a8e86531126ce026819cdd5b2aa52a3d4c9a5f4e5e7f7ea"
+    },
+    {
+      "path": "internal/tui/tui.go",
+      "bytes": 25704,
+      "sha256": "13311ea228316a13d384d05ef5851f67974d933d556be21213c5cd41d031fa45"
+    },
+    {
+      "path": "internal/tui/network.go",
+      "bytes": 4054,
+      "sha256": "57184f635ad82cd773578a72c11127d495fe7b8eef17e505eb0a0c3884e15873"
+    },
+    {
+      "path": "internal/tui/layout.go",
+      "bytes": 24499,
+      "sha256": "6b30cd2faf0ab7d80b18d1ec4f384d3d378eabf2871ef7582f11da4474bc96a4"
+    },
+    {
+      "path": "internal/tui/presentation.go",
+      "bytes": 18078,
+      "sha256": "bb759cc27ae78618cc9bc08953405cd75f3c4626dfde7f918ddaf833b72b9e11"
+    },
+    {
+      "path": "internal/tui/mouse.go",
+      "bytes": 15684,
+      "sha256": "f10e8870116c36b5caf3d47e296214a9d65910715e5e22e2e585f845dc88a036"
+    },
+    {
+      "path": "internal/tui/pending_store.go",
+      "bytes": 13373,
+      "sha256": "9d51f078673a928fe6dec409b39c9c3fd3a9908c85f745183349d5fd97642626"
+    },
+    {
+      "path": "internal/model/monitor.go",
+      "bytes": 3097,
+      "sha256": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c"
+    }
+  ],
+  "accepted_helpers_unchanged_sha256": "76b62701d9578acaf97dd83f53788fe31bf576f0e5897fc19cb8e86e553f2d7d",
+  "root": "TestMonitorPickerInventoryKeepsVisibleFocus",
+  "cases": [
+    "TestMonitorPickerInventoryKeepsVisibleFocus/disk=true/reorder",
+    "TestMonitorPickerInventoryKeepsVisibleFocus/disk=true/all-member-disappears",
+    "TestMonitorPickerInventoryKeepsVisibleFocus/disk=false/reorder",
+    "TestMonitorPickerInventoryKeepsVisibleFocus/disk=false/all-member-disappears"
+  ],
+  "grid": [
+    45,
+    14
+  ],
+  "observations_expected": 8,
+  "strict_cleanups_expected": 4,
+  "expected_stages": [
+    "inventory-focused-before-update",
+    "inventory-focused-after-update"
+  ],
+  "transitions": {
+    "reorder": "Custom scopeIDs0/7 remain exact; focused reportedID8 moves to the last row. Preserve exact focusedID and reveal it because its full row pair was visible before the update.",
+    "all-member-disappears": "All remains All and follows exactly23 surviving members. Focused reportedID8 disappears; choose the clamped prior index (nowID9), canonical and visible, without keeping a ghost selected member or changing the other chart."
+  },
+  "input_policy": "Accepted synthetic fixture64 cores/24 counters per chart, exact private constructor lock validation, strict fake zero calls and nil local arrangement commands. Only direct inert acceptMonitor(page)/syncViewport after snapshot copy; no Update/stream, timer, collector, transport command or post-update repair helper.",
+  "focus_policy": {
+    "visible_follow": "Capture old canonical focus/index and whether its full label/ID pair is visible BEFORE replacing the inventory. Reconcile to the same ID or deterministic clamped prior index. Reveal only when that previously visible focus moves/disappears and needs it.",
+    "reading_preservation": "If focus was outside the viewport during deliberate wheel/page reading, reconcile identity without forcing a reveal or top reset. Preserve reading offset apart from natural content clamping. Later explicit arrows/selection/resize retain accepted reveal behavior.",
+    "no_poll_snap": "Unchanged focus/order during ordinary polling never forces scrolling. No unconditional reveal on every acceptMonitor, clock or render.",
+    "scope_note": "Only four initially-visible cases are prepared here. Off-focus reading/hit/other15 cases remain separate; policy source review is not executed evidence."
+  },
+  "command": [
+    "GO",
+    "test",
+    "-mod=readonly",
+    "-p",
+    "1",
+    "-count=1",
+    "-timeout=15s",
+    "-json",
+    "-run",
+    "^TestMonitorPickerInventoryKeepsVisibleFocus$",
+    "./internal/tui"
+  ],
+  "budgets": {
+    "cpu_cooperative": 2,
+    "memory_cooperative_bytes": 2147483648,
+    "GOMAXPROCS": "2",
+    "GOMEMLIMIT": "1536MiB",
+    "fifo_seconds": 45,
+    "test_timeout_seconds": 15,
+    "phase_supervision_seconds": 40,
+    "helper_cancel_grace_seconds": 3,
+    "whole_wrapper_seconds": 65,
+    "fresh_scratch_bytes": 1073741824,
+    "sampled_margin_bytes": 33554432,
+    "per_file_bytes": 268435456,
+    "raw_output_bytes": 8388608
+  },
+  "gates": "Independent source/policy and exact private source/tool/cache/FIFO/sampler/cleanup proposal review, followed by a separate allocation. Original0/1 collection requires exact5 named nodes, all8 complete original observations/four strict cleanups, normal original handles/EOF, final stable enumeration and all preservation/source/budget gates; exit1 is not automatic defect acceptance.",
+  "limits": [
+    "No Go metadata/compiler/test/workload/native/browser execution",
+    "No product/accepted-helper/existing-test edits",
+    "No other15 reading/hit cases or feature scope",
+    "No actual dependency-graph or SDK closure discovery; source inventory/caches remain qualified",
+    "All original failed/red/green/native branches/artifacts keep their scopes and remain immutable"
+  ]
+}

@@ -11926,3 +11926,14 @@ root, worker or workload. No race, later-main, native-C, measured-profile or
 original-child continuity acceptance follows. The external measurement owner
 and its actual containment/funded uncertainty tail remain a separate source
 and execution gate.
+
+
+## Monitor inventory follow-up — four unexecuted ordinary source cases
+
+The [source proposal](validation/ux-terminal-monitor-inventory-proposal-2026-10-30.json)
+binds four child names at 45x14, eight planned original observations/four strict
+cleanups, unchanged accepted helpers/product and the bounded single FIFO command.
+Source formatting/parser/hash checks only; no Go metadata/compiler/test, real
+transport/timer/collector, native or browser run occurred. Inventory focus issues
+remain candidates pending original execution/review. Existing M1/M2 evidence
+keeps its accepted scope; remaining 15 reading/hit cases are unassigned here.

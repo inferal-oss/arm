@@ -4326,3 +4326,15 @@ across worker replacement remain gates. The separate external-measurement
 authority contract supplies direction only; its concrete supervisor and funded
 uncertainty-tail capability are still missing. No measurement interface or
 production grant is authorized by this qualification.
+
+
+## Terminal Monitor inventory follow-up — four source cases prepared
+
+The existing full-UX owner continues from accepted `0454567` on isolated branch
+`codex/ux-terminal-monitor-inventory-followup`, preserving the prior owner branch.
+Only disk/network × surviving-ID reorder and reported-ID disappearance in All
+mode are prepared. The [policy/proposal](UX-TERMINAL-MONITOR-INVENTORY.md) requires
+initially visible focus, inert snapshot delivery and exact membership semantics,
+while preserving deliberate off-focus reading. Accepted helpers/product bytes are
+unchanged. Source/policy/pin review and a separate allocation remain gates; the
+other 15 reading/hit cases and native/browser work are outside this cut.
