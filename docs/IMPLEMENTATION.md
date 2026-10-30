@@ -4631,3 +4631,14 @@ terminal results and reject conflicting transaction terminal operations. These
 are source observations only. No driver source, module selection, native engine,
 installed process or API/UI worker changes in ARM. Native closure, service custody
 and actual public-start job-preserving replacement remain open.
+
+
+## Native lease reading source review
+
+Owner `9b6b560` retains original model, read closure and typed mouse lifecycle
+while restricting the fixture to detail reads, exact record navigation, decline
+and filter restoration. The original `json.Number` becomes a decimal string
+before JSON transport, with a separate visible-digit check planned for replay.
+Final key navigation acknowledges the actual selected row. Independent source
+review finds no blocker; no product code, backend, protocol or renderer changes.
+A compile-only allocation does not establish native input or layout acceptance.

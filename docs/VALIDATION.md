@@ -10720,3 +10720,18 @@ failed task and masking a later substantive first failure. No executed failure o
 pass is claimed. Corrected source, exact offline graph availability and a bounded
 first normal cohort precede runtime allocation. No compilation, test, dependency
 replacement, native proof replay or product activation occurred in this review.
+
+
+## Native lease reading — independent source gate and compile allocation
+
+Source `9b6b560` and its owner-retained 62-input plan pass independent source/
+hash, Python AST, Node syntax and whitespace review. The
+50 classified existing inputs equal composed main. Review checks the original
+model/read/Cmd boundaries, exact typed/string number, real input acknowledgment,
+21-frame roster, cumulative artifacts and original cleanup requirements. The
+plan is currently retained in the owner cut pending compile acceptance.
+
+Only one offline compile-only FIFO attempt is allocated, with 115-second total,
+two CPU/two GiB targets, one GiB owned output/temp bound and exact new binary/62
+source receipts. No test invocation or runtime acceptance is claimed. First
+failure and all previous artifacts must remain unchanged; no automatic retry.
