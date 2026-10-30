@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "status": "DETAIL PAGEDOWN HARNESS CORRECTION SOURCE ONLY. Original9b compile passed and first capture failed; corrected source has not been compiled or executed. New source/build/runtime review required.",
-  "branch": "codex/ux-terminal-lease-detail-pgdown",
+  "status": "PAGEDOWN AND FIVE-INPUT ACCOUNTING SOURCE ONLY. Original9b compile/first capture are preserved;79 source-only cut is preserved. This final correction is uncompiled/unexecuted; new source/build/runtime review required.",
+  "branch": "codex/ux-terminal-lease-five-inputs",
   "parentDiagnosticEvidenceCommit": "2f0920bc02a4c5183943873bf8bdde85229e7f93",
   "mainConstraintCommit": "757033706fed1767ac84a143b61bf20f78c19194",
   "mainComparison": "57 relevant classified/original-helper/diagnostic source files exact, no active-work rebase. Product TUI/protocol/pins unchanged.",
@@ -12,13 +12,13 @@
       "lines": 315
     },
     "scripts/dashboard-screenshots/ux-terminal-lease-capture.py": {
-      "sha256": "9e2b5b726582217821d244d9bbf0185cbf26aefa07ee25fa8e954efee38ce409",
-      "bytes": 18109,
-      "lines": 286
+      "sha256": "94671bf23bd0acd455eae28671a10d847b9bd62f3ceb3f6f5e7f6c0a931419b5",
+      "bytes": 18609,
+      "lines": 290
     },
     "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs": {
-      "sha256": "a600e5590c7790ba10e9965ef9ba3acad0d465fc548cd499dd5764af5d1a04ea",
-      "bytes": 25381,
+      "sha256": "0d5102dddb547263c3376ca08cbe9e369f9121ed368e04ff2e212e54d68a7800",
+      "bytes": 25632,
       "lines": 250
     }
   },
@@ -202,10 +202,10 @@
     "reuse": "Import exact SHA980fc761382c0de2854f43decb854658c69462ac05ad5b899105585eac8231d6 support script definitions under non-main name; hash guard BEFORE import. Inherit reviewed Session wait/settle/checkpoint/final Popen/slave-close/termios/EOF cleanup. Copy constructor changes only selector/env plus explicit retained inputs; copy drain changes combined budget with128KiB receipt reserve. No source/module mutation.",
     "genuineInput": "Original owned PTY SGR press/release at fully visible original cells, one supported PageDown for each overflowing detail tail, explicit End only for the overflowing release-review tail; both wait for actual offset==total-height, bounded actual Down/Enter record expansion, literal bracketed-paste framing and exact filter content, original Enter/Esc and n-decline. No host viewport/selection assignment, native clipboard or synthetic model-text terminal data. Record selection/expansion waits for the exact published selection/path effect, not merely a generic input counter.",
     "coverage": "Union actual captured viewport logical-row offsets must cover complete original detail/review contents; no redundant middle/wide copy. Exact per-grid roster checked before continuing. No old failed wide whole-line-border helper is replaced/rerun; whole original frames and source viewport metadata retained.",
-    "buildGuard": "New clean62-source compile receipt required after capture-input and plan changes, despite unchanged Go source/test selector. Never relabel or reuse the original9b build receipt as this source cut. Validate fresh binary digest and exact62-entry before/after source map; original50/helper/support guards unchanged. No implicit build/install/backend or selection widening.",
+    "buildGuard": "New clean62-source compile receipt required after capture-input, replay-guard and plan changes, despite unchanged Go source/test selector. Never relabel or reuse the original9b build receipt as this source cut. Validate fresh binary digest and exact62-entry before/after source map; original50/helper/support guards unchanged. No implicit build/install/backend or selection widening.",
     "PopenCleanup": "Original child inherits FIFO group; no setsid/setpgid/group/PID lookup. Local terminate/kill/wait retained original only. Saved termios comparison before parent slave close and bounded final EOF/EIO versus quiet; forced/truncated/timed-out/unknown cleanup fails. Existing70s capture/25sProgram/35schild/<=9s teardown targets retained.",
-    "cumulativeBudget": "Four explicit canonical private disjoint roots bind111direct/29originalruntime/47acceptedreplay/15diagnostic manifests; mapped artifact hashes checked before and after capture. They and new native capture share16MiB, with128KiB reserve and<=4MiB stream/grid. Check before child launch and before every data block, including cleanup. Fresh output never reused. Old allocated build binaries remain separately retained.",
-    "failures": "Retain original partial streams/checkpoints/child receipts; stop first error/no replacement. Future outer wrapper must verify all old111/64/29/47/15 source/artifact scopes even after failure."
+    "cumulativeBudget": "Five explicit canonical private unique/disjoint runtime roots bind111direct/29originalruntime/47acceptedreplay/15diagnostic/23first-native-failure manifests, each exact digest and entry count. Mapped artifact hashes and manifest identity checked before/after capture. All five roots and new capture share16MiB with128KiB metadata reserve and<=4MiB stream/grid. Every child-launch/data-block/cleanup-drain/Session bound includes the complete five-root sum; new output never reused. Both retained build containers/binaries remain separate.",
+    "failures": "Retain original partial streams/checkpoints/child receipts; stop first error/no replacement. Future outer independently verifies all111/64/29/47/15/71/23 source/artifact scopes even after failure. Original23-entry first failure is an explicit budgeted retained input, never overwritten or hidden in metadata reserve."
   },
   "replayDriver": {
     "input": "Actual pre-exit native PTY prefixes/byte hashes/exact grids and resize offsets; exact21roster only. SourceModel.Content remains comparator, never screen data. No Go/PTY/backend/test invocation in renderer.",
@@ -213,7 +213,7 @@
     "readingAssertions": "Whole active alternate-buffer rows with same symmetric trailingASCII U+0020-only comparison/raw arrays/per-row results; complete logical reading coverage in capture receipt; actual original n-region Keep lease text at review fit/tail; review ID/revision tied to original detail; exact visible filter draft, applied empty ID list and restored8/default flags. Raw PNG/cell samples retained before any assertion.",
     "controls": "Region-cell text is read at source-owned button coordinates; inert reason/hint text cannot satisfy Keep control assertion. Bound to fully visible cells.",
     "browser": "Pinned xterm/Playwright existing assets only; original requested font and builtin provider unchanged. No diagnostic provider, CDP/font scan or library/pin/font/output change. Fresh BrowserServer/context/Terminal with private temp/profile, loopbackCONTROL only; page/native network/clipboard refused; endpoint/error text never logged.",
-    "boundsCleanup": "Own20swork/30stotal includes init/cleanup/write markers, original retained process immediate exit observation, bounded original APIs, forced/unknown failure and original digest-bound write-return marker/no-deadline/tool-exit0 gates. Whole four prior containers + new capture/output/wrapper/temp share16MiB. Up to96wide/multi and32right-edge cells; glyph/physical terminal acceptance stays separately qualified."
+    "boundsCleanup": "Own20swork/30stotal includes init/cleanup/write markers, original retained process immediate exit observation, bounded original APIs, forced/unknown failure and original digest-bound write-return marker/no-deadline/tool-exit0 gates. Exactly five retained roots plus native capture means six unique canonical private disjoint inputs; exact five manifest digests/counts required before browser. retainedTotal sums native capture + all five prior runtime roots + fresh replay for initial reserve/every PNG/final cleanup receipt and deadline reserve. Whole future outer wrapper/temp/metadata also shares16MiB through128KiB reserve and explicit outer accounting. Up to96wide/multi and32right-edge cells; glyph/physical terminal acceptance remains separately qualified."
   },
   "sourceBinding": {
     "requiredEntries": 62,
@@ -281,28 +281,30 @@
       "scripts/dashboard-screenshots/ux-terminal-loop-capture.py",
       "scripts/dashboard-screenshots/ux-terminal-loop-replay.mjs"
     ],
-    "meaning": "Fresh correction source cut and exact62-map/compile receipt, same test selector. Capture and this source plan change; other60 receipt inputs stay exact. Preserve original9b62 map/binary and its failed runtime unchanged. This plan remains a receipt member with no self-hash; normalized failure inventory is review evidence outside the62 runtime membership.",
+    "meaning": "Final correction cut with a fresh clean62 map/compile receipt and unchanged selector. Capture, replay and this plan differ from original9b; other59 inputs stay exact. Source-only79 cut and original9b62 binary/receipts/23-entry failure remain preserved. Plan is a receipt member without a self-hash; normalized first-failure inventory stays review evidence outside62 membership.",
     "testSelector": "^TestUXTerminalLeaseReadingFixture$",
     "proposedCompile": "env SEMBLANCE_RUN_LIMIT=115 GOMAXPROCS=2 GOMEMLIMIT=1536MiB GOENV=off GOWORK=off GOFLAGS= GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off \"$SHARED_FIFO\" go test -mod=readonly -c -p 1 -trimpath -o \"$NEW_OWNED_LEASE_BINARY\" ./internal/tui",
     "notAllocated": true
   },
   "proposedCLI": {
-    "capture": "python3 scripts/dashboard-screenshots/ux-terminal-lease-capture.py --binary \"$NEW_OWNED_LEASE_BINARY\" --build-receipt \"$NEW_NATIVE_BUILD_RECEIPT\" --output \"$FRESH_CAPTURE_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\"",
-    "replay": "node scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs \"$FRESH_CAPTURE_OUTPUT\" --output \"$FRESH_REPLAY_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\"",
-    "orchestration": "NOT RUN. Separate normal unchangedFIFO<=115s window only if explicitly allocated. Capture exit0 plus all original cleanup before replay; originals and new source/binary/pre/post receipts frozen. No queue/slot/worker overrides. Owned private tool temp, configured<=2CPU/<=2GiB target/offline localGo flags. No retries or automatic corrected flags/output reuse."
+    "capture": "python3 scripts/dashboard-screenshots/ux-terminal-lease-capture.py --binary \"$NEW_OWNED_LEASE_BINARY\" --build-receipt \"$NEW_NATIVE_BUILD_RECEIPT\" --output \"$FRESH_CAPTURE_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\" --retained-input-root \"$FIRST_NATIVE_FAILURE_INPUT\"",
+    "replay": "node scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs \"$FRESH_CAPTURE_OUTPUT\" --output \"$FRESH_REPLAY_OUTPUT\" --retained-input-root \"$DIRECT_INPUT\" --retained-input-root \"$FIRST_RUNTIME_INPUT\" --retained-input-root \"$ACCEPTED_REPLAY_INPUT\" --retained-input-root \"$DIAGNOSTIC_INPUT\" --retained-input-root \"$FIRST_NATIVE_FAILURE_INPUT\"",
+    "orchestration": "NOT RUN. Future fresh outer wrapper must append the first-native-failure root as fifth RUNTIME_INPUTS entry in BOTH driver argv and all combined() sums, pin111/64/29/47/15/71/23 preservation plus the future new build, and use new source/compile receipt/binary identities. Capture exit0/positive original cleanup/source/pins/budget/time gates before browser; one unchangedFIFO<=115s only after separate allocation. Whole five prior runtime containers plus entire new root/tool-temp/wrapper/metadata share16MiB; no root hidden in128KiB reserve. No compiler in runtime, queue overrides, output reuse or retries."
   },
   "preservedManifests": [
     "01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce",
     "17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67",
+    "2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177",
     "60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d",
     "bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510"
   ],
   "sourceValidation": [
-    "Python AST parse and exact one-line detail-key diff review; original offset acknowledgment unchanged",
-    "Source inspection of pinned Bubbles DefaultKeyMap/Update/PageDown/clamping plus original detail/review/direct-helper callsites",
-    "Exact compiled-map comparison: capture and plan are the only changed members; other60 inputs/classified50/Go fixture/replay/product/dependencies unchanged",
-    "Original111/64/29/47/15/71/23 artifacts retained and rehashed; normalized evidence and added-content privacy/diff review",
-    "No new compile, test executable, PTY, browser, backend, install or retry in this source step"
+    "Python AST parse without import/execution; JS syntax check only",
+    "Static exact five-root/count/digest/CLI position and six-input uniqueness/canonical/disjoint guards",
+    "Capture ordinary-block and cleanup-drain, Session bounds/launch/final sum and replay initial/PNG/final/deadline receipt paths all include the five-root collection",
+    "Same62membership, changed capture/replay/plan only versus9b/79;59others/classified50/Go/model/dependencies and21roster exact",
+    "Original111/64/29/47/15/71/23 artifacts/source-only79 preserved; normalized failure inventory unchanged; added-content privacy/diff review",
+    "No compiler/test executable/PTY/browser/backend/install/source reproduction/runtime retry in this source step"
   ],
   "actualResults": {
     "correctedCut": {
@@ -323,11 +325,10 @@
     "diagnosticAlreadySeparate": "Prior provider-only evidence does not validate this corrected native source."
   },
   "remainingGates": [
-    "Independent source correction/normalized evidence review",
-    "New clean62-source before/after map, source commit and compile receipt; never relabel the accepted original62 receipt/binary",
-    "Separately reviewed fresh outer orchestration must preserve the first23-entry failure set and account it with all other runtime evidence under16MiB; original four-root driver guards are unchanged by this correction",
-    "Separate compile and single capture/replay allocations; none granted by this source step",
-    "Full21 capture/browser/reading/precision/filter/decline/restore/cleanup and separate paint review remain open"
+    "Independent PageDown/five-input source and future outer accounting review",
+    "ONE new compile allocation on this completed clean62-source cut with fresh exact map/binary/original receipt; no intermediate79 compile or old receipt relabel",
+    "Fresh outer wrapper bound to accepted new compile and all five retained roots, original exit/API/write-marker/preservation/budget gates; separate serial runtime allocation",
+    "Full21 reading/precision/filter/decline/restore/cleanup evidence plus separate paint review; original first failure stays preserved"
   ],
   "continuationOfSourceCommit": "9b6b560de0580d2801e254019b5f54f9b1de5c10",
   "firstFailureInventory": {
@@ -342,6 +343,27 @@
     "detailOffsetPredicate": "offset == total - height",
     "reviewTailInput": "end",
     "freshRuntimeRootRequired": true,
-    "runtimeBudget": "All prior runtime containers, including the preserved23-entry first failure, plus entire new runtime output/metadata must share16MiB. Both build containers/binaries retained separately. New outer review/allocation remains required; four-root capture/replay source guards are not expanded in this one-line correction."
+    "runtimeBudget": "All five prior runtime containers including the explicit23-entry native first failure plus entire new runtime output/metadata share16MiB. Both retained build containers/binaries remain separate. Driver guards now include all five in every existing sum; future outer must use the same five, preserve original sets and bind the new compile before separate runtime review/allocation."
+  },
+  "preservedRuntimeManifestCounts": {
+    "60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d": 111,
+    "01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce": 29,
+    "bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510": 47,
+    "17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67": 15,
+    "2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177": 23
+  },
+  "inputAccountingCorrection": {
+    "parentSourceOnlyCommit": "79f04ee4a3b29c98e69f7a8e06fc9d44accabf72",
+    "parentPlanSHA256": "96004fbd8ba473ed781987cd73c5bb24840ad8fe4a09961b9fbb8b3571b481bf",
+    "requiredRetainedRoots": 5,
+    "replayTotalInputRootsIncludingCapture": 6,
+    "firstFailureManifestSHA256": "2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177",
+    "firstFailureManifestEntries": 23,
+    "firstFailureBytes": 127994,
+    "allFivePriorRuntimeBytes": 9044068,
+    "remainingBeforeNewOutputBytes": 7733148,
+    "capBytes": 16777216,
+    "metadataReserveBytes": 131072,
+    "freshOuterContract": "Use exactly these five roots in RUNTIME_INPUTS, retained argument pairs and combined-byte sums; preserve old64/native71 builds separately. Original four-root wrapper remains immutable failed-attempt evidence and cannot run as this corrected cut. New wrapper receipt identities follow new compile; no speculative executable wrapper is bound to the old binary."
   }
 }

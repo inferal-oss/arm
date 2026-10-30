@@ -41,11 +41,11 @@ EXTRA_SOURCES = {
  'scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs',
  'docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json'}
 
-PRESERVED_MANIFESTS = {
- '60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d',
- '01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce',
- 'bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510',
- '17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67'}
+PRESERVED_MANIFESTS = {'60cf482f0aa12b2b95f6569ffd3608ff60048c57a13bbd86d9ddac632126402d': 111,
+ '01283d9b87a645d7c5f443f783ffb21707e8196a583369cd8eb0db3f40dbb3ce': 29,
+ 'bb963ddd2c5583bc689e5bf3d0916671797b05da9118af78fbb572ef0b12b510': 47,
+ '17a72af61c172d6620e77dd42f58b42d0f2c259933ff712a0766c803dcd1da67': 15,
+ '2e5a0919fffd1ae3379cc3cd95e1fa180ad88585fb939815d056eef25613e177': 23}
 ROSTER = {
  '72x28':['lease-detail-first','lease-detail-tail','lease-record-exact-number','release-review-first','release-review-tail','filter-draft','leases-filter-empty','leases-restored'],
  '100x35':['lease-detail-first','lease-detail-tail','lease-record-exact-number','release-review-fit','filter-draft','leases-filter-empty','leases-restored'],
@@ -201,16 +201,19 @@ def main():
     if not root.is_absolute() or root.parent.resolve() != root.parent or root.resolve().is_relative_to(REPO):
         raise RuntimeError('fresh resolved private lease output required')
     inputs = args.retained_input_root
-    if len(inputs) != 4 or len(set(inputs)) != 4:
-        raise RuntimeError('four preserved runtime input containers required')
+    if len(inputs) != 5 or len(set(inputs)) != 5:
+        raise RuntimeError('five preserved runtime input containers required')
     for p in inputs:
         if not p.is_absolute() or p.resolve() != p or not p.is_dir() or p.is_relative_to(REPO) or p.stat().st_mode & 0o077 or root.is_relative_to(p) or p.is_relative_to(root):
             raise RuntimeError('private disjoint retained input required')
     if any(a.is_relative_to(b) or b.is_relative_to(a) for i,a in enumerate(inputs) for b in inputs[i+1:]):
         raise RuntimeError('retained inputs overlap')
-    if {sha(p/'artifact-manifest.json') for p in inputs} != PRESERVED_MANIFESTS:
+    input_manifest_sha = {p: sha(p/'artifact-manifest.json') for p in inputs}
+    if set(input_manifest_sha.values()) != set(PRESERVED_MANIFESTS):
         raise RuntimeError('preserved runtime manifest identity mismatch')
     input_entries = {p: json.loads((p/'artifact-manifest.json').read_text()) for p in inputs}
+    if any(len(entries) != PRESERVED_MANIFESTS[input_manifest_sha[p]] for p,entries in input_entries.items()):
+        raise RuntimeError('preserved runtime manifest entry count mismatch')
     if any((p/f).is_symlink() or not (p/f).resolve().is_relative_to(p) or sha(p/f) != h for p,entries in input_entries.items() for f,h in entries.items()):
         raise RuntimeError('preserved runtime artifact changed')
     classification_path = REPO/'docs/validation/ux-terminal-source-classification-2026-10-29.json'
@@ -278,6 +281,7 @@ def main():
         if len(checkpoints)!=21 or retained(root)+sum(retained(p) for p in inputs)>LIMIT:
             raise RuntimeError('native lease roster/retention bound')
         if any(sha(REPO/f)!=h for f,h in build['sourceSHA256'].items()):raise RuntimeError('lease source changed during capture')
+        if any(sha(p/'artifact-manifest.json')!=input_manifest_sha[p] for p in inputs):raise RuntimeError('preserved manifest changed during lease capture')
         if any(sha(p/f)!=h for p,entries in input_entries.items() for f,h in entries.items()):raise RuntimeError('preserved input changed during lease capture')
     except Exception as exc:failure=type(exc).__name__+': '+str(exc)
     finally:write_json(root/'capture-receipt.json',{'complete':failure is None,'failure':failure,'receipts':receipts,'checkpoints':len(checkpoints),'qualification':'Original lease reading Program/PTY/fake only; no mutation/native transport/universal reap'})

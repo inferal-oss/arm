@@ -834,3 +834,26 @@ receipts are preserved. Corrected source is AST-reviewed only, uncompiled and
 unexecuted. Separate source/compile/outer-orchestration/runtime review remains;
 future orchestration must also preserve/count the first23-entry failure set under
 the cumulative16MiB runtime cap. No new execution window is implied.
+
+
+## Native lease retained evidence — five-input source guards
+
+On continuation branch `codex/ux-terminal-lease-five-inputs`, both native drivers
+now require five retained runtime roots:111 direct,29 original runtime,47 accepted
+replay,15 diagnostic and the immutable23-entry native first failure. Capture
+checks five distinct canonical/disjoint roots plus exact manifest digests/counts;
+replay checks six total inputs including capture, fifteen argv positions and the
+same five manifests/counts before browser launch. Existing per-block/cleanup,
+child-launch, PNG and final-receipt sums now include the fifth root explicitly.
+All five prior containers plus new output/outer metadata share16MiB; the failed
+attempt is not charged to the128KiB metadata reserve. Both builds stay separate.
+
+The [source plan](validation/ux-terminal-lease-reading-plan-2026-10-30.json)
+specifies the matching future outer argv/preservation/combined sums. The21-frame
+roster, PageDown acknowledgment/review End, Go/model/product/pins and original
+cleanup/deadlines remain unchanged. Capture/replay/plan are the three changed
+members of62 versus the original cut; the other59 stay exact. Source-only79,
+original9b/binary and all first-failure evidence are preserved. AST/JS syntax and
+static guard review only: no intermediate compile or runtime/source reproduction.
+One new compile allocation follows independent review of this completed cut;
+fresh outer binding/review and separate native runtime/paint gates remain open.
