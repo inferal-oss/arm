@@ -2233,3 +2233,29 @@ geometry-only acceptance missed avoidable Architecture fragmentation; the
 scoped primary-list correction and actual line-box oracle now pass all 40
 sampled labels. Older source evidence and failed measurement candidates remain
 qualified and preserved. No full UX, live backend, Linux or new TUI claim.
+
+
+## Next reviewed dependency scopes
+
+- Upgrade owner `codex/resident-local-package-contract`, based on accepted
+  `4cd024c`, inventories trusted local source approval, actual-byte verification,
+  admitted immutable staging/retention and borrower-image integration. This is
+  a documentation/contract cut only: finite budgets, native custody/Close and
+  unknown/recovery behavior, concrete import/callsite/transaction seams and the
+  smallest implementation sequence. No native effect, new API/factory, ledger/
+  schema/model/CLI/module/policy/runtime change or validation fixture is granted.
+  First/repeated `arm start` and real compatible distinct-version API/UI
+  active-job survival remain mandatory product completion gates.
+- UX owner `codex/ux-forwarding-inventory`, based on accepted `17ec201`, surveys
+  actual native forwarding form/private local review and recorded-listener
+  read/uncertainty/recovery-review presentation. Two bounded synthetic browser
+  cohorts may serve only exact list/status and common bootstrap reads; start,
+  stop, recovery, real forwarding/host/cluster/token/clipboard/backend effects
+  remain refused. No production correction/build/install/activation is granted.
+  Return source-bound findings and proposed existing-container scopes for review,
+  with private leaves/raw captures outside version control and positive original
+  fixture API cleanup. Full UX/TUI/live transport acceptance remains open.
+
+Both continuations preserve their frozen prior branches/artifacts. Separate
+normal-FIFO allocations are direct queued-command evidence with cooperative
+settings, not enrollment, ARM leases or measured kernel resource enforcement.
