@@ -1,5 +1,31 @@
 # Backend and CLI implementation
 
+## Original official-driver database owner — unconnected source
+
+`database.ResidentOpen` is a pure pending holder registered before effects. It
+retains the actual original Manager claim, canonical fresh-ledger descriptors,
+official `modernc.org/sqlite v1.60.1` Connector, `sql.OpenDB` pool before Ping,
+and exact generation/pool binding for the private Manager. Native file checks
+precede SQL; mode=rw provides no implicit ledger creation or legacy fallback.
+One registered wrapper Connect attempt runs outside the observation mutex and
+keeps its actual returned connection/error/abnormal outcome. The connection is
+passed through unchanged, preserving optional and concrete APIs and registered
+Driver/Backup/Error types. Existing dependencies/imports remain unchanged.
+
+One physical attempt total explicitly forbids database/sql discard/reconnect;
+max-open1/idle1/no expiry alone would not. Independent DB failure can degrade
+availability and settlement. Worker replacement must leave the healthy original
+pool untouched. Public pool Close is an original-stop-only API observation after
+required actual DB-user joins; hidden failed-native allocations and internal
+pool/task closure remain opaque. The root must keep unresolved custody funded;
+this leaf supplies no funding, complete Closed, resource credit or fresh abort.
+The actual consumer graphs and selected 18-root normal and race owner/legacy
+cohorts pass. Wrapper pending/panic/Goexit and causal negative controls pass,
+including pending under race. Original positive claim/schema/Manager and product
+gates remain open.
+No Manager/Server/root/public-start/worker production caller is supplied. See the
+[source and qualification limits](validation/resident-standard-database-owner-2026-10-30.json).
+
 ## Official-driver resident database owner — source checkpoint only
 
 The no-fork source design keeps the database ownership layer around the existing
@@ -5204,3 +5230,26 @@ diff and receipt review found no remaining blocking finding in this scope.
 The 102 passing model/render/input outcomes are source-equivalent evidence,
 not a new native terminal execution. Fresh 45-column native validation and the
 broader UX review remain open.
+
+## Official-driver database owner — independent composition review
+
+The focused owner cut is accepted as an unconnected library layer. Independent
+review verified its source hashes, actual normal and race test streams, all three
+owned-wrapper positive controls, the exact causal failures and the maintained
+portable harness correspondence. No SQLite driver, module or import namespace
+changes are present. The composed checkout differs from the tested owner only
+in four terminal UI source paths, which are absent from the actual database test
+dependency graph; this is source-equivalence evidence, not a new test run.
+
+The subsequent Manager assembly's affected-package vet passed on the same
+database bytes. Its genuine native-claim fixtures passed normal and race checks;
+those results qualify that isolated assembly and do not activate production.
+Linux cross-compilation is recorded separately. Original Server/root integration,
+partial initialization, funding, public startup and preservation of existing
+run/proxy children across worker replacement remain open.
+
+The same database and Manager source also cross-compiled in native-owner test
+artifacts for Linux amd64 and arm64, each after its actual target dependency
+graph and checksum verification. Both original compile command handles joined;
+neither artifact executed. These are compilation results, not Linux runtime or
+upgrade-continuity acceptance.

@@ -1,5 +1,22 @@
 # ARM delivery plan
 
+## Original official-driver database owner — selected normal and race scope qualified
+
+Owner: `codex/resident-standard-driver-owner`, based on reviewed `891689b`.
+The unconnected owner retains its actual pending operation, native Manager claim,
+canonical fresh-ledger files, official Connector, original pool and binding.
+A wrapper records one original physical Connect attempt and returns the actual
+connection unchanged; no driver fork, module or import-namespace change is used.
+The actual consumer graph and eight new plus ten legacy source/backup/format
+controls passed in normal and race modes (18 roots/205 named results each). All
+63 actually referenced official modules were authenticated before and after
+against project checksums. Owned-wrapper pending/panic/Goexit positives and
+causal negative controls pass, including pending positive under race. Positive
+original claim/pool/schema/Manager composition remains required. The [source-bound record](validation/resident-standard-database-owner-2026-10-30.json)
+keeps opaque private-native/task closure and independent DB-failure degradation
+explicit. No service grant, closure credit, fresh abort or production/start/worker
+activation is supplied; original-job public-start/B-worker acceptance stays open.
+
 ## Resident database direction — official driver, same ownership layer
 
 Continue the existing upgrade implementation with the official SQLite driver and
@@ -3858,3 +3875,26 @@ diff and receipt review found no remaining blocking finding in this scope.
 The 102 passing model/render/input outcomes are source-equivalent evidence,
 not a new native terminal execution. Fresh 45-column native validation and the
 broader UX review remain open.
+
+## Official-driver database owner — independent composition review
+
+The focused owner cut is accepted as an unconnected library layer. Independent
+review verified its source hashes, actual normal and race test streams, all three
+owned-wrapper positive controls, the exact causal failures and the maintained
+portable harness correspondence. No SQLite driver, module or import namespace
+changes are present. The composed checkout differs from the tested owner only
+in four terminal UI source paths, which are absent from the actual database test
+dependency graph; this is source-equivalence evidence, not a new test run.
+
+The subsequent Manager assembly's affected-package vet passed on the same
+database bytes. Its genuine native-claim fixtures passed normal and race checks;
+those results qualify that isolated assembly and do not activate production.
+Linux cross-compilation is recorded separately. Original Server/root integration,
+partial initialization, funding, public startup and preservation of existing
+run/proxy children across worker replacement remain open.
+
+The same database and Manager source also cross-compiled in native-owner test
+artifacts for Linux amd64 and arm64, each after its actual target dependency
+graph and checksum verification. Both original compile command handles joined;
+neither artifact executed. These are compilation results, not Linux runtime or
+upgrade-continuity acceptance.

@@ -1,5 +1,51 @@
 # Validation record
 
+## Official-driver database owner — selected actual normal and race scope
+
+The [source-bound record](validation/resident-standard-database-owner-2026-10-30.json)
+records actual official consumer graphs (normal: 742 packages; race: 743; both
+63 external modules) and 18 passing roots/205 named results in each mode: eight
+new owner/Connector tests and ten existing source/backup/cancellation/generic-
+format/resident-namespace controls.
+There were no failures or skips. Every actually referenced official module's
+go.mod, archive and expanded source matched project checksums before and after.
+The official driver remains v1.60.1 and selected x/sys v0.49.0; no replacement,
+download, cache repair or driver-source change was used. Source/module guards
+passed and original command envelopes/FIFO joined.
+
+The first validation attempt stopped before Go when the additional sandbox denied
+the required process-lineage command. Its missing inner metrics stay unknown.
+The separately reviewed envelope placed the unchanged read-only/no-network fence
+on Go commands after normal trusted-monitor verification. That actual attempt
+passed; the initial failure remains preserved and is not a test result.
+
+Owned-wrapper controls also pass: pending/panic/Goexit positives and pending
+under race. The held-mutex variant fails its exact inspection-blocked assertion;
+panic/Goexit omitted-guard variants fail their exact abnormal-state assertion.
+Every original process envelope joined. The delivered testdata generator
+reproduces all qualified overlay Go bytes, leaving the official driver unchanged.
+Generate reproducible controls from the repository root with:
+
+```sh
+python3 internal/database/testdata/resident_connector_controls.py --package-dir internal/database --output /path/to/new-private-controls
+```
+
+The output directory must be new. Its manifest identifies each overlay, exact
+root and expected exit/assertion. Run one case per fresh test process with
+`go test -vet=off -count=1 -overlay=/path/to/case/overlay.json -run=^ROOT$ ./internal/database`.
+The three positives expect exit 0; the three causal negatives expect exit 1
+and the named assertion. Add `-race` for the pending positive race control.
+Generated maps/sources and command receipts belong outside version control.
+
+The hook is before official Connect entry, so it proves no kernel-blocked native
+cancellation. Positive original native claim/pool/schema initialization,
+Manager/Server/root and public-start acceptance remain open.
+Primitive fixtures fabricate no positive native claim, pool binding, service grant
+or Closed. Private fork results do not qualify this adapter. Hidden native/pool/
+task outcomes stay unknown; independent DB failure is not represented as successful
+job continuity. Native platforms, source installation and actual run/proxy/B-worker
+replacement remain separate gates; a brief API reconnect is acceptable.
+
 ## No-fork database layer — source inspection, runtime pending
 
 Official-driver owner checkpoint `9cce9a30e5ef58c535cfea1138ee36b3f60afcd93cd807944d7de8faa034d610`
@@ -11341,3 +11387,26 @@ diff and receipt review found no remaining blocking finding in this scope.
 The 102 passing model/render/input outcomes are source-equivalent evidence,
 not a new native terminal execution. Fresh 45-column native validation and the
 broader UX review remain open.
+
+## Official-driver database owner — independent composition review
+
+The focused owner cut is accepted as an unconnected library layer. Independent
+review verified its source hashes, actual normal and race test streams, all three
+owned-wrapper positive controls, the exact causal failures and the maintained
+portable harness correspondence. No SQLite driver, module or import namespace
+changes are present. The composed checkout differs from the tested owner only
+in four terminal UI source paths, which are absent from the actual database test
+dependency graph; this is source-equivalence evidence, not a new test run.
+
+The subsequent Manager assembly's affected-package vet passed on the same
+database bytes. Its genuine native-claim fixtures passed normal and race checks;
+those results qualify that isolated assembly and do not activate production.
+Linux cross-compilation is recorded separately. Original Server/root integration,
+partial initialization, funding, public startup and preservation of existing
+run/proxy children across worker replacement remain open.
+
+The same database and Manager source also cross-compiled in native-owner test
+artifacts for Linux amd64 and arm64, each after its actual target dependency
+graph and checksum verification. Both original compile command handles joined;
+neither artifact executed. These are compilation results, not Linux runtime or
+upgrade-continuity acceptance.
