@@ -2424,9 +2424,16 @@ The bounded-teardown fixture revision now passes source review for one offline
 parent-only rebuild. It inherits the existing disposable FIFO group, serializes
 original-child signals before the sole non-reaping-witness-qualified Wait, and
 preserves unknown outcomes through explicitly authorized outer fixture teardown.
-Original helper/source artifacts remain frozen. Rebuild evidence is pending;
-separate native R/D execution remains unallocated and cannot imply SQLite Closed
-or a production resident/active-job teardown policy.
+Original helper/source artifacts remain frozen. The parent-only rebuild passed
+in 0.758s with independently verified artifact/source/receipt hashes; tracked VCS
+metadata alone does not attest ignored fixture source. One separate native raw
+R cohort is now allocated to the exact reviewed binaries under the unchanged
+FIFO's 110s alarm plus existing five-second teardown target. It covers only four
+fixed disposable cases, one original child at a time, CPU <=2, memory target
+<=2GiB and owned native disk/artifacts <=128MiB. Required original child reap,
+drain/descriptor/log outcomes and bounded-error records must be reviewed before
+any D allocation. Attempted teardown or unknown outcomes fail the cohort; no
+SQLite Closed, resource credit or product resident/active-job policy is implied.
 
 Remaining resident-upgrade work is implementation and composed acceptance:
 
