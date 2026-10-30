@@ -1,5 +1,30 @@
 # ARM delivery plan
 
+## Local worker package custody — concrete source contract pending review
+
+Owner: `codex/resident-local-package-contract`, from accepted
+`4cd024c0b53b3fbb42104bb4e8b5742a37684002`. The
+[local package contract](design/resident-local-package.md) selects admitted
+inspection/copy into an exclusively created verified snapshot, exact local
+operator review/apply of those held bytes, same-object immutable publication,
+counted image/UI/storage pins and retained first failures/unknown outcomes.
+Existing mesh validation/current-version checks remain unchanged. Pure codec
+candidates stay untrusted; source inspection/approval grants no compatibility,
+provenance, resource entitlement or original child-image proof.
+
+Proposed bounded Manager methods, acyclic imports, transaction/effect ordering,
+finite work/FD/inventory/history limits and causal/native tests connect this path
+to actual storage/admission/format/bootstrap seams. Combined format-4 writer,
+borrower holders/local stop/diagnosis, measured profiles, original child-image
+binding, controller/API/assets and conservative recovery remain implementation
+gates. First/repeated `arm start` must orchestrate the resident and supervised
+worker, distinguish pending control-only bootstrap from ready API/UI, reuse
+original live owners and preserve config/stop/legacy-idle semantics. Real
+compatible distinct-version API/UI behavior with active jobs is mandatory.
+This five-document cut adds no source/export/native/runtime effect or new test
+evidence and is not feature completion; see the
+[source-only inventory](validation/resident-local-package-contract-2026-10-29.json).
+
 ## Private package manifest declarations — source pending review
 
 Owner: `codex/resident-package-manifest`, from accepted
@@ -2259,3 +2284,19 @@ qualified and preserved. No full UX, live backend, Linux or new TUI claim.
 Both continuations preserve their frozen prior branches/artifacts. Separate
 normal-FIFO allocations are direct queued-command evidence with cooperative
 settings, not enrollment, ARM leases or measured kernel resource enforcement.
+
+
+## Local package contract — independent acceptance
+
+Owner `31e0adf4b6d0d2b667b6ef483ab21d239f6bf4ea` is accepted as a docs-only
+requirements cut on current composition. The
+[composed record](validation/resident-local-package-composed-2026-10-29.json)
+binds all 85 unchanged inputs, 36 added links and 26 source anchors. It selects
+admission-before-I/O, approval of a verified private snapshot, exclusive
+publication, original-holder retention and dedicated counted consumers.
+Platform-qualified no-replace publication and pre-/post-execution child-image
+binding remain missing native gates; explicit local approval is cooperative,
+not human-presence attestation. No implementation, exports, native validation
+or activation is accepted. Real bootstrap/combined writer/owners, admitted
+staging, worker/API/assets and first/repeated `arm start` with distinct-version
+active-job preservation remain open.

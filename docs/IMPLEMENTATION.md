@@ -1,5 +1,23 @@
 # Backend and CLI implementation
 
+## Local package approval/staging — contract only, not implemented
+
+The [concrete contract](design/resident-local-package.md) connects untrusted
+manifest data to a proposed original Manager preparation/approval/publication
+transaction. Approval binds an admitted, independently verified private snapshot,
+not future input-directory contents; exact membership, original native custody,
+first close errors and counted image/UI pins remain distinct from hashes and
+pathnames. It inventories current storage/export/sync/format/start seams without
+reusing their workload-specific capabilities or relaxing mesh version validation.
+
+No positive API, native operation, source export, schema writer, CLI or production
+caller is added. Combined bootstrap/binding/admission and original child-image
+evidence, measured resource profiles, worker/controller/API/assets, first and
+repeated `arm start` and real distinct-version job-preserving replacement remain
+unimplemented. The selected initial flow keeps a bounded control-only bootstrap
+pending until the actual supervised API/UI worker is active; a status response
+or helper milestone cannot establish product readiness.
+
 ## Private untrusted package declarations — pure codec only
 
 The [unexported codec](../internal/workerpackage/README.md) accepts private v1
@@ -3997,3 +4015,20 @@ identity and lifecycle code remain exact. Native Grid, Dialog/close policies,
 all current Go/modules/pinned engine/main/graph and resource authority are
 unchanged. Assets are centrally rebuilt over current main. See the
 [composed record](validation/ux-node-layout-composed-2026-10-29.json).
+
+
+## Local package design — composed boundary
+
+The [accepted requirements](validation/resident-local-package-composed-2026-10-29.json)
+bind exact verified snapshot bytes/membership, explicit original-ingress review,
+dedicated Manager admission/physical transactions and charged original-owner
+retention. SQL and filesystem publication are not atomic; uncertain outcomes
+retain obligations instead of adopting or deleting a path. Existing storage/
+export primitives supply inspected seams, not worker authority or closure proof.
+
+No new factory/API/native effect is implemented. Future publication must use an
+actual atomic no-replace operation, not check-then-overwriting-rename. Future
+child-image proof must distinguish pre-execution selection from post-Start
+observation; the latter cannot retroactively authorize earlier effects. Local
+operator intent remains a cooperative protocol, not same-account isolation or
+human-presence attestation. These qualifications do not grant a native method.

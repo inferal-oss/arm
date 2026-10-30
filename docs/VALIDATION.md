@@ -1,5 +1,27 @@
 # Validation record
 
+## Local package contract — source/document checks only
+
+The [contract](design/resident-local-package.md) and
+[inventory](validation/resident-local-package-contract-2026-10-29.json) inspect
+accepted `4cd024c0b53b3fbb42104bb4e8b5742a37684002`. Reuse the manifest evidence
+and its protected inventory chain by exact revision/digest: 74 unchanged source
+inputs including the private codec/reference, plus 11 newly inspected storage
+inputs. Native identity/copy/cleanup limitations and actual CLI/start callsites
+are source findings, not new execution results. Existing unit/native evidence
+retains its earlier scope and is not duplicated as local-package acceptance.
+
+This five-document cut runs only inventory/link/anchor/privacy/whitespace checks.
+All 85 source hashes match the accepted base; 36 added local links and 26 relevant
+source-line anchors resolve, 11 prior owner branches remain unchanged, and
+added-line privacy/whitespace checks pass. Independent contract review is pending.
+No build, Go suite, native fixture/process/admission, browser, staging, installation,
+backend, format or environment change occurs. Operator binding, real held-byte
+verification/publication/retention, resource/cancellation/recovery, original child
+image and first/repeated `arm start`/distinct-version active-job behavior require
+the proposed meaningful causal/native tests on the exact future composed source.
+No implementation or overall feature completion follows from document checks.
+
 ## Pure package manifest — focused unit qualification
 
 The [evidence](validation/resident-worker-package-manifest-2026-10-29.json)
@@ -9518,3 +9540,21 @@ scaling and explicit-font Canvas estimates are qualified; actual line boxes
 are authoritative. Initial default-font measurement captures stay excluded.
 Direct FIFO evidence grants no ARM adoption/lease/backend or hard RSS claim.
 No installation, Linux/full-Go/new-TUI or live runtime acceptance is inferred.
+
+
+## Local package requirements — independent static review
+
+The [composed record](validation/resident-local-package-composed-2026-10-29.json)
+records all 85 source hashes matching the original accepted baseline, owner
+checkout and current composition, plus the original contract/inventory digests.
+All 36 added local links and 26 nonempty relevant source anchors resolve. The
+five-path owner cut is documentation only; current Go/modules/CLI/models/schema/
+native/runtime code is unchanged. Bound arithmetic and original custody/Close,
+publication/SQL, pin, approval and first/repeated-start dependencies were reviewed.
+
+This adds no tests/builds/browser/native fixture, payload verification/staging,
+backend or install evidence. Finite caps are proposals and native profile floors
+remain unmeasured. Atomic no-replace publication and actual child-image selection/
+observation methods still need implementation and native causal controls.
+No helper/contract evidence establishes real API/UI delivery or active-job
+survival across two versions; those remain mandatory completion gates.
