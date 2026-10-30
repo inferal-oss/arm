@@ -2420,6 +2420,14 @@ authority, sole Wait, drains and exhaustion paths are reviewed. This fixture
 policy cannot authorize stopping product jobs or unrelated children.
 An acknowledgment flag alone never authorizes terminating an active child.
 
+The bounded-teardown fixture revision now passes source review for one offline
+parent-only rebuild. It inherits the existing disposable FIFO group, serializes
+original-child signals before the sole non-reaping-witness-qualified Wait, and
+preserves unknown outcomes through explicitly authorized outer fixture teardown.
+Original helper/source artifacts remain frozen. Rebuild evidence is pending;
+separate native R/D execution remains unallocated and cannot imply SQLite Closed
+or a production resident/active-job teardown policy.
+
 Remaining resident-upgrade work is implementation and composed acceptance:
 
 1. Original bootstrap Manager/Server/image custody, non-retiring borrowers,
@@ -2552,3 +2560,15 @@ Independent 454 JS/55 native UI tests, two identical dashboard builds and native
 CLI build pass. D1–D4 containment is accepted; original failed oracles and
 earlier B fixture remain separate. No installed/live/terminal/full-UX or upgrade
 acceptance follows.
+
+
+## Screen Sharing — remaining existing UX source inventory
+
+The existing UX owner continues on `codex/ux-screen-inventory` from accepted
+`85d85ea`. Classify remaining mode/account/auth-state, viewer/viewport and
+clipboard-control surfaces and actual native parents/private-input lifecycle.
+The prior accepted sign-in field/footer fix stays intact. This allocation is
+source classification and a proposed faithful synthetic no-effect inventory
+seam only: no browser/PTY/runtime/build/setup, credentials, real connection,
+clipboard/input/native effect or product/auth/cleanup change. Review the exact
+effect boundary and bounded state/viewport proposal before any collection.

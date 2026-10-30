@@ -9826,3 +9826,9 @@ composition; B keeps its distinct earlier fixture and all its observed closes
 restore the surviving opener. No duplicate browser run or real destination
 effect was needed. Original failed native/browser oracles remain failed, and API
 cleanup is not OS process/reap proof.
+
+
+The destination layout commit `85d85ea` also passes the public
+[Pages workflow](https://github.com/inferal-oss/arm/actions/runs/41006115170).
+This is the website/dashboard capture and publication scope; it does not
+establish a full Go suite, installed native backend or upgrade acceptance.
