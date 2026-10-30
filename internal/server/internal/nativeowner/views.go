@@ -1,6 +1,9 @@
 package nativeowner
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 type Snapshot struct {
 	Path, Generation string
@@ -109,22 +112,19 @@ func (v *ManagerView) ClaimOriginal() (*ManagerClaim, error) {
 	return c, err
 }
 func (c *ManagerClaim) ValidateOriginal() (Snapshot, error) {
+	return c.ValidateOriginalContext(context.Background())
+}
+
+// Cancellation can end a queued wait, never an already-started native syscall.
+// That original effect remains registered until actual normal return, or remains
+// unresolved after panic/Goexit. No replacement effect or goroutine is spawned.
+func (c *ManagerClaim) ValidateOriginalContext(ctx context.Context) (Snapshot, error) {
 	if c == nil || c.owner == nil || c.view == nil {
 		return Snapshot{}, errNotOriginal
 	}
-	o := c.owner
-	o.mu.Lock()
-	if o.manager != c.view || c.view.claim != c {
-		o.mu.Unlock()
-		return Snapshot{}, errNotOriginal
-	}
-	op, err := o.beginLocked("validate_manager_claim")
-	o.mu.Unlock()
-	if err != nil {
-		return Snapshot{}, err
-	}
-	return o.validateEffect(op)
+	return c.owner.validateBorrowerContext(ctx, c, nil)
 }
+
 func (stop *ManagerStop) ValidateOriginalClaim(c *ManagerClaim) error {
 	if stop == nil || stop.owner == nil || c == nil {
 		return errNotOriginal
@@ -209,22 +209,19 @@ func (v *ServerView) ClaimOriginal() (*ServerClaim, error) {
 	return c, err
 }
 func (c *ServerClaim) ValidateOriginal() (Snapshot, error) {
+	return c.ValidateOriginalContext(context.Background())
+}
+
+// Cancellation can end a queued wait, never an already-started native syscall.
+// That original effect remains registered until actual normal return, or remains
+// unresolved after panic/Goexit. No replacement effect or goroutine is spawned.
+func (c *ServerClaim) ValidateOriginalContext(ctx context.Context) (Snapshot, error) {
 	if c == nil || c.owner == nil || c.view == nil {
 		return Snapshot{}, errNotOriginal
 	}
-	o := c.owner
-	o.mu.Lock()
-	if o.server != c.view || c.view.claim != c {
-		o.mu.Unlock()
-		return Snapshot{}, errNotOriginal
-	}
-	op, err := o.beginLocked("validate_server_claim")
-	o.mu.Unlock()
-	if err != nil {
-		return Snapshot{}, err
-	}
-	return o.validateEffect(op)
+	return c.owner.validateBorrowerContext(ctx, nil, c)
 }
+
 func (stop *ServerStop) ValidateOriginalClaim(c *ServerClaim) error {
 	if stop == nil || stop.owner == nil || c == nil {
 		return errNotOriginal
@@ -282,6 +279,7 @@ type Inspection struct {
 	OpenAttempted, OpenComplete, Sealed, Retired               bool
 	ManagerIssued, ManagerClaimed, ServerIssued, ServerClaimed bool
 	Opened, Closed                                             uint64
+	ValidationWaiters                                          int
 	LiveDescriptors                                            int // last published census; NEVER exhaustive while an effect is pending
 	FirstFailure                                               error
 	OriginalRetirement                                         NativeClosure
@@ -300,7 +298,7 @@ func (h *ServeIssuer) InspectOriginal() (Inspection, error) {
 	if o.original != h {
 		return Inspection{}, errNotOriginal
 	}
-	result := Inspection{Generation: o.generation, OpenAttempted: o.openTried, OpenComplete: o.openComplete, Sealed: o.sealed, Retired: o.retired, ManagerIssued: o.manager != nil, ManagerClaimed: o.manager != nil && o.manager.claim != nil, ServerIssued: o.server != nil, ServerClaimed: o.server != nil && o.server.claim != nil, Opened: o.published.Opened, Closed: o.published.Closed, LiveDescriptors: o.published.Unknown, FirstFailure: o.failure, OriginalRetirement: o.published}
+	result := Inspection{ValidationWaiters: len(o.validationWaiters), Generation: o.generation, OpenAttempted: o.openTried, OpenComplete: o.openComplete, Sealed: o.sealed, Retired: o.retired, ManagerIssued: o.manager != nil, ManagerClaimed: o.manager != nil && o.manager.claim != nil, ServerIssued: o.server != nil, ServerClaimed: o.server != nil && o.server.claim != nil, Opened: o.published.Opened, Closed: o.published.Closed, LiveDescriptors: o.published.Unknown, FirstFailure: o.failure, OriginalRetirement: o.published}
 	// An active original may be inside the kernel BEFORE its handle/result can
 	// be registered. Published counters are observations, never zero-effect proof.
 	if o.active != nil {

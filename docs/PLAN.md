@@ -1,5 +1,18 @@
 # ARM delivery plan
 
+## Original Server and native validation gate — selected scope qualified
+
+Owner: `codex/resident-original-server-ingress`, based on `ed32fed`.
+The pending actual Server now binds the original native Server claim and same
+Manager borrower before loop startup. Its new ingress branch uses that private
+binding; legacy Directory validation remains exclusive. A shared bounded gate
+queues native borrower validation without holding inspection across native work.
+Selected normal/race each pass 20 roots, affected default vet passes, and causal
+pending/cancellation/capacity/fresh-wake/panic/Goexit controls qualify across two
+explicitly scoped phases. Prior parser and wrong-stage harness failures remain
+preserved. See the [source-bound limits](validation/resident-original-server-2026-10-30.json).
+No listener, root/start, funding, worker or job-upgrade activation is supplied.
+
 ## Original Manager assembly — actual source, qualification pending
 
 Owner: `codex/resident-standard-manager-assembly`, based on `ccf4c509`.
@@ -3926,3 +3939,18 @@ This lands the pending Manager, original-pool initialization and genuine-claim
 fixtures only. Production Server/root/worker activation, partial initialization
 and cancellation, named format-4 persistence and existing-job continuity remain
 open as recorded in the normalized validation file.
+
+## Original Server and native validation — composed review accepted
+
+Independent review accepts this focused, unconnected Server layer and bounded
+borrower-validation queue. All eleven source hashes match the reviewed cut. The
+only Go differences from its qualification tree are four terminal UI paths absent
+from the actual 782-package graph. Original normal/race/vet and complementary
+control receipts were inspected; the two earlier overall failures remain failures
+with the exact scopes recorded in the normalized validation file. The completion
+phase authenticates the same prior dependency inputs before and after, without
+claiming that the earlier phase reached post-authentication.
+
+The source preserves the legacy ingress path and supplies no production listener,
+startup, funding grant or worker activation. Actual resident network reporting and
+existing run/proxy child continuity remain required end-to-end acceptance gates.

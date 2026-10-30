@@ -1,0 +1,99 @@
+{
+  "scope": "unconnected original Server and bounded native borrower validation gate",
+  "status": "selected-normal-race-vet-and-complementary-causal-controls-pass-product-gates-open",
+  "source_sha256": {
+    "internal/server/internal/nativeowner/owner.go": "f9db6ce2b2ad1d4fa42baa39829017c5e9cbe8466cdd78fc66ad4509eabf7936",
+    "internal/server/internal/nativeowner/testdata/validation_controls.py": "7f089a6ba277151d3c635179e00d4ffcc4198a03fbe8f113375de01aa2db20f9",
+    "internal/server/internal/nativeowner/validation.go": "153a68b60001914165449848f49e4842990db67b31a3142b1d07285f8cf24fda",
+    "internal/server/internal/nativeowner/validation_pause_test.go": "f4e78dd4f5cc2bd909d60fbeecb8ea66d8b6cbc7016bd2ccf8b43698422b0d3a",
+    "internal/server/internal/nativeowner/validation_test.go": "068c1623be39e653b7ab50e47750e1a7b8aac1119cd41fef9e277fab1355db79",
+    "internal/server/internal/nativeowner/views.go": "719b81e26f43431a9ec42e8c2232e941885674d32d035bbf3c425785eaf3e2fa",
+    "internal/server/resident_auth.go": "eb90de7cc2618805328317088fc28ca66224918e2955da76ffeae3cc6e974490",
+    "internal/server/resident_server.go": "fa61407ca7d433fcb1d3f38b9c5c351c11f841cf30c5d31de38d8c1b7049f93d",
+    "internal/server/resident_server_assembly_test.go": "68af2f5fa5856f3fedc77abfd51ba6808c33008b92363bbd5300563e6b7c011c",
+    "internal/server/resident_server_test.go": "c014ff42aaf6abe13d791b10d575dbdcfdcec3e3b988a62526cddb2b75a21c1e",
+    "internal/server/server.go": "fd8d7db8f294840b15e9a42b8a642eca6380cd209c40722bb5f5e5fa974c61ca"
+  },
+  "ordinary_normal": {
+    "new_roots_passed": 5,
+    "legacy_native_and_ingress_roots_passed": 15,
+    "total_roots_passed": 20,
+    "named_results_passed": 20
+  },
+  "ordinary_race": {
+    "new_roots_passed": 5,
+    "legacy_native_and_ingress_roots_passed": 15,
+    "total_roots_passed": 20,
+    "named_results_passed": 20
+  },
+  "affected_default_vet": [
+    "internal/server/internal/nativeowner",
+    "internal/server",
+    "internal/server/lifetimeview"
+  ],
+  "causal_controls": {
+    "normal_positive": [
+      "pending queued cancellation/capacity/fresh wake",
+      "panic retained original",
+      "Goexit retained original"
+    ],
+    "normal_exact_negative": {
+      "held_observation_mutex": "inspection blocked behind original borrower validation",
+      "armed_panic_omitted_guard": "original abnormal native validation was forgotten",
+      "armed_Goexit_omitted_guard": "original abnormal native validation was forgotten"
+    },
+    "pending_positive_race": "pass",
+    "all_non_omission_control_Go_bytes_unchanged_by_generator_fix": true,
+    "generator": "internal/server/internal/nativeowner/testdata/validation_controls.py",
+    "scope": "actual owned original validation and waiter admission; every fixture child and helper joined; no whole-product Closed"
+  },
+  "actual_source_graph": {
+    "packages": 782,
+    "external_official_modules": 69,
+    "replacements": 0
+  },
+  "authentication_scope": {
+    "ordinary_and_initial_controls_phase": "all 69 referenced official modules authenticated before; post-authentication not reached because wrong-stage negative control stopped the phase",
+    "focused_remaining_phase": "current before equals actual prior before and current after, exact 69-module lists; before/after mod/archive/expanded-source Hash1 match root checksums",
+    "prior_phase_postauth_not_inferred": true
+  },
+  "preserved_failed_attempts": [
+    {
+      "failure": "native sandbox rejects numeric loopback host syntax",
+      "Go_graph_auth_or_tests_executed": 0,
+      "original_envelope_and_FIFO_joined": true
+    },
+    {
+      "failure": "negative overlay omitted original guard during unarmed setup, before intended causal assertion",
+      "overall_phase": "failed; no qualifying negative result at wrong stage",
+      "scope_retained": "completed normal/race/vet and preceding controls remain distinct",
+      "fix": "testdata generator omits guard only on explicitly armed original target; all production/test Go unchanged"
+    }
+  ],
+  "shared_dependency_cache_read_only": true,
+  "network_scope": "selected owned test fixtures use TCP localhost IPv4/IPv6 only; no other networking or acquisition",
+  "download_cache_repair_or_fallback": false,
+  "original_Go_and_FIFO_envelopes_joined": true,
+  "actual_temporary_directories_empty": true,
+  "genuine_original_Server_claim_Manager_binding_fixture": "pass normal/race; no actual network ingress on resident branch proved by direct binding fixture",
+  "production_listener_or_route_or_start_activation": false,
+  "native_FD_alias_to_borrower_or_worker": false,
+  "service_grant_or_native_Closed_or_resource_credit_supplied": false,
+  "finite_fresh_abort_enabled": false,
+  "visibility_limits": [
+    "Context cancellation can remove a queued waiter but cannot cancel a started native syscall.",
+    "Abnormal original validation stays retained and its completion notification stays unclosed.",
+    "Legacy background validation can wait indefinitely behind an original blocked syscall.",
+    "At most 64 queued validation callers; excess capacity refuses explicitly and needs the eventual service/request profile.",
+    "Whole fixture-process exit and public API returns do not prove product/native/pool/task Closed."
+  ],
+  "open_gates": [
+    "Original Server/root partial initialization and cancellation",
+    "actual resident network ingress and reporting continuity",
+    "standing resource profile/operator grant/accounting/handoff",
+    "fresh fence and authenticated original launch channel",
+    "public first/repeated/concurrent arm start",
+    "real replaceable worker/controller/API/UI/assets",
+    "original run/proxy child/log/empty heartbeat/finish/renewal/cancel/expiry/completion through genuine B replacement"
+  ]
+}

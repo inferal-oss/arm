@@ -24,6 +24,7 @@ type nativeOwner struct {
 	original                                             *ServeIssuer
 	state                                                *nativeState // exclusively accessed by the active original effect
 	active                                               *nativeEffect
+	validationWaiters                                    map[*nativeValidationWait]struct{}
 	openTried, openComplete, sealed, retired, retireDone bool
 	generation                                           string
 	failure, retireError                                 error
@@ -39,6 +40,7 @@ type nativeEffect struct {
 	kind, phase string
 	abnormal    bool
 	cause       any
+	done        chan struct{} // closes only after original normal effect publication
 }
 type nativeAbnormal struct{ cause any }
 
@@ -90,7 +92,7 @@ func (o *nativeOwner) beginLocked(kind string) (*nativeEffect, error) {
 	} else if kind != "retire" && !o.openComplete {
 		return nil, ErrNativePending
 	}
-	op := &nativeEffect{owner: o, kind: kind, phase: "registered_before_effect"}
+	op := &nativeEffect{owner: o, kind: kind, phase: "registered_before_effect", done: make(chan struct{})}
 	o.active = op
 	return op, nil
 }
@@ -148,6 +150,8 @@ func (o *nativeOwner) finishEffect(op *nativeEffect, normal *bool, resultErr *er
 	o.publishNativeLocked()
 	if !*normal {
 		o.published.Complete = false
+	} else {
+		close(op.done) // release waiters only after this actual effect published
 	}
 	o.mu.Unlock()
 	if cause != nil {

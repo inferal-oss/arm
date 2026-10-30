@@ -24,6 +24,7 @@ type authenticatedCaller struct {
 
 type ingressProof struct {
 	generation string
+	original   *residentServerBinding
 	directory  *database.Directory
 	admission  browserAdmission
 	nativeNode bool
@@ -67,14 +68,23 @@ func (s *Server) authenticateLocalIngress(r *http.Request, now time.Time) (*auth
 	if len(native) > 0 && (admission.Browser || len(native) != 1 || native[0] != "v1") {
 		return nil, &ingressFailure{http.StatusForbidden, "invalid native node negotiation"}
 	}
-	if s.generation == "" || s.nodeStopDirectory == nil || !validIngressDirectory(s.nodeStopDirectory) {
+	proof := &ingressProof{generation: s.generation, admission: admission, nativeNode: len(native) == 1}
+	if s.resident != nil {
+		s.resident.mu.Lock()
+		proof.original = s.resident.binding
+		s.resident.mu.Unlock()
+	} else {
+		proof.directory = s.nodeStopDirectory
+	}
+	if err := s.validateOriginalIngressProof(r.Context(), proof); err != nil {
 		return nil, &ingressFailure{http.StatusServiceUnavailable, "resident ingress unavailable"}
 	}
 	if admission.Node != nil {
 		bound := *admission.Node
 		admission.Node = &bound
 	}
-	return &authenticatedCaller{owner: s, proof: &ingressProof{generation: s.generation, directory: s.nodeStopDirectory, admission: admission, nativeNode: len(native) == 1}}, nil
+	proof.admission = admission
+	return &authenticatedCaller{owner: s, proof: proof}, nil
 }
 
 // registerCallerIngress is called only after websocket.Accept succeeded. Pending
@@ -84,8 +94,8 @@ func (s *Server) registerCallerIngress(caller *authenticatedCaller, c *websocket
 		return model.Err("forbidden", "original resident ingress required")
 	}
 	p := caller.proof
-	if p.generation != s.generation || p.directory != s.nodeStopDirectory || p.directory == nil || !validIngressDirectory(p.directory) {
-		return model.Err("forbidden", "resident ingress identity changed")
+	if err := s.validateOriginalIngressProof(ctx, p); err != nil {
+		return err
 	}
 	ingress := &residentIngress{proof: p, connection: c, ctx: ctx}
 	if p.admission.Node != nil {
@@ -172,8 +182,8 @@ func (s *Server) validateIngress(ingress *residentIngress) error {
 	if ingress.ctx.Err() != nil {
 		return ingress.ctx.Err()
 	}
-	if p.generation != s.generation || p.directory != s.nodeStopDirectory || p.directory == nil || !validIngressDirectory(p.directory) {
-		return model.Err("forbidden", "resident ingress identity changed")
+	if err := s.validateOriginalIngressProof(ingress.ctx, p); err != nil {
+		return err
 	}
 	if p.admission.Browser && !time.Now().Before(p.admission.Expires) {
 		return model.Err("forbidden", "dashboard session expired")
@@ -233,4 +243,23 @@ func validIngressDirectory(d *database.Directory) bool {
 		return false
 	}
 	return d.Validate() == nil
+}
+
+// A resident Server proves current native identity through its actual nonretiring
+// claim and original same-issuer Manager binding. Legacy ingress retains its
+// exact original Directory validation. Neither branch accepts the other's proof.
+func (s *Server) validateOriginalIngressProof(ctx context.Context, p *ingressProof) error {
+	if p == nil || s.generation == "" || p.generation != s.generation {
+		return model.Err("forbidden", "resident ingress identity changed")
+	}
+	if s.resident != nil {
+		if p.directory != nil || p.original == nil {
+			return model.Err("forbidden", "original resident binding required")
+		}
+		return s.resident.validateIngressBinding(ctx, p.original, s)
+	}
+	if p.original != nil || p.directory != s.nodeStopDirectory || p.directory == nil || !validIngressDirectory(p.directory) {
+		return model.Err("forbidden", "resident ingress identity changed")
+	}
+	return nil
 }

@@ -1,5 +1,23 @@
 # Backend and CLI implementation
 
+## Original Server binding and borrower validation — unconnected source
+
+The private pending Server retains its actual object before native claim,
+same-issuer Manager binding and original loop launch. It records partial and
+abnormal operations outside its publication mutex, retains first errors and
+never enters the legacy Serve close/unlock path. The resident ingress branch
+validates an actual nonretiring native claim plus the same original Manager
+pointer; copied or mixed legacy/resident proofs refuse. Native descriptors and
+Close authority are not lent to a Server or worker.
+
+The shared issuer bounds queued validation at 64 callers. Each waits on the
+actual original operation's normal-completion notification, then performs its
+own fresh native check. Cancellation removes only a queued waiter. It cannot
+interrupt a native syscall or replace an abnormal retained operation. Inspection
+remains responsive. No helper goroutine or polling loop is created by the gate.
+Selected normal/race/vet and maintained causal controls pass; this is still
+unconnected to production root, funding, listener, public start or workers.
+
 ## Original Manager assembly — unconnected implementation
 
 `manager.ResidentManagerPending` retains the actual Manager before claiming its
@@ -5285,3 +5303,18 @@ This lands the pending Manager, original-pool initialization and genuine-claim
 fixtures only. Production Server/root/worker activation, partial initialization
 and cancellation, named format-4 persistence and existing-job continuity remain
 open as recorded in the normalized validation file.
+
+## Original Server and native validation — composed review accepted
+
+Independent review accepts this focused, unconnected Server layer and bounded
+borrower-validation queue. All eleven source hashes match the reviewed cut. The
+only Go differences from its qualification tree are four terminal UI paths absent
+from the actual 782-package graph. Original normal/race/vet and complementary
+control receipts were inspected; the two earlier overall failures remain failures
+with the exact scopes recorded in the normalized validation file. The completion
+phase authenticates the same prior dependency inputs before and after, without
+claiming that the earlier phase reached post-authentication.
+
+The source preserves the legacy ingress path and supplies no production listener,
+startup, funding grant or worker activation. Actual resident network reporting and
+existing run/proxy child continuity remain required end-to-end acceptance gates.
