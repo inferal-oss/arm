@@ -10070,3 +10070,78 @@ Screen correction `9760ef3` also passes the public
 [Pages workflow](https://github.com/inferal-oss/arm/actions/runs/41014791785).
 This covers the website/dashboard capture and publication pipeline; it is not
 a full Go suite, real Screen transport/auth or resident upgrade acceptance.
+
+
+## Shared terminal — source classification only
+
+The [source record](validation/ux-terminal-source-classification-2026-10-29.json)
+binds fifty files to exact base `9760ef3ad071b72b026ab3126ea183538daf0bce`,
+with SHA-256, byte/line counts and 152 verified declaration anchors in 34 files.
+This is a focused reviewed/pinned source set, not the full transitive Go
+dependency closure. Primary source includes actual model, layout/presentation/
+polish/theme/format, record, mouse, lease table/actions and Runs/list. Direct
+constructor/preferences/pending, client/endpoint, naming/model and check-in
+boundaries are classified only as needed for this slice. Existing tests and
+capture tools are source evidence, not executed verification.
+
+The source-derived geometry below is not rendered evidence:
+
+| Proposed grid | Main/body | Ordinary viewport | Maximum modal viewport | Full run viewport | Lease columns |
+| --- | --- | --- | --- | --- | --- |
+| 72×28 | 72×20 | 68×18 | 68×18 | 72×26 | 3 |
+| 100×35 | 100×27 | 96×25 | 84×25 | 100×33 | 5 |
+| 160×50 | 125×42 | 121×40 | 84×40 | 160×48 | 5 |
+
+Only the 160-column proposal gets the existing 33-column side feed plus gap.
+Modal height depends on wrapped content. The product's enlargement notice below
+45×14 is distinct from the old helper's eighty-column capture limit. Source
+width caps, bounded action chips and truncation alone are not visual defects.
+
+Escaping preserves inert control-character representation; exact-number display
+uses decimal strings while bytes use rounded binary units. Record data uses
+UseNumber, a four-MiB marshaled boundary, paged children and at most five thousand
+tree rows plus a limit notice; displayed scalar rows are still width-truncated.
+Log presentation keeps the latest 256KiB while preserving byte cursors, handles
+split/invalid UTF-8 and wraps safe presentation at 512 runes before viewport
+soft wrapping. These are classified semantics, not new limit/stress acceptance.
+
+Both inactive preferences default true and remain independent. Unknown and
+reporter-lost Runs remain visible according to current source semantics; lease
+terminal filtering is separately defined. Selected historical run reader/fold/
+full-view/cursor state must remain unchanged by roster preferences. Native mouse
+callbacks return frame-bound typed events; raw mouse fed straight to Update does
+not exercise them. Keyboard meaning depends on actual modal/detail/list state.
+A future fixture must use actual rendered regions and original OnMouse then
+Update, with stale-frame/resize checks, rather than treating visible user text
+as action coordinates or interpreting one key uniformly across views.
+
+Future fixture gaps are explicit. Original Init/reconnect opens native clients;
+newDashboard performs local pending-directory/lock writes; h can synchronously
+persist preferences; strict backend refusal cannot contain every Cmd or local
+effect. Existing capture.py builds web/CLI, starts a backend and acquires a
+lease, and render.mjs requires live web authentication before terminal replay.
+The original geometry helpers reject 72 columns. The coordinator accepts the
+described test-only adapter, fresh isolated home bookkeeping and exact-grid
+validator as possible future seams, with no implementation/runtime allocation.
+The command roster distinguishes native connect, Batch/stream/timers, allowed
+reads, opaque UI-library commands, mouse events, writes/mutations and shutdown.
+
+The smallest proposed transport allowlist is inspect/runs/run_output. Original
+full-snapshot refresh would need a separate extension for synthetic status and
+empty messages/agents, without routing or messaging authority. Proposed data is
+bounded to twelve leases, ten runs, eight-KiB log, two-KiB reason, 256-byte other
+labels and a 64KiB synthetic DTO budget, with at most 48 captured checkpoints.
+The roster covers defaults, dense/empty lists, one lease/detail/record/review
+decline, filter modal and run detail/fold/fullscreen/scroll, plus bounded
+disconnected/error/held-read cases. These are suggestions for review, not an
+execution or resource allocation. Native glyph/cell reach, real PTY input/resize,
+focus, cancellation and closure must be measured later.
+
+Validation in this cut consists of source reads, exact file/hash comparisons,
+anchor matching and documentation privacy/diff checks only. No tests, native
+binary, PTY, emulator/browser, Go build/race/vet, backend, run/proxy, adoption,
+resource command, key-to-mutation or real agent/message/job/default-state effect
+was executed. No source remediation or existing capture modification occurred.
+No old test/capture becomes current terminal acceptance. Model frames alone
+cannot prove actual loop/terminal paint or any goroutine/process/OS cleanup.
+Independent source review and future execution gates remain open.

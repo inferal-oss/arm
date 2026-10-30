@@ -1,0 +1,1625 @@
+{
+  "schema": 1,
+  "scope": "SOURCE CLASSIFICATION ONLY: shared terminal shell/navigation/modals/action hints and Leases/Runs list/detail/log containment",
+  "sourceBaseCommit": "9760ef3ad071b72b026ab3126ea183538daf0bce",
+  "ownerBranch": "codex/ux-terminal-layout-inventory",
+  "sourceEntries": {
+    "internal/tui/tui.go": {
+      "sha256": "3c743dbcc4e0d391da3be321063ba3050fe1ad95437e4715b801470993ab70f1",
+      "bytes": 25255,
+      "lines": 765,
+      "role": "primary source"
+    },
+    "internal/tui/layout.go": {
+      "sha256": "6b30cd2faf0ab7d80b18d1ec4f384d3d378eabf2871ef7582f11da4474bc96a4",
+      "bytes": 24499,
+      "lines": 738,
+      "role": "primary source"
+    },
+    "internal/tui/presentation.go": {
+      "sha256": "e14168185f6287522c3b34e62655669aa0cb506854b037417c5962643303c29d",
+      "bytes": 17258,
+      "lines": 435,
+      "role": "primary source"
+    },
+    "internal/tui/polish.go": {
+      "sha256": "5cc6df4d7894b21cdbd8fb0ee49b93d0071adaffc3933ba33fbf0bd5d894d740",
+      "bytes": 3050,
+      "lines": 98,
+      "role": "primary source"
+    },
+    "internal/tui/theme.go": {
+      "sha256": "2bfa9013539c9c8f9dfbc2cc58ae38458d1b4e9be6cc023a6c4854fd0ac539e3",
+      "bytes": 4276,
+      "lines": 116,
+      "role": "primary source"
+    },
+    "internal/tui/format.go": {
+      "sha256": "48d1f6f3010121e3f44f2714b86966183466d97045b77da69cd2f3d8f0e12109",
+      "bytes": 3328,
+      "lines": 134,
+      "role": "primary source"
+    },
+    "internal/tui/record.go": {
+      "sha256": "4fa6a28fbd1d99d4676eac42f5fea310d8e8f10ed20eba03c7b807c51cecda3f",
+      "bytes": 3922,
+      "lines": 174,
+      "role": "primary source"
+    },
+    "internal/tui/mouse.go": {
+      "sha256": "d8ee6291bde31ff023f1bd4f51c1877156ff788660b5995e5a7939c1e9ec11c5",
+      "bytes": 15571,
+      "lines": 472,
+      "role": "primary source"
+    },
+    "internal/tui/lease_table.go": {
+      "sha256": "924868fccf062ae6ad89eaa55dc7954c7eb42a3d71dadaefe69aac88d558aef1",
+      "bytes": 3967,
+      "lines": 110,
+      "role": "primary source"
+    },
+    "internal/tui/actions.go": {
+      "sha256": "e73c737dcdf105a8943040dc7728093927b97f9f2f0446896feeb5511db0bcc3",
+      "bytes": 9242,
+      "lines": 273,
+      "role": "primary source"
+    },
+    "internal/tui/runs.go": {
+      "sha256": "74ea280a55d48b5a1d0f638e017d648d738822ea9364b5976b7515892c61303c",
+      "bytes": 12349,
+      "lines": 448,
+      "role": "primary source"
+    },
+    "internal/tui/run_list.go": {
+      "sha256": "254348fb34414151d95d85ba4a94f419e2726875ee4384026491475cb9f6b426",
+      "bytes": 5904,
+      "lines": 228,
+      "role": "primary source"
+    },
+    "internal/tui/preferences.go": {
+      "sha256": "fa7706ef1c57cadd0e341eea5239cde099acb4622e5695a6d5b507584d13702c",
+      "bytes": 3969,
+      "lines": 159,
+      "role": "primary source"
+    },
+    "internal/tui/readable_names.go": {
+      "sha256": "1b88d86562342c6ce794d3e69eea3644a451438a89285ca0a174edd53ddc7845",
+      "bytes": 8073,
+      "lines": 249,
+      "role": "primary source"
+    },
+    "internal/tui/naming_observations.go": {
+      "sha256": "12ef1323cd4874bb4d059855051a42e270a5e77e48dd5f8c3501f796a60d69fc",
+      "bytes": 833,
+      "lines": 25,
+      "role": "primary source"
+    },
+    "internal/tui/custom_names.go": {
+      "sha256": "ac2cce293c2d7da032150ebf6dee26c7755e23eeae3d3a46f7e7e96f789b3a07",
+      "bytes": 23560,
+      "lines": 716,
+      "role": "primary source"
+    },
+    "internal/tui/network.go": {
+      "sha256": "57184f635ad82cd773578a72c11127d495fe7b8eef17e505eb0a0c3884e15873",
+      "bytes": 4054,
+      "lines": 150,
+      "role": "primary source"
+    },
+    "internal/tui/pending_store.go": {
+      "sha256": "9d51f078673a928fe6dec409b39c9c3fd3a9908c85f745183349d5fd97642626",
+      "bytes": 13373,
+      "lines": 451,
+      "role": "primary source"
+    },
+    "internal/tui/recovery.go": {
+      "sha256": "f9425c743ff8f4c74997b19ca2c184fb40851429abc0fc901daa1675aa81a74a",
+      "bytes": 7752,
+      "lines": 224,
+      "role": "primary source"
+    },
+    "internal/tui/peers.go": {
+      "sha256": "deeeda7f73c78a6374c53c7493499707629a4b046797eee67b771e9d8fbd508b",
+      "bytes": 9614,
+      "lines": 309,
+      "role": "primary source"
+    },
+    "internal/tui/lease_checkins.go": {
+      "sha256": "e50bfcc5408f5dedb4070e8ba15db09f693ef873c3c220fbbb420ab69903cd84",
+      "bytes": 13678,
+      "lines": 389,
+      "role": "primary source"
+    },
+    "internal/cli/dashboard.go": {
+      "sha256": "3b236979452a042abed01c5b122b950e59e534f1447460839187882b2e819a35",
+      "bytes": 5337,
+      "lines": 136,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/client/client.go": {
+      "sha256": "b59a7c3cf54352b1fa8ad68bd4999c494c9381057a3c4891d9e1f8b165348511",
+      "bytes": 4182,
+      "lines": 138,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/client/session.go": {
+      "sha256": "94bd3271624af086461dbb6a27206b653126600d2889d70313cef9e0682071c2",
+      "bytes": 9083,
+      "lines": 307,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/local/local.go": {
+      "sha256": "cad921688f833ed4f57adecdf01e02dac467327078ac985e2ef49283d12eeebe",
+      "bytes": 2307,
+      "lines": 109,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/local/statefence.go": {
+      "sha256": "5d98092715151176268268f331a4b1c483bb90280aff1583e3c27bfcb9c5190a",
+      "bytes": 5088,
+      "lines": 124,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/model/model.go": {
+      "sha256": "d423624d18c48ab6565c25e1b931a4e2bbe0422118bff159aefb170b603df9e1",
+      "bytes": 9487,
+      "lines": 194,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/model/operator.go": {
+      "sha256": "817f54d81b1c29767eb916084ea7728a0383d32255223bb2b1c792f4893cc67f",
+      "bytes": 723,
+      "lines": 21,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/model/runs.go": {
+      "sha256": "a44654d3c514f011108194798b79845ac317c3b4d888f4a117199162dd5450e8",
+      "bytes": 1715,
+      "lines": 54,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/model/reviews.go": {
+      "sha256": "e69808756b1bbb8510f4f995db72f89093cc982b7d609e0a0a643f28a0dde031",
+      "bytes": 3896,
+      "lines": 87,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/server/runs.go": {
+      "sha256": "51a82cc79ed683b9056475e7c3fe855f9089beb6c2f561d5aba95388425c6dd3",
+      "bytes": 1410,
+      "lines": 58,
+      "role": "direct boundary source; scoped declarations only"
+    },
+    "internal/tui/dashboard_test.go": {
+      "sha256": "95fc49e80bf96fcc0c5c97c734447ec91e1d4c8764c429d5dfb5056eeb67d8f0",
+      "bytes": 14098,
+      "lines": 425,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/visual_test.go": {
+      "sha256": "5f01d583801c63dd9dc4d3d384df36628281a930f65f19e05082ee9e0b12138a",
+      "bytes": 10407,
+      "lines": 213,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/polish_test.go": {
+      "sha256": "8c0cc2d21a8f1aed73d2791927a74160be49b638b8828702f17dbe371b29b1dc",
+      "bytes": 6704,
+      "lines": 187,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/mouse_test.go": {
+      "sha256": "2f9da14913b89b1fb9f74c89ecfc2f2fce79a127b7877ef49d7b0558758c0286",
+      "bytes": 9050,
+      "lines": 279,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/active_defaults_test.go": {
+      "sha256": "8546ae076f7a43b087cc35db43add9f15de7fca38aeea2a5b5c7bdad20ccdb28",
+      "bytes": 3875,
+      "lines": 105,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/lease_table_test.go": {
+      "sha256": "8cfb5bb69d6fb960c8bbab5b16fd44746d1610d42a786c4e26a46a0599e49bab",
+      "bytes": 2324,
+      "lines": 66,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/run_list_test.go": {
+      "sha256": "79f45324c09e6ebc0d79d618921f487ea6037211e52431e5de75471916e01e4a",
+      "bytes": 8287,
+      "lines": 222,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/runs_test.go": {
+      "sha256": "1271daf032c890f399a653bb68529f803c09a2dc7971ec0f490347e8fc357137",
+      "bytes": 9860,
+      "lines": 302,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/run_detail_presentation_test.go": {
+      "sha256": "dacafc2103d62a1701b9072e491953dfefbe29eba448edff5ea8027c99db18a2",
+      "bytes": 2130,
+      "lines": 61,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/record_test.go": {
+      "sha256": "4929350811795b2a29f4be8ef4dced6bef45bc0d9b9db2fa77ebe5232ed17fb7",
+      "bytes": 1966,
+      "lines": 68,
+      "role": "existing test source; not executed"
+    },
+    "internal/tui/pending_store_test.go": {
+      "sha256": "68e6fd8c5c4f07f1b0f2420cd60a084c1868b709d295e6a9bfe8d2d6ff853194",
+      "bytes": 9175,
+      "lines": 282,
+      "role": "existing test source; not executed"
+    },
+    "scripts/dashboard-screenshots/capture.py": {
+      "sha256": "737a2bf75c9d66fc8935a6b78fd1eb5ce6d4326f27b7d4a829a35381ea834b3c",
+      "bytes": 14974,
+      "lines": 299,
+      "role": "existing capture tool or dependency pin; not executed"
+    },
+    "scripts/dashboard-screenshots/render.mjs": {
+      "sha256": "e9b0b4fd1acfbf208cd3f86eb5281d058e23885313fa41a8260eca67e6c38494",
+      "bytes": 9463,
+      "lines": 160,
+      "role": "existing capture tool or dependency pin; not executed"
+    },
+    "scripts/dashboard-screenshots/geometry.mjs": {
+      "sha256": "2834649750f9ad30fddfbd54e52906ab5bc6a2259c531015ccfd829e15927813",
+      "bytes": 692,
+      "lines": 13,
+      "role": "existing capture tool or dependency pin; not executed"
+    },
+    "scripts/dashboard-screenshots/geometry.json": {
+      "sha256": "213d6f6520828b2d6534e8a80b31b2a9938433535e10e7dd4fa912040db6258a",
+      "bytes": 32,
+      "lines": 4,
+      "role": "existing capture tool or dependency pin; not executed"
+    },
+    "scripts/dashboard-screenshots/package.json": {
+      "sha256": "e8f00e720461f432eebad25ca092b462c3cb71994f764a48037952abb26233e6",
+      "bytes": 218,
+      "lines": 11,
+      "role": "existing capture tool or dependency pin; not executed"
+    },
+    "scripts/dashboard-screenshots/package-lock.json": {
+      "sha256": "3fbc9cd6ed43c1a4598cf52c51c3ffafecfe32c05272a152b411ff9c6afed1fe",
+      "bytes": 1583,
+      "lines": 53,
+      "role": "existing capture tool or dependency pin; not executed"
+    },
+    "go.mod": {
+      "sha256": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+      "bytes": 4491,
+      "lines": 101,
+      "role": "existing capture tool or dependency pin; not executed"
+    },
+    "go.sum": {
+      "sha256": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+      "bytes": 22968,
+      "lines": 254,
+      "role": "existing capture tool or dependency pin; not executed"
+    }
+  },
+  "anchors": {
+    "internal/tui/tui.go": [
+      {
+        "symbol": "var viewNames",
+        "line": 23,
+        "sourceLine": "var viewNames = []string{\"Monitor\", \"Resources\", \"Leases\", \"Messages\", \"Activity\", \"Host\", \"Mesh\", \"Runs\"}"
+      },
+      {
+        "symbol": "type dashboardModel",
+        "line": 25,
+        "sourceLine": "type dashboardModel struct {"
+      },
+      {
+        "symbol": "func Run(",
+        "line": 85,
+        "sourceLine": "func Run(ctx context.Context, home string, input io.Reader, output io.Writer) error {"
+      },
+      {
+        "symbol": "func newDashboard(",
+        "line": 148,
+        "sourceLine": "func newDashboard(ctx context.Context, home string) *dashboardModel {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) Init(",
+        "line": 176,
+        "sourceLine": "func (m *dashboardModel) Init() tea.Cmd { return tea.Batch(connect(m.ctx, m.home), clockTick()) }"
+      },
+      {
+        "symbol": "func (m *dashboardModel) Update(",
+        "line": 202,
+        "sourceLine": "func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {"
+      },
+      {
+        "symbol": "case tea.WindowSizeMsg:",
+        "line": 226,
+        "sourceLine": "case tea.WindowSizeMsg:"
+      },
+      {
+        "symbol": "case tickMsg:",
+        "line": 331,
+        "sourceLine": "case tickMsg:"
+      },
+      {
+        "symbol": "func (m *dashboardModel) key(",
+        "line": 418,
+        "sourceLine": "func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {"
+      },
+      {
+        "symbol": "case \"?\":",
+        "line": 661,
+        "sourceLine": "case \"?\":"
+      },
+      {
+        "symbol": "func (m *dashboardModel) acceptInput(",
+        "line": 730,
+        "sourceLine": "func (m *dashboardModel) acceptInput() tea.Cmd {"
+      }
+    ],
+    "internal/tui/layout.go": [
+      {
+        "symbol": "func scrollReview(",
+        "line": 21,
+        "sourceLine": "func scrollReview(view *viewport.Model, key string) bool {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) mainWidth(",
+        "line": 41,
+        "sourceLine": "func (m *dashboardModel) mainWidth() int {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) resize(",
+        "line": 50,
+        "sourceLine": "func (m *dashboardModel) resize() {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) syncViewport(",
+        "line": 56,
+        "sourceLine": "func (m *dashboardModel) syncViewport() {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) viewportContent(",
+        "line": 60,
+        "sourceLine": "func (m *dashboardModel) viewportContent() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) displayContent(",
+        "line": 67,
+        "sourceLine": "func (m *dashboardModel) displayContent() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) keepSelectionVisible(",
+        "line": 116,
+        "sourceLine": "func (m *dashboardModel) keepSelectionVisible() {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) applySnapshot(",
+        "line": 198,
+        "sourceLine": "func (m *dashboardModel) applySnapshot(data snapshot) {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) restoreSelection(",
+        "line": 219,
+        "sourceLine": "func (m *dashboardModel) restoreSelection(id string, previous int) {"
+      },
+      {
+        "symbol": "func fitBlock(",
+        "line": 231,
+        "sourceLine": "func fitBlock(text string, width, height int) string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) filteredLeases(",
+        "line": 285,
+        "sourceLine": "func (m *dashboardModel) filteredLeases() []model.Lease {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) leasesText(",
+        "line": 314,
+        "sourceLine": "func (m *dashboardModel) leasesText() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) leaseDetailText(",
+        "line": 425,
+        "sourceLine": "func (m *dashboardModel) leaseDetailText() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) leaseReviewText(",
+        "line": 447,
+        "sourceLine": "func (m *dashboardModel) leaseReviewText() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) currentRecord(",
+        "line": 611,
+        "sourceLine": "func (m *dashboardModel) currentRecord() any {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) openSelected(",
+        "line": 649,
+        "sourceLine": "func (m *dashboardModel) openSelected() tea.Cmd {"
+      }
+    ],
+    "internal/tui/presentation.go": [
+      {
+        "symbol": "func (m *dashboardModel) modal(",
+        "line": 13,
+        "sourceLine": "func (m *dashboardModel) modal() bool {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) bodyHeight(",
+        "line": 22,
+        "sourceLine": "func (m *dashboardModel) bodyHeight() int { return max(1, m.height-8) }"
+      },
+      {
+        "symbol": "func (m *dashboardModel) modalGeometry(",
+        "line": 23,
+        "sourceLine": "func (m *dashboardModel) modalGeometry() (int, int) {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) viewportGeometry(",
+        "line": 29,
+        "sourceLine": "func (m *dashboardModel) viewportGeometry() (int, int) {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) editorDisplay(",
+        "line": 43,
+        "sourceLine": "func (m *dashboardModel) editorDisplay() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) windowTitle(",
+        "line": 79,
+        "sourceLine": "func (m *dashboardModel) windowTitle() (string, string) {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) renderMain(",
+        "line": 172,
+        "sourceLine": "func (m *dashboardModel) renderMain() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) renderFeed(",
+        "line": 196,
+        "sourceLine": "func (m *dashboardModel) renderFeed() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) freshness(",
+        "line": 225,
+        "sourceLine": "func (m *dashboardModel) freshness() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) footer(",
+        "line": 249,
+        "sourceLine": "func (m *dashboardModel) footer() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) View(",
+        "line": 288,
+        "sourceLine": "func (m *dashboardModel) View() tea.View {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) exitFooter(",
+        "line": 402,
+        "sourceLine": "func (m *dashboardModel) exitFooter() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) runFullscreenView(",
+        "line": 416,
+        "sourceLine": "func (m *dashboardModel) runFullscreenView() tea.View {"
+      }
+    ],
+    "internal/tui/polish.go": [
+      {
+        "symbol": "func (m *dashboardModel) navigationLabel(",
+        "line": 40,
+        "sourceLine": "func (m *dashboardModel) navigationLabel(index int) string {"
+      },
+      {
+        "symbol": "func scrollFrame(",
+        "line": 74,
+        "sourceLine": "func scrollFrame(frame string, view viewport.Model, width int) string {"
+      }
+    ],
+    "internal/tui/theme.go": [
+      {
+        "symbol": "func align(",
+        "line": 28,
+        "sourceLine": "func align(left, right string, width int) string {"
+      },
+      {
+        "symbol": "func window(",
+        "line": 39,
+        "sourceLine": "func window(title, body string, width, height int, focused bool, tone string) string {"
+      },
+      {
+        "symbol": "func keycap(",
+        "line": 76,
+        "sourceLine": "func keycap(key, label, tone string) string {"
+      },
+      {
+        "symbol": "func fieldLabels(",
+        "line": 105,
+        "sourceLine": "func fieldLabels(content string) string {"
+      }
+    ],
+    "internal/tui/format.go": [
+      {
+        "symbol": "func safe(",
+        "line": 17,
+        "sourceLine": "func safe(text string) string {"
+      },
+      {
+        "symbol": "func short(",
+        "line": 38,
+        "sourceLine": "func short(text string, width int) string { return ansi.Truncate(safe(text), max(0, width), \"\u2026\") }"
+      },
+      {
+        "symbol": "func exact(",
+        "line": 40,
+        "sourceLine": "func exact(number json.Number) string {"
+      },
+      {
+        "symbol": "func byteCount(",
+        "line": 48,
+        "sourceLine": "func byteCount(number string) string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) owner(",
+        "line": 126,
+        "sourceLine": "func (m *dashboardModel) owner(uid, username, host string) string {"
+      }
+    ],
+    "internal/tui/record.go": [
+      {
+        "symbol": "func newRecord(",
+        "line": 29,
+        "sourceLine": "func newRecord(value any, label string) (*recordTree, error) {"
+      },
+      {
+        "symbol": "func (t *recordTree) rebuild(",
+        "line": 90,
+        "sourceLine": "func (t *recordTree) rebuild() {"
+      },
+      {
+        "symbol": "func (t *recordTree) toggle(",
+        "line": 119,
+        "sourceLine": "func (t *recordTree) toggle() {"
+      },
+      {
+        "symbol": "func (t *recordTree) text(",
+        "line": 136,
+        "sourceLine": "func (t *recordTree) text(width int) string {"
+      }
+    ],
+    "internal/tui/mouse.go": [
+      {
+        "symbol": "func (m *dashboardModel) controls(",
+        "line": 29,
+        "sourceLine": "func (m *dashboardModel) controls() []mouseControl {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) baseControls(",
+        "line": 52,
+        "sourceLine": "func (m *dashboardModel) baseControls() []mouseControl {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) controlBar(",
+        "line": 114,
+        "sourceLine": "func (m *dashboardModel) controlBar() (string, []mouseRegion) {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) mouseFrame(",
+        "line": 140,
+        "sourceLine": "func (m *dashboardModel) mouseFrame() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) mouseScrollFrame(",
+        "line": 147,
+        "sourceLine": "func (m *dashboardModel) mouseScrollFrame() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) mouseRegions(",
+        "line": 182,
+        "sourceLine": "func (m *dashboardModel) mouseRegions() []mouseRegion {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) mouseHandler(",
+        "line": 308,
+        "sourceLine": "func (m *dashboardModel) mouseHandler() func(tea.MouseMsg) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) acceptMouse(",
+        "line": 349,
+        "sourceLine": "func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg, frame string) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) modalButtonRegions(",
+        "line": 444,
+        "sourceLine": "func (m *dashboardModel) modalButtonRegions() []mouseRegion {"
+      }
+    ],
+    "internal/tui/lease_table.go": [
+      {
+        "symbol": "func (m *dashboardModel) leaseTable(",
+        "line": 14,
+        "sourceLine": "func (m *dashboardModel) leaseTable(leases []model.Lease) string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) leaseTableSelectionRow(",
+        "line": 110,
+        "sourceLine": "func (m *dashboardModel) leaseTableSelectionRow() int { return 4 + 2*m.selected }"
+      }
+    ],
+    "internal/tui/actions.go": [
+      {
+        "symbol": "func (m *dashboardModel) loadDetail(",
+        "line": 35,
+        "sourceLine": "func (m *dashboardModel) loadDetail(id string) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) acceptDetail(",
+        "line": 51,
+        "sourceLine": "func (m *dashboardModel) acceptDetail(msg detailMsg) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) startReview(",
+        "line": 145,
+        "sourceLine": "func (m *dashboardModel) startReview(action string) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) reviewTTL(",
+        "line": 172,
+        "sourceLine": "func (m *dashboardModel) reviewTTL(text string) tea.Cmd {"
+      },
+      {
+        "symbol": "func leaseConsequences(",
+        "line": 190,
+        "sourceLine": "func leaseConsequences(l model.Lease) string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) reviewKey(",
+        "line": 214,
+        "sourceLine": "func (m *dashboardModel) reviewKey(key string) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) acceptLeaseResult(",
+        "line": 244,
+        "sourceLine": "func (m *dashboardModel) acceptLeaseResult(msg leaseResultMsg) tea.Cmd {"
+      }
+    ],
+    "internal/tui/runs.go": [
+      {
+        "symbol": "const runDisplayLimit",
+        "line": 14,
+        "sourceLine": "const runDisplayLimit = 256 * 1024"
+      },
+      {
+        "symbol": "type runsDashboard",
+        "line": 16,
+        "sourceLine": "type runsDashboard struct {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) runsVisible(",
+        "line": 38,
+        "sourceLine": "func (m *dashboardModel) runsVisible() bool {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) runRosterVisible(",
+        "line": 41,
+        "sourceLine": "func (m *dashboardModel) runRosterVisible() bool {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) retireRuns(",
+        "line": 44,
+        "sourceLine": "func (m *dashboardModel) retireRuns() {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) readRunPage(",
+        "line": 65,
+        "sourceLine": "func (m *dashboardModel) readRunPage(manual, inventory bool) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) acceptRunsRead(",
+        "line": 98,
+        "sourceLine": "func (m *dashboardModel) acceptRunsRead(msg runsReadMsg) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) filteredRuns(",
+        "line": 170,
+        "sourceLine": "func (m *dashboardModel) filteredRuns() []model.Run {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) openRun(",
+        "line": 186,
+        "sourceLine": "func (m *dashboardModel) openRun() tea.Cmd {"
+      },
+      {
+        "symbol": "func safeRunOutput(",
+        "line": 205,
+        "sourceLine": "func safeRunOutput(data []byte, done bool) string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) hostContextLabel(",
+        "line": 237,
+        "sourceLine": "func (m *dashboardModel) hostContextLabel(host string) string {"
+      },
+      {
+        "symbol": "func runDetailTime(",
+        "line": 247,
+        "sourceLine": "func runDetailTime(value time.Time) string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) runsText(",
+        "line": 259,
+        "sourceLine": "func (m *dashboardModel) runsText() string {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) runKey(",
+        "line": 318,
+        "sourceLine": "func (m *dashboardModel) runKey(k string) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) setRunFullscreen(",
+        "line": 397,
+        "sourceLine": "func (m *dashboardModel) setRunFullscreen(enabled bool) {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) runFullscreenText(",
+        "line": 418,
+        "sourceLine": "func (m *dashboardModel) runFullscreenText() string {"
+      }
+    ],
+    "internal/tui/run_list.go": [
+      {
+        "symbol": "func activeRunRecord(",
+        "line": 13,
+        "sourceLine": "func activeRunRecord(run model.Run) bool {"
+      },
+      {
+        "symbol": "func currentRunRecord(",
+        "line": 20,
+        "sourceLine": "func currentRunRecord(run model.Run) bool {"
+      },
+      {
+        "symbol": "func runStatusLabel(",
+        "line": 23,
+        "sourceLine": "func runStatusLabel(run model.Run) string {"
+      },
+      {
+        "symbol": "func runListTime(",
+        "line": 73,
+        "sourceLine": "func runListTime(run model.Run, now time.Time) string {"
+      },
+      {
+        "symbol": "func runListCommand(",
+        "line": 114,
+        "sourceLine": "func runListCommand(run model.Run) string {"
+      },
+      {
+        "symbol": "func runListPurpose(",
+        "line": 129,
+        "sourceLine": "func runListPurpose(run model.Run) string {"
+      },
+      {
+        "symbol": "func orderRunRecords(",
+        "line": 141,
+        "sourceLine": "func orderRunRecords(runs []model.Run) {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) runListRender(",
+        "line": 156,
+        "sourceLine": "func (m *dashboardModel) runListRender() textRows {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) runListSelectionRow(",
+        "line": 221,
+        "sourceLine": "func (m *dashboardModel) runListSelectionRow() int {"
+      }
+    ],
+    "internal/tui/preferences.go": [
+      {
+        "symbol": "const preferenceFile",
+        "line": 20,
+        "sourceLine": "const preferenceFile = \"dashboard-client.json\""
+      },
+      {
+        "symbol": "func trustedClientRoot(",
+        "line": 22,
+        "sourceLine": "func trustedClientRoot(home string) (*os.Root, error) {"
+      },
+      {
+        "symbol": "func defaultPreferences(",
+        "line": 48,
+        "sourceLine": "func defaultPreferences() preferences {"
+      },
+      {
+        "symbol": "func readPreferences(",
+        "line": 51,
+        "sourceLine": "func readPreferences(home string) (preferences, error) {"
+      },
+      {
+        "symbol": "func writePreferences(",
+        "line": 87,
+        "sourceLine": "func writePreferences(home string, p preferences) error {"
+      },
+      {
+        "symbol": "func leaseLabel(",
+        "line": 117,
+        "sourceLine": "func leaseLabel(lease model.Lease) string {"
+      }
+    ],
+    "internal/tui/network.go": [
+      {
+        "symbol": "type transport interface",
+        "line": 14,
+        "sourceLine": "type transport interface {"
+      },
+      {
+        "symbol": "func readSnapshot(",
+        "line": 55,
+        "sourceLine": "func readSnapshot(ctx context.Context, session transport) (snapshot, error) {"
+      },
+      {
+        "symbol": "func connect(",
+        "line": 82,
+        "sourceLine": "func connect(ctx context.Context, home string) tea.Cmd {"
+      },
+      {
+        "symbol": "func refresh(",
+        "line": 105,
+        "sourceLine": "func refresh(ctx context.Context, s transport) tea.Cmd {"
+      },
+      {
+        "symbol": "func waitStream(",
+        "line": 108,
+        "sourceLine": "func waitStream(ctx context.Context, s transport) tea.Cmd {"
+      },
+      {
+        "symbol": "func clockTick(",
+        "line": 124,
+        "sourceLine": "func clockTick() tea.Cmd {"
+      }
+    ],
+    "internal/tui/readable_names.go": [
+      {
+        "symbol": "type statusRenderView",
+        "line": 30,
+        "sourceLine": "type statusRenderView struct {"
+      },
+      {
+        "symbol": "func (v statusRenderView) values(",
+        "line": 63,
+        "sourceLine": "func (v statusRenderView) values() (model.Status, renderLabels) {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) leaseDisplayName(",
+        "line": 140,
+        "sourceLine": "func (m *dashboardModel) leaseDisplayName(id, host string) string {"
+      }
+    ],
+    "internal/tui/naming_observations.go": [
+      {
+        "symbol": "func callWithNamingObservation(",
+        "line": 14,
+        "sourceLine": "func callWithNamingObservation(ctx context.Context, session transport, operation string, params, result any) (*model.Error, error, uint64) {"
+      }
+    ],
+    "internal/tui/custom_names.go": [
+      {
+        "symbol": "func callWithNaming(",
+        "line": 76,
+        "sourceLine": "func callWithNaming(ctx context.Context, session transport, operation string, params, result any) (*model.Error, error) {"
+      }
+    ],
+    "internal/tui/recovery.go": [
+      {
+        "symbol": "func (m *dashboardModel) refreshPending(",
+        "line": 20,
+        "sourceLine": "func (m *dashboardModel) refreshPending() {"
+      }
+    ],
+    "internal/tui/pending_store.go": [
+      {
+        "symbol": "func openPending(",
+        "line": 183,
+        "sourceLine": "func openPending(home string) (*pendingFiles, error) {"
+      },
+      {
+        "symbol": "func (h *pendingFiles) close(",
+        "line": 258,
+        "sourceLine": "func (h *pendingFiles) close() {"
+      },
+      {
+        "symbol": "func loadPending(",
+        "line": 326,
+        "sourceLine": "func loadPending(home string) ([]pendingRecord, error) {"
+      }
+    ],
+    "internal/tui/lease_checkins.go": [
+      {
+        "symbol": "func hasLeaseCheckins(",
+        "line": 43,
+        "sourceLine": "func hasLeaseCheckins(s model.Status) bool {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) openCheckins(",
+        "line": 51,
+        "sourceLine": "func (m *dashboardModel) openCheckins() tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) readCheckins(",
+        "line": 64,
+        "sourceLine": "func (m *dashboardModel) readCheckins(next bool) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) checkinKey(",
+        "line": 142,
+        "sourceLine": "func (m *dashboardModel) checkinKey(k string) tea.Cmd {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) sendCheckinSettings(",
+        "line": 236,
+        "sourceLine": "func (m *dashboardModel) sendCheckinSettings() tea.Cmd {"
+      }
+    ],
+    "internal/tui/peers.go": [
+      {
+        "symbol": "func (m *dashboardModel) peerVisible(",
+        "line": 39,
+        "sourceLine": "func (m *dashboardModel) peerVisible() bool {"
+      },
+      {
+        "symbol": "func (m *dashboardModel) readPeers(",
+        "line": 70,
+        "sourceLine": "func (m *dashboardModel) readPeers(force bool) tea.Cmd {"
+      }
+    ],
+    "internal/cli/dashboard.go": [
+      {
+        "symbol": "func (a *app) dashboard(",
+        "line": 19,
+        "sourceLine": "func (a *app) dashboard(args []string) error {"
+      }
+    ],
+    "internal/client/client.go": [
+      {
+        "symbol": "func Connect(",
+        "line": 16,
+        "sourceLine": "func Connect(ctx context.Context, home string) (*websocket.Conn, error) {"
+      },
+      {
+        "symbol": "func ConnectEndpoint(",
+        "line": 26,
+        "sourceLine": "func ConnectEndpoint(ctx context.Context, ep local.Endpoint) (*websocket.Conn, error) {"
+      }
+    ],
+    "internal/client/session.go": [
+      {
+        "symbol": "func OpenSession(",
+        "line": 61,
+        "sourceLine": "func OpenSession(ctx context.Context, home string) (*Session, error) {"
+      },
+      {
+        "symbol": "func (s *Session) Close(",
+        "line": 85,
+        "sourceLine": "func (s *Session) Close()                                 { s.fail(errors.New(\"dashboard connection closed\")) }"
+      },
+      {
+        "symbol": "func (s *Session) Call(",
+        "line": 234,
+        "sourceLine": "func (s *Session) Call(ctx context.Context, operation string, params, result any) error {"
+      }
+    ],
+    "internal/local/local.go": [
+      {
+        "symbol": "func ReadEndpoint(",
+        "line": 101,
+        "sourceLine": "func ReadEndpoint(home string) (Endpoint, error) {"
+      }
+    ],
+    "internal/local/statefence.go": [
+      {
+        "symbol": "func CheckStateFence(",
+        "line": 28,
+        "sourceLine": "func CheckStateFence(home string) error {"
+      }
+    ],
+    "internal/model/operator.go": [
+      {
+        "symbol": "type LeaseAction",
+        "line": 8,
+        "sourceLine": "type LeaseAction struct {"
+      },
+      {
+        "symbol": "type LeaseRevision",
+        "line": 18,
+        "sourceLine": "type LeaseRevision struct {"
+      }
+    ],
+    "internal/model/runs.go": [
+      {
+        "symbol": "type Run struct",
+        "line": 7,
+        "sourceLine": "type Run struct {"
+      },
+      {
+        "symbol": "type RunLog struct",
+        "line": 28,
+        "sourceLine": "type RunLog struct {"
+      }
+    ],
+    "internal/server/runs.go": [
+      {
+        "symbol": "func (s *Server) runOperation(",
+        "line": 11,
+        "sourceLine": "func (s *Server) runOperation(operation string, params json.RawMessage) (any, error) {"
+      }
+    ],
+    "internal/tui/dashboard_test.go": [
+      {
+        "symbol": "func fixtureDashboard(",
+        "line": 54,
+        "sourceLine": "func fixtureDashboard(t *testing.T) (*dashboardModel, *testTransport) {"
+      },
+      {
+        "symbol": "func newTestTransport(",
+        "line": 30,
+        "sourceLine": "func newTestTransport() *testTransport {"
+      }
+    ],
+    "internal/tui/visual_test.go": [
+      {
+        "symbol": "func TestWriteWindowedDashboardPreviews(",
+        "line": 144,
+        "sourceLine": "func TestWriteWindowedDashboardPreviews(t *testing.T) {"
+      }
+    ],
+    "scripts/dashboard-screenshots/capture.py": [
+      {
+        "symbol": "def terminal_geometry(",
+        "line": 64,
+        "sourceLine": "def terminal_geometry(slave):"
+      },
+      {
+        "symbol": "stage = 'rebuild embedded dashboard'",
+        "line": 124,
+        "sourceLine": "stage = 'rebuild embedded dashboard'"
+      },
+      {
+        "symbol": "stage = 'start private backend'",
+        "line": 132,
+        "sourceLine": "stage = 'start private backend'"
+      },
+      {
+        "symbol": "stage = 'create example cooperative lease'",
+        "line": 151,
+        "sourceLine": "stage = 'create example cooperative lease'"
+      },
+      {
+        "symbol": "master, slave = pty.openpty()",
+        "line": 161,
+        "sourceLine": "master, slave = pty.openpty()"
+      }
+    ],
+    "scripts/dashboard-screenshots/render.mjs": [
+      {
+        "symbol": "const grid = terminalGeometry(config.terminalGeometry)",
+        "line": 52,
+        "sourceLine": "const grid = terminalGeometry(config.terminalGeometry)"
+      },
+      {
+        "symbol": "stage = 'terminal renderer'",
+        "line": 108,
+        "sourceLine": "stage = 'terminal renderer'"
+      },
+      {
+        "symbol": "stage = 'terminal byte replay'",
+        "line": 127,
+        "sourceLine": "stage = 'terminal byte replay'"
+      },
+      {
+        "symbol": "window.captureTerminal.buffer.active.type === 'alternate'",
+        "line": 139,
+        "sourceLine": "alternate: window.captureTerminal.buffer.active.type === 'alternate',"
+      }
+    ],
+    "scripts/dashboard-screenshots/geometry.mjs": [
+      {
+        "symbol": "export function terminalGeometry(",
+        "line": 3,
+        "sourceLine": "export function terminalGeometry(grid) {"
+      }
+    ]
+  },
+  "sourceFacts": [
+    {
+      "id": "T1",
+      "statement": "Actual entry is CLI dashboard terminal with input/output TTY and cursor-capable TERM checks, then tui.Run. Run owns the terminal and client connection only; exiting does not release leases or stop backend. Bubble Tea options use caller context/input/output and no signal handler; NO_COLOR selects ASCII profile. Real Run schedules native Init, closes actual sessions after program return and prints unresolved operation receipts. No entrypoint or terminal lifecycle is executed in this cut.",
+      "sourceFiles": [
+        "internal/cli/dashboard.go",
+        "internal/tui/tui.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T2",
+      "statement": "newDashboard is not a pure rendering constructor: it reads preferences under its supplied home and calls refreshPending/loadPending/openPending. openPending checks reset fence and directory identity, may create dashboard-pending and .lock, fsyncs and takes/releases a nonblocking flock. Actual Init batches native connect plus one-second clock. No fixture may call either with default/shared state.",
+      "sourceFiles": [
+        "internal/tui/tui.go",
+        "internal/tui/preferences.go",
+        "internal/tui/recovery.go",
+        "internal/tui/pending_store.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T3",
+      "statement": "Native connect opens the existing authenticated endpoint through client.OpenSession/ReadEndpoint/WebSocket. readSnapshot reads status with naming diagnostics, messages, agents and conditional lease_review_list. connect additionally subscribes to events/monitor and reads recent events; it does not itself start a backend. Reconnect commands may open the native client again. A synthetic render must suppress native Init/reconnect, not merely replace m.session after Init.",
+      "sourceFiles": [
+        "internal/tui/network.go",
+        "internal/client/session.go",
+        "internal/client/client.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T4",
+      "statement": "WindowSize clamps width to 1..500 and height to 1..200; model default is 100x30; its initially created65x20 viewport is resized/synced to96x20 at that default size, SoftWrap=true, textinput CharLimit=16384. One shared Bubbles viewport is resized/synced after Update. Update uses one wall-clock time.Now cut, with raw mouse ignored and click frame captured before advancing time. Rendering below 45x14 shows an enlargement notice, except fullscreen dispatch is checked first. Source formulas alone do not establish actual cell paint.",
+      "sourceFiles": [
+        "internal/tui/tui.go",
+        "internal/tui/layout.go",
+        "internal/tui/presentation.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T5",
+      "statement": "Shell has four top lines, bodyHeight=max(1,height-8) and four bottom lines. At width>=110 a 33-column feed and 2-column gap leave mainWidth=width-35; otherwise mainWidth=width. Nonmodal viewport is mainWidth-4 by bodyHeight-2. Modal width=min(mainWidth,88); its content is ANSI-wrapped at width-4, height=min(bodyHeight,max(9,wrappedLines+2)), centered over dimmed background with shadow. Detail/record/run detail are ordinary reading windows, not modal() surfaces.",
+      "sourceFiles": [
+        "internal/tui/layout.go",
+        "internal/tui/presentation.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T6",
+      "statement": "Navigation labels expand at width>=100, abbreviate below100, compact further below55; inactive tab padding changes below65. Shell lines use fitBlock ANSI truncation and cell padding. align preserves a clipped right part and truncates left when needed; window bounds title to width-6. controlBar uses actual controls(), adds connected nonmodal Name first, and stops at the first action chip that will not fit; omitted later chips are not automatically wrapped. Scroll indicator is on the frame bottom, uses visual line counts and yields if too wide. These caps/omissions are policies to inspect, not diagnosed defects.",
+      "sourceFiles": [
+        "internal/tui/polish.go",
+        "internal/tui/theme.go",
+        "internal/tui/layout.go",
+        "internal/tui/mouse.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T7",
+      "statement": "Keys route by actual state, not just view number: Ctrl+C exits first; name editor/fullscreen routing, q, node/recovery/editor/checkin/picker/review/composer routes precede ordinary record/detail/list logic. Numeric navigation resets selection/filter/feed, but lease detail handles numeric keys through its viewport fallback until closed; mouse nav explicitly clears detail/record first. Tab toggles feed focus; narrow f toggles compact feed and focus, while f in selected Runs means follow/pause. No universal key semantics are inferred across overlays.",
+      "sourceFiles": [
+        "internal/tui/tui.go",
+        "internal/tui/mouse.go",
+        "internal/tui/runs.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T8",
+      "statement": "Mouse is the actual tea.View.OnMouse path with cell-motion mode. View snapshots rendered frame hash, dimensions, current regions and a separate scroll-frame identity. Handler returns dashboardMouseMsg commands; raw mouse sent directly to Update is ignored. Native click acceptance invalidates changed geometry/modal/selection/content; wheel +/-3 tolerates scroll/telemetry changes but not navigation/context changes. Row and trusted action regions are derived from actual renderers/final review row; never infer actionable text from an arbitrary reason/log string. Source does not prove current hit-map/cell alignment.",
+      "sourceFiles": [
+        "internal/tui/presentation.go",
+        "internal/tui/mouse.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T9",
+      "statement": "Lease list preserves status order. Default hideInactive=true removes every state=terminal lease, independent of outcome; filtering matches full identity/display label/reason/state/status/agent/project/owner username. Table owns two row lines, source selection row=4+2*selected and matching two-line mouse regions. Columns use inner width mainWidth-4: 2 below58, reason added at58, claims/expiry at88. List names/reasons/account are bounded scan labels; details carry full ID/reason/claims/timestamps. No complete paint guarantee follows from that detail string.",
+      "sourceFiles": [
+        "internal/tui/layout.go",
+        "internal/tui/lease_table.go",
+        "internal/tui/mouse.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T10",
+      "statement": "Both inactive defaults are true and independently persisted. Pressing h in Leases or Runs roster writes dashboard-client.json atomically under the supplied private same-user real home. h in lease detail opens check-ins; h in selected run reader is not a preference operation. Accepted current/default/history-reader behavior must remain exact. An inventory must not press roster h against real state and should label any in-memory/synthetic-home history seed explicitly.",
+      "sourceFiles": [
+        "internal/tui/preferences.go",
+        "internal/tui/tui.go",
+        "internal/tui/active_defaults_test.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T11",
+      "statement": "Lease Enter/loadDetail issues inspect with exact ID and captures detailGeneration; acceptDetail rejects stale generations and preserves separately sourced display labels. Snapshot updates restore selection by exact ID where possible; fallback clamps prior index. Lease detail remains original viewport, starts at top, exposes identity/owner/host/resource/date/artifact/process observations and e/x/c/h/r/i hints. Reads and hint rendering confer no mutation authority.",
+      "sourceFiles": [
+        "internal/tui/actions.go",
+        "internal/tui/layout.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T12",
+      "statement": "Lease e/x/c build a draft review from connected/nonpending/exact current detail and eligibility guards. Renew edits bounded TTL from now; release/cancel bind revision and reviewed consumers, with consequence text for processes/storage/ports. n/Esc declines without a transport call; y in an eligible review is the lease_action mutation boundary and marks pending/unknown. Pending blocks repeat/close review; lost response stays unknown until fresh inspect, never auto-retried. Future inventory may render a draft and decline; no y or genuine lease_action.",
+      "sourceFiles": [
+        "internal/tui/actions.go",
+        "internal/model/operator.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T13",
+      "statement": "Check-in hint h is capability-gated and reads inspect/policy/pending/history. Editing/confirm is separate; lease_review_configure is a mutation and may schedule owner-agent questions. First bounded inventory excludes this workflow beyond displaying its existing hint. Name/recovery/message/pool/mesh shortcuts similarly route outside the assigned slice and must not be activated.",
+      "sourceFiles": [
+        "internal/tui/lease_checkins.go",
+        "internal/tui/tui.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T14",
+      "statement": "Record reader JSON-marshals original typed value, rejects >4MiB, decodes with UseNumber, sorts object keys, expands independent JSON-encoded paths and pages children100 at a time. Tree has <=5000 rows plus an explicit display-limit notice, depth<=64 and indentation<=20 levels. Each scalar row is short(...,width), with quoted string representation; untruncated underlying value/numeric text does not mean full scalar glyphs are visible. Record is local reading state and has no transport call.",
+      "sourceFiles": [
+        "internal/tui/record.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T15",
+      "statement": "safe escapes Unicode controls/format/separator characters, spelling newline/carriage-return/tab visibly, and short applies ANSI-aware truncation. exact(json.Number) preserves its decimal string; byteCount formats a big.Rat in binary units rounded to one decimal. Owners prefer recorded username, or explicitly mark live current-account fallback when exact local host/UID match. Display names are metadata separate from action models. Existing escaping/value semantics must stay exact; raw ANSI/control bytes in a fixture log may only become inert visible text.",
+      "sourceFiles": [
+        "internal/tui/format.go",
+        "internal/tui/readable_names.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T16",
+      "statement": "Runs currentRunRecord is state!=terminal OR outcome=reporter_lost; unfamiliar/interrupted states remain current even when not active. activeRunRecord covers active/queued/provisioning/ending/reclaiming/needs_attention. Stable ordering is active first, current before history, descending start/created, then exact ID. Status distinguishes reporter/log loss/unknown/cleanup/failed/completed. List uses compact two-line purpose/status and command/agent/age, full fields searchable; basename/path and whitespace shortening is intentional scan presentation. Source currentRunRecord is not a process-liveness proof.",
+      "sourceFiles": [
+        "internal/tui/run_list.go",
+        "internal/tui/runs.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T17",
+      "statement": "Run reader uses original runsUI and shared viewport. readRunPage has 10s context, busy guard and exact captured session/UI generation; ops are runs inventory and run_output(id,byte offset). Visible/connected/session checks gate reads; retirement increments generation and cancels. accept requires same UI/generation/session, then visible/connected; pages require same run ID, exact offset and nextOffset=offset+len(data). Immediate following drains omit repeat inventory, periodic ticks refresh it. Roster ID/scroll anchoring is limited to runRosterVisible, excluding associated lease/detail/overlay contexts.",
+      "sourceFiles": [
+        "internal/tui/runs.go",
+        "internal/tui/tui.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T18",
+      "statement": "Displayed output retains latest256KiB and drops leading continuation bytes at cut, while exact durable offsets continue separately. safeRunOutput holds an unfinished final UTF-8 rune until complete if not done, replaces invalid UTF-8, expands tabs to4spaces, escapes controls and injects display newlines every512runes before Bubbles soft-wrap. Source caps are not full retained-log acceptance or a visual defect. Reporter-lost/truncation/display-cut/disconnected/error text remain distinct.",
+      "sourceFiles": [
+        "internal/tui/runs.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T19",
+      "statement": "Selected run detail shows complete source command/reason/CWD/IDs and honest missing timestamps; Local marker requires exact known32hex host match, not cosmetic name. f/End follows, scroll keys pause, Home resets display cursor and reads from0 paused, n pages only paused/notdone, r refreshes, l opens exact associated lease, i builds original local record. Fold is presentation only, capture/follow can continue. z enters full-terminal same-buffer viewport (width x height-2), saves prior fold/offset, and Esc restores prior reader state before returning to roster. Navigation/exit retires reader; fullscreen itself does not create another reader.",
+      "sourceFiles": [
+        "internal/tui/runs.go",
+        "internal/tui/presentation.go"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    },
+    {
+      "id": "T20",
+      "statement": "Existing test sources cover geometry, inactive defaults, exact record numbers, mouse stale-frame/trusted actions and run pagination/fold/fullscreen/late receipts, but none are executed or promoted to current source/render acceptance by this classification. Existing screenshot preview test emits model View.Content; the live capture pipeline rebuilds, starts backend and acquires a lease before PTY. Existing renderer additionally requires a live web URL/ticket and geometry floor80 columns. It is not an unchanged read-only synthetic runner at72 columns.",
+      "sourceFiles": [
+        "internal/tui/dashboard_test.go",
+        "internal/tui/visual_test.go",
+        "scripts/dashboard-screenshots/capture.py",
+        "scripts/dashboard-screenshots/render.mjs",
+        "scripts/dashboard-screenshots/geometry.mjs"
+      ],
+      "anchorLookup": "Exact verified declarations for these source files are recorded in anchors."
+    }
+  ],
+  "proposedGeometries": [
+    {
+      "cols": 72,
+      "rows": 28,
+      "derivedNotRendered": true,
+      "navigation": "abbreviated names",
+      "sidebarFeedColumns": null,
+      "mainWidth": 72,
+      "bodyHeight": 20,
+      "ordinaryViewport": [
+        68,
+        18
+      ],
+      "modalMaxOuter": [
+        72,
+        20
+      ],
+      "modalMaxViewport": [
+        68,
+        18
+      ],
+      "fullRunViewport": [
+        72,
+        26
+      ],
+      "leaseTableInnerWidth": 68,
+      "leaseColumns": 3
+    },
+    {
+      "cols": 100,
+      "rows": 35,
+      "derivedNotRendered": true,
+      "navigation": "full names",
+      "sidebarFeedColumns": null,
+      "mainWidth": 100,
+      "bodyHeight": 27,
+      "ordinaryViewport": [
+        96,
+        25
+      ],
+      "modalMaxOuter": [
+        88,
+        27
+      ],
+      "modalMaxViewport": [
+        84,
+        25
+      ],
+      "fullRunViewport": [
+        100,
+        33
+      ],
+      "leaseTableInnerWidth": 96,
+      "leaseColumns": 5
+    },
+    {
+      "cols": 160,
+      "rows": 50,
+      "derivedNotRendered": true,
+      "navigation": "full names",
+      "sidebarFeedColumns": 33,
+      "mainWidth": 125,
+      "bodyHeight": 42,
+      "ordinaryViewport": [
+        121,
+        40
+      ],
+      "modalMaxOuter": [
+        88,
+        42
+      ],
+      "modalMaxViewport": [
+        84,
+        40
+      ],
+      "fullRunViewport": [
+        160,
+        48
+      ],
+      "leaseTableInnerWidth": 121,
+      "leaseColumns": 5
+    }
+  ],
+  "dependencyPinsFromRepository": {
+    "go": "1.27.3",
+    "bubbles": "v2.2.1",
+    "bubbletea": "v2.1.0",
+    "lipgloss": "v2.0.6",
+    "ansi": "v0.11.9",
+    "xterm": "6.0.0",
+    "playwright": "1.64.1",
+    "meaning": "Declared pins only; no toolchain/library installation or runtime/version command executed."
+  },
+  "effectBoundaries": {
+    "readTransportInterface": "Existing internal/tui transport (Call, Events, Telemetry, Done, Err, Close); optional naming diagnostics stay original if supported. Existing testTransport is permissive and is not sufficient as the strict refusal boundary.",
+    "candidateMinimalReadAllowlist": [
+      "inspect",
+      "runs",
+      "run_output"
+    ],
+    "optionalFullSnapshotReadExtension": [
+      "status",
+      "messages",
+      "agents"
+    ],
+    "snapshotExtensionQualification": "Only if centrally approved to exercise original list refresh; messages/agents would return synthetic empty arrays, not contact or messaging authority. Check-in capability omitted for first slice. No native subscription/client endpoint may be opened.",
+    "localOnlyPresentation": [
+      "selection and scroll",
+      "record expand/collapse",
+      "filter draft/apply",
+      "compact feed focus",
+      "run fold/fullscreen exit/restoration",
+      "review draft and decline"
+    ],
+    "writesToExclude": [
+      "Roster h: dashboard-client.json preferences",
+      "Init/reconnect: native endpoint session",
+      "y reviewed lease_action",
+      "lease_review_configure",
+      "Name editor controls",
+      "Recovery replay",
+      "Messages/send/reply/broadcast",
+      "Pool/mesh/node mutation paths",
+      "run_create/run_append/run_finish, jobs, daemon lifecycle, resource claims"
+    ],
+    "notUniversalKeyAllowlist": "Each input must be allowed for the exact current state. Number keys are limited to existing Leases(3)/Runs(8); inspect/log/filter/record/scroll/read keys are state-dependent. q/Ctrl+C stop only fixture-owned program. Unknown key, mouse region, command or transport method is refused/counts before external effect."
+  },
+  "proposedFixture": {
+    "status": "PROPOSAL ONLY. Coordinator accepts the described test-only adapter, owned-home bookkeeping and exact-grid validator as viable future seams with limits; no implementation/runtime/build/PTY/window is allocated. No fixture implemented or executed.",
+    "firstStage": "New package-local test-only fixture using original newDashboard with explicitly approved task-owned0700 synthetic home, original Update/View/viewport/layout/list/detail/mouse methods and strict transport; collect direct View.Content and model facts. Constructor filesystem bookkeeping must be disclosed/limited to that home. No default/shared state or backend.",
+    "ptyStage": "Only after separate build/PTY allocation: original Bubble Tea with a test-only tea.Model adapter that suppresses native Init/reconnect, delegates original Update/View, and returns the adapter after each Update (not returned raw dashboardModel). Retain actual same model/viewport and context cancellation/reader retirement. This does not execute unchanged tui.Run and does not establish real CLI/native-session startup or cleanup.",
+    "terminalRenderer": "Separate terminal-only replay using existing pinned xterm/Playwright assets, no live web URL/ticket and no native network. New bounded grid validation must explicitly accept72x28 without weakening old helper. PTY resize and emulator cols/rows must agree; await terminal.write and real layout frames; inspect active alternate buffer, actual cell text, ANSI/cell widths and original typed regions before raster. No text pasted into invented terminal DOM.",
+    "existingToolsNotReusableUnchanged": [
+      "capture.py builds assets/CLI, starts backend and acquires a lease",
+      "render.mjs requires live web auth before terminal replay",
+      "geometry.mjs and capture.py reject72 columns",
+      "newDashboard writes pending directory/lock even for empty reads",
+      "real Init/reconnect bypass injected session",
+      "existing permissive testTransport does not refuse unknown operations"
+    ],
+    "proposedDataBounds": {
+      "leases": 12,
+      "runs": 10,
+      "logUTF8Bytes": 8192,
+      "singleReasonUTF8Bytes": 2048,
+      "otherLabelUTF8Bytes": 256,
+      "syntheticDTOBudgetBytes": 65536,
+      "logPageBytes": 2048,
+      "screensOrCheckpointsMaximum": 48,
+      "qualification": "Suggested bounds for review, not an allocation or tested limit. Static synthetic names/IDs/CWD/commands only; no real host/user/session/agent values. No maximum-size/stress acceptance."
+    },
+    "proposedStateRoster": [
+      "At each of three grids: default Leases with current rows and terminal rows hidden; default Runs with current/reporter-lost/unknown rows and history hidden",
+      "At each grid: one long lease detail and original local record; first/middle/final reach samples keep allocation, safe value and truncation semantics separate",
+      "At each grid: one release-review draft and explicit decline; no confirmation or mutation command",
+      "At each grid: one original filter modal with static nonsecret text, apply and Escape; no roster h persistence",
+      "At each grid: one selected run detail with bounded paged log, paused/following sample, Fold and full-terminal same-buffer reading/restoration",
+      "At first/short grid only: empty/filter-empty, disconnected cached/error, held run read retired then late receipt ignored; cap total captured checkpoints at48",
+      "Historical data may be an explicitly labeled in-memory seed, as existing source fixtures do; it does not change accepted defaults or real preference files. No new agent/contact/message/job or check-in action."
+    ],
+    "requiredObservationsIfAllocated": [
+      "Exact baseline/fixture/effective source hashes and any deliberate adapter differences",
+      "Actual cell allocations and stable first/middle/final reach, not End-only or raw line-length proof",
+      "Native OnMouse command then original Update with typed region, successful allowed targets and stale-render/resize invalidation",
+      "Selection/focus/feed/scroll continuity and reader/UI/generation/session/offset facts before/after transitions",
+      "No duplicate readers/late resurrection, bounded drain/context cancellation, fixture program/PTY/emulator close returns; do not imply OS process reap from API return",
+      "All unknown/mutating/native endpoint/pref/default-state effects refused or absent and counted; original source/capture pipeline unchanged"
+    ]
+  },
+  "coordinatorSourceSeamDisposition": {
+    "testOnlyAdapter": "Viable future proposal only: preserve original methods, retain adapter after every delegated Update, native Init/OpenSession/reconnect unreachable. No production Run startup/auth/report-cleanup acceptance.",
+    "ownedHome": "Potential later allocation only for fresh owned0700 synthetic home and constructor pending directory/lock creation/sync. This is a local filesystem effect, not filesystem-read-only construction. No preexisting obligations/default/shared home.",
+    "terminalValidator": "Potential new fixture-only validator for EXACT72x28/100x35/160x50 using existing pinned assets. Old capture/render/geometry files remain unchanged; no new browser/backend/build pipeline authorized.",
+    "commands": "Classify every returned Cmd and synchronous local effect. Strict backend refusal alone is insufficient. Bound and track timers/streams/Batch/context/session/peer/run work.",
+    "readScope": "Smallest proposed first transport allowlist is inspect/runs/run_output. Full-snapshot refresh extension remains a separate future scope decision; not required to finish source classification.",
+    "execution": "No implementation/runtime/build/PTY/test/setup or mutation confirmation now."
+  },
+  "nonFindings": [
+    "No visual defect is asserted from source width caps, action-chip omission, scalar truncation, display-buffer bounds or geometry formulas alone.",
+    "No historical test/capture is current source, actual PTY, all-cell, glyph-width, focus or terminal acceptance.",
+    "No remediation, product/Go logic/format change, test scaffold or new environment setup is included."
+  ],
+  "validationPerformed": [
+    "Read actual assigned source/declaration ranges and existing test/tool source",
+    "SHA-256/byte comparisons of all listed source files against exact sourceBaseCommit",
+    "Documentation-only diff/privacy checks; no tests/build/PTY/native binary/backend/run/proxy/adoption/resource commands"
+  ],
+  "notPerformed": [
+    "Any TUI/model test, Go build/test/race/vet or binary invocation",
+    "Any PTY, terminal emulator/browser, actual key or mouse injection",
+    "Any native endpoint/session/backend/subscription/agent/message/job/default-state/resource effect",
+    "Any runtime paint/focus/scroll/hit/cancellation/recovery/cleanup acceptance",
+    "Any source remediation, peer-task monitoring, merge or push"
+  ],
+  "limits": [
+    "This is a focused reviewed/pinned source set, not the complete transitive Go dependency closure or full TUI feature inventory. Boundary files are reviewed only for named assigned-slice edges.",
+    "Monitor/Resources/Messages/Activity/Host/Mesh/pools/check-in/name/recovery workflow internals are outside the first visual inventory, except shared shell or effect boundaries explicitly noted.",
+    "Accepted Screen branches/evidence and terminal default/inactive/run-reader behavior are preserved. Independent current-composition classification review and any fixture/runtime permission remain separate."
+  ],
+  "commandAndLocalEffectRoster": [
+    {
+      "entry": "newDashboard construction",
+      "kind": "synchronous local filesystem plus model setup",
+      "behavior": "readPreferences reads private settings; refreshPending opens/creates/syncs pending directory and lock under supplied home, reads bounded pending entries then releases flock/descriptors. No tea.Cmd needed for these effects.",
+      "fixtureBoundary": "Future fresh owned0700 home must be explicitly allocated. Never call with default/shared state; no claim of filesystem-read-only construction.",
+      "sourceFiles": [
+        "internal/tui/tui.go",
+        "internal/tui/preferences.go",
+        "internal/tui/recovery.go",
+        "internal/tui/pending_store.go"
+      ],
+      "anchorLookup": "Exact verified declarations are recorded in anchors."
+    },
+    {
+      "entry": "Init and reconnectMsg",
+      "kind": "native endpoint/client and timers",
+      "behavior": "Init returns tea.Batch(connect(ctx,home),clockTick()). Reconnect after connection/stream errors schedules Tick that can later call connect. Native connect reads endpoint/token, dials authenticated WebSocket, reads/subscribes snapshots/events/monitor.",
+      "fixtureBoundary": "Adapter.Init returns no production Init command; adapter rejects native connected/reconnect messages and cannot return raw inner model. No session fallback. Suppression is an explicit seam, not tested native startup.",
+      "sourceFiles": [
+        "internal/tui/tui.go",
+        "internal/tui/network.go"
+      ],
+      "anchorLookup": "Exact verified declarations are recorded in anchors."
+    },
+    {
+      "entry": "connectedMsg/streamMsg/tickMsg in Update",
+      "kind": "Batch, event streams, recurring timers and conditional reads",
+      "behavior": "Connected receipts start waitStream plus view-dependent reads. Stream responses restart waitStream; stream errors schedule native reconnect timer. Tick batches clockTick with Runs reads, dirty snapshot refresh, or guarded peer/mesh/node reads. waitStream can block on fake events/telemetry/workflows/Done/context.",
+      "fixtureBoundary": "First direct-frame fixture need not execute these paths. Any later loop must use explicit bounded synthetic messages, never native connected/reconnect. Model invariants exclude unrelated views/contexts. Classify/filter every Batch child; do not blanket-execute Cmd. Close/cancel streams and stop recurring fixture work explicitly.",
+      "sourceFiles": [
+        "internal/tui/tui.go",
+        "internal/tui/network.go"
+      ],
+      "anchorLookup": "Exact verified declarations are recorded in anchors."
+    },
+    {
+      "entry": "Leases/Runs allowed read commands",
+      "kind": "strict transport reads and result messages",
+      "behavior": "loadDetail returns inspect; run read returns runs and optional run_output with10s timeout, and acceptRunsRead may return another bounded drain. Original list r would call refresh ->status/messages/agents/conditional check-in reads. Numeric3/8 navigation calls readPeers(false)/readRuns(false); peerVisible prevents peer work in these views.",
+      "fixtureBoundary": "Minimum first allowlist inspect/runs/run_output only, exact synthetic IDs/cursors/pages and cloned typed result shapes. Roster refresh excluded unless separate snapshot extension approved. Unknown op counted/refused; no subscriptions or real client. Drain page count/deadline and contexts must be tracked, not inferred from final frame.",
+      "sourceFiles": [
+        "internal/tui/actions.go",
+        "internal/tui/runs.go",
+        "internal/tui/network.go",
+        "internal/tui/peers.go"
+      ],
+      "anchorLookup": "Exact verified declarations are recorded in anchors."
+    },
+    {
+      "entry": "input.Focus, input.Update, viewport.Update, Cursor/Paste/default messages",
+      "kind": "library UI commands, potentially timers",
+      "behavior": "Slash/filter and TTL/editor focus return textinput command; input/viewport updates can return library tea.Cmd. These are not transport calls. Dependency pins are frozen but their complete Cmd implementation was not audited in this focused cut.",
+      "fixtureBoundary": "First fixture may bound pure model frames and explicitly known filter operations. Before any future Cmd execution, inspect the pinned library command implementation or refuse unclassified commands. No assumption of effect freedom from a transport stub. Bounded nonsecret filter text only; no composer/name/TTL mutation path.",
+      "sourceFiles": [
+        "internal/tui/tui.go",
+        "go.mod"
+      ],
+      "anchorLookup": "Exact verified declarations are recorded in anchors."
+    },
+    {
+      "entry": "View.OnMouse callbacks and queued dashboardMouseMsg",
+      "kind": "pure event-producing command followed by original routed effects",
+      "behavior": "Actual handler snapshots regions/frame and returns a function producing dashboardMouseMsg; acceptance routes trusted keys or rows into original key/openSelected actions. Wheel changes local scroll/follow state; stale-frame mismatch returns nil.",
+      "fixtureBoundary": "Allow only exact assigned view/region/key, execute original OnMouse command then Update, count stale/allowed results. Reject Name,Recovery,h,pool/mesh/message/confirm regions before routing; backend refusal alone cannot stop local preference writes.",
+      "sourceFiles": [
+        "internal/tui/mouse.go"
+      ],
+      "anchorLookup": "Exact verified declarations are recorded in anchors."
+    },
+    {
+      "entry": "roster h, review y, check-in y and other shortcuts",
+      "kind": "synchronous local write or mutation command",
+      "behavior": "Roster h immediately writes preferences. Review y returns lease_action and marks pending/unknown before Cmd executes. Check-in confirm returns lease_review_configure. Name/pool/mesh/recovery/message routes may persist intent or return other mutation commands; actual bodies are outside this visual slice.",
+      "fixtureBoundary": "All these inputs and typed external result messages are disallowed. Draft release review x and n/Esc decline may be proposed because original local path returns no mutation command; no y, new durable intent, policy fix, process execution or file mutation.",
+      "sourceFiles": [
+        "internal/tui/tui.go",
+        "internal/tui/preferences.go",
+        "internal/tui/actions.go",
+        "internal/tui/lease_checkins.go"
+      ],
+      "anchorLookup": "Exact verified declarations are recorded in anchors."
+    },
+    {
+      "entry": "q/Ctrl+C, navigation, run retirement and fixture shutdown",
+      "kind": "Quit command plus context/cancel/session ownership",
+      "behavior": "q/Ctrl+C call stopPeerReads/retireRuns and return tea.Quit. Navigating/hiding/disconnecting retires run/peer reads. Production Run separately cancels its context, closes actual sessions and prints unresolved receipts after tea.NewProgram returns.",
+      "fixtureBoundary": "A test-only program must own cancellation, join its original Program/PTY, close strict fake session and track outstanding Cmd/stream/timer/page work. Suppressing production Run does not qualify its session/report cleanup. Frame contents or Close return alone do not prove goroutine/process/OS reap.",
+      "sourceFiles": [
+        "internal/tui/tui.go",
+        "internal/tui/runs.go",
+        "internal/tui/peers.go"
+      ],
+      "anchorLookup": "Exact verified declarations are recorded in anchors."
+    }
+  ]
+}

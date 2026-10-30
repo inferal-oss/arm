@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "scope": "Independent composition of source-only terminal classification; no runtime or visual acceptance",
+  "baseCommit": "454f76922632c9a510019967f9a784b747841cc4",
+  "ownerCommit": "c18e9c84d1b34b508d6e0bddafe4f409135da0af",
+  "composedCommit": "713fcd5f092f86be51eddd455aca69eac682068c",
+  "classificationSha256": "574c62ed1e2d66828082880beeaa4d706b7690cf4f38b1ff3a229aa1165cae5d",
+  "verifiedSources": 50,
+  "verifiedAnchors": 152,
+  "sourceSetMatchesComposedTree": true,
+  "onlyDocumentationChanged": true,
+  "review": [
+    "Reviewed original constructor, layout geometry, Update/Init, transport and reader callsites.",
+    "Preserved current integration notes while appending owner classification.",
+    "Privacy and conflict-marker review passed."
+  ],
+  "testsBuildsBackendOrFixturesRun": false,
+  "nextGate": "Test-only synthetic fixture source review before bounded direct-frame and later terminal replay allocation."
+}
