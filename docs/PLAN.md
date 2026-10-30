@@ -4338,3 +4338,15 @@ initially visible focus, inert snapshot delivery and exact membership semantics,
 while preserving deliberate off-focus reading. Accepted helpers/product bytes are
 unchanged. Source/policy/pin review and a separate allocation remain gates; the
 other 15 reading/hit cases and native/browser work are outside this cut.
+
+
+## Inventory focus red accepted; non-snapping correction source prepared
+
+The four-case ordinary reproduction is independently accepted on `2ecf0d0` with
+original tests/helpers unchanged. The source correction separates canonical
+identity repair from reveal and follows only previously visible moved focus.
+Six original-page-scroll off-focus/unchanged-poll guards are prepared; the
+[green proposal](validation/ux-terminal-monitor-inventory-green-proposal-2026-10-30.json)
+is nine roots/45 nodes, 86 observations/32 strict cleanups. Source/diff/pin review
+and a new single-run allocation remain gates; no product acceptance, execution,
+other 15 or native/browser scope follows.

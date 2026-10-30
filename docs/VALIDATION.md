@@ -11937,3 +11937,19 @@ Source formatting/parser/hash checks only; no Go metadata/compiler/test, real
 transport/timer/collector, native or browser run occurred. Inventory focus issues
 remain candidates pending original execution/review. Existing M1/M2 evidence
 keeps its accepted scope; remaining 15 reading/hit cases are unassigned here.
+
+
+## Inventory four-case ordinary red; 45-node green source prepared
+
+The [accepted red record](validation/ux-terminal-monitor-inventory-red-2026-10-30.json)
+retains original normal1/EOF, 5 named failures, 8 full observations/four strict
+cleanups and exact 27-member manifest. All 7031 source/tool pins and 28 protected
+sets stayed exact; final scan/empty temporary trees passed. Focus failures are
+scoped; chart policies and the other inventory stayed unchanged.
+
+The unchanged accepted/red cases plus six new off-focus/unchanged-poll guards
+form the [nine-root/45-node proposal](validation/ux-terminal-monitor-inventory-green-proposal-2026-10-30.json):
+86 observations/32 strict cleanups, all expected pass, normal original0joins/EOF
+and all original final-scan/preservation/resource gates. Only source formatting/
+parser/hash checks ran for the correction/guards; no green/compiler/test/native/
+browser or other 15 execution is claimed.

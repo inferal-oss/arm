@@ -5593,3 +5593,15 @@ All-mode removal snapshots; no transport/timer/collector or post-update repair
 helper executes. The [focus/reveal policy](UX-TERMINAL-MONITOR-INVENTORY.md) keeps
 exact surviving IDs and deterministic replacements while avoiding poll-driven
 scroll snaps during deliberate reading. Product implementation is not changed.
+
+
+## Inventory focus and deliberate reading — source correction pending green
+
+Prepared two-file correction captures prior canonical focus/full-row visibility
+before snapshot replacement, reconciles identity without scrolling, and reveals
+only previously visible moved/replaced focus. Unchanged/off-focus delivery
+preserves reading position apart from natural bounds; explicit actions/resize
+keep accepted behavior. Selection policies and backend/metrics are untouched.
+Accepted/red tests stay exact and one six-case page-reading guard root is added.
+The [bounded proposal](validation/ux-terminal-monitor-inventory-green-proposal-2026-10-30.json)
+is unexecuted; independent review/green/composition remain gates.

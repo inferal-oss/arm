@@ -175,10 +175,25 @@ func newDashboard(ctx context.Context, home string) *dashboardModel {
 }
 func (m *dashboardModel) Init() tea.Cmd { return tea.Batch(connect(m.ctx, m.home), clockTick()) }
 func (m *dashboardModel) acceptMonitor(page model.MonitorPage) {
+	// Follow a previously visible focus; offscreen page reading keeps its place.
+	index, id, visible := 0, "", false
+	if m.ioPicker != nil {
+		index, id = m.pickerIndex(), m.ioPicker.selectedID
+		options := m.ioOptions()
+		row := 3 + 2*index
+		visible = m.width >= 45 && m.height >= 14 && index < len(options) && options[index].id == id &&
+			row >= m.viewport.YOffset() && row+1 < m.viewport.YOffset()+m.viewport.Height()
+	}
 	m.history = mergeMonitor(m.history, page, m.page.Epoch)
 	m.page = page
 	m.timeMonitor = m.timeNow
 	m.dirty = true
+	if m.ioPicker != nil {
+		current := m.reconcilePickerFocus(index)
+		if visible && (current != index || m.ioPicker.selectedID != id) {
+			m.keepPickerVisible(current)
+		}
+	}
 }
 func (m *dashboardModel) addEvent(event model.Event) {
 	for _, old := range m.events {

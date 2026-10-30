@@ -76,3 +76,38 @@ cache locations, fresh output root and reviewed wrapper must precede a separate
 allocation. No downloads/setup, cache replacement, Go metadata query, native or
 browser execution is proposed. Formatting/parser/source checks do not establish
 typechecking, defect reproduction, visibility or full UX acceptance.
+
+
+## Four-case red accepted; source correction and six reading guards prepared
+
+The [normalized inventory red](validation/ux-terminal-monitor-inventory-red-2026-10-30.json)
+binds original `2ecf0d0`/unchanged `48564e87…` cases and qualified helper 76b627.
+One complete normal original 1 collection has all 5 named fail nodes, 8 full
+observations/four strict cleanups, EOF/stable final scan and unchanged guards.
+Independent review accepts the scoped reorder/offscreen and All-mode orphan
+focus reproduction. Chart-selection policies and the other chart stay exact.
+Original artifacts and accepted/red tests remain immutable.
+
+The source correction separates identity reconciliation from reveal. Snapshot
+acceptance captures old canonical focus/index and full-row visibility before
+replacing inventory. Exact surviving ID or nearest clamped fallback is repaired
+without scrolling. Only a previously fully visible focus whose row/ID changed
+can request reveal. Unchanged polling or off-focus reading does not reveal.
+Explicit action/resize behavior continues through the same reconciler; no chart
+membership, return-offset, metrics/accounting, transport or protocol changes.
+
+One new guard root adds exactly six ordinary cases: disk/network × unchanged,
+reorder and All-mode disappearance. Each uses two original local page-scroll
+actions to put ID8 offscreen before direct inert delivery. It requires the
+unchanged reading offset where still in bounds, canonical ID8 or clamped ID9,
+continued offscreen row pair and exact active/other-chart policies. It logs two
+original observations and one strict cleanup per case. No real wheel/PTY or
+live polling claim follows. The original four visible-focus cases are untouched.
+
+The [green proposal](validation/ux-terminal-monitor-inventory-green-proposal-2026-10-30.json)
+contains prior seven roots/33 nodes plus original inventory 4 and the six guards:
+nine roots/36 children = 45 named nodes; 86 complete original observations and 32
+strict cleanups. It retains original normal 0 joins/EOF, stable final scan, source/
+history/cache and resource limits. Only source formatting/parser/hash checks
+have run for this correction. Independent diff/pin review and a separate single
+allocation precede any execution. Other 15 reading/hit cases remain separate.

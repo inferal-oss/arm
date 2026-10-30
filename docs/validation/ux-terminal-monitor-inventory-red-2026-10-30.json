@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "scope": "Independently reviewed four initially-visible ordinary inventory focus transitions",
+  "source_commit": "2ecf0d028293dfbcdf75880e047ba4eddcb947dc",
+  "case_sha256": "48564e87c0485a9eea20dd333dd6ac827e9b25cff4e73590d85183e7c8e174f1",
+  "helper_sha256": "76b62701d9578acaf97dd83f53788fe31bf576f0e5897fc19cb8e86e553f2d7d",
+  "status": "Scoped reproduction accepted; no product correction/green implied",
+  "original_collection": {
+    "complete": true,
+    "normal_Go_helper_FIFO_exit": 1,
+    "normal_original_handle_joins": true,
+    "output_EOF": true,
+    "termination": false,
+    "forced": false,
+    "truncated": false,
+    "failures": []
+  },
+  "roster": {
+    "named_run_fail_nodes_once": 5,
+    "roots": 1,
+    "children": 4,
+    "package_fail": 1,
+    "observations": 8,
+    "strict_positive_cleanups": 4,
+    "positive_constructor_snapshots": 8,
+    "invisible_focus_assertions": 4,
+    "orphaned_focus_assertions": 2,
+    "expected_clamped_replacement_assertions": 2,
+    "other_source_messages": 0
+  },
+  "artifacts": {
+    "manifest_members": 27,
+    "manifest_sha256": "77e7de44436375ecf72cbc4aab8783a083e1bf454945ff491a7c21a9d05f95c0",
+    "receipt_sha256": "208008ecfa1e79ea2c8e6c02405c9c4fffd202a02064f5569bdbe553d647e7a8",
+    "raw_bytes": 363957,
+    "raw_sha256": "10263176dfff0eb9ca789cb73ca87089f616526387e43c97c23fbb5d52d825e4",
+    "observations_sha256": "235db3b38539ea8e052f8115c3e8eee247e7170ed39b8470a376edc2565f0509",
+    "helper_sha256": "84d14ca1659ba0840c3cfd38deee1df2da918fed23d7d12a64af3085108aa62e",
+    "all_hashes_and_roster_reverified": true
+  },
+  "observed_transitions": [
+    "Reorder retains exactID8 but moves it from index8 to23 outside offset17/41x4, leaving chart policies unchanged.",
+    "All-mode removal keeps All/current23 members but leaves disappeared rawID8 orphaned with invisible index0/ID0 fallback at offset17; expected clamped ID9 is not selected. Other chart remains exact."
+  ],
+  "sampler": {
+    "deferred_unknown_samples": 3,
+    "temporary_ENOENT_records": 9,
+    "final_stable_post_join_EOF_scan": true,
+    "charged_identities": 821,
+    "charged_logical_bytes": 65220544,
+    "charged_allocated_bytes": 65232896,
+    "reclamation_credit": false,
+    "temporary_entries_remaining": 0
+  },
+  "retained_root": {
+    "regular_files_including_manifest": 28,
+    "logical_bytes": 3040997,
+    "allocated_bytes": 3108864
+  },
+  "timing_ms": {
+    "phase": 6408,
+    "whole": 10036
+  },
+  "preservation": {
+    "source_inputs_exact_before_after": 7031,
+    "compiler_tools_exact": true,
+    "protected_sets_exact": 28
+  },
+  "limits": [
+    "Initially-visible four cases only; off-focus/unchanged-poll behavior was not established by this red run.",
+    "No native wheel/PTY/browser/collector/real transport or other15 coverage.",
+    "Sampled/non-atomic/shared-cache/SDK/dependency and original-handle qualifications remain; no universal descendant/reclamation claim."
+  ]
+}
