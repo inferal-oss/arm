@@ -3119,3 +3119,19 @@ plus new evidence containers total 6,868,809 bytes, including new wrapper logs/
 receipts and empty browser temporary state, below the existing 16MiB cap.
 Independent normalized evidence/glyph review remains before integration or
 overall acceptance; no further execution window is implied.
+
+
+## Terminal loop inventory — coordinator scoped acceptance
+
+The five focused owner cuts through `d311cb1` are composed and independently
+reviewed. Exact build/source/artifact hashes, original three Program/model/reader/
+mouse/resize outcomes, six End/no-reread effects and corrected 36-case marker
+replay agree. The original whitespace-oracle failure remains failed. No
+production UI code changed and no duplicate native/browser run was needed.
+
+Scoped acceptance covers the recorded input, reading, scrolling and original
+cleanup facts. It excludes glyph paint: sampled smiley width one is visibly
+clipped despite matching row text. The same owner continues read-only pinned
+width/font diagnosis and the remaining lease-detail/modal/filter inventory
+proposal. Overall UX and physical-terminal acceptance remain open; no new
+runtime window is allocated.

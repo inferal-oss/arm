@@ -10582,3 +10582,21 @@ receipts remain exact. Five selected package/source pins and all installed
 regular package members matched locked offline cache content before/after.
 Separate original8d and corrected13ab source stages are retained. No compiler,
 test binary, Program, native client/backend or PTY ran in this window.
+
+
+## Terminal loop inventory — independent composed review
+
+The [composed record](validation/ux-terminal-loop-composed-2026-10-30.json)
+verifies 64 build, 29 original-runtime and 47 corrected-replay artifact hashes,
+57 original inputs and the separately bound corrected replay. Three original
+Program/model/reader/mouse/resize checks and six cached-End/no-transport-reread
+checks agree. All 36 replay cases and 1,356 normalized rows pass, with 312 raw
+trailing-ASCII-space differences retained. Twelve tail and three each first/
+middle marker cases pass; original process/API/write-marker outcomes agree.
+
+Independent PNG review confirms readable markers and clipped emoji at sampled
+width one. The original replay oracle failure remains preserved. This accepts
+scoped synthetic input/read/scroll/cleanup evidence, not glyph paint, physical
+terminal behavior, production startup/auth or full UX. Composition source/syntax/
+privacy/whitespace checks pass; exact unchanged inputs required no duplicate
+fixture/browser execution.

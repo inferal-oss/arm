@@ -4540,3 +4540,12 @@ sampled cell width1; 界 has width2/continuation. Original row text still matche
 This qualifies emulator/font/Unicode paint compatibility, not an established
 ARM product defect or physical-terminal result. No provider/font/source change,
 rerender, build or PTY recapture occurred.
+
+
+## Terminal loop fixture — independently composed
+
+The reviewed test-only wrapper/capture/replay source retains original model and
+reader identity with explicit command and local-effect gates. The replay-only
+ASCII-space comparison correction preserves raw rows and original failed
+evidence. Production UI, transport and dependency behavior are unchanged.
+Recorded marker/scroll checks pass; clipped-emoji paint remains unsupported.
