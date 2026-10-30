@@ -1418,6 +1418,7 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
   const inventoryCard = ui.card("Available Kubernetes Nodes", [
     ui.text("Inspect schedulable resources before preparing a separate reviewed Pod plan."), open, content
   ]);
+  ui.put?.(inventoryCard.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#KubeInventoryCard", true);
   root.append(inventoryCard);
   function clear() {
     selection = null; snapshot = null; snapshotRequest = null; cardByUID.clear();
@@ -1479,7 +1480,9 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
       ["Zone", raw(node.zone)], ["Instance type", raw(node.instance_type)],
       ["CPU allocatable (raw)", raw(node.allocatable_cpu)], ["RAM allocatable (raw)", raw(node.allocatable_memory)], ["Disk allocatable (raw)", raw(node.allocatable_ephemeral)],
       ...quantities, ["Taints", node.taints?.length ? node.taints.join(", ") : "None"], ["Conditions", node.conditions?.length ? node.conditions.join(", ") : "Not reported"]];
-    return ui.disclosure("Technical details", [ui.descriptions(facts),
+    const descriptions = ui.descriptions(facts);
+    ui.put?.(descriptions.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#KubeTechnicalFacts", true);
+    return ui.disclosure("Technical details", [descriptions,
       ...(omitted ? [ui.text(`${omitted} additional capacity or allocatable fields omitted from this summary. See Exact Kubernetes Node record; its display reports any truncation.`)] : []),
       ui.json(node, "Exact Kubernetes Node record")]);
   }
@@ -1501,6 +1504,7 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
             ui.text("Use this context, namespace, Node name and UID in a separate current Pod plan. Selection alone creates nothing."));
         }, { disabled: !selectable });
         const card = ui.card(node.name ?? "Unnamed Node", [ui.descriptions([...primary(node), ["Status", selectable ? "Available for ARM Pod review" : "Unavailable for ARM Pod review"]]), technical(node)], { actions: [choose] });
+        ui.put?.(card.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#KubeNodeCard", true);
         if (node.uid) cardByUID.set(node.uid, cardByUID.has(node.uid) ? null : card);
         return card;
       }));

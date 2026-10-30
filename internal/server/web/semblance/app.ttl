@@ -637,6 +637,9 @@ arm:NodeDetailBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-node-de
 arm:NodeDetailFoot a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-node-detail-foot" .
 arm:NodeDetailGrants a owl:Class ; rdfs:subClassOf c:Grid ; sem:slug "arm-node-detail-grants" .
 arm:NodeDetailTrust a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-node-detail-trust" .
+arm:KubeInventoryCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-kube-inventory-card" .
+arm:KubeNodeCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-kube-node-card" .
+arm:KubeTechnicalFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-kube-technical-facts" .
 
 # Node roster allocation.
 [] a sty:StyleRule ; sty:appliesTo arm:NodeRosterGrid ;
@@ -758,3 +761,70 @@ arm:NodeDetailTrust a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-node-d
               [ sty:property "max-width" ; sty:raw "100%" ],
               [ sty:property "white-space" ; sty:raw "normal" ],
               [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# Kubernetes inventory and card allocation.
+[] a sty:StyleRule ; sty:appliesTo arm:KubeInventoryCard ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeInventoryCard ; sty:part "> header, > .sem-card-body, [data-sem-c=\"stack\"], .sem-panel" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeInventoryCard ; sty:part "[data-sem-c=\"code\"]" ;
+ sty:declares [ sty:property "display" ; sty:raw "block" ],
+              [ sty:property "width" ; sty:raw "100%" ],
+              [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:part "> header, > .sem-card-body" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:part "> header h2" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:part "> header .sem-actions" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "flex-wrap" ; sty:raw "wrap" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:part "> header .sem-actions [data-sem-c=\"toolbar\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "flex-wrap" ; sty:raw "wrap" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:part "> header button" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "white-space" ; sty:raw "normal" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:part "> .sem-card-body > [data-sem-c=\"stack\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "box-sizing" ; sty:raw "border-box" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:part "[data-sem-c=\"description-list\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr) minmax(0, 2fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:part "[data-sem-c=\"description-list\"] dt, [data-sem-c=\"description-list\"] dd" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:part "[data-sem-c=\"text\"]" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+
+# Kubernetes technical description allocation.
+[] a sty:StyleRule ; sty:appliesTo arm:KubeTechnicalFacts ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr) minmax(0, 2fr)" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeTechnicalFacts ; sty:part "dt, dd" ;
+ sty:declares [ sty:property "min-width" ; sty:raw "0" ],
+              [ sty:property "max-width" ; sty:raw "100%" ],
+              [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
+[] a sty:StyleRule ; sty:appliesTo arm:KubeTechnicalFacts ; sty:atWidth sty:CompactWidth, sty:MediumWidth ;
+ sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
