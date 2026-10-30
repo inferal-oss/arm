@@ -462,3 +462,20 @@ and Escape/opener focus work. Width cap alone does not establish a defect. No
 remediation or new authority is implemented, and failed/oracle-limited evidence
 remains qualified. Independent review, any separately allocated correction and
 full UX/TUI/live acceptance remain open.
+
+
+## Destination layout owner handoff
+
+The [D1–D4 correction record](validation/ux-destination-layout-2026-10-29.json)
+shows full names and resource/lease allocations contained by existing native
+Stack/Card scopes. Detail title wrapping leaves the original native close target
+inside its panel; long bodies and reasons remain native scrolling content. The
+new direct amount oracle replaces the historical excluded inventory selector.
+
+Four positive geometries and isolated style omissions support owner handoff.
+Read/context/origin/scope and lifecycle behavior stay source-exact, including
+closed desktop retention, surviving-opener return and actual retired-opener
+banner fallback. Original failed/oracle-limited candidates remain qualified, and
+B's distinct fixture hash is explicit. No native/global theme change, effects,
+new window, default-filter change or independent full UX acceptance is implied.
+Central current-source review/composition/assets/builds remain required.

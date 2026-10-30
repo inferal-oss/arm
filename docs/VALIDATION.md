@@ -9746,3 +9746,65 @@ new disposable proof fixtures only; its actual source revision still requires
 review before recompilation or execution. Actual active product jobs and other
 children are outside that policy. First/repeated/concurrent `arm start`, real distinct B
 API/UI and native active-job preservation remain mandatory composed gates.
+
+
+## Destination D1–D4 correction evidence
+
+The [owner evidence](validation/ux-destination-layout-2026-10-29.json) binds
+38 source inputs and 34 protected base-exact inputs to four positive geometries.
+Replacement A took 32,335ms and B took 32,572ms. The two isolated style controls
+took 10,139ms (D1–D3) and 10,096ms (D4). Each original command used the normal
+shared FIFO with the allocated 115-second limit and cooperative CPU ≤2 / memory
+target ≤2GiB; no hard resource enforcement/measurement or ARM claim follows.
+Intervals include transforms/runtime/collection and original awaited API closes
+but exclude initial static imports/hash reads and FIFO wait.
+
+The new fixture uniquely selects the actual direct native amount Heading and
+observes known zero with original units, actual monotonic aging to unavailable,
+and restored zero after held refresh releases. Full original names/IDs/reasons
+match the synthetic reads. Own allocations and actual ancestor clips pass; all
+first/middle/final reason and resource/Host/detail JSON ranges remain reachable
+through native scrolling, with exact wide integers retained in Host/lease JSON.
+Native close remains 30×30 with original declared margins, fits/hits initially
+and after reader scrolling plus native focus, and Escape closes. Surviving openers
+regain exact focus; the replacement desktop sample captures actual opener
+retirement and focus on the source-defined banner root. An exact current-view
+heading fallback is source-identified/checked by the fixture if encountered,
+without claiming that unobserved branch ran.
+
+D1–D3 control removes only the new banner/Card style rules; D4 remains sound.
+D4 control removes only detail rules; D1–D3 remain sound. Both retain schemas,
+markers, original read facade/transparent factory wrapper, native main/parents
+and all semantic gates. Source inverses prove entire remote module and original
+app prefix unchanged apart from presentation. Scope refusals, ten context
+mismatches without status reads, exact lease/origin failures, held refresh,
+pending close/disconnect and actual public dispose retain their scoped behavior.
+
+Original core: 454 JS pass; native 28/30 with two new assertions incorrectly
+expecting destruction of baseline desktop-owned closed handles. A separately
+allocated command passes only the corrected three production GraphUI/WAT cases,
+with unchanged product hashes. It verifies actual marker/native projection,
+interactive types, request binding and closed/hidden retained desktop ownership.
+Those results remain separate, without an all-green original-core label. Its
+pre-command hash helper used a wrong relative directory; that same shell still
+ran the passing command, and hashes were saved immediately after without edits
+or any test rerun.
+
+Original browser A fails after 22,660ms on an overly strict computed-margin
+oracle; actual close paint/hit and original API cleanup are retained, but it
+earns no final case credit. Its openerFocus=false lacks an actual retirement
+capture and is not retroactively interpreted. Only fixture observations change
+for replacement A. B keeps its earlier fixture hash: every captured close uses
+the exact surviving opener, and a byte inverse proves that the sole subsequent
+fixture change tightens its unused retired-opener fallback capture. No claim
+that all final fixture hashes are equal or additional B rerun is made.
+
+All six final browser sessions capture zero active/pending reads, forbidden calls,
+external requests, real WebSockets, clipboard attempts or page errors. Original
+read capture/release and context/browser/server API closes complete for all
+cohorts, including failed A. This is not OS process-group exit/reap, memory wipe
+or RDF/LDES export evidence. All eleven earlier artifact sets rehash unchanged.
+Raw values/IDs/captures remain private. Representative density, selected root/text
+tokens 2×, native glyphs, server enforcement and unchanged JSON caps retain their
+stated limits; central composition/assets/builds/review and TUI/Linux/upgrade/
+live/full UX gates remain open. No new effect, setup or owner build is run.

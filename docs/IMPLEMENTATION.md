@@ -4126,3 +4126,29 @@ parent/factory API and substitute only strict synthetic reads plus transparent
 API retention; they establish presentation observations, not live remote
 permission, lifecycle or upgrade authority. Banner/Card/detail containment
 remediation remains pending.
+
+
+## Native destination containment
+
+Five app-owned noninteractive subtypes mark existing destination banner/resources
+Stacks, resource/lease Cards and the existing detail-body Stack. Full names, IDs,
+amounts, summaries and lease reasons wrap within their available native reading
+width. The lease Button keeps its native type and exact-ID callback. No additional
+DOM/window/reader or density cap is introduced.
+
+The detail-body marker alone selects native Dialog panel/header/title/body rules.
+Panel width, maximum height, padding and native auto-scrolling policy remain
+unchanged. Header padding reserves the existing negative close margins without
+changing native 30×30 dimensions or the margin declaration. Chromium may resolve
+its auto left margin to zero when the title consumes flex space. Native focus
+returns the close target into view after long reading; the header need not remain
+simultaneously visible with a record tail.
+
+The [whole-module inverse](validation/ux-destination-layout-2026-10-29.json)
+restores the inventory source after presentation hooks only. Request identity,
+permission/context/origin checks, mayInspect, generation/aging/focus-held reads,
+pending/disconnect/dispose and default filtering/admission stay unchanged. Existing
+desktop ownership retains closed Dialog/body/reader handles while their native
+projection closes/hides; no cleanup or RDF/GC/authentication reset behavior is
+changed or newly accepted. Main, GraphUI, bridge, backend, protocol, Go, models,
+formatters, pins and native theme/component sources remain unchanged.
