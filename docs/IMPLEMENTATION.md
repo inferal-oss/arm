@@ -4964,3 +4964,20 @@ The product's earlier29-case ordinary cohort remains scoped to its frozen
 product/regression source. This new fixture source is uncompiled/unexecuted.
 Independent source review, fresh compile allocation, actual binary/receipt-bound
 outer review and a separate native window remain required before paint review.
+
+
+## Modal shadow native binding — compile-only coordinator acceptance
+
+The reviewed `7e58c97` fixture binding compiled successfully on byte-identical
+63-member composed inputs. One original compile command produced a new, never
+invoked test binary with SHA-256
+`97ea9d0015a6916dc6b967a94bf8acf94994ac0625f22d085fe2194b4a523fa0`.
+Its 76-artifact commitment is
+`7751c640f86f54f783742c9fdda8adaf370880b882fb53bff176b855e59b82d6`.
+Original compiler/helper and FIFO handles joined normally; source and all twelve
+prior artifact sets remained exact, and temporary directories were empty.
+
+This accepts only the source binding and fresh compile. No new Program, PTY or
+browser invocation occurred. The three narrow modal images, actual border/control
+cells, replay comparisons and original cleanup require the separately reviewed
+binary-bound outer and native allocation. Historical evidence remains unchanged.
