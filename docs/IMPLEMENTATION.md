@@ -5481,3 +5481,12 @@ also addresses the early queue-error return before ending-resource settlement.
 It retains separate nonlease accounting, and has no production caller or runtime
 acceptance. Actual operator issuance, root handoff, worker routing and child
 continuity remain implementation and validation gates.
+
+
+## Terminal Monitor picker focus test source
+
+A new ordinary-model test file prepares 18 missing-option transition cases and 4
+resize cases with a strict no-call fake, owned temporary homes and full original
+state/text observations. See the [proposal](validation/ux-terminal-monitor-focus-proposal-2026-10-30.json).
+No product code or historical test/fixture/driver changed. Formatting/parser
+checks do not establish typechecking, candidate reproduction or a correction.

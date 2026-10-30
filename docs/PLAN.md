@@ -4195,3 +4195,13 @@ interactions must be explicit before implementation. Actual offline operator
 issuance and bounded measurement provenance are in source preparation. Evidence
 digests are data, not grants or proof of future resource bounds. Public startup,
 worker activation and original run/proxy child survival remain incomplete.
+
+
+## Terminal Monitor picker focus — ordinary test source prepared
+
+The same isolated owner branch adds only the reviewed two-root/22-case ordinary
+model test proposal, documented in [the source handoff](UX-TERMINAL-MONITOR-REVIEW.md).
+Central review authorized preparation after the source inventory, while product
+edits and Go metadata/compiler/test/native/browser execution remain unallocated.
+The 19-case follow-up remains separate. Final source/private FIFO wrapper review
+and a specific bounded allocation precede execution; no red result is claimed.

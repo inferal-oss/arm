@@ -11742,3 +11742,16 @@ addressed without suppressing the projection error or admitting partial totals.
 The genuine-issuer cleanup regression and V1-order omission control are proposed
 only. No compiler, test, positive charge, live core or child-continuity evidence
 is supplied by this source review.
+
+
+## Terminal Monitor picker focus — 22 cases prepared, unexecuted
+
+The [focused source proposal](validation/ux-terminal-monitor-focus-proposal-2026-10-30.json)
+records exact two-root/22-child names, 18 unchanged inspected source bindings and
+new test bytes. It proposes one offline normal-FIFO Go invocation with explicit
+source/tool/cache/environment pins, CPU 2/memory 2GiB, 45s FIFO, 15s test timeout,
+40s phase and 65s whole-wrapper limits, 1GiB owned scratch and 8MiB original output.
+Complete original observations precede assertions and remain retained on failure.
+No Go metadata, compiler, test, Program/PTY, browser, real transport or collector
+ran. Candidate reproduction, product fixes, execution and composition remain
+open gates; no 19-case follow-up is included.

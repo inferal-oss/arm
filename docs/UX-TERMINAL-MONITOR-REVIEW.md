@@ -152,3 +152,80 @@ test, Program, PTY, browser, transport or collector was invoked. Existing native
 sources, pins, evidence, branches and historical artifacts remain unchanged.
 Source-only preparation does not establish defect, fix, visual/lifecycle,
 physical terminal/font/Unicode or full-UX acceptance.
+
+
+## Two-root ordinary-model source prepared
+
+The authorized next source cut adds only
+`internal/tui/monitor_picker_focus_test.go`. The
+[focused proposal](validation/ux-terminal-monitor-focus-proposal-2026-10-30.json)
+binds its bytes, all 18 unchanged inspected inputs and the exact 22 child names.
+`TestMonitorPickerMissingFocusRemainsVisible` covers 18 cases;
+`TestMonitorPickerResizeKeepsFocusVisible` covers 4. Neither has been typechecked,
+compiled or run. Product source and existing test/fixture/driver files are exact.
+
+Each case uses 64 synthetic cores, 24 disk and 24 network counters, a fresh owned
+empty constructor home and a strict fake. Every returned local command must be
+nil and is never invoked. Fake Call/Events/Telemetry/Done/Err are failures; owned
+fake Close once and context cancellation are explicit cleanup. The selected
+missing row is removed through Space/None/All, then the next toggle's actual
+identity and independent chart state are observed. Resize goes through original
+Update; no navigation, stream, timer, Init or native fixture is called.
+
+Focus assertions do not prescribe a replacement row. They require a valid
+stable focus ID and its label/ID pair in both the actual viewport and full frame.
+The independent visibility oracle scans those rendered rows rather than copying
+viewport row arithmetic. Nonfatal post-transition focus assertions allow the
+original next-toggle result to be recorded on a failing source. Complete original
+picker text, viewport text, full frame, options, IDs, chart scopes and offsets
+are logged before assertions: 66 observations and 22 cleanup records are expected.
+
+A separate private execution proposal must pin the final clean commit, test
+bytes, complete conservative project source projection, existing external source
+pins, compiler/tool/environment and canonical shared-cache locations. Reusing
+external metadata does not establish a fresh actual dependency graph or SDK
+closure. Shared build-cache changes are ordinary compiler bookkeeping; clearing,
+replacement, downloads and cache-result reuse are excluded. No Go query is
+required to prepare that binding. Historical native source bindings are not
+used as a guard or harness for these tests.
+
+The only proposed Go invocation, through the unchanged normal FIFO and owned
+original-process helper, is:
+
+```text
+GO test -mod=readonly -p 1 -count=1 -timeout=15s -json -run '^(TestMonitorPickerMissingFocusRemainsVisible|TestMonitorPickerResizeKeepsFocusVisible)$' ./internal/tui
+```
+
+`GO` denotes the private pinned absolute compiler, not an unreviewed PATH
+lookup. Effective environment is explicit and offline: GOPROXY/GOSUMDB/GOENV/
+GOWORK off, GOTOOLCHAIN local, no ARM_TUI variables, GOMAXPROCS 2 and
+GOMEMLIMIT 1536MiB. No Go metadata command is proposed. Fresh HOME/TMPDIR/GOTMPDIR
+are owned; shared GOCACHE/GOMODCACHE stay at their reviewed canonical locations
+without clearing or replacing them. Existing C-query uncertainty is retained.
+
+Proposed ceilings are CPU 2, memory 2GiB cooperatively; FIFO 45s; test 15s; phase 40s
+including queue wait; three-second cooperative helper cancellation grace; whole
+wrapper 65s including preparation and joins; fresh scratch 1GiB with 32MiB sampled
+margin; per-file 256MiB and original raw output 8MiB. Output is retained before
+parsing; any lost/truncated output refuses acceptance. Normal test exit 1 can be
+collected as a candidate failure only after the complete exact roster and owned
+cleanup; it is not itself defect acceptance. Compiler failure, timeout, missing
+case/observation/cleanup, forced or unknown lifecycle all fail the collection
+gate. Retain the original red output/source for later causal comparison.
+
+All 22 cases must finish once, with no skip, plus both roots. Go JSON output
+fragments must be reassembled per test before reading observations; raw events
+remain immutable. The parent retains the original FIFO handle and cancellation
+pipe, and its helper retains the original Go child. Cancellation uses the sticky
+pipe EOF; finalization joins these exact handles. Any fallback group signalling
+is restricted to the still-unreaped original owned group; no PID discovery or
+replacement process is allowed. Forced cleanup never establishes acceptance.
+No wrapper is invoked during preparation. Fresh-root scratch includes copied
+proposal/source metadata, helpers, all raw output and retained compiler-home
+metadata. Shared-cache growth is outside that owned-root claim and stays
+explicitly unmeasured.
+
+Source formatting/parsing and documentation checks are not typechecking or test
+evidence. Execution remains unallocated. No product correction or 19-case
+follow-up is included. Wheel/page reading and all prior native evidence remain
+unchanged.
