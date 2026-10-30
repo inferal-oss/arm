@@ -91,7 +91,11 @@ function createForwardConsole({ ui, root, call, connected, cryptoAPI = globalThi
   function render(rows) {
     const lookup = ui.field("Exact TCP listener key", { placeholder: "Exact 32-hex listener key" });
     const inspect = ui.button("Inspect exact key", async () => {
-      if (!connected() || !validKey(lookup.value)) {
+      if (!connected()) {
+        warn("Reconnect before inspecting this exact listener key.");
+        return;
+      }
+      if (!validKey(lookup.value)) {
         warn("Enter an exact 32-hex listener key.");
         return;
       }
