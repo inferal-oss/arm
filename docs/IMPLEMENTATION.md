@@ -4703,3 +4703,124 @@ write results and panic behavior. Observation failure remains unknown and cannot
 replace the write result. No model/callback call while holding its lock; no stdin
 wrapper, synthetic marker/message, forced renderer or dependency change. This
 source direction adds no observer or product code to the current implementation.
+
+
+## Native lease reading — complete source prepared, uncompiled
+
+The [source plan](validation/ux-terminal-lease-reading-plan-2026-10-30.json)
+now binds a test-only original-model wrapper, owned-PTY capture and21-case byte
+replay (8/7/6 frames). It reuses the unchanged strict fake/direct helper and
+original inspect/View/OnMouse; Init/native transport, confirmations, preference
+h, refresh, unrelated commands and mutation paths remain refused. Native
+scroll, record Down/Enter, exact bracketed paste and original decline/escape
+are bounded. Complete detail/review logical-row coverage and restored defaults
+are explicit gates; no duplicate36 run-log cases are included.
+
+Precision is preserved before JSON: original json.Number is serialized using
+String(), with a separate type/path observation. Browser replay additionally
+requires actual visible ASCII9007199254740993. Full original rows/PNGs, trusted
+Keep-button cells, filter draft/empty and restored8 states remain separate
+observations. No diagnostic provider/font/CDP/package/output change is used.
+
+Only Go formatter parsing, Python AST and JS syntax/static source review ran.
+No native compile/Program/PT Y/browser result exists. A new exact62-source
+receipt and separate source/build/capture allocations are required; original57
+receipts/binaries and111/64/29/47/15 scopes stay untouched. Existing deadlines,
+Popen/Program/browser ownership and cumulative16MiB gates remain. Overall UX
+and any product fix still depend on concrete findings and independent review.
+
+
+## Native lease detail PageDown correction — source only
+
+The [first-failure inventory](validation/ux-terminal-lease-first-failure-2026-10-30.json)
+records the accepted original62-source compile and first capture failure: one
+72x28 detail-first checkpoint, then the End predicate timed out at offset0 of
+33 rows with height18. The original child exited1 and semantic gates failed;
+Program/PTY cleanup observations passed. No replay/browser/PNG or full native
+reading acceptance followed, and the original failure remains preserved.
+
+Source review traces unhandled detail keys to the pinned viewport, whose default
+bindings support PageDown and have no End binding. Review scrolling explicitly
+supports End. The direct helper had already paged down before its End checkpoint,
+so that checkpoint did not establish End movement. The continuation branch
+`codex/ux-terminal-lease-detail-pgdown` changes only the detail-tail input to
+PageDown while retaining its exact observed-offset acknowledgment, review End,
+21-frame roster, coverage, cleanup and byte/time gates. Go/product/dependencies
+and replay remain unchanged; this is a harness correction with no product fix.
+
+The [updated source plan](validation/ux-terminal-lease-reading-plan-2026-10-30.json)
+requires a fresh clean62-source map/build receipt for this cut: capture and plan
+are the only changed members; the other60 stay exact. Original source/binaries/
+receipts are preserved. Corrected source is AST-reviewed only, uncompiled and
+unexecuted. Separate source/compile/outer-orchestration/runtime review remains;
+future orchestration must also preserve/count the first23-entry failure set under
+the cumulative16MiB runtime cap. No new execution window is implied.
+
+
+## Native lease retained evidence — five-input source guards
+
+On continuation branch `codex/ux-terminal-lease-five-inputs`, both native drivers
+now require five retained runtime roots:111 direct,29 original runtime,47 accepted
+replay,15 diagnostic and the immutable23-entry native first failure. Capture
+checks five distinct canonical/disjoint roots plus exact manifest digests/counts;
+replay checks six total inputs including capture, fifteen argv positions and the
+same five manifests/counts before browser launch. Existing per-block/cleanup,
+child-launch, PNG and final-receipt sums now include the fifth root explicitly.
+All five prior containers plus new output/outer metadata share16MiB; the failed
+attempt is not charged to the128KiB metadata reserve. Both builds stay separate.
+
+The [source plan](validation/ux-terminal-lease-reading-plan-2026-10-30.json)
+specifies the matching future outer argv/preservation/combined sums. The21-frame
+roster, PageDown acknowledgment/review End, Go/model/product/pins and original
+cleanup/deadlines remain unchanged. Capture/replay/plan are the three changed
+members of62 versus the original cut; the other59 stay exact. Source-only79,
+original9b/binary and all first-failure evidence are preserved. AST/JS syntax and
+static guard review only: no intermediate compile or runtime/source reproduction.
+One new compile allocation follows independent review of this completed cut;
+fresh outer binding/review and separate native runtime/paint gates remain open.
+
+
+## Native initial-output observer and diagnostics — implemented source only
+
+The existing test fixture now forwards the same output file through explicit
+Read/Write/Close/Fd/Name methods, retains original write results/panics and file
+ordering, and observes only byte-identical output. Metadata recovery stays after
+the original write; no model/callback is called under observer locks. Descriptor/
+terminal/sizing observations and bounded passive parsed/filter/callback/Cmd/
+typed/frame/inspect/Program counters are recorded separately from paint.
+
+Before the first mouse, capture requires a complete successful original renderer
+write, matching drained PTY range/hash/modes/roster and stable startup fingerprint.
+One full-count press/release is retained; partial/error/unknown fails without
+resend. Both drivers now explicitly include the second22-entry failure as sixth
+runtime input. Child16KiB/48records, parent8KiB/16records and2KiB summaries fit the
+64KiB/grid/64record diagnostic ceiling and share the unchanged16MiB budget with
+all six prior runtime inputs/new output. Original deadlines/21roster/coverage,
+review End and detail PageDown remain; product/pins are unchanged.
+
+The [source plan](validation/ux-terminal-lease-reading-plan-2026-10-30.json)
+retains62members using the same Go test file for prepared pass-through/error/
+metadata/panic/frame regressions. Go/capture/replay/plan are four changed members;
+other58 remain exact77467. Formatter/AST/JS syntax and source review only; tests,
+new compile/native runtime and paint are unvalidated. The new outer is an unbound
+source template requiring reviewed fresh source/build identities before any
+output/ticket/process. Nine original artifact sets/binaries and both failed
+attempts remain preserved. Independent review and separate execution allocations
+remain required; neither old mouse cause is established by this source change.
+
+
+## Native lease observer — reviewed implementation boundary
+
+The terminal reading fixture now waits for an observed complete original
+renderer write and its matching drained PTY bytes before one mouse press. Its
+passive diagnostics distinguish parsed input, callback execution, command
+completion and typed delivery. The observer preserves original I/O results and
+panics; it does not force a render, retry a click, change the production model
+or substitute a callback. Product code, dependency pins and terminal provider
+remain unchanged by this fixture cut.
+
+A separate narrow-modal issue remains in production presentation: a full-width
+dialog plus an offset shadow exceeds its pane before final clipping. The
+existing geometry tests bound final dimensions but do not ensure an intact right
+border. The correction must preserve trusted control and mouse geometry rather
+than merely accepting the clipped result.

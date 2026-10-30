@@ -1,0 +1,197 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "status": "Original native compile succeeded; first native capture failed before replay. Detail-key harness correction is source-only and unexecuted.",
+  "scope": "Synthetic original-model Program/owned PTY only; no production startup/backend/transport/operator mutation or physical-terminal/font acceptance.",
+  "originalSourceCommit": "9b6b560de0580d2801e254019b5f54f9b1de5c10",
+  "originalSourceFiles": {
+    "docs/validation/ux-terminal-lease-reading-plan-2026-10-30.json": "9462701e2dd1c67b4ba359d421cf27880efe1f2b4c975c1524f89268d04cb652",
+    "internal/tui/ux_terminal_lease_reading_fixture_test.go": "c0866c60a372fd2dbb4fdf1693d03e3ee9187d2ba73a02beca417df3e4c25e44",
+    "scripts/dashboard-screenshots/ux-terminal-lease-capture.py": "262e6768b7671c25221a32ab591e880b30af9e3f6ddd78712fb12a34b4ff028b",
+    "scripts/dashboard-screenshots/ux-terminal-lease-replay.mjs": "a600e5590c7790ba10e9965ef9ba3acad0d465fc548cd499dd5764af5d1a04ea"
+  },
+  "originalCompile": {
+    "exitCode": 0,
+    "FIFOElapsedMS": 5693,
+    "exact62BeforeAfterInputs": true,
+    "binaryBytes": 68322386,
+    "binarySHA256": "7fe620abf013f0ea332effa045168adbcafd770de73ac69968b23289e3a23120",
+    "qualification": "Compile-only success; no native reading or paint acceptance. Cooperative CPU/memory targets and sampled disk accounting are not hard resource/peak proofs."
+  },
+  "firstCaptureFailure": {
+    "FIFOExitCode": 1,
+    "FIFOElapsedMS": 7287,
+    "insideElapsedMS": 7168,
+    "captureExitCode": 1,
+    "grid": "72x28",
+    "capturedFrames": 1,
+    "checkpoint": "lease-detail-first",
+    "error": "original state deadline: end",
+    "initialViewport": {
+      "total": 33,
+      "height": 18,
+      "offset": 0
+    },
+    "finalViewport": {
+      "total": 33,
+      "height": 18,
+      "offset": 0
+    },
+    "finalInputs": 7,
+    "finalRevision": 9,
+    "nativeBinaryInvocations": 1,
+    "replayInvocations": 0,
+    "browserInvocations": 0,
+    "PNGCount": 0,
+    "retry": false
+  },
+  "originalChild": {
+    "exitCode": 1,
+    "testFailed": true,
+    "programStarted": true,
+    "programReturned": true,
+    "sameWrapperReturned": true,
+    "sameModel": true,
+    "quitRequested": true,
+    "contextCanceled": true,
+    "fakeClosed": true,
+    "activeFakeCalls": 0,
+    "inspectCalls": 1,
+    "mouseProduced": 1,
+    "mouseDelivered": 1,
+    "mouseActive": 0,
+    "recordKeys": 0,
+    "pastes": 0,
+    "restored": false,
+    "sawExactNumber": false,
+    "sawReview": false,
+    "declined": false,
+    "qualification": "Cleanup observations passed; final semantic fixture gate failed. This partial result does not validate the complete21-frame workflow."
+  },
+  "ownedCleanup": {
+    "childWaited": true,
+    "termiosRestored": true,
+    "slaveClosed": true,
+    "masterClosed": true,
+    "finalDrainAfterChildJoin": true,
+    "finalMasterEOFObserved": true,
+    "finalMasterEIOObserved": false,
+    "finalDrainTimedOut": false,
+    "terminationRequested": false,
+    "cleanupErrors": [],
+    "originalFIFOAndCaptureHandlesReaped": true,
+    "toolTemporaryFilesAfter": [],
+    "qualification": "Original handles/APIs/PTY observations only; no universal process/goroutine reap claim."
+  },
+  "preservation": {
+    "source62UnchangedDuringAttempt": true,
+    "packagePinsUnchanged": true,
+    "priorArtifactEntryCounts": [
+      111,
+      64,
+      29,
+      47,
+      15,
+      71
+    ],
+    "priorAndNewListedFilesHashExact": true,
+    "firstFailureManifestEntries": 23,
+    "firstFailureRuntimeBytes": 127994,
+    "allRuntimeBytesThroughFirstFailure": 9044068,
+    "runtimeCapBytes": 16777216,
+    "failedOutputRetained": true,
+    "originalBranchesBinariesReceiptsUnchanged": true,
+    "rawEvidence": "Private original logs, PTY, progress, child/capture/outcome receipts and manifest retained outside the repository; no paths, process IDs or raw execution receipts published."
+  },
+  "sourceDiagnosis": {
+    "conclusion": "The harness expected an unsupported detail End binding; this observation does not require a product change.",
+    "projectEvidence": [
+      {
+        "file": "internal/tui/tui.go",
+        "lines": [
+          525,
+          550
+        ],
+        "observation": "Detail branch handles modal actions and delegates other key messages to original viewport.Update."
+      },
+      {
+        "file": "internal/tui/layout.go",
+        "lines": [
+          21,
+          39
+        ],
+        "observation": "scrollReview explicitly routes End to GotoBottom."
+      },
+      {
+        "file": "internal/tui/actions.go",
+        "lines": [
+          214,
+          218
+        ],
+        "observation": "reviewKey calls scrollReview before action handling."
+      },
+      {
+        "file": "internal/tui/ux_terminal_direct_fixture_test.go",
+        "lines": [
+          662,
+          666
+        ],
+        "observation": "Direct helper sent pgdown before its later end/tail checkpoint; equal middle/tail offsets cannot establish End movement."
+      }
+    ],
+    "dependency": {
+      "module": "charm.land/bubbles/v2",
+      "version": "v2.2.1",
+      "files": {
+        "viewport/keymap.go": {
+          "sha256": "0e01274491b38e97c69bee33ad77750538577f354816cfbf80202bb645edbf93",
+          "observations": "DefaultKeyMap binds pgdown/space/f; there is no End/GotoBottom key binding."
+        },
+        "viewport/viewport.go": {
+          "sha256": "6d5d15d15d175464237df578efd2f9f3022e89874649454ee69c30b1a250dec7",
+          "observations": "Update uses the page binding; PageDown scrolls by viewport height and SetYOffset clamps to the content maximum."
+        }
+      },
+      "readOnlySourceInspection": true
+    },
+    "expectedDetailTransitions": [
+      {
+        "grid": "72x28",
+        "total": 33,
+        "height": 18,
+        "fromOffset": 0,
+        "expectedAfterOnePageDown": 15
+      },
+      {
+        "grid": "100x35",
+        "total": 29,
+        "height": 25,
+        "fromOffset": 0,
+        "expectedAfterOnePageDown": 4
+      },
+      {
+        "grid": "160x50",
+        "total": 27,
+        "height": 40,
+        "scrollRequired": false
+      }
+    ],
+    "qualification": "Source-derived expected transitions only, not new runtime observations. Existing actual-offset and complete logical-row coverage predicates remain required."
+  },
+  "sourceCorrection": {
+    "branch": "codex/ux-terminal-lease-detail-pgdown",
+    "file": "scripts/dashboard-screenshots/ux-terminal-lease-capture.py",
+    "change": "Only detail-tail key end becomes pgdown; the exact offset==total-height acknowledgment is unchanged. Release-review End, all timing, cleanup, data,21roster and coverage gates remain unchanged.",
+    "correctedCaptureSHA256": "9e2b5b726582217821d244d9bbf0185cbf26aefa07ee25fa8e954efee38ce409",
+    "GoFixtureProductDependenciesAndReplayUnchanged": true,
+    "compiled": false,
+    "executed": false
+  },
+  "remainingGates": [
+    "Independent source correction/normalized evidence review",
+    "New clean62-source before/after map, source commit and compile receipt; never relabel the accepted original62 receipt/binary",
+    "Separately reviewed fresh outer orchestration must preserve the first23-entry failure set and account it with all other runtime evidence under16MiB; original four-root driver guards are unchanged by this correction",
+    "Separate compile and single capture/replay allocations; none granted by this source step",
+    "Full21 capture/browser/reading/precision/filter/decline/restore/cleanup and separate paint review remain open"
+  ]
+}
