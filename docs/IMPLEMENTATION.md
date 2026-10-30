@@ -4093,3 +4093,24 @@ Only noninteractive presentation/guard scope changes: no callback/start/sent/
 uncertain/retry/admission/private-leaf or historical stop/recovery behavior,
 main/graph/pure helper/native policy/module/schema/Go change. Assets are rebuilt
 centrally; no installed or live listener behavior is exercised.
+
+
+## Destination inventory fixture boundary
+
+The destination inventory runs the unchanged native main, retained remote slot,
+view roots and stock Dialog/desktop ownership. A strict synthetic Backend
+substitution permits only empty-argument node_context/status/node_metadata and
+exact known-ID inspect reads; normal own-scope inventory is filtered and detail
+reads independently refuse other sources. Synthetic bootstrap selectors are
+not real enrollment or authority. Actual validators, codecs, units, JSON caps,
+context/host/lease/origin guards and original product files remain unchanged.
+
+One fixture-only wrapper intercepts main's remote import, reexports the original
+module, passes its original argument object/reference unchanged into the actual
+factory, stores the returned public API and returns that same object. Public
+component dispose is exercised locally with a pending result. No reset API is
+invented; this does not verify main's private authentication/slot reset or host
+bridge closure. Native UI selection/disclosure/close and backend callbacks
+provide the other observations. The
+[inventory record](validation/ux-destination-inventory-2026-10-29.json) proposes
+existing noninteractive banner/Card/detail-body scopes only; none is implemented.

@@ -2445,3 +2445,20 @@ separate. A fixture-only import wrapper may retain the actual remote dashboard's
 returned public API unchanged; it cannot replace methods, DOM, context, clocks,
 handlers or production lifecycle. Public component disposal is a local fixture
 scope, not proof of private main-slot or native host-bridge closure.
+
+
+## Destination read-only inventory owner handoff
+
+Owner branch `codex/ux-destination-inventory` starts at accepted
+`f02143129f168795be0edbebd2aa0698b646d895`. The
+[source-bound inventory](validation/ux-destination-inventory-2026-10-29.json)
+classifies the actual node-window/main remote-slot path before collection and
+records four geometries, bounded synthetic scopes and findings D1–D4. Only new
+fixtures and normalized documentation/evidence change; all 34 protected inputs
+remain byte-exact. The original A locator failure and explicitly allocated
+replacement remain distinct. Numeric amount-selector metrics are excluded.
+
+Banner names, resource/lease Cards and lease Dialog title/close allocation need
+independent review before any app-owned scope correction. No remediation,
+product acceptance, merge/push, build/install, actual destination operation or
+full UX/TUI/live acceptance is included in this inventory cut.

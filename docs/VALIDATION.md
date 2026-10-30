@@ -9668,3 +9668,52 @@ was not run. Browser RDF export, memory wiping, universal zoom, native input
 painted glyphs, OS group/reaping and full dense historical prose are not proved.
 No ARM grant/hard RSS, installed backend, Go suite, Linux/new TUI/full UX or
 real upgrade acceptance is inferred.
+
+
+## Destination resources, leases and Host inventory
+
+The [source-bound record](validation/ux-destination-inventory-2026-10-29.json)
+binds 37 identical final inputs, including 34 unchanged protected inputs, to
+1440×900, 390×900, 390×320 and 768×600 with selected root/text tokens doubled.
+Final B and replacement A took 30,990ms and 31,664ms through the normal FIFO.
+Intervals include transforms/runtime/collection and original awaited API closes,
+excluding initial static imports/hash reads and FIFO wait. CPU ≤2 and memory
+target ≤2GiB are cooperative targets, not hard enforcement/measurement. No
+ARM enrollment or lease assertion, builds, native/Go/unit/full-suite runs, setup
+or actual authenticated destination effect occurs.
+
+Six resources, seven own leases/eight full-observation leases and bounded
+metadata provide representative density. Exact resource/Host/lease JSON matches
+its captured synthetic record and first/middle/final text ranges are reachable
+through actual native scrollers. Host and lease records preserve the exact
+wide integer through original codecs; rounded presentation formatters remain
+unchanged. No width-cap-only or unreachable-tail finding follows from a tall
+reader. Escape closes details and returns opener focus; one native Tab reaches
+a Close control, without claiming complete focus traversal.
+
+The original main/factory checks reject ten context/read-only/scope mismatches
+without status reads, wrong status host, wrong detail ID/origin and read errors.
+Own-scope refuses a deliberately adversarial foreign inventory row; distinct
+synthetic observe-all permits its exact detail. Focus-held native controls persist
+while actual monotonic aging changes the stale/unavailable message, and release
+the held view after focus leaves. Pending close/disconnect and actual public
+component dispose reject late replies. No main private reset/credential exchange,
+backend-generation request or live grant/transport proof is implied. Metadata
+throttle/wrong-host reread and wide context revisions remain source-only here.
+
+The original A failed after 2,069ms because a nested disclosure locator matched
+six controls. Its frozen source/media/first error and original API cleanup remain
+historical; a scoped locator is the only fixture correction. The explicitly
+allocated replacement and original B complete the four final geometries. A
+separate selector sampled the nested Resource details heading as an amount;
+those numeric amount allocations and focus-held before/after amount fields
+are excluded, not repaired with extra runs. Independent summary/note, actual
+aging copy, focus, record and geometry observations retain their stated scope.
+
+All four final sessions capture zero active/pending reads, forbidden operations,
+external requests, real sockets, clipboard attempts or page errors, and original
+read capture/release plus context/browser/server close promises complete. This
+is API evidence, not OS process-group exit/reap or memory-wiping proof. All ten
+prior private evidence sets rehash unchanged; runtime identities/values/captures
+stay private. No full200/max-cap, universal zoom/native glyph, runtime RDF/LDES,
+TUI/Linux/upgrade/live/full UX or remediation acceptance is claimed.
