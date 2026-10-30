@@ -5447,3 +5447,14 @@ graph. The resulting binary SHA-256 is
 `98a1ff212853df8efbebd0a5b1ae93f6f1a55b9900413ffbd7a1e54d22970f9a`.
 It was not executed, and no composed native runtime rerun is claimed. No module,
 product behavior or accepted historical fixture was changed by this cut.
+
+
+## Terminal Monitor/I/O source inventory
+
+The [source review](UX-TERMINAL-MONITOR-REVIEW.md) and its 18-file hash record
+classify current terminal Monitor rendering, local I/O selection, focus/scroll
+paths and existing direct tests. No product/test/harness implementation changed.
+Two source-derived focus candidates await ordinary reproduction; compact dense
+reading is not an established defect. Metric, aggregation, accounting, backend
+and protocol behavior remain outside this cut. No Monitor runtime/paint or
+full-UX acceptance follows from source inventory.

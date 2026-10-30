@@ -4099,3 +4099,19 @@ terminal native45/native72 records retain their scopes. No metric/accounting,
 backend, transport, resource action, real measurement or new feature is assigned.
 No CPU/native/browser allocation follows from this routing. Review, resource
 windows, composition and integration remain central.
+
+
+## Terminal Monitor/I/O — source inventory returned
+
+The isolated `codex/ux-terminal-monitor-inventory` continuation reviewed the
+assigned source from `4986454` (same product source as accepted `83681e7`). The
+[bounded review](UX-TERMINAL-MONITOR-REVIEW.md) records two unexecuted focus
+candidates: disappearance of a focused missing I/O option, and focus visibility
+after resize/inert inventory replacement. Compact dense-core/unknown-value
+reading remains a coverage question. No product defect is accepted yet.
+
+The first proposed ordinary-model allocation is two roots/22 child cases, with
+three separately reviewable follow-up roots/19 cases. Source review and an
+explicit focused execution allocation remain gates before test implementation,
+product edits or execution. No new compile, PTY, browser or live transport window
+is assigned. Existing native45/native72 and web Monitor scopes are preserved.

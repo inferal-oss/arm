@@ -11632,3 +11632,20 @@ graph. The resulting binary SHA-256 is
 `98a1ff212853df8efbebd0a5b1ae93f6f1a55b9900413ffbd7a1e54d22970f9a`.
 It was not executed, and no composed native runtime rerun is claimed. No module,
 product behavior or accepted historical fixture was changed by this cut.
+
+
+## Terminal Monitor/I/O — source-only review, execution pending
+
+The [source record](validation/ux-terminal-monitor-source-review-2026-10-30.json)
+binds 18 inspected files at `4986454`, whose product source matches `83681e7`.
+Inspection identifies missing-focus reconciliation and resize/reorder visibility
+candidates; neither has been executed or reproduced. Existing source tests were
+read, not run. Their containment/selection assertions do not establish current
+complete reading or paint acceptance.
+
+The [ordinary-model proposal](UX-TERMINAL-MONITOR-REVIEW.md) starts with 22 child
+cases under two focused roots. Further reading/hit/reorder cases, product fixes,
+compilation and native/browser/composition validation each retain their review
+and allocation gates. This review invoked no Go metadata/compiler/tests/native
+Program/PTY/browser/transport/collector. Existing 65/69 source bindings and all
+historical artifacts retain their original scopes and are unchanged.
