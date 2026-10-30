@@ -1,5 +1,21 @@
 # Backend and CLI implementation
 
+## Borrower binding and closure — missing APIs/source contract only
+
+The [binding proposal](design/resident-lifetime-binding.md) adds no implementation.
+Current Serve eventually unlocks/closes original native handles even after
+teardown errors; Manager.Close error/DB closure and nil/error partial open do not
+certify future borrower completion. Proposed fixed role views carry native
+validation without original FDs or retirement. A private Serve root would compose
+actual typed original Manager/Server/image closure records, retain lock/custody
+on uncertainty, and own the sole final retirement call. A nested internal issuer
+and leaf view aliases avoid the Manager/Server import cycle.
+
+Pending holders, full handler/native close receipts, local revision/bootstrap,
+format-aware bound opener, retained failure diagnosis and initial/repeated
+`arm start` wiring are unimplemented. No exported acquire/retire, borrowed Close,
+worker factory or production behavior follows from accepted unbound native tests.
+
 ## Native lifetime — reviewed unbound primitive
 
 Private native construction/validation/retirement plus the separate pre-normalization

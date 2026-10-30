@@ -1,5 +1,25 @@
 # Validation record
 
+## Lifetime binding contract — source inspection/documentation only
+
+The [contract](design/resident-lifetime-binding.md) and
+[reference inventory](validation/resident-lifetime-binding-contract-2026-10-29.json)
+trace accepted `5066fe9df90e0b8adf58bf9ac1b959842bdd3ba6`. The prior correction
+inventory is reused by exact file/revision/hash for its 44 unchanged source inputs;
+additional inspected startup/close/protocol sources are hashed separately. No raw
+execution/cleanup receipt payload is duplicated. Existing native evidence remains
+unbound-only; source descriptions and resolving links add no runtime proof.
+
+No Go/source/API export/refactor/schema/module change, build/test/browser/native
+operation/admission/install/environment/default/shared-state work or new window
+occurs. Proposed borrower positive factories, complete closure/error retention,
+local revision/bootstrap and `arm start`/real A-to-B completion still need source
+review and separately allocated implementation/validation.
+The five-document scope, reused 44 protected hashes plus 26 additional inspected
+source hashes, 36 local links / 29 source-line anchors, added-line privacy and
+whitespace checks pass. The dependency/export shape is proposed source design;
+no compile or runtime acceptance is inferred from these document checks.
+
 ## Shared dialogs — independent composition
 
 Inventory `be9af44` and four focused corrections through `8625002` compose on

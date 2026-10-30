@@ -31,6 +31,22 @@ sequential original-FIFO cohorts stay within 120s/two CPU/two GiB with positive
 original cleanup. No owner asset/Go build, backend/schema/module/CLI/install,
 environment, new task or subagent is allocated; current-main assets are central.
 
+## Resident borrower binding/closure — documentation proposal pending review
+
+Owner: `codex/resident-lifetime-binding-contract`, from accepted
+`5066fe9df90e0b8adf58bf9ac1b959842bdd3ba6`. The
+[incremental contract](design/resident-lifetime-binding.md) keeps native retirement
+in a private Serve root, exposes only non-retiring registered borrower views,
+and requires actual pending/closed Manager/Server/image records before a private
+retirement permit. It traces current unconditional Serve unlock/close and partial
+Manager/native cleanup gaps; no API export or production binding is added.
+
+A mesh-independent canonical revision, inactive bootstrap/never-admitted abort,
+prepared home/lock and format-policy approval, reachable retained/error mode and
+first/repeated `arm start` flow remain implementation gates. Core crash/exit cannot
+preserve original Go/native custody by assertion. Accepted resource/API/assets
+contracts and mandatory real A-to-B API/UI active-job proof remain separate.
+
 ## Shared dialogs — independently reviewed composition
 
 Inventory `be9af44` and focused corrections `0280f4f`, `c0045a3`, `9fb2e96`,
