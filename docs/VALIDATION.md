@@ -10210,3 +10210,15 @@ was executed. No source remediation or existing capture modification occurred.
 No old test/capture becomes current terminal acceptance. Model frames alone
 cannot prove actual loop/terminal paint or any goroutine/process/OS cleanup.
 Independent source review and future execution gates remain open.
+
+
+## Start authority correction — independent composition
+
+The [composed record](validation/start-authority-composed-2026-10-29.json) binds
+owner `8dae028` and composed `d0e950e`. All 1,761 Go/module inputs match the
+owner source; selected normal checks pass 21 roots/49 named tests and native
+linking passes against current embedded assets. Total active check time is
+32.256s. Source is unchanged and fixture temporary storage is empty. Owner final
+race/vet receipt hashes were independently checked; no redundant race replay
+was needed for identical Go inputs. No binary invocation/installation, default
+state, Linux/full-suite or actual job-preserving upgrade acceptance follows.

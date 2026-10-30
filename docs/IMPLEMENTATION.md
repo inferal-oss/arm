@@ -4338,3 +4338,11 @@ from production Run startup/authentication/unresolved-receipt cleanup. Existing
 pinned xterm assets could replay the actual bytes in a terminal-only fixture,
 with a new validator limited to the three exact proposed grids. All of this is
 a reviewed proposal, not implemented behavior or current terminal acceptance.
+
+
+## Start authority correction — composed review
+
+The focused startup correction is independently accepted on current composition.
+Failed endpoint inspection remains uncertain and post-launch readiness uses the
+same identity checks as reuse. It does not create resident/worker roles, replace
+a running backend or establish child-process survival during an upgrade.

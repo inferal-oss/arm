@@ -2823,3 +2823,15 @@ current composition; product code is unchanged. Geometry and command/effect
 boundaries are source observations only. The existing terminal UX task now
 prepares its bounded test-only fixture for source review; execution, PTY replay
 and remediation remain pending. No live backend or running child is affected.
+
+
+## Start authority correction — coordinator accepted
+
+Focused owner `8dae028` is composed as `d0e950e`. Independent source review,
+all 1,761 Go/module input comparisons, selected 21-root/49-test normal checks
+and native linking pass on current main composition. Owner final race/vet
+receipts and source hashes were independently rechecked. The composed checks
+finished in 32.256s with unchanged source and empty fixture temporary storage.
+No installed executable, live backend or real child process changed.
+Actual resident ownership, worker replacement and distinct-version API/UI job
+survival remain required; the existing upgrade task prepares the next cut.
