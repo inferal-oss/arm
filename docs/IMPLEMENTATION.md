@@ -5426,3 +5426,24 @@ validation remain separate. Physical terminal/font/cursor/platform/Unicode,
 production startup/auth/backend, broader routes/states and full UX acceptance
 are not implied. Source-only records above describe preparation history; the
 new normalized record is the completed outcome for this bounded scope.
+
+## Native45 filter lifecycle — independent integration acceptance
+
+Independent review verified the original compile/runtime receipts and artifact
+manifest and inspected all eight original PNGs at their native resolution. The
+selected 45-by-14 fixture passes all 112 row comparisons with readable draft,
+help, borders and footer controls, the original footer-driven Quit, and normal
+child/browser cleanup. The normalized owner evidence remains bound to its
+original source and binary. This closes that selected native gate, not full UX
+coverage or physical terminal/font portability.
+
+All 69 native source members match in the composed checkout. Four backend inputs
+changed during integration, so the composed revision `bf72a1f` received one fresh
+offline TUI test-binary compile through the shared queue. Compiler, helper and
+FIFO returned zero; the log was empty and source, preservation, copies and
+temporary-file checks passed. Its conservative input inventory contains 2,012
+project files plus 5,004 existing external pins; it is not an exact dependency
+graph. The resulting binary SHA-256 is
+`98a1ff212853df8efbebd0a5b1ae93f6f1a55b9900413ffbd7a1e54d22970f9a`.
+It was not executed, and no composed native runtime rerun is claimed. No module,
+product behavior or accepted historical fixture was changed by this cut.
