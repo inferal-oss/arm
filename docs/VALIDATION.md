@@ -10351,3 +10351,16 @@ The next source-only proposal must target actual visible log tail in inline and
 fullscreen through original loop/scroll paths, preserve buffer/cursor and count
 any empty End read. Original owned Program/PTy/read/cancel/Close outcomes and
 pinned terminal-only replay require separate review and execution allocation.
+
+
+## Shared terminal direct inventory — independent composition
+
+The [composed review](validation/ux-terminal-direct-composed-2026-10-30.json)
+independently verifies all 111 private artifact hashes, 53 input hashes and
+46 saved frame hashes for original source `a79462d`/evidence `60c65a3`.
+Requested model dimensions, eight/six default roster counts, original
+report/receipts and three synchronous cleanup records agree. Fixture inputs
+remain byte-exact in composition; production code is unchanged. No duplicate
+fixture run was performed. The original helper failure and absent visible log
+tail remain qualified. Actual native loop, cells/glyphs, PTY and UX remediation
+are separate remaining gates.

@@ -2930,3 +2930,15 @@ strict fake/audited commands and exact grids. It must replace a redundant
 checkpoint with real inline/fullscreen log-tail reach while preserving the
 existing bounds. No further compile/runtime/browser/PTY is allocated. Product
 remediation still awaits concrete terminal findings.
+
+
+## Shared terminal direct inventory — coordinator acceptance
+
+Reviewed focused source `a79462d` and evidence `60c65a3` are composed as
+`c07798d`/`03ab751`. Independent checks verify 111 private artifact hashes,
+53 exact inputs, 46 frame hashes, model dimensions/default counts and all three
+synchronous cleanup records. No product code changed; duplicate runtime was
+unnecessary for identical fixture inputs. This accepts direct-model evidence
+only. Saved log-tail reach and wide text-oracle gaps remain open; no native
+terminal/cell/glyph/PTY or overall UX acceptance follows. The same owner prepares
+the smallest bounded original-model loop/PTY/replay source candidate.
