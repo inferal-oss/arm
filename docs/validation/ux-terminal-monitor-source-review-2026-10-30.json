@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "scope": "terminal Monitor/I/O source-only inventory and ordinary-model proposal",
+  "source_commit": "4986454d536d40f6ac5e451ae9ed40fb79d7b5ad",
+  "accepted_product_base": "83681e7431668b5bc4b144f173503a2ce4c0c8cf",
+  "status": "source reviewed; candidates not reproduced; execution unallocated",
+  "review": "../UX-TERMINAL-MONITOR-REVIEW.md",
+  "source_files": [
+    {
+      "path": "internal/tui/monitor.go",
+      "bytes": 9110,
+      "sha256": "b78d891d0c2952e9e5e8ac226f0566468542cb14b3fd7ada4431840711594985"
+    },
+    {
+      "path": "internal/tui/io_picker.go",
+      "bytes": 6615,
+      "sha256": "0ddd018875c4590df859c876801282b955c32a35eef8e92454820c61f47e8df4"
+    },
+    {
+      "path": "internal/tui/capacity_budget.go",
+      "bytes": 2952,
+      "sha256": "5a1e824b80e1ba9e3b23b3d0969d9b20ce6e2be5f6ca94c35fbbbc815913a909"
+    },
+    {
+      "path": "internal/tui/io_selection.go",
+      "bytes": 2569,
+      "sha256": "7ec2d60a8fcaa57e6a8e86531126ce026819cdd5b2aa52a3d4c9a5f4e5e7f7ea"
+    },
+    {
+      "path": "internal/tui/tui.go",
+      "bytes": 25585,
+      "sha256": "b5a86e52d9226475732f4cd4f51db455a8b9871bbaf65bc84758d1ef7863a255"
+    },
+    {
+      "path": "internal/tui/layout.go",
+      "bytes": 24499,
+      "sha256": "6b30cd2faf0ab7d80b18d1ec4f384d3d378eabf2871ef7582f11da4474bc96a4"
+    },
+    {
+      "path": "internal/tui/presentation.go",
+      "bytes": 18078,
+      "sha256": "bb759cc27ae78618cc9bc08953405cd75f3c4626dfde7f918ddaf833b72b9e11"
+    },
+    {
+      "path": "internal/tui/mouse.go",
+      "bytes": 15654,
+      "sha256": "9a75ed40429cf6966e5ecd9002debd53168d92775e8470f9f7349efc39721211"
+    },
+    {
+      "path": "internal/tui/theme.go",
+      "bytes": 4276,
+      "sha256": "2bfa9013539c9c8f9dfbc2cc58ae38458d1b4e9be6cc023a6c4854fd0ac539e3"
+    },
+    {
+      "path": "internal/tui/format.go",
+      "bytes": 3328,
+      "sha256": "48d1f6f3010121e3f44f2714b86966183466d97045b77da69cd2f3d8f0e12109"
+    },
+    {
+      "path": "internal/model/monitor.go",
+      "bytes": 3097,
+      "sha256": "f447d3f4b33f996af05c4782b3118806d55880fc5627d5048f23bd253feb812c"
+    },
+    {
+      "path": "internal/tui/io_picker_test.go",
+      "bytes": 6207,
+      "sha256": "0e5179ee8b4e51069d3f2bb58cf14c44ee726733a51e34bf1b7edb4a7bbd8228"
+    },
+    {
+      "path": "internal/tui/capacity_budget_test.go",
+      "bytes": 5214,
+      "sha256": "aefe22bfe02e479f877280fbaf828aab91c90fee62e222f95f22aa666414f9e7"
+    },
+    {
+      "path": "internal/tui/io_selection_test.go",
+      "bytes": 3644,
+      "sha256": "5a020823c41e2bc13adda23c9f87b2baac35a55ed800f0b5c34f795b359fae9f"
+    },
+    {
+      "path": "internal/tui/visual_test.go",
+      "bytes": 10407,
+      "sha256": "5f01d583801c63dd9dc4d3d384df36628281a930f65f19e05082ee9e0b12138a"
+    },
+    {
+      "path": "internal/tui/dashboard_test.go",
+      "bytes": 14098,
+      "sha256": "95fc49e80bf96fcc0c5c97c734447ec91e1d4c8764c429d5dfb5056eeb67d8f0"
+    },
+    {
+      "path": "internal/tui/format_test.go",
+      "bytes": 1588,
+      "sha256": "62bc7a0414c925dbca3e6563cc2241e9b75482e246d41fdd683bae73b60c9085"
+    },
+    {
+      "path": "internal/tui/pending_store_test.go",
+      "bytes": 9175,
+      "sha256": "68e6fd8c5c4f07f1b0f2420cd60a084c1868b709d295e6a9bfe8d2d6ff853194"
+    }
+  ],
+  "candidate_findings": [
+    {
+      "id": "M1",
+      "classification": "source-derived focus candidate, not reproduced",
+      "anchors": [
+        "internal/tui/io_picker.go:46",
+        "internal/tui/io_picker.go:69",
+        "internal/tui/io_picker.go:95",
+        "internal/tui/io_picker.go:124"
+      ],
+      "trigger": "Focus a checked missing ID near the bottom; remove it with Space, None or All.",
+      "risk": "The option vanishes while selectedID remains orphaned; pickerIndex falls back to zero without revealing the replacement row. A second toggle may affect the first option outside the current viewport."
+    },
+    {
+      "id": "M2",
+      "classification": "source-derived visibility candidate, not reproduced",
+      "anchors": [
+        "internal/tui/io_picker.go:124",
+        "internal/tui/tui.go:221",
+        "internal/tui/tui.go:236",
+        "internal/tui/tui.go:177"
+      ],
+      "trigger": "Focus a lower row, then shrink the viewport or move the same ID to another index in an inert inventory update.",
+      "risk": "Viewport synchronization does not call keepPickerVisible for resize or inventory replacement. Stable identity may survive while its rendered row is outside the viewport."
+    },
+    {
+      "id": "M3",
+      "classification": "reading coverage question, not a defect",
+      "anchors": [
+        "internal/tui/monitor.go:44",
+        "internal/tui/monitor.go:74",
+        "internal/tui/theme.go:28",
+        "internal/tui/mouse.go:114"
+      ],
+      "trigger": "Render 64 cores and unavailable values at 45x14; scroll all panels.",
+      "risk": "Right-aligned GPU text competes with the hidden-core/record hint; containment assertions alone do not establish meaningful labels or discoverability."
+    }
+  ],
+  "proposed_grids": [
+    [
+      45,
+      14
+    ],
+    [
+      72,
+      28
+    ],
+    [
+      100,
+      35
+    ]
+  ],
+  "first_proposed_allocation": {
+    "kind": "ordinary model tests only, after source review and separate allocation",
+    "roots": 2,
+    "child_cases": 22,
+    "cases": [
+      "M1: three grids, disk/network, Space/None/All (18)",
+      "M2 resize: disk/network, 72x28 and 100x35 each shrinking to 45x14 (4)"
+    ]
+  },
+  "follow_up_proposal": [
+    "M2 reorder/removal in All mode: disk/network, two transitions (4)",
+    "Monitor reading: three grids, dense fresh / unknown-stale / known-zero states (9)",
+    "Visible selector and picker hit agreement, independent chart selection and return offset: three grids, disk/network (6)"
+  ],
+  "execution_performed": {
+    "go_metadata": false,
+    "compiler": false,
+    "tests": false,
+    "native_program_or_pty": false,
+    "browser": false,
+    "real_transport_or_measurements": false
+  },
+  "preservation": "No product, test, fixture, driver, binding or historical artifact is changed. Existing native65/native69 bindings retain their exact scopes; this inventory does not reuse their source pins for Monitor.",
+  "limits": [
+    "No reproduced defect or fix acceptance",
+    "No visual, native lifecycle, physical terminal, font or full-UX acceptance",
+    "No new metric, accounting, backend, transport, protocol, resource action or feature scope"
+  ]
+}

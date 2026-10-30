@@ -1253,3 +1253,19 @@ validation remain separate. Physical terminal/font/cursor/platform/Unicode,
 production startup/auth/backend, broader routes/states and full UX acceptance
 are not implied. Source-only records above describe preparation history; the
 new normalized record is the completed outcome for this bounded scope.
+
+
+## Terminal Monitor/I/O — source-only continuation
+
+The [bounded source review](UX-TERMINAL-MONITOR-REVIEW.md) replaces neither the
+existing web Monitor acceptance nor the separate selected terminal evidence. It
+binds 18 inspected source/test files and identifies unexecuted candidates for a
+focused missing I/O option disappearing and focus visibility after resize or
+inert inventory replacement. Dense-core/unknown-value compact reading remains
+a coverage question. Existing direct tests already cover basic selection,
+missing IDs, stale clicks, 45x14 containment and return scrolling; this inventory
+does not misclassify those as absent tests.
+
+A first two-root/22-case ordinary-model proposal awaits central source review
+and a separate allocation. No product/test/harness edits or Go metadata, compile,
+test, PTY/browser or real transport execution occurred. Full UX remains open.
