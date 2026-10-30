@@ -738,3 +738,24 @@ invocation or glyph acceptance. All existing sources/inputs/failures stay exact.
 Independent source review and separate replay-only allocation remain gates.
 The21-frame native lease reading source continuation remains a separate step;
 no production/output/font/pin changes or new execution window are implied.
+
+
+## Provider-only diagnostic result — scoped allocation attribution
+
+The [inventory](validation/ux-terminal-glyph-diagnostic-inventory-2026-10-30.json)
+records one frozen2fa74ee four-case attempt: FIFO/Node exit0, all paired raw
+rows/markers/input/font-CSS gates and original cleanup/write-marker outcomes
+passed. All four original PNGs were inspected. Builtin Unicode6 clips 🙂;
+fixture-only width2 displays its full glyph at72 and160. Emoji allocation
+changes1 to2 plus continuation0, while CJK2 and recorded ASCII1 remain stable.
+This supports the provider-width boundary for these exact captures; resolved
+font identity, general Unicode/native terminal and full-UX acceptance remain
+unclaimed. Original script paintAccepted=null is preserved separately.
+
+The unchanged original29+accepted47+new15 containers total7,462,220 bytes under
+16MiB, with owned preparation metadata separately counted. Original APIs/exit0
+and digest-bound marker passed without forced/pending cleanup or page requests.
+No CDP/fontscan/build/test binary/Program/PT Y/recapture occurred. Paused native
+Go source remained hash-exact and uncompiled during this run. Every old scope
+and first failure stays unchanged. No further execution window is implied;
+21-frame native reading source work resumes under separate review gates.
