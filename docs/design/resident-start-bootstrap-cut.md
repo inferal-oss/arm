@@ -19,7 +19,7 @@ and [package](resident-local-package.md) contracts remain required.
 | --- | --- | --- |
 | 1 | `app.daemon` in [cli.go](../../internal/cli/cli.go), [startup inspection](../../internal/cli/startup_inspect.go): claim an original keyed launch attempt before `cmd.Start`; retain its original command/channel through reviewed handoff. | Identical first/concurrent starts converge on one home/config/policy commitment and original key; absent endpoint during birth cannot spawn another core. A lost ACK remains inspectable uncertainty. |
 | 2 | Branch before [serveConfiguredNode](../../internal/server/server.go)'s Prepare/managed-image/lock/startup-SQL effects. New `resident_startup.go` owns pending native, Manager, Server, SQLite and image slots before their effects, using the reviewed nested nativeowner/lifetimeview boundary. | Partial startup retains original objects and first errors; it cannot return through legacy unconditional unlock/close defers or attach a replacement Manager. |
-| 3 | Refactor actual `openWithSyncSchemaAndStartupLock` initialization in [manager.go](../../internal/manager/manager.go) behind `manager/resident_open.go` and `database/resident_open.go`. | The original pending SQL owner exists before physical Connect, including constructor failure. No wrapper around current nil/error Open can substitute. |
+| 3 | Refactor actual `openWithSyncSchemaAndStartupLock` initialization in [manager.go](../../internal/manager/manager.go) behind `manager/resident_open.go` and `database/resident_open.go`, using the official SQLite connector. | The original pending SQL owner exists before connector/pool effects, retains the returned pool before Ping/schema and records the original public Connect call. Hidden driver allocations remain opaque and owned as unresolved process state; no driver change is required. |
 | 4 | Replace opaque legacy startup/stop SQL preflight with bound original owners. [OpenStartupRead](../../internal/database/startup_read.go) currently uses a borrowed flock, auxiliary files, SQLite and cleanup. Add pending `mesh/runtime_open.go` before [image capture](../../internal/mesh/runtime_identity.go). | No SQL/native image effect precedes its funding/fence/holder. Original A helper image/path stays pinned; overwriting its named path cannot preserve current Proof. |
 | 5 | Add the reviewed combined resident/storage transaction and canonical local desired-state revision. Adapt [saveStoragePools](../../internal/manager/storage_pools.go) and the [format guard](../../internal/database/workspace_format.go). | The selected pre-SQL compatibility fence already exists. Lost commit ACK uses same-key readback; storage writes cannot downgrade the combined marker to3. |
 | 6 | Open authenticated resident control/diagnosis only after both original borrower bindings and standing service custody. Extend actual startup inspection with operation/state, stop revision and eventual worker/package/route observations. | Public start returns a precise pending state until the actual worker API/UI is active. Restored mesh and ordinary job admission remain closed during initial preparation. |
@@ -37,14 +37,14 @@ authorization. They narrow the initial implementation to explicit fresh entry.
 
 | Decision | Proposed default | Concrete dependency or refusal |
 | --- | --- | --- |
-| D1: retained driver/native capability | Pursue a separately reviewed upstream opt-in retained-open extension on the same generated SQLite engine; choose its actual delivery/pin only after review. | Current pinned driver loses partial constructor ownership before an ARM wrapper can see it. Step3 cannot open SQL until the real API exists. No fork, second binding, module replace, vendor/cache edit or generated-engine change is approved. Retention alone is not all-native Closed; positive retirement still needs original native closure/error evidence. |
+| D1: official-driver ownership boundary | Keep the same pending database-owner layer around the existing official `modernc.org/sqlite v1.60.1` public `NewConnector` and `database/sql` APIs. | Retain the actual connector, pool, original public Connect and returned raw connection without changing driver registration, optional interfaces or concrete types. Hidden partial-native allocations and pool/task closure remain unknown and charged. No driver fork, replacement, cache patch or engine change is required or selected. |
 | D2: core funding and service custody | Prefer explicitly operator-funded standing resident service custody from process birth through safe closure, with a reviewed build/platform profile and positive finite resource/task/I/O/receipt bounds. | Grant validation precedes core spawn and import/runtime cost. No Manager self-lease, spare-headroom authority, auto/zero capacity or guessed profile floor. Actual profile measurement needs a later bounded allocation. Unknown closure remains retained/charged under the selected policy. |
 | D3: finite fresh-bootstrap abort, conditional | Do not enable this option by default. Standing custody from birth avoids requiring a disposable-bootstrap abort shortcut. | If finite disposable bootstrap is selected instead, it needs separate explicit fresh-only diagnosis/UNKNOWN-abort approval and a pre-SQL fence. Disposable proof teardown permission supplies none. Existing jobs/residents never receive that timer; unknown exit is never Closed or release credit. |
 | D4: pre-SQL compatibility fence | Select explicit fresh-only entry using canonical `state.db` as a retained directory with inner `ledger.sqlite`, subject to independent supported-writer/maintenance refusal and actual SQLite file-selection proof. | Existing regular-file homes remain legacy, with no migration/adoption. If `state.db` must remain a file, require a reviewed pre-genesis fence/minimum-writer rollout instead. SQL format4 alone cannot fence an older writer before its marker exists. Unsupported maintenance must refuse, never fall back to legacy file access. |
 | D5: original core launch/handoff | Review an authenticated handoff from the actual parent command/channel to the child's retained resident root, after which the CLI may return; before that point preserve the exact pending attempt and uncertainty. | `Process.Release` alone, a PID lookup or a copied receipt is insufficient. Decide whether this handoff permits relinquishing the launcher child reference without claiming native Closed, or whether a persistent parent is required. The latter changes the process architecture; this contract invents no external service installation/caretaker. |
 | D6: public rollout/legacy entry | Make new fresh entry explicit and reviewed initially; preserve legacy live work. | Public repeated start must identify actual resident/worker state. Live monolithic owners cannot transfer retroactively; report the upgrade limitation and require separately reviewed idle-only entry. Never cancel existing jobs to enter resident mode. Preserve config and intentional stop/restart semantics. |
 
-D1 actual capability delivery plus D2/D4/D5/D6 interface selection precede the
+D1 actual official-connector owner plus D2/D4/D5/D6 interface selection precede the
 first effectful bootstrap implementation. D3 is conditional, not an additional
 mandatory policy choice. No approval is inferred from this contract or from
 the user's permission to tear down disposable fixtures.
@@ -142,13 +142,25 @@ service custody (D2) is the selected funding interface direction, with actual
 operator inputs and a measured profile still required before execution. These
 choices authorize code preparation, not production activation or resource grants.
 
-For D1, prepare a complete additive opt-in candidate against the exact pinned
-driver in an isolated source tree. Legacy Open and generated engine bytes must
-remain compatible. Return actual holder/connector/partial-open/close records,
-provenance, licenses, tests and a concrete pinned delivery option for independent
-review. The incomplete callsite sketch is insufficient. No repository module
-pin, replacement, vendor tree, shared cache, upstream publication or runtime is
-changed by preparing that candidate. Original native closure remains unknown
-where evidence cannot establish it. Public keyed-launch/handoff code must then
-consume the actual retained root; a separate demonstration entry point cannot
-replace the public-start acceptance gate.
+For D1, use the official connector at the same database ownership layer. The
+pending owner retains the actual pool before Ping/schema, keeps its exact
+claim/generation/pool binding and records one original public Connect attempt.
+The returned raw connection keeps its official optional interfaces and concrete
+Backup/Error types. Max-open1/idle1/no expiry alone does not prevent pool retries;
+the explicit one-attempt policy refuses replacement and reports degraded database
+availability rather than claiming continuity through an independent DB failure.
+
+The official driver may hide or dispose partial native objects before returning
+an error. That state remains opaque; the original pool/process obligation stays
+retained and charged. Public Close, nil error or an empty visible registry cannot
+issue native/pool/task Closed or release credit. Finite fresh abort remains off.
+This supersedes the earlier driver-extension preparation direction. Its stronger
+internal census and close diagnostics are not prerequisites for retaining a
+healthy resident database and jobs across API/UI worker replacement. Prototype
+driver qualification does not qualify the official-driver owner or its consumers.
+
+No module pin, replacement, nested module, vendor/cache patch, upstream
+publication or driver modification is selected. Preserve normal checkout builds
+and versioned `go install getarm.org/cmd/arm@latest`. Public keyed-launch/handoff
+code must consume the actual retained root; a separate demonstration entry point
+cannot replace the public-start acceptance gate.
