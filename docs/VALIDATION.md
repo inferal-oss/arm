@@ -10364,3 +10364,19 @@ remain byte-exact in composition; production code is unchanged. No duplicate
 fixture run was performed. The original helper failure and absent visible log
 tail remain qualified. Actual native loop, cells/glyphs, PTY and UX remediation
 are separate remaining gates.
+
+
+## Resident retained-driver candidate — independent source review only
+
+The private additive candidate was checked against all 1,899 pinned archive
+entries, with nine permitted handwritten changes and two new source/test files.
+Exact patch/review/manifest and cached archive hashes agree; unchanged engine,
+module and license entries remain exact. No source compilation, test, native
+fixture, ARM module edit or delivery/publication was performed.
+
+Static findings require retained uncertainty on abnormal API/child completion,
+bounded completed-record retirement suitable for a long-lived connection,
+conflicting transaction terminal-operation refusal and consistent sticky errors.
+These are review findings, not reproduced runtime failures. The original source
+candidate is preserved and remains unaccepted pending the corrected source and
+separate bounded validation. No previous SQLite proof supplies these results.

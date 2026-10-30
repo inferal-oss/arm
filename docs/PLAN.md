@@ -2942,3 +2942,20 @@ unnecessary for identical fixture inputs. This accepts direct-model evidence
 only. Saved log-tail reach and wide text-oracle gaps remain open; no native
 terminal/cell/glyph/PTY or overall UX acceptance follows. The same owner prepares
 the smallest bounded original-model loop/PTY/replay source candidate.
+
+
+## Resident retained-driver candidate — source findings, not accepted
+
+The existing upgrade owner prepares an additive opt-in source candidate against
+the pinned SQLite driver, preserving generated engine, module and license bytes.
+Independent static review verified archive/candidate provenance and the bounded
+changed-file roster. No ARM dependency or native runtime is activated.
+
+Review returned abnormal API/child-close completion handling, permanent
+completed-record exhaustion, conflicting Commit/Rollback replay and optional
+API error retention for correction in a separately preserved candidate. The
+long-lived original Manager connection must remain usable without resetting its
+identity, growing records without bound or misreporting an operation. The owner
+continues actual launch/handoff source preparation; candidate compilation,
+normal/race/vet, delivery selection and product integration remain unallocated.
+Existing jobs, installed backend and all earlier proof/source records stay intact.
