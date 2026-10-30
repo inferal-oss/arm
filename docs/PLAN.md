@@ -2906,3 +2906,27 @@ Independent fixture-code review and a separately allocated bounded compile/
 direct-frame command are the next gates. Actual terminal loop/PTY/replay and UX
 inventory/remediation remain the objective after those gates; this source
 preparation does not complete terminal or overall UX acceptance.
+
+
+## Shared terminal direct fixture — original execution frozen
+
+The reviewed source `a79462d` completed its one allocated compile/direct-frame
+command with exit zero: 46 checkpoints at the three proposed grids, fifty
+classified inputs and all 53 attempt inputs unchanged. The
+[immutable execution record](validation/ux-terminal-direct-inventory-2026-10-30.json)
+retains the original receipts, model observations and limits. No fixture source
+was corrected or repeated.
+
+The run-log buffer/cursor has all 3,165 bytes, but no saved frame shows LOG FINAL;
+recorded log offsets remain zero. This is a fixture reach gap, not a demonstrated
+product defect. A read-only text helper also stopped at its invalid wide-layout
+whole-line border assumption; partial narrow/medium matches and failure remain
+frozen without replacement. Direct model/ANSI dimensions do not accept native
+terminal cells, focus, loop or PTY cleanup.
+
+The continuing next step is source preparation/review of the smallest test-only
+Bubble Tea wrapper and terminal-only replay plan, using actual owned PTY output,
+strict fake/audited commands and exact grids. It must replace a redundant
+checkpoint with real inline/fullscreen log-tail reach while preserving the
+existing bounds. No further compile/runtime/browser/PTY is allocated. Product
+remediation still awaits concrete terminal findings.

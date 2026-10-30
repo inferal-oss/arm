@@ -608,3 +608,22 @@ only. Actual terminal cells/hits/scroll/focus/resize/loop/PTY and later
 remediation remain the continuing goal; source scaffolding is not terminal or
 overall UX acceptance. No old capture or prepared assertion is promoted to
 current runtime evidence.
+
+
+## Shared terminal — direct model evidence and remaining reach
+
+The [frozen direct inventory](validation/ux-terminal-direct-inventory-2026-10-30.json)
+records one compiled/passed bounded fixture, 46 model frames and observed
+read/default/record/retirement behavior. Source and prepared plan remain exact.
+This accepts neither native terminal paint/focus/PTY lifecycle nor the entire
+terminal UX. No product correction is introduced.
+
+Remaining gap: all 3,165 log bytes are buffered but no saved frame shows the
+log tail; offset-zero captures are not reach evidence. A separate read-only
+wide-frame text helper failed at its side-feed assumption and remains an
+explicit oracle limitation. These do not establish product defects. The next
+small source proposal will retain original model/readers/layout and strict
+effect gates in a test-only Bubble Tea wrapper, capture owned PTY output and
+replay actual bytes with pinned terminal assets at the exact grids. It must
+replace redundant checkpoints with visible inline/fullscreen tail checks and
+measure original handles/cleanup without broadening current runtime authority.

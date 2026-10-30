@@ -4388,3 +4388,26 @@ peer/run retirement, cancels the owned context and closes only the fake
 transport, recording zero-work/file-boundary expectations without claiming
 native Run, goroutine/process or PTY cleanup. These are prepared paths and
 checks; no fixture has been compiled or executed.
+
+
+## Shared terminal direct fixture — observed execution boundary
+
+The original opt-in fixture `a79462d` compiled and passed once. Its prepared
+source and historical source-only plan remain unchanged; the
+[execution record](validation/ux-terminal-direct-inventory-2026-10-30.json)
+separately records actual results. The original model/read/OnMouse paths
+produced 46 saved View.Content frames with requested model dimensions, default
+visibility, exact record decimal, read cursors and reader retirement/restoration
+checks. Strict fake calls remain inspect/runs/run_output only; no confirmation
+or preference/native-client path was exercised. Constructor-created private
+pending directory/empty lock are disclosed fixture effects.
+
+All 3,165 log bytes were drained into the original reader, yet the selected
+normal/fullscreen snapshots remain at offset zero. No saved LOG FINAL is visible.
+This qualifies buffer evidence only; Home/paused append/PgUp does not establish
+visible tail reach. The separate whole-line text-inspection helper failed at
+the 160-column side feed and was preserved without correction or replacement.
+No product behavior changed and no defect follows from these fixture/oracle
+gaps. The next reviewed source proposal must use a wrapper that returns itself
+after Update and actual owned Program/PTY bytes for terminal-only replay,
+retaining the original model, data, readers and command gates.
