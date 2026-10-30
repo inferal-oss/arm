@@ -3655,3 +3655,22 @@ inputs plus new output/metadata under16MiB. Independent outer review, a separate
 original lifecycle/receipt-return gates and PNG inspection remain pending.
 Historical positive/failed evidence remains unchanged; native paint, production
 startup and full-UX acceptance are not claimed.
+
+
+## Resident upgrade — constructor revision and native qualification status
+
+The earlier private driver source passed its scoped normal/race cohorts and all
+12 causal controls. Default vet remained failed. An executed pristine upstream
+baseline reported 64 unsafe-pointer diagnostics against the candidate's 65; the
+extra site came from a duplicated statement-constructor body. That comparison
+stopped without running the conditional remaining-analyzer command.
+
+The separately reviewed shared-constructor revision preserves one original body
+for legacy and retained calls, with the retained child registered before native
+allocation. It now passes 35 normal roots and 64 named cases without failures or
+skips. Fresh race, causal and diagnostic checks remain separate gates; prior
+source results cannot qualify the revision. No dependency delivery or installed
+backend change is activated. Native-owner qualification also exposed an owned
+test-directory preparation error; its fixture-only correction preserves the
+strict production mode/identity checks and requires a fresh run. Public startup,
+actual root/service custody and live run/proxy survival remain open.

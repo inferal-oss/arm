@@ -11117,3 +11117,29 @@ inputs plus new output/metadata under16MiB. Independent outer review, a separate
 original lifecycle/receipt-return gates and PNG inspection remain pending.
 Historical positive/failed evidence remains unchanged; native paint, production
 startup and full-UX acceptance are not claimed.
+
+
+## Retained driver — fresh constructor scope and preserved failures
+
+The previous candidate's race cohort passed 34 roots and 60 named cases, and
+its 12 causal commands reached the planned three positive and nine omission
+outcomes. Default vet failed with 65 diagnostics. Actual pristine upstream vet
+failed with 64; the strict correspondence gate stopped and preserved both
+results. The additional site was duplicated constructor code, not an exact
+unchanged upstream statement. No default-vet pass is claimed.
+
+Fresh shared-constructor manifest SHA-256
+`3cf9f71a7226715cae541dc18693639ae30da4da027dfff262643b24e072531c`
+passes 35 roots, 64 named cases and two packages with zero failures/skips.
+Independent review checked the raw event roster, source guard and original
+process joins. Active time was 8.488 seconds; sampled counted allocation peaked
+at 2,334,318,592 bytes. Roster commitment:
+`d17f786d4d54e29b7d4984cca74119a1582946d2a470539f53ac4181edf76047`.
+Race/controls/diagnostics and actual ARM-graph delivery remain pending.
+
+The original native-owner run produced four failed roots and one pass on strict
+private-directory checks; later commands did not run. Source diagnosis found
+that the fixture omitted explicit private-leaf preparation. Cleaned paths were
+not remeasured or assigned an inferred numeric mode. The fixture-only correction
+requires new qualification; no full native closure, production startup, live
+upgrade or child-process survival result follows from these records.
