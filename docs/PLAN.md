@@ -2183,3 +2183,14 @@ unchanged. Final review removed shadowed grid overrides and an unused hook.
 Independent current-main composition, visual/source review and central asset/Go
 build against newer backend code remain open. No owner merge/push, build/install,
 runtime activation or full UX acceptance is implied.
+
+
+## Kubernetes primary-fact review correction
+
+A focused follow-up to frozen `36d62f6` addresses K1 ordinary-label fragmentation
+that geometric fit alone missed. Existing Node-card primary descriptions stack
+at compact/medium widths, with a direct primary-list selector. Technical rules,
+Grid parameters, hooks, callbacks and all protected contracts remain exact.
+The [source-bound correction](validation/ux-kube-primary-labels-2026-10-29.json)
+records the allocated Kube four-case positive, stacking-only K1 omission and
+affected native/module checks. Independent composed review remains open.

@@ -3943,3 +3943,18 @@ hooks and equivalent construction-variable changes. Callbacks, request/unit
 arguments, IDs, selection/cardByUID, stale-context, pending, disposal and focus
 logic are unchanged. Raw quantity strings, BigInt display, 64-field quantity
 summary/omission notice and exact JSON cap/truncation remain intact.
+
+
+## Kubernetes primary-fact label allocation
+
+One compact/medium rule targets only the existing DescriptionList directly inside
+the Node Card body Stack. Labels and values take separate rows, keeping ordinary
+labels such as Architecture whole when the complete card line has room. Native
+Grid, technical disclosure/list rules, hooks, callbacks, text, units and bindings
+are unchanged; deleting only this rule restores the frozen app source exactly.
+
+The [focused record](validation/ux-kube-primary-labels-2026-10-29.json) adds an
+actual DOM Range line-count oracle beyond fullTextFits. A label that fits the
+full available row under explicit computed-font Canvas measurement must occupy
+one line. Canvas width is an estimate; native line boxes are authoritative and
+the fixture fit margins are ample. No universal font/zoom claim is made.

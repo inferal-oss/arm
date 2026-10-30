@@ -818,6 +818,11 @@ arm:KubeTechnicalFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slu
               [ sty:property "max-width" ; sty:raw "100%" ],
               [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
 
+# Kubernetes primary fact label allocation.
+# Give ordinary labels the card's reading width before wrapping at compact/medium sizes.
+[] a sty:StyleRule ; sty:appliesTo arm:KubeNodeCard ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part "> .sem-card-body > [data-sem-c=\"stack\"] > [data-sem-c=\"description-list\"]" ;
+ sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
+
 # Kubernetes technical description allocation.
 [] a sty:StyleRule ; sty:appliesTo arm:KubeTechnicalFacts ;
  sty:declares [ sty:property "min-width" ; sty:raw "0" ],

@@ -360,3 +360,14 @@ support this owner handoff. Prior inventory and failed candidates are preserved.
 Selected text scaling, native glyphs, individual scrolling and original API
 cleanup are explicitly qualified. Independent source/visual acceptance, current
 composition and central rebuild remain gates; no full UX or installed/live claim.
+
+
+## Kubernetes primary-label review follow-up
+
+Review found that fullTextFits alone accepted Architecture split before its final
+letter. The [focused K1 correction](validation/ux-kube-primary-labels-2026-10-29.json)
+stacks only actual primary facts at compact/medium widths. The new oracle checks
+whole ordinary labels against a complete available line and their actual native
+line boxes. A stacking-only omission reproduces the defect. Technical facts and
+native Grid retain their independent rules and parameters. Prior owner/central
+evidence stays historical; independent final-source acceptance remains open.

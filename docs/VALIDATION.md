@@ -9437,3 +9437,27 @@ Native input/select painted glyph and popup bounds, universal zoom, other themes
 and maximum cases, real auth/transport/discovery/cluster and broader UX/TUI remain
 open. Independent current-main review/composition and central rebuild against
 newer Go remain required.
+
+
+## Kubernetes primary-label review evidence
+
+The [focused record](validation/ux-kube-primary-labels-2026-10-29.json) binds final
+source hashes to four Kube cases and a K1 control omitting only the new primary
+stacking rule. Forty ordinary primary labels occupy one line; the omission
+reproduces two-line fragmentation, including Architecture. Captures cover narrow
+and selected-token sizes. The technical rule retains its separate scope; its
+prior omission evidence remains historical rather than newly rerun.
+
+Twenty-seven native and 23 module checks pass on this exact product/test source.
+The subsequent font fix changes only the browser evidence runner. An initial
+empty font shorthand caused Canvas default-font widths; those candidate inputs,
+reports and images are preserved as measurement failures. Final cohorts use and
+record explicit computed font components and the accepted Canvas font.
+
+Original FIFO runner intervals are about 62 and 16 seconds, including transforms,
+collection and awaited original API closes; initial static imports/source hashing
+and FIFO wait are excluded. Actual capture/release is recorded with zero pending/
+active reads or forbidden effects. API closure does not prove OS group/reap facts.
+Native glyphs, selected tokens versus universal zoom, real runtime/cluster work
+and independent current-main acceptance remain qualified. No setup, asset build,
+install, live operation or ARM lease assertion. Older evidence rehashes unchanged.
