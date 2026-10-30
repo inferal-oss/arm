@@ -9642,3 +9642,29 @@ Earlier dense historical uncertainty prose stays separately qualified. Raw
 values/keys/tokens/images remain private; native glyph/selected-token-versus-zoom
 limits, independent current-main composition/rebuild and full UX/TUI/live gates
 remain open. All prior artifact sets rehash unchanged.
+
+
+## Forwarding F1/F2 — independent final composition
+
+The [composed record](validation/ux-forwarding-review-composed-2026-10-29.json)
+binds exact final working inputs to 454 JS and 52 native UI tests in ten files,
+zero failures/skips, two identical dashboard builds and a native CLI build.
+Core completed in 15.660s; the two positive browser cohorts in
+26.554s/25.809s and isolated F1/F2 controls in
+13.281s/9.895s. All six sessions have zero forbidden effects,
+active/pending reads, page errors, sockets, external or clipboard requests at
+capture and positive original API cleanup. Browser does not invoke mutations.
+
+Final source includes reviewer singular-minute and full-reading-width fixes.
+At the selected desktop geometry, canonical identity allocation grows from
+237.34px to 372px, painted height drops from 35.5px to 16px, and the same bounded
+reason height decreases from 2652px to 1989px. Full reason first/middle/final
+ranges, whitespace2/2, all eight snapshot values after edits, control/caption
+reach and private-leaf lifecycle pass. Prior narrow-column geometry passes and
+owner harness/oracle failures remain historical, not final-source acceptance.
+
+Mocks cover original exact start/sent/uncertain behavior; native OS forwarding
+was not run. Browser RDF export, memory wiping, universal zoom, native input
+painted glyphs, OS group/reaping and full dense historical prose are not proved.
+No ARM grant/hard RSS, installed backend, Go suite, Linux/new TUI/full UX or
+real upgrade acceptance is inferred.

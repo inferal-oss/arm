@@ -4077,3 +4077,19 @@ the entire native forwarding module to its inventory base after only F1/F2
 presentation inverses: prepare/start/sent/uncertain/private-leaf prefix, original
 request/key/token, callbacks, historical statusLine/listener cards, pending/retry
 and admission behavior stay exact. No automatic uncertain credential erasure.
+
+
+## Forwarding prepared review — composed behavior
+
+Disconnected exact-key inspection now gives reconnect guidance; online invalid
+key validation and exact read arguments are unchanged. Existing native review
+Card fields show all eight captured settings, complete reason/lifetime and the
+form-edit distinction without changing the request or token. Its values use
+full Card width, with exact whitespace wrapping; 1 minute uses singular copy.
+
+The [composed record](validation/ux-forwarding-review-composed-2026-10-29.json)
+qualifies source inverse, current builds/tests and browser/negative controls.
+Only noninteractive presentation/guard scope changes: no callback/start/sent/
+uncertain/retry/admission/private-leaf or historical stop/recovery behavior,
+main/graph/pure helper/native policy/module/schema/Go change. Assets are rebuilt
+centrally; no installed or live listener behavior is exercised.

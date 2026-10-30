@@ -850,11 +850,9 @@ arm:ForwardPreparedReview a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-f
               [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
 [] a sty:StyleRule ; sty:appliesTo arm:ForwardPreparedReview ; sty:part "[data-sem-c=\"description-list\"]" ;
  sty:declares [ sty:property "min-width" ; sty:raw "0" ],
-              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr) minmax(0, 2fr)" ] .
+              [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .
 [] a sty:StyleRule ; sty:appliesTo arm:ForwardPreparedReview ; sty:part "[data-sem-c=\"description-list\"] dt, [data-sem-c=\"description-list\"] dd" ;
  sty:declares [ sty:property "min-width" ; sty:raw "0" ],
               [ sty:property "max-width" ; sty:raw "100%" ],
               [ sty:property "white-space" ; sty:raw "break-spaces" ],
               [ sty:property "overflow-wrap" ; sty:raw "anywhere" ] .
-[] a sty:StyleRule ; sty:appliesTo arm:ForwardPreparedReview ; sty:atWidth sty:CompactWidth, sty:MediumWidth ; sty:part "[data-sem-c=\"description-list\"]" ;
- sty:declares [ sty:property "grid-template-columns" ; sty:raw "minmax(0, 1fr)" ] .

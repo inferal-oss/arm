@@ -87,7 +87,7 @@ function createForwardConsole({ ui, root, call, connected, cryptoAPI = globalThi
         ["Destination service name", request.service],
         ["Destination grant revision", request.grant_revision],
         ["Local loopback bind", request.bind],
-        ["Listener lifetime", `${request.ttl_ns} ns (${request.ttl_ns / 60000000000} minutes)`],
+        ["Listener lifetime", `${request.ttl_ns} ns (${request.ttl_ns / 60000000000} ${request.ttl_ns === 60000000000 ? "minute" : "minutes"})`],
         ["Resource reservation reason", request.reason]
       ]),
       ui.text("Form edits do not update this prepared review."),
