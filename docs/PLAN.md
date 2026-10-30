@@ -1,5 +1,32 @@
 # ARM delivery plan
 
+## Coordinator review — native ownership component accepted
+
+Focused owner commit `cafd0f1` is composed as `8c9bc66`. The six qualified Go
+inputs and the complete Go/module tree match the tested actual-project source;
+current-main differences outside this component are documentation only. Native
+normal/race, paused-original controls and scoped vet were independently checked.
+Linux amd64/arm64 artifacts were hash- and architecture-checked without execution.
+The component has no production caller. Database/Manager/service construction,
+worker replacement and original-job continuity remain open; no live activation
+or full native/borrower closure is accepted.
+
+## Resident native ownership leaf — native scope qualified; integration pending
+
+Owner: `codex/resident-native-owner-delivery`, based on accepted `c1937e4`.
+The actual pending issuer and nonretiring view aliases retain original partial
+native ownership, one original effect and observable sealing. Five normal and
+five race roots, explicit paused-original positive/negative/positive-race checks
+and scoped vet pass both in an isolated module and against the unchanged actual
+project module using the project dependency pin.
+The [normalized evidence](validation/resident-native-issuer-leaf-2026-10-30.json)
+records the corrected fixture failure and precise limits. Linux amd64 and arm64
+compile-only checks also pass against the unchanged actual project module.
+Foreign artifacts were not executed; integration review remains pending. No production
+caller, root borrower-retirement permit, funding/profile, database/Manager/Server
+bootstrap, worker controller or public-start activation is included. Original
+jobs through genuine different-version API/UI replacement remain the final gate.
+
 ## Next resident bootstrap cut — source contract awaiting decisions
 
 Owner: `codex/resident-bootstrap-cut-contract`, based on accepted `4328297`.

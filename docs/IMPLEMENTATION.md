@@ -1,5 +1,31 @@
 # Backend and CLI implementation
 
+## Composed native ownership review
+
+The unconnected component from `cafd0f1`, composed as `8c9bc66`, retains exactly
+the six Go inputs qualified against the real project module. The surrounding
+Go/module tree is source-equivalent to that tested composition. The overlay
+generator retains the previously qualified positive/negative control bodies.
+No existing startup, Manager, storage, worker or job-reporting caller changes.
+The next database adapter remains a source-only checkpoint; it has no compiled
+or runtime acceptance, and its pool must stay private to the original Manager.
+
+## Original native issuer and nonretiring views — unconnected leaf
+
+`server/internal/nativeowner` now contains an actual pure pending holder before
+one-shot native directory/lock construction, retained partial errors and original
+role/claim/stop identities. One registered original effect owns mutable native
+state; native syscalls run outside the inspection/seal mutex. Pending inspection
+is explicitly uncertain and cannot certify zero ownership or closure. Ordinary
+admission refusal does not become sticky native failure. `server/lifetimeview`
+exposes only opaque nonretiring aliases, with no issuer or raw FD authority.
+
+Native retirement remains a low-level FD operation with no production callsite.
+The actual root's original borrower-closure permit, service funding, database/
+Manager/Server construction and worker/public-start integration are not supplied.
+See the [component contract](../internal/server/internal/nativeowner/README.md)
+and [scoped evidence](validation/resident-native-issuer-leaf-2026-10-30.json).
+
 ## Next resident product allocation — contract only
 
 The [bootstrap cut](design/resident-start-bootstrap-cut.md) proposes the actual
