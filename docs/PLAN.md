@@ -2474,3 +2474,22 @@ imagery confirms the title/close finding. Failed initial collection and excluded
 amount selectors retain their qualifications; no product source or built assets
 change. D1–D4 are accepted review findings, with remediation and composed
 validation still required.
+
+The existing UX owner continues on `codex/ux-destination-layout` from
+`a355252`. Scope is the four measured banner, resource Card, lease Card/Button
+and lease-detail header/body containment findings. Existing native components,
+full identifiers/reasons/units, JSON bounds and scroll, exact read/permission
+validators, focus/aging and pending/disconnect/disposal behavior stay intact.
+Only `remote.mjs` presentation wiring and app-owned ontology/style hooks plus
+focused tests/fixtures/docs may change; no global theme/engine/main/bridge,
+Go/model/protocol/admission or default filtering changes.
+
+One affected JS/native-runtime core cohort, two positive browser cohorts and
+two isolated presentation-negative cohorts are allocated through the unchanged
+shared FIFO, each <=115s including collection and original cleanup, CPU <=2 and
+memory target <=2GiB. The four established viewport/selected-token geometries,
+actual amount oracle, own/ancestor paint, close/focus/scroll, read scopes and late
+reply lifecycle require final-source checks. Old failed and oracle-limited
+inventory remains historical. No owner bundle/Go build, installation, live
+host/socket/credential/clipboard effect, new setup or additional window is
+allocated; independent composition, asset rebuild and acceptance remain central.
