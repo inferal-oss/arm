@@ -2669,3 +2669,26 @@ Task-owned loopback fixtures only, no detached/default/installed daemon or jobs.
 No first-launch serialization/native handoff/worker readiness or resident
 activation is claimed. Dependency retention API, funding/exhaustion and ledger
 layout remain proposals; no module/fork/binding/schema/bootstrap policy change.
+
+
+## Screen modal layering — focused correction assigned
+
+The existing UX owner continues on `codex/ux-screen-modal-layering` from
+accepted inventory `8c5bd9e`. After existing valid/live/duplicate guards, only
+showCredentials/showClipboard may leave active fullViewport via the original
+fullView(false) helper before opening the original native modal. Close remains
+inline; Fill window provides explicit re-entry. The same client/private fields/
+callbacks/ownership/cache and existing Cancel/disconnect behavior stay intact.
+Whole screen source must invert to the base after only two presentation calls;
+no engine/main/GraphUI/style/pin/protocol/auth or private lifecycle change.
+
+One affected JS/focused native-runtime core cohort, two positive browser cohorts
+covering the four established geometries and one two-geometry isolated source
+control are allocated through the unchanged FIFO, each <=115s including original
+cleanup, CPU <=2/memory target <=2GiB. All genuine effects and populated auth
+submissions remain refused; only the approved inert dependencies and bounded
+synthetic clipboard/account data are used. Final hit/focus/scroll/full-mode/client
+identity and late/disconnect/disposal checks are required. The new fixture may
+correct the top-layer clip oracle without rewriting old inventory evidence.
+No owner assets/Go build/setup/install/PTY/live effect or extra window; central
+composition, asset rebuild and acceptance remain required.
