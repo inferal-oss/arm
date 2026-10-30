@@ -4240,3 +4240,21 @@ The [scoped result](validation/ux-terminal-monitor-focus-green-2026-10-30.json)
 records immutable evidence and qualifications. No additional workload was run.
 Central composed review/landing remains; no native/fullUX or inventory/reorder 19
 acceptance is implied. Owner evidence-only successor leaves all Go bytes exact.
+
+
+## Coordinator acceptance — focused terminal Monitor M1/M2 fix
+
+Owner commits `74513de`, `82dd627`, `efc342e` and evidence-only `5899f67`
+compose as `4fb29b0`, `3ef96f0`, `8d6d6c1` and `3c46858`. Independent review
+checked the actual three-file product diff, immutable red/green tests, original
+raw roster, all 66 observations, 22 cleanups and complete process/output/storage
+gates. All tracked non-documentation files equal the green-tested owner tree;
+only preserved coordinator documentation differs. The selected normal evidence
+therefore applies to this exact product composition without a duplicate run.
+
+Missing-option actions now choose a deterministic visible valid row, and resize
+reveals the surviving focus. Chart scope, stale-click and return-scroll tests
+pass. Broader inventory/reorder, density/reading/hit, native/physical terminal
+and full-UX acceptance remain outside this completed cut. The next bounded
+existing-task step may prepare the four inventory-transition cases and policy
+proposal as source only, with no execution or product changes implied.

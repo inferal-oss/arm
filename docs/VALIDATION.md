@@ -11811,3 +11811,25 @@ charges; no reclamation claim is made. Original26-member manifest and all bytes
 were reverified and retained. This does not promote prior failed V1/V2 artifacts
 or establish composed/native/race/full-package/fullUX acceptance. Final owner
 evidence changes are documentation only; no later Go tree is claimed as run.
+
+
+## Coordinator acceptance — exact Monitor focus composition
+
+Owner `5899f67` is composed through `3c46858`, including runtime source
+`efc342e` as `8d6d6c1`. Independent checks verified the actual product diff,
+all 26 green artifacts and exact path set, all 33 named starts/passes once,
+66 positive observations and 22 strict cleanups. Every original initial green
+observation equals its red counterpart; all 66 green viewport/full-frame pairs
+show the canonical selected ID and preserve the other chart. Original normal
+Go/FIFO exit 0 joins, full EOF, final stable enumeration, empty temporary trees
+and source/tool/history guards are positive. Earlier two failed collections
+remain failed and preserved.
+
+The composed tracked non-documentation tree is byte-for-byte identical to the
+qualified owner tree. Source-bound selected normal evidence applies unchanged;
+no additional compiler or runtime invocation was performed for documentation-only
+composition differences. The normalized green record's SHA-256 is
+`c7d87baa0b09dc11840adfd2ea81d13e190f9627909469c7ee3425c9c4924e2f`.
+New files parse and the focused diff passes whitespace/privacy review. No race,
+full package, native Program/PTY/browser, physical-terminal/Unicode or full-UX
+claim is added. The untracked dependency symlink was preserved and unused.

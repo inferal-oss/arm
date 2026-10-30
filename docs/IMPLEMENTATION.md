@@ -5525,3 +5525,15 @@ other-chart scopes, stale-click and return-scroll regressions remain intact.
 The [result](validation/ux-terminal-monitor-focus-green-2026-10-30.json) is
 owner-source evidence; central composition/landing and broader UI/transport/
 native coverage remain separate. No further product source changed.
+
+
+## Coordinator acceptance — local Monitor focus behavior
+
+The reviewed terminal picker correction is composed with unchanged qualified
+tests: removing a focused missing row selects a deterministic visible replacement,
+and original resize reveals valid focus. Selection actions and validated clicks
+reveal their target; ordinary clock/render/wheel/page reading remains unchanged.
+All tracked product inputs equal the seven-root green-tested owner source.
+Documentation conflicts were append-only and both histories were retained.
+This accepts the focused ordinary-model behavior, not broader Monitor/native
+paint, live transport, race or full-UX coverage.
