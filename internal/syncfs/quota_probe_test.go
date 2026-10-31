@@ -68,7 +68,11 @@ func TestNativeQuotaProbeUsesExistingHostStatus(t *testing.T) {
 	defer parent.Close()
 	evidence, err := ProbeNativeQuota(t.Context(), selected, parent)
 	if errors.Is(err, ErrQuotaUnknown) {
-		t.Skipf("native quota query unavailable: %v", err)
+		if evidence != (NativeQuotaEvidence{}) {
+			t.Fatalf("unknown native quota returned usable evidence: %+v %v", evidence, err)
+		}
+		t.Logf("native quota query unknown; no usable evidence: %v", err)
+		return
 	}
 	if errors.Is(err, ErrQuotaUnsupported) {
 		if evidence != (NativeQuotaEvidence{}) {
