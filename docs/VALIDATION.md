@@ -12598,3 +12598,23 @@ The coordinator independently checked the original command joins, stream
 hashes, official dependency authentication and unchanged inputs. Later changes
 are documentation only; no tests or binary were rerun for composition. Actual
 signing, Root handoff, public startup and live child continuity remain untested.
+
+## Pressure control journal: current composition
+
+The [normalized scoped record](validation/pressure-control-journal-scoped-2026-10-31.json)
+binds the twelve reviewed source files to base `bdc571b8`; feature `236db270`
+contains those exact validated images. Normal and race each pass all 29 roots /
+75 named cases, including the oversized schema-name refusal, with identical
+package-qualified rosters and no skips. Manager and database vet pass.
+
+Before-dispatch cancellation refuses the inert sentinel; during-dispatch
+cancellation joins its original inert probe and refuses continuation at the
+post-return guard. The expected cancelled outcomes are distinguished from
+source test success. The normal run has three successful original validation
+commands and eight successful outer commands, exact untruncated quiet output,
+ordinary nonforced shutdown, verified endpoint/lock/listener closure and
+unchanged final source hashes, modes and Git state.
+
+This is selected component and test-owned native-fixture evidence. It does not
+establish production pause activation, authenticated public permits, complete
+suite, Linux runtime, physical sleep/wake or broad crash-recovery acceptance.

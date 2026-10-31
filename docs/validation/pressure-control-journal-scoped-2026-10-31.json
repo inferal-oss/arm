@@ -1,0 +1,60 @@
+{
+  "schema": "arm.scoped-validation/v1",
+  "date": "2026-10-31",
+  "component": "pressure-control-journal",
+  "source_base": "bdc571b829c82f2b59e58628e5311fce2a5e29e6",
+  "source_file_sha256": {
+    "internal/database/proof_forward_unix_compose_test.go": "97cc97115d38e136306571d20fdfa153757fd7f973ac3ac0a6feb87f18b709d1",
+    "internal/database/proof_integration_test.go": "9877ee9f278f80b679315dc292bfa590fa6ae6cf2b6747b412e5f3c9bdc3a3a4",
+    "internal/database/proof_operations.go": "f2d0a6ece6d40e5cb293bbee9bebd597d979526539eccca2410c5bb9cea7e662",
+    "internal/database/proof_schema.go": "304d719712f777df77b665e60a89543cb09917877e0ce7fe4de93b413a371c85",
+    "internal/database/proof_schema_test.go": "b299a909f8cbcc578e1710bfb9ea77fba58a1422ff1d512a97f13c71eb713690",
+    "internal/manager/host_pressure.go": "580401cbcc4ad27a2fd95280efd1046e0c6152552e9f7752867f5c7554c8df66",
+    "internal/manager/manager.go": "dc8a5d5b7891f91c8c3e43d16a32ae48c0dbf5b3eea32a827ac3c208898d3fd3",
+    "internal/manager/pressure_control_journal.go": "c9db0301b3df0c7411d18b8e66c97c77303c6124f212805bbbe04742e5faae48",
+    "internal/manager/pressure_control_journal_test.go": "826bd63522aefe904801e0c00793ca6e157c17074063233d5c122289216c937b",
+    "internal/manager/pressure_native_candidate.go": "6449c94acac313121bc0bfc47f6e10a75c8bffec08f42377d95dc3cff947f989",
+    "internal/manager/pressure_native_candidate_test.go": "3d8fd0b9715b0bd195ad348764d2d2fc457cb0cec270e8da776d3cd0b696870a",
+    "internal/manager/pressure_native_permit.go": "079ea7142581c70fb57b209ee881ddd453f76353698a83acf904907b51552e22"
+  },
+  "normal": {
+    "roots": 29,
+    "named": 75,
+    "pass": 75,
+    "skip": 0
+  },
+  "race": {
+    "roots": 29,
+    "named": 75,
+    "pass": 75,
+    "skip": 0
+  },
+  "full_package_qualified_rosters_equal": true,
+  "mandatory_cases": [
+    "getarm.org/internal/database.TestPressureControlOptionalSchemaIsWholeAndExact/oversized-name"
+  ],
+  "vet_packages": [
+    "./internal/manager",
+    "./internal/database"
+  ],
+  "cancellation_controls": {
+    "before": "Expected cancellation observed; inert sentinel dispatch refused before any source stage.",
+    "during": "Original inert probe joined successfully; post-return cancellation guard refused continuation before any source stage.",
+    "ordinary_cleanup_qualified": true
+  },
+  "execution_integrity": {
+    "three_original_validation_commands_returned_zero": true,
+    "eight_original_outer_commands_returned_zero": true,
+    "quiet_output_exact_and_untruncated": true,
+    "validation_stderr_empty": true,
+    "ordinary_nonforced_stop_and_postjoin_closure_verified": true,
+    "final_source_hashes_modes_and_git_state_unchanged": true
+  },
+  "scope": "Selected component tests and controlled native fixtures only; fixture STOP/CONT is limited to each test-owned admitted original child.",
+  "remaining_gates": [
+    "Authenticated public permit workflow and policy activation.",
+    "Broader native/model/crash-recovery and platform acceptance.",
+    "Complete suite and physical sleep/wake acceptance."
+  ],
+  "production_pause_enabled": false
+}

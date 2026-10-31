@@ -6152,3 +6152,17 @@ evidence as `3a9f719`. Every qualified runtime, module and embedded input is
 identical to the reviewed snapshot. The official SQLite driver stays unchanged.
 This integration adds no Root caller or public startup activation and changes
 no running backend or managed child.
+
+## Durable pressure control journal
+
+Reviewed feature `236db270` integrates bounded optional-schema verification,
+durable control intent/result records and exact permit-revision and original
+acknowledged-deadline checks. Startup verifies the namespace before repair-like
+DDL can obscure a partial schema. Recovery retains uncertain native intent
+without replaying the action. Current resident ownership, accounting and
+constructor outcomes are preserved.
+
+Selected controlled fixtures exercise only their own admitted original child.
+The default policy remains warning-only; authenticated public permit handling
+and production native pausing are not enabled. Broader native/model, crash
+recovery and platform acceptance remain separate gates.

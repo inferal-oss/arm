@@ -1091,7 +1091,7 @@ retain their assignments and the source-specific gates recorded below.
 | Storage performance pools — `codex/storage-performance-pools` | Reviewed focused owner commits `e015b5b`, `ce55d7e`, `0ddc1e6`, `cc24b70`, `2b16fd8`, `8c7d839` plus fixture cleanup `6aa5f80`; focused feature `3856f9c` lands on `dacba08`, with production source identical to reviewed `ce92760`. | All four source findings are closed. Fully synthetic final observer fixtures pass 61 normal/61 race nodes. Reviewed native boundary 87, affected race 453, complete storage race 41, JS 420, native Semblance lifecycle, native/Linux vet/builds and nondeploy Pages CI pass. Source-bound macOS samples and web/PTY evidence are verified; corrected Linux read-only discovery/config/views pass on the original target. Positive Linux allocation/workload/performance and full-suite acceptance remain open; strict external-root reset remains unsupported. Automatic main build and Pages deployment pass on `2d83ba4`. Branch/worktree preserved. |
 | Multiple simultaneous run logs — `codex/multiple-run-logs` | Initial six focused commits landed as `827e09f`; supplemental `4199207`, `19664fe`, `fcaacc6` reviewed on that milestone as `a7fb230`. | Eight independent views and two actual in-flight calls. Supplemental 430 JS tests, two native lifecycle cases, web/native builds and video decoding pass. Both source-bound desktop/narrow capture sets are verified; nondeploy capture/SSR/browser gates match 612 inputs/assets, four pages/CSS and eight PNGs. Narrow floating refit, retained identity/reconnect and aggregate display bounds are accepted within the recorded source. Automatic main build and Pages deployment pass on `2d74eab`. Owner branches and plan preserved; full Go/Linux/throughput/OS popup scope remains outside acceptance. |
 | Kubernetes onboarding — `codex/kubernetes-current-source-extraction` | Reviewed component milestone `17f39cd2` integrates core, managed bridge, historical journal and private original API helper components. Closed default-root roles reject non-default storage bindings. | Composed normal/race each pass 85 roots / 195 named cases, seven-package vet passes, and three Linux ARM64 compile-only outputs are verified. Durable pre-Pod ownership, constructor outcomes, protected workflow activation and unified dashboard onboarding remain unfinished; no live-cluster acceptance. |
-| Pressure control journal — `codex/pressure-control-journal-review-fixes-current` | Four source corrections are prepared for schema/proof compatibility, exact permit revision, original acknowledged deadline and bounded header reads. | Independent correction review and current composed validation remain required. Ordinary behavior stays warning-only; native pausing remains disabled. |
+| Pressure control journal — `codex/pressure-control-journal-currentbdc` | Reviewed feature `236db270` is integrated with current resident and constructor behavior. Normal/race each pass 29 roots / 75 named cases, with two-package vet and qualified cancellation controls. | Authenticated public permits, broader native/model/crash-recovery acceptance and policy activation remain open. Ordinary behavior stays warning-only; native pausing remains disabled. |
 | Forwarding worker — `codex/forward-unix-adapter` | Original cleanup gate failed. A retained-cleanup liveness correction and bounded diagnostic controls are prepared. | Review and validate the corrected original route and causal controls; preserve earlier failures. Production TCP access, recovery and broader runtime acceptance remain open. |
 | Provider lifecycle — `codex/provider-pair-c3-hooks` | Focused C3 hook source and a proposed 121-root roster are available for independent review. | Current storage/native/sync composition, causal runtime and original finalizer checks remain required. C4/C5 and rollout remain open; paired factory stays disabled. |
 | Public sync — `codex/sync-native-enrollment-backing` | Read-only enrollment/backing inputs `f07d5a18` are under independent review; backing-sample provenance needs a correction. | Persistent exclusive enrollment before startup writes, independent full-quota backing headroom, complete writer exclusion and reviewed public push/pull/bidirectional workflow remain unfinished. |
@@ -1919,7 +1919,7 @@ source review alone does not establish runtime acceptance or production enableme
 | `codex/unified-onboarding-ui-integration` | Current-main source projection is reviewed. Earlier component evidence passes 51 Node cases, three RDF cases and eight Go race roots / 15 names on its recorded source. | Validate final composed assets, current Go behavior and actual connect/install dialogs with controlled node discovery. Installation and live-cluster acceptance remain open. Dependency changes require affected component tests again. |
 | `codex/forward-worker-current406` | Private binder is integrated as `25d60cc`. Older worker source has scoped six-package vet and four Linux ARM64 compile-only evidence; earlier route/cleanup failures remain failed. Current-main extraction needs source fixes. | Refuse changed storage bindings at default-root native and application-byte gates; make failure-path test joins unconditional; then validate the finite current composition. Intermittent cleanup uncertainty and production enablement remain unresolved. |
 | `codex/provider-pair-c3-current` | Unused primitives are integrated as `53938db`; current full-hook source is reviewed, with 198 finite roots proposed and unrun. | Correct atomic cancellation-marker publication and the final complete phase-budget check before running the reviewed controls and separate test windows. C4/C5, named-root accounting and public activation remain separate. |
-| `codex/pressure-control-journal-current406` | The twelve-file current-main source projection matches the reviewed schema/journal/permit corrections. Native pausing remains disabled. | Restore the cleared regression roster and complete bounded source/tool checks in the runner; then run cancellation controls, normal/race and targeted vet. No authenticated public permit or native-effect acceptance follows yet. |
+| `codex/pressure-control-journal-currentbdc` | Reviewed twelve-file feature `236db270` preserves current resident ownership and constructor behavior. Normal/race each pass 29 roots / 75 names, with two-package vet and qualified cancellation controls. | Authenticated public permits, broader native/model/crash-recovery gates and policy activation remain open. Native pausing stays disabled. |
 | `codex/sync-native-enrollment-backing` | Read-only enrollment and backing prerequisites remain unintegrated. The final root recheck correction is untested. | Add the causal later-probe root-replacement control, review the current-main projection and run scoped checks. Persistent enrollment, independent backing, all-writer exclusion and reviewed bidirectional effects remain required for public sync. |
 | `codex/numeric-182-d879`, `codex/sparkline-155-d879` and `codex/semblance-8ced16a-406-ui` | Focused upstream commits `22ba77db` / `8ced16a4` are submitted as draft PRs #226 / #227. ARM's current-main dependency projection is under review; retained assets are not evidence of a new rebuild. | Close final abort/deadline checks in the unlaunched runner, validate the final composed dependency and assets, and capture actual browser evidence. No upstream merge or release is authorized by this record. |
 
@@ -1932,10 +1932,10 @@ The routed SSH pin follow-up is present through its focused integration and
 later native acceptance; reimporting its divergent predecessor is unnecessary.
 QUIC remains parked research.
 
-The pressure-controller prerequisite now has a reviewed current-base extraction
-retaining cancellation and fixture corrections; its execution gate remains
-unrun. Authenticated permit handling, observed native effects, crash recovery
-and model/native gates still precede activation. Public sync
+The pressure-controller prerequisite is integrated as `236db270`, retaining
+cancellation and fixture corrections. Its selected normal/race and vet gates
+pass; authenticated permits, broader native/model and crash-recovery gates
+still precede activation. Public sync
 continues beyond its private bridge: persistent enrollment, independent backing
 headroom, complete writer exclusion and reviewed bidirectional effects are
 required. Web mobile-policy parity remains a separate verification/integration
@@ -4840,3 +4840,14 @@ Next is the private Root parent/child protocol, retaining actual normal Start
 and original phase/context/entropy/current/fresh-commitment/no-pending facts.
 Parent reference retirement, workers and public startup remain later gates.
 Actual managed-job/proxy continuity across an upgrade remains unverified.
+
+## Pressure control journal integration
+
+Reviewed feature `236db270` composes the durable journal, exact permit revision
+and original acknowledged deadline with the current resident and constructor
+boundaries. The [scoped evidence](validation/pressure-control-journal-scoped-2026-10-31.json)
+records 29 roots / 75 names in both normal and race modes, targeted vet and
+expected cancellation controls. The ownership branch is
+`codex/pressure-control-journal-currentbdc`. Public permit handling, broader
+native/model/crash-recovery gates and policy activation remain unfinished;
+ordinary behavior stays warning-only and native pausing stays disabled.
