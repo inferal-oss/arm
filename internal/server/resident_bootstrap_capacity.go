@@ -8,6 +8,7 @@ import (
 
 	"getarm.org/internal/daemonconfig"
 	"getarm.org/internal/mesh"
+	"getarm.org/internal/residentprotocol"
 	"getarm.org/internal/residentrefs"
 	"getarm.org/internal/server/internal/residentbirth"
 	"getarm.org/internal/server/internal/residentservice"
@@ -53,7 +54,14 @@ func p1BootstrapCapacityData(inputs residentservice.P1LaunchInputsData, settings
 	if err != nil {
 		return 0, err
 	}
-	if _, err = residentbirth.P1LaunchJournalCapacityData(len(intent), len(footer)); err != nil {
+	launchBytes, err := residentbirth.P1LaunchJournalCapacityData(len(intent), len(footer))
+	if err != nil {
+		return 0, err
+	}
+	// The three future signed wire schemas are DATA here, with exact known
+	// A/profile/settings/Env/key links and maximal not-yet-known fixed fields.
+	handoff := residentprotocol.ContextData{Generation: footerData.Generation, DebitID: selector, LaunchKeySHA256: footerData.LaunchKeySHA256, ProfileSHA256: inputs.ProfileSHA256, ImageSHA256: inputs.Build.SHA256, ImageBytes: inputs.Build.Size, SettingsSHA256: settingsHash, EnvironmentSHA256: inputs.EnvironmentSHA256, IntentSHA256: selector, PreparedCommitmentSHA256: selector, ServiceJournalBytes: serviceBytes, ServiceJournalSHA256: selector, FooterBytes: int64(len(footer)), FooterSHA256: selector, LaunchJournalBytes: int64(launchBytes), LaunchJournalSHA256: selector}
+	if _, err = p1HandoffCapacityData(handoff); err != nil {
 		return 0, err
 	}
 	raw, err := json.Marshal(bootstrap)

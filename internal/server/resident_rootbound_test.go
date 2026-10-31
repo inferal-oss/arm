@@ -22,7 +22,7 @@ func TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects(t *testing.T)
 	}
 }
 func TestRootBoundPreflightDataRejectsBeforeDebitCapacityOverflow(t *testing.T) {
-	inputs := residentservice.P1LaunchInputsData{Home: "/synthetic", Build: residentservice.Build{SHA256: strings.Repeat("a", 64), Size: 1, GOOS: "linux", GOARCH: "amd64", GoBuild: "synthetic-data", Protocol: 1}, ProfileSHA256: strings.Repeat("b", 64), GrantJournalBytes: 1}
+	inputs := residentservice.P1LaunchInputsData{Home: "/synthetic", Build: residentservice.Build{SHA256: strings.Repeat("a", 64), Size: 1, GOOS: "linux", GOARCH: "amd64", GoBuild: "synthetic-data", Protocol: 1}, ProfileSHA256: strings.Repeat("b", 64), EnvironmentSHA256: strings.Repeat("c", 64), GrantJournalBytes: 1}
 	key := strings.Repeat("\x01", 128)
 	settings := daemonconfig.Settings{Resources: model.Resources{CPU: 1}, Listen: "127.0.0.1:0"}
 	if _, err := p1BootstrapCapacityData(inputs, settings, key); err != nil {

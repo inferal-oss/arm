@@ -1,6 +1,9 @@
 package residentservice
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"os/exec"
 	"path/filepath"
 	"sort"
@@ -225,6 +228,7 @@ type P1LaunchInputsData struct {
 	Home              string
 	Build             Build
 	ProfileSHA256     string
+	EnvironmentSHA256 string
 	Environment       []string
 	GrantJournalBytes int64
 }
@@ -247,5 +251,23 @@ func (p *ParentPending) P1LaunchInputsOriginalData() (P1LaunchInputsData, error)
 	if err != nil {
 		return P1LaunchInputsData{}, err
 	}
-	return P1LaunchInputsData{Home: o.path, Build: o.grant.Intent.Profile.Build, ProfileSHA256: hash, Environment: append([]string(nil), o.grant.Intent.Profile.RuntimeEnvironment.Entries...), GrantJournalBytes: int64(read.bytes)}, nil
+	environmentHash, err := p1EnvironmentSHA256Data(o.grant.Intent.Profile.RuntimeEnvironment)
+	if err != nil {
+		return P1LaunchInputsData{}, err
+	}
+	return P1LaunchInputsData{Home: o.path, Build: o.grant.Intent.Profile.Build, ProfileSHA256: hash, EnvironmentSHA256: environmentHash, Environment: append([]string(nil), o.grant.Intent.Profile.RuntimeEnvironment.Entries...), GrantJournalBytes: int64(read.bytes)}, nil
+}
+
+// Same bounded canonical profile Env representation as original prepared service
+// validation, now sized/committed before debit. No ambient snapshot or new read.
+func p1EnvironmentSHA256Data(environment *ExecutionEnvironment) (string, error) {
+	if _, err := environment.Validate(); err != nil {
+		return "", ErrInvalid
+	}
+	canonical, err := json.Marshal(environment)
+	if err != nil || len(canonical) > 8<<10 {
+		return "", ErrInvalid
+	}
+	h := sha256.Sum256(canonical)
+	return hex.EncodeToString(h[:]), nil
 }

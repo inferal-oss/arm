@@ -53,7 +53,7 @@ func TestOriginalChildPendingOwnsAllThirteenBeforeEffectsAndRejectsCopy(t *testi
 	}
 }
 func TestP1BootstrapWorstCaseCapacityRefusesOversizeBeforeNamespaceEffects(t *testing.T) {
-	inputs := residentservice.P1LaunchInputsData{Home: "/synthetic", Build: residentservice.Build{SHA256: strings.Repeat("a", 64), Size: 1, GOOS: "linux", GOARCH: "amd64", GoBuild: "synthetic-parser-data", Protocol: 1}, ProfileSHA256: strings.Repeat("b", 64), Environment: []string{"GOMAXPROCS=1", "GOMEMLIMIT=1B"}, GrantJournalBytes: 1}
+	inputs := residentservice.P1LaunchInputsData{Home: "/synthetic", Build: residentservice.Build{SHA256: strings.Repeat("a", 64), Size: 1, GOOS: "linux", GOARCH: "amd64", GoBuild: "synthetic-parser-data", Protocol: 1}, ProfileSHA256: strings.Repeat("b", 64), EnvironmentSHA256: strings.Repeat("c", 64), Environment: []string{"GOMAXPROCS=1", "GOMEMLIMIT=1B"}, GrantJournalBytes: 1}
 	settings := daemonconfig.Settings{Resources: model.Resources{CPU: 1}, Listen: "127.0.0.1:0"}
 	size, err := p1BootstrapCapacityData(inputs, settings, "synthetic-data-key")
 	if err != nil || size <= 36 || size > residentrefs.MaxWireBytes {
