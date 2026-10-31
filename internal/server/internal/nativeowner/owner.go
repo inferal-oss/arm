@@ -63,14 +63,28 @@ func publicClosure(c nativeClosure) NativeClosure {
 	return NativeClosure{c.opened, c.closed, c.unknown, c.lockAcquired, c.complete}
 }
 func NewServePending(path string) (*ServeIssuer, error) {
-	if len(path) > maxPathBytes || !filepath.IsAbs(path) || filepath.Clean(path) != path || path == "/" || strings.ContainsRune(path, 0) || len(strings.Split(strings.TrimPrefix(path, "/"), "/")) > maxPathParts {
-		return nil, fmt.Errorf("bounded canonical absolute existing directory required")
+	var issuer *ServeIssuer
+	err := newServePending(&issuer, path)
+	return issuer, err
+}
+
+// The sole issuer factory implementation. The inherited entry supplies its
+// retained destination; the legacy API keeps its original observation order.
+// No caller UID/FD/native facts can construct an issuer. Publish the actual
+// pending issuer/owner/state BEFORE the original Geteuid observation.
+func newServePending(destination **ServeIssuer, path string) error {
+	if destination == nil || *destination != nil {
+		return errNotOriginal
 	}
-	h := &ServeIssuer{}
-	o := &nativeOwner{original: h}
-	h.owner = o
-	o.state = &nativeState{registry: o, path: path, uid: uint32(os.Geteuid())}
-	return h, nil
+	if len(path) > maxPathBytes || !filepath.IsAbs(path) || filepath.Clean(path) != path || path == "/" || strings.ContainsRune(path, 0) || len(strings.Split(strings.TrimPrefix(path, "/"), "/")) > maxPathParts {
+		return fmt.Errorf("bounded canonical absolute existing directory required")
+	}
+	*destination = &ServeIssuer{}
+	h := *destination
+	h.owner = &nativeOwner{original: h}
+	h.owner.state = &nativeState{registry: h.owner, path: path}
+	h.owner.state.uid = uint32(os.Geteuid())
+	return nil
 }
 
 // beginLocked records the actual operation before its effects. Ordinary pending,

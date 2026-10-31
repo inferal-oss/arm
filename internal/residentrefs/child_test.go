@@ -24,6 +24,14 @@ func inertChildData() *ChildPending {
 	return c
 }
 func TestFixedChildPendingRegistersAllBeforeEffectsAndRejectsCopies(t *testing.T) {
+	if err := NewFixedChildPending(nil); err != ErrOriginal {
+		t.Fatal("nil destination accepted", err)
+	}
+	occupied := &ChildPending{}
+	originalOccupied := occupied
+	if err := NewFixedChildPending(&occupied); err != ErrOriginal || occupied != originalOccupied {
+		t.Fatal("occupied destination replaced", err)
+	}
 	var wg sync.WaitGroup
 	winners := make(chan *ChildPending, 32)
 	failures := make(chan error, 32)
@@ -31,7 +39,8 @@ func TestFixedChildPendingRegistersAllBeforeEffectsAndRejectsCopies(t *testing.T
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			c, err := NewFixedChildPending()
+			var c *ChildPending
+			err := NewFixedChildPending(&c)
 			if err == nil {
 				winners <- c
 			} else {
@@ -55,7 +64,8 @@ func TestFixedChildPendingRegistersAllBeforeEffectsAndRejectsCopies(t *testing.T
 			t.Fatal(err)
 		}
 	}
-	if c, err := NewFixedChildPending(); c != nil || err != ErrOriginal {
+	var replay *ChildPending
+	if err := NewFixedChildPending(&replay); replay != nil || err != ErrOriginal {
 		t.Fatal("claim replay", err)
 	}
 	if err := ClaimLegacyReceiverExclusion(); err != ErrOriginal {

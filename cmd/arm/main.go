@@ -8,9 +8,13 @@ import (
 	"getarm.org/internal/cli"
 	"getarm.org/internal/companions"
 	"getarm.org/internal/mesh"
+	"getarm.org/internal/server"
 )
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == server.ResidentCoreRole {
+		os.Exit(server.RunOriginalResidentCore(os.Args[1:]))
+	}
 	if err := buildinfo.ValidateBundleTag(mesh.LifecycleProtocol); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

@@ -127,15 +127,19 @@ var processChildClaim struct {
 
 // The claim is process-wide and consumed before allocation. Failed/abnormal
 // construction cannot make inherited originals available to a second registry.
-func NewFixedChildPending() (*ChildPending, error) {
+// The caller must retain its destination before calling. Publish the actual
+// original there before later allocation, so abnormal return cannot lose it.
+// A nil/occupied destination refuses without consuming or replacing custody.
+func NewFixedChildPending(destination **ChildPending) error {
 	processChildClaim.mu.Lock()
 	defer processChildClaim.mu.Unlock()
-	if processChildClaim.attempted {
-		return nil, ErrOriginal
+	if destination == nil || *destination != nil || processChildClaim.attempted {
+		return ErrOriginal
 	}
 	processChildClaim.attempted = true
 	c := &ChildPending{}
 	processChildClaim.original = c
+	*destination = c // actual original published BEFORE later state/entry allocation
 	s := &childState{self: c}
 	c.state = s
 	for i := range s.entries {
@@ -143,7 +147,7 @@ func NewFixedChildPending() (*ChildPending, error) {
 		e.self = e
 		s.entries[i] = e
 	}
-	return c, nil
+	return nil
 }
 
 // ClaimLegacyReceiverExclusion consumes the same process-wide exclusion for

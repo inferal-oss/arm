@@ -14,7 +14,8 @@ import (
 // PURE pending/data controls. Never seal a live descriptor or open native/SQL/
 // image/worker state. Cancellation occurs before the first fcntl in the test PID.
 func TestOriginalChildPendingOwnsAllThirteenBeforeEffectsAndRejectsCopy(t *testing.T) {
-	root, err := newResidentChildPending()
+	root := &residentChildPending{}
+	err := root.initializeOriginal()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +26,13 @@ func TestOriginalChildPendingOwnsAllThirteenBeforeEffectsAndRejectsCopy(t *testi
 	if root.native != nil || root.manager != nil || root.server != nil || root.runtime != nil {
 		t.Fatal("pure constructor performed binding")
 	}
+	if err = root.initializeOriginal(); err != errResidentChildOriginal {
+		t.Fatal("initialized root accepted another initialization", err)
+	}
 	copied := *root
+	if err = copied.initializeOriginal(); err != errResidentChildOriginal {
+		t.Fatal("copied root accepted initialization", err)
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	if err = copied.prepareOriginalBindings(ctx); err != errResidentChildOriginal {
@@ -41,7 +48,7 @@ func TestOriginalChildPendingOwnsAllThirteenBeforeEffectsAndRejectsCopy(t *testi
 	if state.MaterializedEntries != 0 || state.Sealed || !state.RootCloseAuthorityWithdrawn || root.bindingsPrepared || root.firstError != context.Canceled {
 		t.Fatal(state)
 	}
-	if root.native != nil || root.manager != nil || root.server != nil {
+	if root.native != nil || root.manager != nil || root.server != nil || root.bootstrapCall != nil {
 		t.Fatal("cancelled root opened original state")
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"io"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"getarm.org/internal/daemonconfig"
 	"getarm.org/internal/manager"
@@ -43,6 +44,7 @@ type p1LaunchIntentData struct {
 type residentChildPending struct {
 	mu                             *sync.Mutex
 	self                           *residentChildPending
+	entry                          *residentCoreEntry
 	rootContext                    context.Context // independent of parent/API/UI workers
 	refs                           *residentrefs.ChildPending
 	control                        *residentrefs.ControlOriginal
@@ -53,6 +55,7 @@ type residentChildPending struct {
 	fence                          *residentbirth.InheritedFencePending
 	image                          *mesh.InheritedImagePending
 	runtime                        *mesh.RuntimeExecutable // nonclosing borrower; existing native/helper type
+	bootstrapCall                  *residentChildBootstrapCall
 	bootstrapRaw                   []byte
 	bootstrap                      p1RootBootstrap
 	composed                       residentrefs.ComposedIdentities
@@ -66,18 +69,32 @@ type residentChildPending struct {
 	prepareTried, bindingsPrepared bool
 	firstError                     error
 }
+
+// Owns the one finite bootstrap I/O context attempt. Runtime constructor/cancel
+// internals stay opaque; these return records do not assert native quiescence.
+type residentChildBootstrapCall struct {
+	contextAttempted, contextReturned bool
+	context                           context.Context
+	cancel                            context.CancelFunc
+	receiveAttempted, receiveReturned bool
+	receiveError                      error
+	cancelAttempted, cancelReturned   bool
+}
+
 type residentChildOperation struct {
 	phase    string
 	abnormal bool
 	cause    any
 }
 
-// Fixed-role constructor: first records ALL13 raw inherited originals. Only
-// afterward may it construct actual component recipients or any native holder.
-// This is not called by legacy Serve or a worker, and exposes no Close/Manager/
-// File/FD/command/getter. A partial original remains retained by its caller.
-func newResidentChildPending() (root *residentChildPending, resultErr error) {
-	root = &residentChildPending{mu: &sync.Mutex{}}
+// In-place fixed-role initialization. The actual outer entry retains root BEFORE
+// this call; no return-then-assignment can lose a partial original. All13 raw
+// entries are published before component recipients or native holders exist.
+func (root *residentChildPending) initializeOriginal() (resultErr error) {
+	if root == nil || root.self != nil || root.mu != nil {
+		return errResidentChildOriginal
+	}
+	root.mu = &sync.Mutex{}
 	root.self = root
 	defer func() {
 		if resultErr != nil {
@@ -86,29 +103,28 @@ func newResidentChildPending() (root *residentChildPending, resultErr error) {
 			root.mu.Unlock()
 		}
 	}()
-	root.refs, resultErr = residentrefs.NewFixedChildPending() // FIRST: pure process-wide raw13 claim
+	resultErr = residentrefs.NewFixedChildPending(&root.refs) // FIRST: same process-wide raw13 claim
 	if resultErr != nil {
-		return root, resultErr
+		return resultErr
 	}
 	root.rootContext = context.Background() // never a launcher/request lifetime
 	root.serviceCustody, root.fenceCustody, root.imageCustody, root.control, resultErr = root.refs.NewOriginalRecipients()
 	if resultErr != nil {
-		return root, resultErr
+		return resultErr
 	}
 	root.service, resultErr = residentservice.NewP1ChildPending(root.serviceCustody)
 	if resultErr != nil {
-		return root, resultErr
+		return resultErr
 	}
 	root.fence, resultErr = residentbirth.NewInheritedFencePending(root.rootContext, root.fenceCustody)
 	if resultErr != nil {
-		return root, resultErr
+		return resultErr
 	}
 	root.image, resultErr = mesh.NewInheritedImagePending(root.rootContext, root.imageCustody)
 	if resultErr != nil {
-		return root, resultErr
+		return resultErr
 	}
-	resultErr = root.refs.DelegateOriginalRecipients(root.serviceCustody, root.fenceCustody, root.imageCustody, root.control)
-	return root, resultErr
+	return root.refs.DelegateOriginalRecipients(root.serviceCustody, root.fenceCustody, root.imageCustody, root.control)
 }
 func (r *residentChildPending) phase(value string) {
 	r.mu.Lock()
@@ -177,7 +193,7 @@ func (r *residentChildPending) prepareBody(bootstrapContext context.Context) (er
 		return err
 	}
 	r.phase("actual_original_complete_bounded_bootstrap")
-	r.bootstrapRaw, err = r.control.ReceiveOriginalData(bootstrapContext)
+	err = r.receiveOriginalBootstrap(bootstrapContext)
 	if err != nil {
 		return err
 	}
@@ -226,7 +242,7 @@ func (r *residentChildPending) prepareBody(bootstrapContext context.Context) (er
 		return err
 	}
 	r.phase("actual_native_issuer_retained_before_Open")
-	r.native, err = nativeowner.NewInheritedServePending(r.fence)
+	err = nativeowner.NewInheritedServePending(&r.native, r.fence)
 	if err != nil {
 		return err
 	}
@@ -275,6 +291,47 @@ func (r *residentChildPending) prepareBody(bootstrapContext context.Context) (er
 	// is performed here. The actual worker/controller/ingress cut must follow.
 	return nil
 }
+
+// Called ONLY after all13 CLOEXEC and the original control materialization.
+// Creating a timer before that seal could leak inherited originals to helpers.
+// The call record is retained before the stdlib timeout constructor is entered;
+// an unreturned opaque constructor/cancel is UNKNOWN, never fabricated Closed.
+func (r *residentChildPending) receiveOriginalBootstrap(parent context.Context) error {
+	if parent == nil {
+		return errResidentChildOriginal
+	}
+	_, finite := parent.Deadline()
+	if finite || !r.entry.ownsPreparingRoot(r) {
+		// Preserve supplied finite-context handling and the existing nonfinite
+		// refusal. Only the actual static entry may construct the extra timer.
+		var err error
+		r.bootstrapRaw, err = r.control.ReceiveOriginalData(parent)
+		return err
+	}
+	r.phase("original_bootstrap_timeout_constructor_pending_after_all13_seal")
+	call := &residentChildBootstrapCall{}
+	r.mu.Lock()
+	r.bootstrapCall = call
+	call.contextAttempted = true
+	r.mu.Unlock()
+	ctx, cancel := context.WithTimeout(parent, 5*time.Second)
+	r.mu.Lock()
+	call.context, call.cancel, call.contextReturned = ctx, cancel, true
+	call.receiveAttempted = true
+	r.mu.Unlock()
+	raw, err := r.control.ReceiveOriginalData(ctx)
+	r.mu.Lock()
+	r.bootstrapRaw = raw
+	call.receiveReturned, call.receiveError = true, err
+	call.cancelAttempted = true
+	r.mu.Unlock()
+	cancel() // this finite bootstrap I/O context only; NEVER the Root lifetime
+	r.mu.Lock()
+	call.cancelReturned = true
+	r.mu.Unlock()
+	return err
+}
+
 func decodeP1BootstrapData(raw []byte, value *p1RootBootstrap) error {
 	if len(raw) == 0 || len(raw) > residentrefs.MaxWireBytes-36 {
 		return errResidentChildOriginal

@@ -8,21 +8,21 @@ import (
 // Actual P1 constructor: derives the path from the concrete verified inherited
 // fence and retains that owner before ANY native issuer open. No caller-provided
 // birth, approved bool, FD or metadata-only fence can use this path.
-func NewInheritedServePending(fence *residentbirth.InheritedFencePending) (*ServeIssuer, error) {
-	if fence == nil {
-		return nil, errNotOriginal
+func NewInheritedServePending(destination **ServeIssuer, fence *residentbirth.InheritedFencePending) error {
+	if destination == nil || *destination != nil || fence == nil {
+		return errNotOriginal
 	}
-	data, err := fence.NativeSelectorsOriginal()
+	data, err := fence.NativeSelectorsOriginal() // pure selectors; no native observation
 	if err != nil {
-		return nil, err
+		return err
 	}
-	issuer, err := NewServePending(data.Home)
-	if err != nil {
-		return nil, err
+	if err = newServePending(destination, data.Home); err != nil {
+		return err
 	}
+	issuer := *destination
 	issuer.owner.inheritedFence = fence
 	issuer.owner.inheritedIDs = data.Identities
-	return issuer, nil
+	return nil
 }
 func sameInheritedIdentity(actual nativeIdentity, expected residentrefs.Identity) bool {
 	return actual.device == expected.Device && actual.inode == expected.Inode && actual.uid == expected.UID && actual.gid == expected.GID && actual.mode == expected.Mode

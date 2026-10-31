@@ -8,7 +8,8 @@ import (
 )
 
 func TestInheritedImagePendingCancellationAndBorrowedCloseRefuseBeforeEffects(t *testing.T) {
-	census, err := residentrefs.NewFixedChildPending()
+	var census *residentrefs.ChildPending
+	err := residentrefs.NewFixedChildPending(&census)
 	if err != nil {
 		t.Fatal(err)
 	}
