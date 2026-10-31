@@ -43,8 +43,38 @@ type SavedSessionResult struct {
 	Truncated bool           `json:"truncated,omitempty"`
 }
 
+type SavedSessionScope string
+
+const (
+	SavedExactDirectories SavedSessionScope = "exact-directories"
+	SavedWholeClient      SavedSessionScope = "whole-client"
+)
+
+// SavedSessionRequest never treats missing roots as permission to widen scope.
+// Whole-client means one explicitly configured home, not other client homes or
+// a filesystem/history scan. Directory requests require exact canonical paths.
+type SavedSessionRequest struct {
+	Scope       SavedSessionScope
+	Directories []string
+}
+
+func (r SavedSessionRequest) valid() bool {
+	if r.Scope == SavedWholeClient {
+		return len(r.Directories) == 0
+	}
+	if r.Scope != SavedExactDirectories || len(r.Directories) == 0 || len(r.Directories) > Limit {
+		return false
+	}
+	for _, path := range r.Directories {
+		if !savedPath(path) {
+			return false
+		}
+	}
+	return true
+}
+
 // SavedSessionSource is bounded, read-only display discovery. Ordinary native
 // Session/Source discovery and its identity/delivery contract remain separate.
 type SavedSessionSource interface {
-	DiscoverSavedSessions(context.Context, []string) SavedSessionResult
+	DiscoverSavedSessions(context.Context, SavedSessionRequest) SavedSessionResult
 }
