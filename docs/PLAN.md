@@ -4649,3 +4649,18 @@ API/UI worker replacement and public first/repeat/concurrent `arm start` remain
 open. Actual positive funding/prepared/journal/environment gates, managed-run/
 proxy upgrade survival and shutdown/recovery remain unaccepted. Prior failed and
 separately passing scopes retain their classifications and preserved branches.
+
+## Original control-phase composition accepted
+
+The coordinator integrated reviewed source `786e323` as `e492c48` and scoped
+evidence `0c2fde1` as `dcb0867`. All 3,283 qualified tracked inputs, including
+1,900 Go files, match exactly at source composition. Later scoped documentation
+and evidence do not change runtime inputs. The selected normal result is accepted
+without another execution or a broader live/native claim.
+
+The existing upgrade task next needs a bounded construction review for distinct
+current service/launch/native/SQL operations using the original authenticated
+challenge view. Prepared validators must remain once-only. Source expansion and
+validation require their own reviewed cut and allocation. Root protocol wiring,
+parent-owned reference retirement, workers and public startup remain later gates;
+actual managed-child continuity across an upgrade remains unverified.

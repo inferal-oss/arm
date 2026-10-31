@@ -12366,3 +12366,12 @@ challenge/proof orchestration and parent-owned reference retirement remain
 unimplemented. Worker/schema/controller/admission/assets, API/UI replacement,
 public `arm start`, managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/
 accounting upgrade survival and core shutdown/recovery remain open.
+
+Coordinator composition accepts source `e492c48` and scoped evidence `dcb0867`.
+Independent comparison verifies all 3,283 qualified inputs, including 1,900 Go
+files and every module and embedded input. The normalized evidence hash, twelve
+source SHA256/Git-blob pairs and all twenty package-qualified raw run/pass pairs
+agree with the audited result. Later changes are documentation only; no test or
+binary was rerun for composition. This accepts selected normal DATA/refusal
+qualification while retaining every stated successful-original-phase, native and
+live-upgrade limitation.

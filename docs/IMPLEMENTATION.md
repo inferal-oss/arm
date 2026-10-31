@@ -5918,3 +5918,9 @@ view/read. Pure validation grants no native currentness, Ready or closure.
 These new methods have no Root callers. Current journal/native/SQL checks, whole
 handoff/retirement, workers/schema/public-start wiring and live upgrade survival
 remain separate unimplemented gates.
+
+Coordinator composition retains the fixed control-phase and challenge ownership
+source as `e492c48` and scoped evidence as `dcb0867`. All qualified runtime, module
+and embedded inputs match exactly. The official SQLite driver remains unchanged.
+No new Root protocol caller is activated and no running backend or managed child
+is changed by this integration.
