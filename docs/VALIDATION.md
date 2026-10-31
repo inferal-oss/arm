@@ -12665,3 +12665,23 @@ syncfs/syncscope package and module objects match; the intervening forwarding
 changes have no owned or package overlap. Persistent production enrollment,
 Manager wiring, full-quota backing headroom, writer exclusion and public sync
 remain unaccepted.
+
+## Pending composition failures
+
+The latest prepared Semblance dependency run compiles two equal private WAT
+artifacts and passes provenance checks. Its RDF report has 89 tests: 87 pass,
+two fail and none are pending. Both failures occur after palette disposal:
+direct entry membership is absent but one prior validation result remains,
+in each engine mode. Metadata repair, entry removal/recreation and length
+boundary assertions before disposal pass. Application Node checks, both asset
+builds, promotion, native embedding and browser review were not reached.
+Earlier failed attempts remain failed.
+
+The prepared C3 roster retains 224 unique roots and 14 required named nodes.
+Paired component normal/race checks pass, but later composed windows fail at
+an expected retained-close error in a negative fixture and at storage fixtures
+that assume optional native topology. Reviewed test-only corrections preserve
+production refusals, original joins and charges; their complete composed
+execution remains pending. Controlled topology/headroom is modeled evidence,
+not native backing, quota or throughput acceptance. No factory activation or
+full-feature acceptance follows from these component results.

@@ -6200,3 +6200,19 @@ unchanged. Manager admission and public push/pull/bidirectional effects remain
 unwired. Persistent production enrollment, independent full-quota headroom,
 complete writer exclusion and positive native XFS proof are still required;
 see the [production contract](SYNC-PRODUCTION-ENROLLMENT-CONTRACT.md).
+
+## Pending provider and Semblance composition
+
+The prepared C3 provider hooks have completed source review against the current
+resident, pressure, forwarding and sync foundations. Their paired factory is
+still disabled. Reviewed test-only corrections preserve sticky finalizer debt,
+durable charges and original native joins while separating controlled storage
+observations from physical backing authority. They await complete composed
+validation and are not integrated behavior.
+
+The prepared Semblance dependency and ARM palette compatibility fix also remain
+unintegrated. Exact collection membership enables stock lazy entry validation;
+the current run still exposes a stale derived validation result after palette
+disposal. Dependency acceptance requires that lifecycle correction, composed
+tests, reproducible assets, native embedding and browser review. Stock
+Semblance remains the requested default, with Terminal selectable.
