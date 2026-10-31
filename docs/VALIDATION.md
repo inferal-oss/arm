@@ -12805,3 +12805,30 @@ The prior warning remains unattributed; earlier failed records, unmeasured
 shared-cache growth and retained scratch obligations remain unchanged. These
 scoped checks do not establish full-suite, Linux, terminal-render or native
 session identity/liveness acceptance.
+
+## Onboarding typeahead continuation — scoped qualification
+
+Four new fixture roots cover initial printable q/j/k, retained hidden names,
+paths, Unicode/backspace, arrow navigation, empty/no-match queries, slash focus
+and path separators, applied-filter continuation, bracketed paste, manual entry
+and Escape/Ctrl+C cancellation. The immediate-Enter regression changes queries
+without draining commands and injects an actual stale Bubbles filter result.
+It retains the latest match without beginning a policy write. Existing
+onboarding review/apply, interrupted-result and resize fixtures remain selected.
+
+Source `b7ff933` passes 15 roots/35 unique named run/pass pairs under normal
+testing and the same 15/35 race roster, without skips or failures. CLI vet and
+native command compilation pass. Each serial phase has a natural zero exit,
+positively joined original processes and output EOF, unchanged source/tool pins,
+empty temporary inventories and positive final sampled scratch observations.
+The resulting binary is compile-only and was never executed. These cooperative,
+sampled checks do not claim kernel bounds, measured shared-cache growth or
+physical-reclamation credit.
+
+A fixture-only path-query clarification preceded execution; the superseded
+proposal remains unrun. The existing 64-Unicode-rune query limit is retained.
+The [normalized evidence](validation/rollout-onboard-typeahead-2026-10-31.json)
+records the owner-source cohort and source/artifact hashes. Earlier saved-name
+and metadata compatibility records keep their exact source scopes. No new client
+metadata, PTY capture, full-suite, Linux or installed-binary acceptance is added.
+Composition over newer main requires its separately scoped qualification.

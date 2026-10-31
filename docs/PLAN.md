@@ -4945,3 +4945,16 @@ The earlier owner-binary public CLI compatibility result remains separately
 scoped, including its unattributed warning. The installed binary is unchanged.
 Full-suite, Linux, terminal rendering and native identity/liveness acceptance
 remain unclaimed; retained failures and scratch obligations are preserved.
+
+## Onboarding typeahead continuation — qualified owner source
+
+Branch `codex/onboard-typeahead` adds direct local filtering to the project
+picker. Printable text, including q/j/k, searches existing names and paths;
+arrow/page navigation, manual selection and explicit cancellation remain
+available. Matching is synchronous within the bounded catalog so Enter cannot
+select an earlier query's results. Source `b7ff933` passes 15 roots/35 named cases
+under both normal and race checks, CLI vet and native compilation. The
+[normalized evidence](validation/rollout-onboard-typeahead-2026-10-31.json)
+keeps the owner source and compile-only scope explicit. Composition over newer
+main and scoped composed qualification remain integration gates. No additional
+client metadata, policy, identity or backend operation is added.

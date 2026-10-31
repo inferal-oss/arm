@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "feature": "Direct typeahead in project onboarding",
+  "status": "owner source qualified; composition and composed qualification pending",
+  "source": {
+    "commit": "b7ff933dd9e68f3f34c71dd4144a3d0acd255b67",
+    "base": "e14c43a4e0239ee9d1325870da3b8bbf5c5ad608",
+    "go_module_input_count": 1950,
+    "go_module_input_manifest_sha256": "b441a6a7613ee69b0bf8f2b9232376c5289fb40df87ee94fde1ff32385114fe9",
+    "owned_go_files_sha256": {
+      "internal/cli/rollout_onboard.go": "4200ae11b7423a72e7003b71f861e415f3f7c3f8743fc88787e0916edcbeb165",
+      "internal/cli/rollout_onboard_typeahead_test.go": "48882aa66b202025ed3d40fb3cec33c755a4c86f841de4a3c533ee57efe51697"
+    }
+  },
+  "behavior": {
+    "scope": "Existing onboarding catalog only; existing FilterValue names and paths, with no new metadata fetch.",
+    "printable_input": "Starts filtering directly, including q/j/k as text.",
+    "paste": "Bracketed paste starts filtering directly.",
+    "slash": "Browsing shortcut focuses filter; slashes while editing are literal path characters.",
+    "navigation": "Arrow and page keys browse matches while input remains focused.",
+    "enter": "Selects latest current match immediately; no-match Enter stays in picker.",
+    "escape": "Clears active/applied filter before cancelling unfiltered picker.",
+    "ctrl_c": "Existing explicit cancellation semantics retained.",
+    "query_limit_unicode_runes": 64,
+    "matching": "Synchronous bounded Bubbles SetFilterText; queued unversioned FilterMatchesMsg ignored; input cursor retained."
+  },
+  "normal": {
+    "status": "passed",
+    "package": "internal/cli",
+    "root_tests": 15,
+    "named_run_pass_pairs": 35,
+    "skips": 0,
+    "failures": 0,
+    "roster": [
+      {
+        "name": "TestRolloutOnboardStoredNamesWithoutNativeBinary",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardReadinessAndStaleReviewCannotApply",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardCanSaveDisabledProjectWithoutInstructions",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardTypeaheadEditingNavigationAndNoMatch",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardTypeaheadLatestQueryWinsBeforeEnter",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardTypeaheadPasteManualAndCancellation",
+        "package": "cli"
+      }
+    ]
+  },
+  "race": {
+    "status": "passed",
+    "package": "internal/cli",
+    "root_tests": 15,
+    "named_run_pass_pairs": 35,
+    "skips": 0,
+    "failures": 0,
+    "same_root_roster_as_normal": true
+  },
+  "vet": {
+    "status": "passed",
+    "packages": [
+      "internal/cli"
+    ]
+  },
+  "native_build": {
+    "status": "passed",
+    "package": "cmd/arm",
+    "scope": "compile only; never executed",
+    "bytes": 74755938,
+    "sha256": "a73626e06b78d8410faf4a1ac19908596ff06cc66c5c9d7785ddcecb14c4569e"
+  },
+  "qualification": {
+    "all_phases_serial_and_natural_zero_exit": true,
+    "original_handles_joined_and_output_eof": true,
+    "forced_or_truncated": false,
+    "source_tool_pins_unchanged": true,
+    "temporary_inventories_empty": true,
+    "positive_final_sampled_scratch_observations": true,
+    "kernel_or_measured_shared_cache_or_reclamation_claim": false
+  },
+  "prequalification": {
+    "superseded_proposal": "unrun",
+    "fixture_clarification": "Path query made unambiguous under fuzzy matching before execution.",
+    "runtime_failure_reclassified": false
+  },
+  "boundaries": {
+    "additional_client_metadata_reads": false,
+    "new_backend_enrollment_or_policy_authority": false,
+    "identity_native_reader_module_or_existing_test_changes": false,
+    "review_apply_unknown_outcome_boundaries_changed": false,
+    "installed_binary_replaced": false,
+    "prior_saved_name_compatibility": "Remains scoped only to its previously recorded source and actual-read artifact."
+  },
+  "not_established": [
+    "Full suite",
+    "Linux",
+    "PTY or terminal capture",
+    "New native client metadata/API compatibility",
+    "Compatibility of a later composed main binary"
+  ]
+}

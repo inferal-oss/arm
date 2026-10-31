@@ -5548,6 +5548,21 @@ Shared names are deduplicated/sorted, up to three are shown and every retained
 name is searchable; full directory context and a directory-only/manual fallback
 remain available. Names do not establish ownership or activity.
 
+The typeahead picker starts filtering on printable input or
+bracketed paste, including q/j/k as text. The existing 64-Unicode-rune query limit
+is retained. Slash from browsing focuses the filter; slashes while editing are
+literal path characters. Arrow and page keys browse matches while typing remains
+focused. Enter selects the current match immediately; no-match Enter does
+nothing. Escape clears a filter before cancelling an unfiltered picker; Ctrl+C
+cancels. Other onboarding stages keep their existing confirmation/cancellation
+rules. The footer describes these keys and replaces the list's apply-filter
+help. Existing bounded FilterValue matching runs synchronously, preserving the
+text cursor; queued unversioned list filter results are ignored. Source
+`b7ff933` passes 15 normal roots/35 named cases and the same race roster, CLI vet
+and native compilation. The [normalized evidence](validation/rollout-onboard-typeahead-2026-10-31.json)
+bounds this owner-source qualification; no new client metadata read or terminal
+capture is included.
+
 The continuation reads the supported Codex saved-name index and
 `state_5.sqlite` using the existing Go SQLite driver, without a client binary,
 control socket, server or helper process. Only explicit index `thread_name`
