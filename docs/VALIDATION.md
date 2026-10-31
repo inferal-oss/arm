@@ -12961,3 +12961,25 @@ or physical reclamation; retained envelopes and earlier uncertainty persist.
 No live native metadata, native Git grouping, real policy/backend, enrollment, delivery or
 terminal capture was executed. Discovery and wizard wiring remain unfinished;
 earlier acceptance scopes do not transfer.
+
+
+## Hierarchical onboarding foundation: composition verification
+
+Independent review binds code `8cdf1a0` to integrated `a897fa6` and evidence
+`a5354f0` to `f33c7c8`. All 1,958 qualified Go/module inputs match manifest
+`d98b3f775ca607f582664943a018927d5744440d7792db5f591bae525d942142`.
+Remaining tracked runtime/source images are identical; only delivery records
+differ after the newer documentation-only main updates. Tests were not rerun
+for those documentation changes.
+
+The coordinator checked complete raw package-qualified normal/race run-pass
+rosters (47 roots/88 unique named cases each), source and protected hashes,
+five-package vet, compile-only artifact, original natural exits/joins/EOF,
+unchanged tool/cache identity/selected SDK pins, empty temporary inventories
+and positive stable final owned-scratch observations. The original five
+capacity-fixture setup failures remain failed and their canceled later phases
+remain unexecuted; the corrected fixtures reach the original refusal checks.
+No live client metadata, real repository grouping, real policy/backend,
+enrollment, delivery or terminal capture is accepted by this unused foundation.
+No installed binary or running job was changed; retained scratch obligations
+and unmeasured shared-cache growth imply no physical-reclamation credit.

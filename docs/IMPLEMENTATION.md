@@ -6346,3 +6346,16 @@ fixture-only correction and passing refusal assertions. This is an unused
 foundation: whole-client catalog discovery, hierarchy producers, wizard wiring
 and activation handoff remain unfinished. It does not complete the user-facing
 hierarchy feature or establish native client/Git compatibility.
+
+
+## Hierarchical onboarding foundation: current composition
+
+The coordinator integrated the eight reviewed foundation files as `a897fa6` and
+the source-bound evidence as `f33c7c8`. Full-tree comparison preserves the tested
+runtime and module inputs; newer published changes are documentation only.
+Independent source review covers exact group membership, stable snapshot
+selection, bounded Git process ownership and cumulative budgets, and the
+onboarding-only single-save/review/cancellation/uncertain-outcome boundary.
+The existing single-change APIs, native identity/title readers, state schema
+and installed binary remain unchanged. Catalog/group producers, wizard wiring
+and activation handoff remain separate unfinished source slices.

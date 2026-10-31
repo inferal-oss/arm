@@ -5031,3 +5031,21 @@ metadata before copying; producers still establish canonical filesystem/Git
 membership, and activation must verify current recipient facts independently.
 Existing default-no review, explicit acknowledgment and separately reviewed
 activation delivery remain required.
+
+
+## Hierarchical onboarding foundation composition accepted
+
+Source `8cdf1a0` is integrated as `a897fa6`; scoped evidence `a5354f0` is
+integrated as `f33c7c8` over current documentation base `b60d6e4`. Independent
+review verifies all 1,958 qualified Go/module inputs and identical remaining
+runtime/source images. Later published differences are documentation only.
+The 47-root/88-case normal and race results, five-package vet and compile-only
+native artifact are accepted within their recorded synthetic component scope;
+no duplicate execution or native compatibility claim is made for composition.
+
+This remains an unused foundation. Next are the bounded display catalog and
+verified grouping producer, followed by checkbox-wizard/batch review and the
+separate activation handoff. Unchecked chats remain activation omissions, not
+project-policy exclusions. Discovery, user-facing wiring and actual activation
+are not completed by this milestone. Earlier failed fixture setup and retained
+scratch/cache uncertainty remain preserved.
