@@ -4515,3 +4515,17 @@ proxy child/log/heartbeat/finish/renew/cancel/expiry/accounting survival tests s
 open. A prepared format4 instance does not gain worker tables: final fresh public
 startup must select its separately reviewed worker-capable schema path before its
 one original DB install. Core shutdown/recovery remains a separate unsupported gate.
+
+## Resident private entry — current composition accepted
+
+Coordinator review accepts the focused entry source as `69af427`, with scoped
+evidence and preserved plan records in `20d106e`. The current-main composition
+matches every runtime input of the qualified snapshot: all 1,868 Go files,
+module files and embedded assets. Only documentation differs, so the selected
+normal qualification applies without repeating its completed checks.
+
+The existing upgrade task's next bounded source cut is actual prepared-binding
+validation from these original owners. RootBound journals, authenticated ACK and
+current-authority exchange, parent-reference disposition and worker/public-start
+activation remain separate review and validation gates. No live core, installed
+backend or managed workload was changed by this integration.

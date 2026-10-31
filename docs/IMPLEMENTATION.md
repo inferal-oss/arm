@@ -5760,3 +5760,9 @@ This supplies private entry source and pure-process retention evidence. Public
 reference handling, real admitted workers and readiness. It does not start Manager
 loops/ingress or establish native grant/materialization, worker replacement,
 managed-run/proxy survival, core shutdown or unresolved-core reconciliation.
+
+Coordinator composition retains the private entry source as `69af427` and the
+scoped evidence as `20d106e`, preserving the existing current-main plan notes.
+All runtime, module and embedded input bytes match the qualified snapshot;
+subsequent documentation changes do not activate this private role or supply
+any of the outstanding handoff, worker or public-start behavior.

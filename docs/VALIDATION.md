@@ -12188,3 +12188,10 @@ run, genuine fixed13/root/grant/native SQL/launch/ACK, worker or public startup
 acceptance. Helper process joins do not establish native Closed or release credit.
 Original run/proxy upgrade survival and shutdown/recovery remain open. Raw private
 operational records, paths, identifiers and binaries stay outside version control.
+
+Coordinator current-main composition of the private entry source (`69af427`)
+was compared against the complete qualified snapshot. All 1,868 Go files,
+module files, embedded assets and other non-documentation inputs are identical.
+Only retained plan notes and scoped evidence documentation differ. This closes
+the source-composition gate for that selected normal qualification without
+claiming a second execution or broadening its runtime/native limits.
