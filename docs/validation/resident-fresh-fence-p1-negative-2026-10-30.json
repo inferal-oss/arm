@@ -1,0 +1,422 @@
+{
+  "schema": 1,
+  "scope": "Unintegrated original fresh-fence/P1 image and service source; selected native-host normal refusal, compile and affected vet only",
+  "status": "23-selected-roots-61-named-pass-positive-funded-and-product-gates-open",
+  "source_base_commit": "c1173f85097adb98eb81e0e8933eef98e43fa0fa",
+  "candidate_source": {
+    "files": 3172,
+    "Go_files": 1821,
+    "canonical_relative_file_hash_map_sha256": "ed5e96402d5fbd35510d065aa6b80492eaacaf6db70543cba8cc2ea257ef8046",
+    "later_main_or_production_equivalence": false
+  },
+  "eight_affected_source_sha256": {
+    "internal/mesh/resident_image_inventory.go": "862002c594c993987e2a1f1366ae0eda3213f31bda0b82aa10a83d3fef96c0e4",
+    "internal/mesh/resident_image_inventory_test.go": "5bd69f0a4296e5af42f7b2a2626a699c79dbf006be667d91c82768374ae9415c",
+    "internal/mesh/resident_image_pin.go": "91b74374254e25be58bc613c041a74c3ee3009a34b0dc633434e016cc01a2350",
+    "internal/server/internal/residentbirth/fence.go": "bc183beaab1fecb20e7076f3daf728a4faf8028c549535f75a6ce377e4697e2f",
+    "internal/server/internal/residentbirth/fence_test.go": "6a15fae6efaca81e38720c274338a7d1fb73e21b96aa2aa4199813dee0a3634d",
+    "internal/server/internal/residentbirth/journal.go": "33e832b2b12fadf53821a7e9ed66d5e9a0a69e519307b0e47c62a125dfc4e477",
+    "internal/server/internal/residentservice/p1_compose.go": "ae7a17d983780135d036bc8f048f36d5998db9dd6bf8caaf6adc35f1b55616e1",
+    "internal/server/internal/residentservice/p1_compose_test.go": "2c7981da8efba98c5380131e653c22738906591fe698924ed1083f7ab22bd696"
+  },
+  "toolchain": {
+    "Go": "1.27.3",
+    "CGO_ENABLED": "0",
+    "GOMAXPROCS": "1",
+    "build_parallelism": 1,
+    "network_module_resolution": "off",
+    "module_cache_read_only": true
+  },
+  "actual_graph": {
+    "packages": 663,
+    "referenced_module_versions": {
+      "github.com/google/uuid": "v1.6.0",
+      "golang.org/x/sys": "v0.49.0",
+      "github.com/coder/websocket": "v1.8.15",
+      "golang.org/x/text": "v0.43.0",
+      "golang.org/x/net": "v0.60.0",
+      "gopkg.in/inf.v0": "v0.9.1",
+      "github.com/x448/float16": "v0.8.4",
+      "github.com/fxamacker/cbor/v2": "v2.9.1",
+      "sigs.k8s.io/json": "v0.0.0-20250730193827-2d320260d730",
+      "k8s.io/apimachinery": "v0.37.1",
+      "github.com/go-logr/logr": "v1.4.3",
+      "k8s.io/klog/v2": "v2.140.0",
+      "k8s.io/utils": "v0.0.0-20260626114624-be93311217bd",
+      "k8s.io/kube-openapi": "v0.0.0-20260721132016-d427ff9ee9ad",
+      "github.com/modern-go/concurrent": "v0.0.0-20180306012644-bacd9c7ef1dd",
+      "github.com/modern-go/reflect2": "v1.0.3-0.20250322232337-35a7c28c31ee",
+      "github.com/json-iterator/go": "v1.1.12",
+      "go.yaml.in/yaml/v2": "v2.4.4",
+      "sigs.k8s.io/structured-merge-diff/v6": "v6.4.2",
+      "sigs.k8s.io/randfill": "v1.0.0",
+      "k8s.io/api": "v0.37.1",
+      "google.golang.org/protobuf": "v1.36.12-0.20260120151049-f2248ac996af",
+      "github.com/google/gnostic-models": "v0.7.0",
+      "go.yaml.in/yaml/v3": "v3.0.4",
+      "sigs.k8s.io/yaml": "v1.6.0",
+      "k8s.io/client-go": "v0.37.1",
+      "github.com/go-openapi/jsonpointer": "v1.0.0",
+      "github.com/go-openapi/jsonreference": "v1.0.0",
+      "github.com/go-openapi/swag/cmdutils": "v0.27.1",
+      "github.com/go-openapi/swag/conv": "v0.27.1",
+      "github.com/go-openapi/swag/fileutils": "v0.27.1",
+      "github.com/go-openapi/swag/jsonutils": "v0.27.1",
+      "github.com/go-openapi/swag/pools": "v0.27.1",
+      "github.com/go-openapi/swag/typeutils": "v0.27.1",
+      "github.com/go-openapi/swag/yamlutils": "v0.27.1",
+      "github.com/go-openapi/swag/loading": "v0.27.1",
+      "github.com/go-openapi/swag/mangling": "v0.27.1",
+      "github.com/go-openapi/swag/netutils": "v0.27.1",
+      "github.com/go-openapi/swag/stringutils": "v0.27.1",
+      "github.com/go-openapi/swag": "v0.27.1",
+      "github.com/munnerz/goautoneg": "v0.0.0-20191010083416-a7dc8b61c822",
+      "golang.org/x/term": "v0.47.0",
+      "golang.org/x/oauth2": "v0.36.0",
+      "golang.org/x/time": "v0.15.0",
+      "github.com/davecgh/go-spew": "v1.1.2-0.20180830191138-d8f796af33cc",
+      "github.com/emicklei/go-restful/v3": "v3.13.0",
+      "gopkg.in/evanphx/json-patch.v4": "v4.13.0",
+      "github.com/spf13/pflag": "v1.0.10",
+      "github.com/gorilla/websocket": "v1.5.4-0.20250319132907-e064f32e3674",
+      "k8s.io/streaming": "v0.37.1",
+      "github.com/moby/spdystream": "v0.5.1"
+    },
+    "authenticated_modules": 51,
+    "pre_post_mod_archive_expanded_Hash1_equal": true,
+    "module_versions_match_pinned_go_mod_and_go_sum": true,
+    "replacements": false,
+    "sqlite_referenced": false,
+    "sqlite_rule": "Exact official pinned version if actually referenced; absence is not a failure for these consumers."
+  },
+  "commands": [
+    {
+      "kind": "package-graph",
+      "exit": 0,
+      "original_joined": true,
+      "passed": true
+    },
+    {
+      "kind": "test",
+      "exit": 0,
+      "original_joined": true,
+      "passed": true,
+      "root_roster": [
+        "TestResidentServiceFrameDataRoundTripAndRefusesCorruption",
+        "TestResidentServiceDataRefusesUnknownPartialAndNonfinite",
+        "TestResidentServicePendingMissingAuthorizationRetainsOriginalFailure",
+        "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit",
+        "TestResidentServiceCopiedAndCancelledHoldersIssueNoCharge",
+        "TestResidentOperatorEvidenceCanonicalData",
+        "TestResidentOperatorEvidenceRefusesIncompleteData",
+        "TestResidentOperatorCopiedZeroAndCancelledPendingRefuse",
+        "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt",
+        "TestP1ServiceGroupMissingOriginalDebitRefusesBeforeEffects",
+        "TestP1ServiceGroupZeroHolderRefusesBeforeEffects",
+        "TestP1CommandCompositionZeroAndUnfundedRefuse"
+      ],
+      "named_results": [
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/truncated-header",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/truncated-payload",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/checksum",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/chain",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/trailing",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/oversize",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/missing-grant",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/extra-state",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/wrong-debit",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/wrong-root",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/zero",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/nonfinite",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/unknown-platform",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServicePendingMissingAuthorizationRetainsOriginalFailure",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/fifo-lock",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/fifo-journal",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/damaged-journal",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceCopiedAndCancelledHoldersIssueNoCharge",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/unknown-field",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/duplicate-field",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/trailing-object",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/noncanonical",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/oversize",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-cost-scope",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-workload",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/artifact-hash",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-raw",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/unreferenced-artifact",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/claim-too-small",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/no-unknowns",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/source",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/fixture",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/runtime",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/duplicate-artifact",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/zero-bound",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/nonfinite",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/empty-interval",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorCopiedZeroAndCancelledPendingRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/absent-files",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/partial-lock",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/missing-home",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt",
+          "result": "pass"
+        },
+        {
+          "test": "TestP1CommandCompositionZeroAndUnfundedRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestP1ServiceGroupMissingOriginalDebitRefusesBeforeEffects",
+          "result": "pass"
+        },
+        {
+          "test": "TestP1ServiceGroupZeroHolderRefusesBeforeEffects",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "kind": "test",
+      "exit": 0,
+      "original_joined": true,
+      "passed": true,
+      "root_roster": [
+        "TestResidentRuntimeOriginalZeroAndCopiedHolderRefuse",
+        "TestResidentRuntimeOriginalCancelledBeforeEffectsRetainsFailure",
+        "TestResidentImagePinOriginalInvalidInputsRefuse",
+        "TestResidentImagePinOriginalZeroAndCopiedHolderRefuse",
+        "TestResidentImagePinOriginalCancelledBeforeEffectsRetainsFailure",
+        "TestResidentRuntimeSourceRetirementForeignOrCopiedRefusesBeforeEffects",
+        "TestResidentImageP1OriginalZeroCopiedAndForeignCommandRefuse",
+        "TestResidentImageP1OriginalUnpreparedPinRefusesBeforeEffects",
+        "TestResidentImageInventoryOriginalZeroCopiedAndUnpreparedRefuse"
+      ],
+      "named_results": [
+        {
+          "test": "TestResidentImageInventoryOriginalZeroCopiedAndUnpreparedRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentImageP1OriginalZeroCopiedAndForeignCommandRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentImageP1OriginalUnpreparedPinRefusesBeforeEffects",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentImagePinOriginalInvalidInputsRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentImagePinOriginalZeroAndCopiedHolderRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentImagePinOriginalCancelledBeforeEffectsRetainsFailure",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentRuntimeOriginalZeroAndCopiedHolderRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentRuntimeOriginalCancelledBeforeEffectsRetainsFailure",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentRuntimeSourceRetirementForeignOrCopiedRefusesBeforeEffects",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "kind": "test",
+      "exit": 0,
+      "original_joined": true,
+      "passed": true,
+      "root_roster": [
+        "TestComposedFreshFenceRequiresOriginalFundedServiceGroup",
+        "TestComposedFreshFenceZeroHoldersAndNonclosingJournalRefuse"
+      ],
+      "named_results": [
+        {
+          "test": "TestComposedFreshFenceRequiresOriginalFundedServiceGroup",
+          "result": "pass"
+        },
+        {
+          "test": "TestComposedFreshFenceZeroHoldersAndNonclosingJournalRefuse",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "kind": "vet",
+      "exit": 0,
+      "original_joined": true,
+      "passed": true
+    }
+  ],
+  "execution_observation": {
+    "original_Go_commands_joined": true,
+    "original_FIFO_joined": true,
+    "source_tool_support_postchecks_pass": true,
+    "all_temporary_inventories_empty": true,
+    "ten_raw_output_hashes_verified": true,
+    "raw_unique_run_pass_pairs": 61,
+    "alarm_requested": false,
+    "retry": false
+  },
+  "limitations": [
+    "Exact older unintegrated source and eight reviewed source files, not later-main/production qualification.",
+    "Twelve selected service roots (50 named), nine mesh roots (9 named), two new fence roots (2 named); default vet on three packages.",
+    "The four new roots refuse missing/zero/copied/unprepared holders before effects. Existing owned negative filesystem fixtures may execute.",
+    "No real standing grant/debit, successful pin/inventory/fence preparation, journal append/withdrawal, slot binding, channel transfer, native Start, child or ACK was exercised.",
+    "Configuration absence only is implemented by this fence cut; a config.toml entry refuses pending an actual parsed-input owner.",
+    "Actual thirteen-reference root/child delegation and native/Manager/DB/Server/image lineage, worker API/UI/assets, public arm start and genuine active run/proxy upgrade continuity remain open.",
+    "Child-reference successor source prepared later is outside this qualification."
+  ]
+}

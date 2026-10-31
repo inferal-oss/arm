@@ -12044,3 +12044,21 @@ the production downloader was unchanged. Linux Python 3.12 execution, downloads,
 Go build, actual collector/Docker observation, workflow dispatch and all resident
 funding/launch/child-continuity gates remain unrun. No harness source is landed
 by publishing this evidence.
+
+## Resident fresh fence — 23 roots/61 named cases
+
+The [normalized record](validation/resident-fresh-fence-p1-negative-2026-10-30.json)
+binds eight affected Go files and the 3,172-file/1,821-Go-file candidate closure.
+Coordinator review verified those hashes, the canonical source-map commitment,
+all 61 unique raw run/pass pairs across 23 roots and ten command-output hashes.
+Five original commands and the FIFO control joined with exit 0 in 17.684 seconds;
+three temporary inventories were empty, source/tool/support pins matched, and no
+alarm or repeat was requested. Default vet passed for all three affected packages.
+
+The actual graph contained 663 packages/51 official modules, with mod/archive/
+expanded-source authentication equal before and after. SQLite was not referenced.
+This normal CGO-disabled host qualification does not cover positive funded pin,
+inventory, fence, journal, bind, Start, child acknowledgment, native closure or
+upgrade continuity. Configuration support, later-main equivalence and the newer
+child-reference source are not accepted by this record. Raw operational evidence
+remains outside version control; no candidate product source is integrated.

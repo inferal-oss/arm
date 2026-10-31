@@ -4400,3 +4400,12 @@ checkouts and rejecting known observations without an artifact digest. The
 earlier failed fixture run remains separate. Harness/workflow publication,
 artifact acquisition, native Linux observation and actual resident launch or
 child continuity remain unaccepted gates; no candidate product source is landed.
+
+## Resident fresh fence — scoped source qualification
+
+Coordinator review accepts the private eight-file fresh-fence candidate's normal
+compile/refusal qualification: 23 roots/61 named cases and vet for three affected
+packages. The source supports only fresh inventories with configuration absent.
+Positive funded preparation, thirteen-reference child delegation, actual launch
+and acknowledgment, public start and run/proxy continuity remain open. The newer
+child-reference draft is outside this qualification; no candidate source is landed.

@@ -5651,3 +5651,12 @@ normalized capability result. Its storage monitor includes both owned checkouts
 and deduplicates native identities without following symlinks. Offline tests
 qualify data/refusal behavior only; the workflow and harness are not integrated,
 and no acquisition, native observer, resident activation or continuity follows.
+
+## Fresh-fence candidate boundary
+
+The private candidate registers original descriptors before later native calls,
+creates launch files exclusively, retains partial intent writes and lends only
+nonclosing command aliases. Review found no blocking issue in this bounded cut;
+selected refusal tests and affected vet pass. Existing state and config.toml
+entries refuse. Successful preparation and complete child/reference handoff are
+unvalidated, and the actual root/start path is not supplied by these primitives.
