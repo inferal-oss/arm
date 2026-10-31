@@ -12231,3 +12231,9 @@ retirement remain unaccepted. Worker schema/admission/controller/assets, API/UI
 replacement and public first/repeat/concurrent `arm start` remain open, as do
 original managed-run/proxy child/log/heartbeat/finish/renew/cancel/expiry/accounting
 upgrade survival and shutdown/recovery. Raw operational evidence stays private.
+
+Coordinator current-main composition (`7a6fec4`) matches all 3,258 tracked files
+of the qualified source snapshot, including all 1,878 Go files and every module
+and embedded input. The later scoped documentation/evidence additions do not
+affect those inputs. This accepts composition for the selected normal result
+without repeating its checks or broadening the unexercised native/runtime scope.

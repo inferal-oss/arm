@@ -5795,3 +5795,9 @@ RootBound journal/footer, sends no ACK, retires no parent references, and activa
 no worker or public startup. Real successful prepared SQL/read transaction/native
 execution remains unverified by its DATA/refusal qualification. The separate
 worker-capable original schema and public `arm start` composition remain open.
+
+Coordinator composition retains the prepared-binding source as `7a6fec4` and its
+scoped evidence as `6a37976`. The complete runtime, module and embedded inputs
+match the qualified snapshot. Documentation records that source equivalence;
+it does not establish actual prepared native/SQL success or activate handoff,
+workers, public startup or a live upgrade.

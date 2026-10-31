@@ -4549,3 +4549,17 @@ replacement, public first/repeat/concurrent `arm start`, and original managed-ru
 proxy continuity still require implementation and acceptance. Core shutdown and
 unresolved-core recovery remain separate unsupported gates; prior scopes and
 failed attempts retain their classifications.
+
+## Resident prepared bindings — current composition accepted
+
+Coordinator review composes the focused owner source as `7a6fec4` and its scoped
+evidence as `6a37976`. All 3,258 tracked files of the source composition, including
+all 1,878 Go files, match the qualified snapshot exactly. Subsequent differences
+are the scoped documentation and normalized evidence only; no second test run or
+broader native acceptance is inferred.
+
+The existing upgrade task next prepares the bounded RootBound journal/footer
+source from these same original owners. Actual prepared native/SQL success,
+authenticated current handoff, parent-reference disposition and worker/public
+startup remain independent implementation and acceptance gates. Running ARM and
+its managed work were not changed by this source integration.
