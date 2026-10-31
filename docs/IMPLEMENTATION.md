@@ -5727,3 +5727,36 @@ composition. It supplies no public resident-core entry, acknowledgment/reference
 retirement, worker activation or live upgrade. The official SQLite driver/module
 and raw-connection boundary remain unchanged. No running service or installation
 is changed by source integration.
+
+
+## Private same-binary resident core entry
+
+The command now recognizes the exact private core role before bundle validation,
+companion construction or legacy CLI dispatch. Arity rejection returns before
+claiming custody. One statically retained original entry installs its actual
+deferred retainer before claiming/initializing; it publishes the same Root before
+in-place initialization. Ordinary errors, panic (including both nil-panic modes)
+and Goexit keep that same original frame and partial objects in an infinite
+holding wait. Raw causes remain private, sticky component states stay, and wait
+return metadata never asserts native closure or gives resource credit.
+
+The sole fixed13 census factory takes a retained empty destination and publishes
+its actual original before later state/entry allocation. Legacy receiver exclusion
+stays shared. The inherited native issuer uses the same sole factory implementation
+as the legacy API, publishing the actual pending issuer/owner/state before the
+original Geteuid observation. Existing allocation-only/nonclosing-view constructors
+retain their original lineage.
+
+The genuine static entry may create one retained finite bootstrap timeout only
+after actual all13 CLOEXEC and original control materialization. Supplied finite
+contexts keep their earlier handling; unbound/foreign/copied Root data cannot
+select timeout construction. Cancellation follows receive's return and affects
+only bootstrap I/O, with Root lifetime independent. Partial seal failure enters
+the original holding retainer without claiming a completed seal or proceeding
+to the bootstrap helper phase. Runtime/OS internals remain opaque where unknown.
+
+This supplies private entry source and pure-process retention evidence. Public
+`arm start` still needs its new root/controller callsite, ACK/current-authority/
+reference handling, real admitted workers and readiness. It does not start Manager
+loops/ingress or establish native grant/materialization, worker replacement,
+managed-run/proxy survival, core shutdown or unresolved-core reconciliation.

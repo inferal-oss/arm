@@ -1,0 +1,236 @@
+{
+  "boundaries": [
+    "Normal host qualification, not race/full-suite/Linux execution.",
+    "Six helper process/runtime-method controls do not prove genuine inherited native Root initialization, native Closed or resource-release credit.",
+    "The compiled command was never executed; genuine role/fixed13/materialization/service grant/profile/native SQL and parent launch/ACK remain unexercised.",
+    "Public arm start, current-authority/parent-reference handling, Manager loops/ingress, admitted worker/schema/API/UI activation and original managed-run/proxy upgrade survival remain open.",
+    "Core shutdown and unresolved-core recovery remain unsupported."
+  ],
+  "normal_qualification": {
+    "GOFLAGS": "-buildvcs=false",
+    "Go_version": "1.27.3",
+    "VCS_flag_scope": "All graph/test/vet/build invocations; dependency cache remains read-only and network disabled.",
+    "actual_dependency_graph": {
+      "POST_authenticated_modules": 88,
+      "PRE_POST_equal": true,
+      "PRE_authenticated_modules": 88,
+      "authentication": "Pinned mod/ZIP/expanded-source Hash1 and go.sum for actual referenced modules; no replacements or cache seeding.",
+      "packages": 839,
+      "referenced_official_modules": 88,
+      "sqlite": "modernc.org/sqlite@v1.60.1"
+    },
+    "native_command_compile_only": {
+      "artifact_bytes": 74428706,
+      "artifact_executed": false,
+      "artifact_sha256": "c23eb40a1ec8788e1a80e046dd445f337ec2cafb11626f01c1558009104170e5",
+      "result": "pass",
+      "target": {
+        "GOARCH": "arm64",
+        "GOOS": "darwin"
+      }
+    },
+    "pure_retainer_helper_subprocesses": {
+      "authority_boundary": "No Root initialization, fixed13 claim/seal/materialization, service grant, native issuer, SQL, Manager or genuine role invocation.",
+      "cases": [
+        "normal",
+        "error",
+        "panic",
+        "nilpanic-default",
+        "nilpanic-legacy",
+        "goexit"
+      ],
+      "count": 6,
+      "max_live": 1,
+      "observation": "The same production deferred retainer holds the actual pure static entry/Root; its original caller is observed sleeping in that retainer. The exact parent checks its original Start, sole Wait, fixed output marker and successful process result.",
+      "production_test_escape_or_callback": false
+    },
+    "root_count": 13,
+    "supervision": {
+      "active_elapsed_seconds": 51.525285,
+      "all_original_Go_commands_joined_exit_zero": true,
+      "command_stream_hashes_verified": 16,
+      "failed_predecessor_and_scratch_retained": true,
+      "new_temporary_inventories_empty": true,
+      "original_Go_commands": 8,
+      "owning_wrapper_joined_exit_zero": true,
+      "sampled_stop_alarm": false,
+      "source_support_and_proposal_pins_unchanged": true
+    },
+    "test_packages": [
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestFixedChildPendingRegistersAllBeforeEffectsAndRejectsCopies"
+          },
+          {
+            "result": "pass",
+            "test": "TestFixedChildPureOneWayDelegationRejectsForeignCopiedAndReplay"
+          },
+          {
+            "result": "pass",
+            "test": "TestFixedChildNonclosingViewsRefuseBeforeMaterialization"
+          },
+          {
+            "result": "pass",
+            "test": "TestOriginalFrameDataBoundsIncludeCompleteHeader"
+          }
+        ],
+        "package": "getarm.org/internal/residentrefs",
+        "root_tests": [
+          "TestFixedChildPendingRegistersAllBeforeEffectsAndRejectsCopies",
+          "TestFixedChildPureOneWayDelegationRejectsForeignCopiedAndReplay",
+          "TestFixedChildNonclosingViewsRefuseBeforeMaterialization",
+          "TestOriginalFrameDataBoundsIncludeCompleteHeader"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestInheritedImagePendingCancellationAndBorrowedCloseRefuseBeforeEffects"
+          }
+        ],
+        "package": "getarm.org/internal/mesh",
+        "root_tests": [
+          "TestInheritedImagePendingCancellationAndBorrowedCloseRefuseBeforeEffects"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestP1ChildPendingNeverCallsLegacyFourFDReceiver"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "root_tests": [
+          "TestP1ChildPendingNeverCallsLegacyFourFDReceiver"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestInheritedServePendingRequiresRetainedEmptyDestinationAndOriginalFence"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/nativeowner",
+        "root_tests": [
+          "TestInheritedServePendingRequiresRetainedEmptyDestinationAndOriginalFence"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestOriginalChildPendingOwnsAllThirteenBeforeEffectsAndRejectsCopy"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1BootstrapWorstCaseCapacityRefusesOversizeBeforeNamespaceEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreTimeoutRequiresActualPreparingRoot"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreRetainerOriginalUnwind/normal"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreRetainerOriginalUnwind/error"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreRetainerOriginalUnwind/panic"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreRetainerOriginalUnwind/nilpanic-default"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreRetainerOriginalUnwind/nilpanic-legacy"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreRetainerOriginalUnwind/goexit"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreRetainerOriginalUnwind"
+          }
+        ],
+        "package": "getarm.org/internal/server",
+        "root_tests": [
+          "TestOriginalChildPendingOwnsAllThirteenBeforeEffectsAndRejectsCopy",
+          "TestP1BootstrapWorstCaseCapacityRefusesOversizeBeforeNamespaceEffects",
+          "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal",
+          "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal",
+          "TestResidentCoreTimeoutRequiresActualPreparingRoot",
+          "TestResidentCoreRetainerOriginalUnwind"
+        ]
+      }
+    ],
+    "unique_package_qualified_named_run_pass_pairs": 19,
+    "vet": {
+      "packages": [
+        "getarm.org/internal/residentrefs",
+        "getarm.org/internal/mesh",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/internal/server/internal/nativeowner",
+        "getarm.org/internal/server",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    }
+  },
+  "schema": 1,
+  "scope": "Resident core same-binary entry and original deferred retention: normal DATA/refusal and pure-process method controls",
+  "separate_predecessor_attempt": {
+    "authenticated_modules_POST": 0,
+    "authenticated_modules_PRE": 0,
+    "cause": "Go attempted main-module VCS stat-cache metadata write under the read-only dependency-cache fence; strict graph diagnostic guard rejected it.",
+    "graph_command_exit": 0,
+    "helper_processes_started": 0,
+    "owning_wrapper_exit": 1,
+    "qualified_commands": 0,
+    "retained_failed_classification": true,
+    "source_and_support_unchanged": true,
+    "status": "failed_before_authentication_or_tests",
+    "test_roots_executed": 0
+  },
+  "source": {
+    "base_commit": "ee09574474aff5596d5f73f65622b5eecc08af53",
+    "feature_commit": "3a4bf2b2297286a3eb958f3b70ce231331e5e15f",
+    "qualified_Go_files": 1868,
+    "qualified_source_files": 3247,
+    "qualified_source_manifest_sha256": "8accde2ed86de64c3cb61cdd1f729d5bbd51accb30c165927fea4fb7f6ab1be7",
+    "reviewed_Go_files": {
+      "cmd/arm/main.go": "3c5e3c644f84b4538215e69752f61c5d74fbbcf40b9d164470db22dcdcbd6be6",
+      "internal/mesh/inherited_image_test.go": "137e8d40f645a3863f94cae887cdcd1c5dfc8144dc59267ebe471c584c07f6ca",
+      "internal/residentrefs/child.go": "625cb44dcc63a901b2e896591715f8c2f2a10bef09564853fdd3f4d7087f03a2",
+      "internal/residentrefs/child_test.go": "cf328355af682c45de1fa108e377d3035ff99db2098d59f2624dcf1f5f6dd1d9",
+      "internal/server/internal/nativeowner/inherited_fence.go": "1ba81f53a9cf43ab55ce032eaa4e80b1e915b48ebfae8c8ddf87c149ac449e0d",
+      "internal/server/internal/nativeowner/inherited_fence_test.go": "1fc12093689041b49c1dbb2ab0c6a8deab6c8063aef7db31b16d630c2230490c",
+      "internal/server/internal/nativeowner/owner.go": "4d28bc4d00b7e6d05856b89490d7da21d213f4c8c3a9c59e98f482c75a8a3546",
+      "internal/server/internal/residentservice/p1_child_test.go": "1342e8cb35139ed7f9b50047cade6ebbc401ff4e5378afdcd21867bd91ea7822",
+      "internal/server/resident_child_original.go": "f112a988c258970484c67cd88518747f9e8672c42da067c63cd99c088575f6a9",
+      "internal/server/resident_child_original_test.go": "efa876080579f242b7c37fb3f515551fc5a74bade79a3bb19f1e95792614b53f",
+      "internal/server/resident_core_entry.go": "873081bfa59629689e49297642e588a54751c65b073030a10f95643fac52171f",
+      "internal/server/resident_core_entry_test.go": "60c577752e1e22285b28f07611d55f9683818f51a26a66b97b04ac398e686d64",
+      "internal/server/resident_core_retainer_test.go": "4330e5d11b9a9533b9c5f9ae01feca66e19440795851d656a56d9e33f348fe22"
+    }
+  },
+  "status": "scoped_normal_qualification_pass"
+}

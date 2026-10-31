@@ -12152,3 +12152,39 @@ startup and live managed-run/proxy child/log/heartbeat/renew/cancel/expiry/accou
 continuity remain unaccepted. No process join here establishes native Closed or
 physical storage reclamation. Earlier failed and separately passing scopes retain
 their original classifications. Raw operational records and binaries stay private.
+
+
+## Resident core entry — normal and pure-process retainer controls
+
+The [normalized evidence](validation/resident-core-entry-normal-2026-10-30.json)
+binds thirteen reviewed Go inputs in a 3,247-file/1,868-Go snapshot to source
+commit `3a4bf2b2297286a3eb958f3b70ce231331e5e15f`. All 13 selected roots and 19 unique
+package-qualified named run/pass pairs passed, with no skips or unexpected roots.
+Twelve roots retain DATA/refusal scope; the added retainer root has six owned
+subprocess cases: normal return, returned error, panic, both nil-panic modes and
+Goexit. Each invokes the actual production deferred method with only its actual
+pure static entry/Root, observes the same caller sleeping in that retainer, and
+passes the original parent's Start/Wait/marker checks. None invokes inherited
+custody, grant, issuer, SQL, Manager or the genuine core role.
+
+Default vet passes for six affected packages. A native darwin/arm64 command build
+passes with Go 1.27.3 and CGO disabled; the 74,428,706-byte output is retained
+privately and was never executed. The actual graph contains 839 packages and 88
+official modules; mod/ZIP/expanded-source Hash1 authentication matches PRE/POST,
+including unmodified SQLite v1.60.1. All eight original Go envelopes and owning
+wrapper join with zero status, sixteen output hashes and source/support/proposal
+pins match, new temporary inventories are empty, and no alarm fires. The scoped
+wave took 51.525285 seconds.
+
+The preceding attempt remains a separate failure before authentication/tests:
+Go's main-module VCS stat-cache write was denied by the read-only dependency-cache
+fence, and the strict graph diagnostic guard stopped despite Go exit zero. The
+distinct passing wave applies `GOFLAGS=-buildvcs=false` to all eight invocations,
+omitting VCS stamping while preserving the actual graph, official authentication
+and sandbox/cache fence. Neither attempt downloads, seeds or relaxes module inputs.
+
+This is normal source/runtime-method qualification, not a race/full suite, Linux
+run, genuine fixed13/root/grant/native SQL/launch/ACK, worker or public startup
+acceptance. Helper process joins do not establish native Closed or release credit.
+Original run/proxy upgrade survival and shutdown/recovery remain open. Raw private
+operational records, paths, identifiers and binaries stay outside version control.

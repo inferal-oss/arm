@@ -4489,3 +4489,29 @@ public fresh startup requires a separately reviewed worker-capable original
 schema/writer constructor selected before the one original database install and
 bound to actual native/grant/profile/source ownership. No format-4 migration,
 second pool/Manager or metadata-selected authority follows from this plan.
+
+
+## Resident private core entry — reviewed normal scope
+
+Source owner `codex/resident-root-ack` returns focused source commit
+`3a4bf2b2297286a3eb958f3b70ce231331e5e15f`. The private same-binary core role now
+routes before bundle/legacy helpers, retains its actual entry and Root through
+abnormal unwind, and publishes original census/native pending holders before
+later construction effects. Scoped source and normal qualification review pass;
+current composition/landing remains the integration gate.
+
+The [normalized core-entry result](validation/resident-core-entry-normal-2026-10-30.json)
+records 13 roots/19 named cases, six actual pure-process retainer cases, affected
+vet and native compile-only command evidence. The preceding graph attempt remains
+failed before tests; the distinct passing wave disables VCS stamping uniformly
+without relaxing the dependency-cache fence.
+
+Remaining work includes actual whole-root measured/funded lineage and native
+fixed13 birth; ACK/current-authority and parent-owned reference disposition;
+worker-capable fresh schema and original controller/admission/runtime/asset/receipt
+ownership; real API/UI worker replacement; and public first/repeat/concurrent
+`arm start` through that same original root. The original managed-run and CLI
+proxy child/log/heartbeat/finish/renew/cancel/expiry/accounting survival tests stay
+open. A prepared format4 instance does not gain worker tables: final fresh public
+startup must select its separately reviewed worker-capable schema path before its
+one original DB install. Core shutdown/recovery remains a separate unsupported gate.
