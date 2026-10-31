@@ -13033,3 +13033,24 @@ enrollment, delivery, PTY, full suite or Linux acceptance is claimed. This is
 an unused catalog/group component; wizard and activation wiring remain pending.
 Retained earlier failures, scratch envelopes and unmeasured shared-cache growth
 imply no kernel, total-disk or physical-reclamation credit.
+
+
+## Saved-chat catalog and grouping: composition verification
+
+Code `12e9d0d` composes as `e6b753d`; evidence `ae28988` composes as `62323b1`.
+All 1,964 qualified Go/module inputs match manifest
+`f9de5d16d5e81450ca8a867fc137a53209a484ff61c9354e13b2cdd11c52f64b`.
+Other tracked runtime images are identical; newer published changes affect only
+documentation. No additional execution was needed for that composition.
+
+The coordinator independently checked complete package-qualified normal/race
+run/pass keys against all 116 expected cases and 52 roots, seven source and
+25 protected hashes, five-package vet and the verified unexecuted native
+artifact. Original Go/helper/FIFO natural exits, joins and output EOF, unchanged
+tool/cache identity/selected SDK pins, empty temporary inventories and positive
+final owned-scratch observations are retained. The first catalog source was
+never run; its cancellation and relationship corrections remain static findings,
+not failed runtime attempts. Actual client/Git metadata, policy/backend,
+enrollment, delivery, PTY, full-suite and Linux acceptance remain unclaimed.
+The component is still unwired; installed ARM and running jobs are unchanged.
+Retained scratch and unmeasured shared-cache growth imply no reclamation credit.

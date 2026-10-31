@@ -5085,3 +5085,21 @@ all contradictory root/Git/common or primary-root relationships. A unique
 source remains unrun. These are corrected static findings, not failed runtime
 attempts. Explicit checkout-root mapping still needs retention and revalidation
 before policy wiring; `Group.Directories` is display membership, not a binding list.
+
+
+## Saved-chat catalog and grouping composition accepted
+
+Source `12e9d0d` is integrated as `e6b753d`; scoped evidence `ae28988` is
+integrated as `62323b1` over documentation base `bab1047`. Independent review
+verifies all 1,964 qualified Go/module inputs and identical remaining runtime
+images. Only documentation differs from the qualified owner tree. The exact
+52-root/116-case normal and race results, five-package vet and compile-only
+artifact are accepted within their recorded synthetic component scope, without
+repeating execution for documentation-only changes.
+
+This remains an unused component. The next wizard slice must retain verified
+member-to-checkout evidence, freshly revalidate explicit bindings, and keep
+project policy separate from selected activation recipients. Display membership
+is not a binding list. User-facing picker/batch review, actual native
+compatibility and the separately reviewed activation handoff remain unfinished.
+No installed binary, running jobs or real policy/delivery state was changed.

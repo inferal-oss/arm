@@ -6407,3 +6407,16 @@ review corrections to the preserved unexecuted first source, not observed
 runtime failures. Display membership does not supply authoritative bindings:
 the future wizard must retain and freshly verify each explicit checkout-root
 association, including nested linked worktrees, before policy review.
+
+
+## Saved-chat catalog and grouping: current composition
+
+The coordinator integrated the exact seven reviewed Go images as `e6b753d` and
+source-bound evidence as `62323b1`. Full-tree comparison preserves the tested
+runtime/module images and newer documentation records. Independent source and
+raw-result review covers explicit scope, bounded SQL windows, source/close
+guards, marker-only coverage, cumulative producer caps, final cancellation
+and contradictory Git relationships. The first source remains an unexecuted
+static-review predecessor. No actual client or Git compatibility is inferred.
+The wizard and activation flow do not yet consume this component; explicit
+checkout binding evidence and separately reviewed delivery remain later gates.
