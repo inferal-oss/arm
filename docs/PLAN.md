@@ -4615,3 +4615,17 @@ worker-capable schema/controller/admission/assets, API/UI replacement and public
 first/repeat/concurrent `arm start` remain open. Actual positive native/funding/
 environment gates, managed-run/proxy upgrade survival and shutdown/recovery are
 unaccepted; prior failed and separately passing scopes retain their classifications.
+
+## Resident handoff codec composition accepted
+
+The coordinator integrated the reviewed payload/capacity source as `66f0875` and
+its scoped evidence as `e5f9346`. All 3,275 qualified tracked inputs, including
+1,893 Go files, match the reviewed snapshot at the source commit. The later
+documentation and normalized evidence do not change runtime inputs. The selected
+normal result is accepted without repeating execution or expanding its scope.
+
+Next, the existing upgrade task may prepare the bounded fixed control-slot and
+service-owned challenge-view source cut for review, keeping it unactivated.
+Separate current native/journal/SQL validation, Root orchestration, parent-owned
+reference retirement, workers and public startup remain later gates. Actual
+managed child continuity across an upgrade has not been demonstrated.

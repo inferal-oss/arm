@@ -12321,3 +12321,12 @@ proof and parent-owned reference retirement are unimplemented. Worker/schema/
 controller/admission/assets, API/UI replacement, public `arm start`, original
 managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/accounting upgrade survival
 and shutdown/recovery remain open. Raw operational records and binaries stay private.
+
+Coordinator composition accepts source `66f0875` and scoped evidence `e5f9346`.
+Independent comparison verifies all 3,275 qualified tracked inputs, including all
+1,893 Go files and every module and embedded input. The normalized evidence hash,
+ten source SHA256/Git-blob pairs and all 45 package-qualified run/pass pairs agree
+with the audited raw result. Later changes are documentation only. No test or
+binary was rerun for this composition, and the compile-only artifact remains
+unexecuted. This preserves the selected normal qualification and all stated
+native, live-upgrade and managed-child continuity limitations.

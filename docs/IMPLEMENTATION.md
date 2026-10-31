@@ -5873,3 +5873,9 @@ DATA; only lengths leave the server wrapper.
 Actual current-owner authentication, native/journal checks, fixed protocol slots,
 Root orchestration and parent-reference retirement remain separate unimplemented
 gates. Worker/schema/public-start activation and live upgrade acceptance remain open.
+
+Coordinator composition retains the closed payload/capacity implementation as
+`66f0875` and its scoped evidence as `e5f9346`. Every qualified runtime, module and
+embedded input is identical to the reviewed snapshot. The official SQLite driver
+remains unchanged. No control phase is activated and no running backend or managed
+child is changed by this integration.
