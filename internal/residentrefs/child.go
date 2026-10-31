@@ -67,7 +67,7 @@ type recipientState struct {
 	journal                        *JournalView
 	imageView                      *ImageView
 	last                           *originalOperation
-	readTried, writeTried          bool
+	controlPhases                  [4]*controlPhaseCall
 }
 type originalEntry struct {
 	self                            *originalEntry
@@ -90,6 +90,7 @@ type originalOperation struct {
 	ctx                 context.Context
 	kind, phase         string
 	abnormal            bool
+	normalFinished      bool // final metadata only; never native closure
 	cause               any
 	entry               *originalEntry
 	bytes               []byte
@@ -406,6 +407,7 @@ func (s *childState) finish(op *originalOperation, normal *bool, resultErr *erro
 		}
 		s.active = nil
 		close(op.done)
+		op.normalFinished = true
 	}
 	if op.recipient != nil && s.firstError != nil && op.recipient.firstError == nil {
 		op.recipient.firstError = s.firstError

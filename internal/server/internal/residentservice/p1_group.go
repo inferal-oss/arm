@@ -30,6 +30,7 @@ type p1ServiceState struct {
 	command                                                          *exec.Cmd
 	extra                                                            []*os.File
 	fundingTried, fundingChecked, bindTried, bound, beforeStartTried bool
+	controlPhases                                                    [4]*p1ParentControlCall
 }
 type P1ServiceSelectors struct {
 	Home, DebitID, LaunchKey, ProfileSHA256 string

@@ -58,14 +58,19 @@ type owner struct {
 	p1PreparedValidation                                *p1PreparedServiceCall
 	p1RootBoundTried                                    bool
 	p1RootBound                                         *p1RootBoundCall
+	p1AckSignTried, p1ChallengeAuthTried                bool
+	p1AckSign                                           *p1BoundAckSignCall
+	p1ChallengeAuth                                     *p1ChallengeAuthCall
+	p1ChallengeView                                     *CurrentChallengeView
 	openedFDs, closedFDs                                uint64
 	liveFDs                                             int
 }
 type operation struct {
-	owner       *owner
-	kind, phase string
-	abnormal    bool
-	cause       any
+	owner          *owner
+	kind, phase    string
+	abnormal       bool
+	normalFinished bool // final metadata only; not native closure or admission
+	cause          any
 }
 type appendOperation struct {
 	owner                *owner
@@ -195,6 +200,10 @@ func (p *ParentPending) begin(kind string) (*operation, error) {
 			return nil, ErrInvalid
 		}
 		o.p1.transferTried = true
+	case "p1-bound-ack-read", "p1-current-challenge-write", "p1-current-proof-read":
+		if o.p1 == nil || !o.writerWithdrawn || !o.writerSent || !o.p1.transferTried {
+			return nil, ErrInvalid
+		}
 	default:
 		return nil, ErrInvalid
 	}
@@ -239,6 +248,9 @@ func (o *owner) finish(op *operation, normal *bool, resultErr *error) {
 		o.active = nil
 	}
 	o.publishLocked()
+	if *normal && !op.abnormal {
+		op.normalFinished = true
+	}
 	o.mu.Unlock()
 	if cause != nil {
 		panic(cause)

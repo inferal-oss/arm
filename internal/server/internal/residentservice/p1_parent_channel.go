@@ -7,7 +7,6 @@ import (
 	"encoding/binary"
 	"getarm.org/internal/residentrefs"
 	"golang.org/x/sys/unix"
-	"io"
 	"os"
 	"os/exec"
 )
@@ -106,14 +105,10 @@ func (p *P1ServiceGroup) shortSealBody(ctx context.Context) error {
 // been withdrawn by that same root. It accepts a bounded canonical FULL frame,
 // never silently adds another header or resends a partial outcome.
 func (p *P1ServiceGroup) SendOriginalP1Frame(ctx context.Context, command *exec.Cmd, frame []byte) (resultErr error) {
-	if p == nil || p.p1ServiceState == nil || p.self != p || command != p.command {
+	if p == nil || p.p1ServiceState == nil || p.self != p || command != p.command || ctx == nil {
 		return ErrInvalid
 	}
-	if ctx == nil {
-		return ErrInvalid
-	}
-	deadline, ok := ctx.Deadline()
-	if !ok {
+	if _, ok := ctx.Deadline(); !ok {
 		return ErrInvalid
 	}
 	if err := validateP1ParentFrameData(frame); err != nil {
@@ -124,58 +119,27 @@ func (p *P1ServiceGroup) SendOriginalP1Frame(ctx context.Context, command *exec.
 		return err
 	}
 	o := p.parent.owner
+	call, err := p.registerParentControlCall(op, parentBootstrap, nil)
+	if err != nil {
+		normal := true
+		o.finish(op, &normal, &err)
+		return err
+	}
 	normal := false
+	defer p.publishParentControlResult(call, &normal, &resultErr)
 	defer o.finish(op, &normal, &resultErr)
-	call := &channelOperation{owner: o, bytes: append([]byte(nil), frame...)}
+	bootstrap := &channelOperation{owner: o}
 	o.mu.Lock()
-	o.channel = call
+	o.channel = bootstrap
+	call.bootstrap = bootstrap
 	o.mu.Unlock()
-	resultErr = func() error {
-		if err := ctx.Err(); err != nil {
-			return err
-		}
-		endpoint := o.files.parentChannel
-		if endpoint == nil || endpoint.file == nil || endpoint.closeTried {
-			return ErrInvalid
-		}
-		o.files.progress("original_P1_transfer_deadline_pending")
-		if err := endpoint.file.SetWriteDeadline(deadline); err != nil {
-			return err
-		}
-		for call.transferred < len(call.bytes) {
-			if err := ctx.Err(); err != nil {
-				return err
-			}
-			if call.writes >= 32 {
-				return io.ErrShortWrite
-			}
-			o.files.progress("original_P1_transfer_native_write_pending")
-			o.mu.Lock()
-			call.writes++
-			at := call.transferred
-			o.mu.Unlock()
-			n, err := endpoint.file.Write(call.bytes[at:])
-			o.mu.Lock()
-			call.transferred += n
-			o.mu.Unlock()
-			if n < 0 || n > len(call.bytes)-at {
-				return ErrInvalid
-			}
-			if err != nil {
-				return err
-			}
-			if n == 0 {
-				return io.ErrNoProgress
-			}
-		}
-		o.mu.Lock()
-		call.writeComplete = true
-		o.writerSent = projectP1TransferData(call).FullWrite
-		o.mu.Unlock()
-		return ctx.Err()
-	}()
+	resultErr = p.writeParentControl(ctx, call, frame)
+	o.mu.Lock()
+	bootstrap.writeComplete = call.bytesComplete
+	o.writerSent = projectP1TransferData(bootstrap).FullWrite
+	o.mu.Unlock()
 	if resultErr != nil {
-		o.channelFailure(call, resultErr)
+		o.channelFailure(bootstrap, resultErr)
 	}
 	normal = true
 	return resultErr
