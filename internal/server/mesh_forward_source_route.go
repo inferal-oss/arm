@@ -49,28 +49,24 @@ func (m *meshService) forwardSourceDial(ctx context.Context, workspaceID, target
 	if a.Local.Host != localHost || a.Origin.Host != localHost || a.Destination.Host != target || a.Origin.Fingerprint != m.store.Config().Identity.Fingerprint {
 		return nil, meshsshrelay.Open{}, model.Err("forbidden", "current original TCP endpoint changed")
 	}
-	var last error
-	for _, candidate := range m.owner.graphRouteCandidates(ctx, a, "forward") {
+	return forwardSourceDialCandidates(m.owner.graphRouteCandidates(ctx, a, "forward"), func(candidate graphRouteCandidate) forwardCandidateOutcome {
 		if candidate.saved || candidate.probe || len(candidate.path) < 2 || len(candidate.path) > meshsshrelay.MaxNodes {
-			continue
+			return forwardCandidateOutcome{}
 		}
 		if err := holdCheck(ctx); err != nil {
-			return nil, meshsshrelay.Open{}, err
+			return forwardCandidateOutcome{err: err, stop: true}
 		}
 		peer, e := m.owner.graphCandidatePeer(ctx, m, a, candidate, "forward")
 		if e != nil {
-			last = e
-			continue
+			return forwardCandidateOutcome{err: e}
 		}
 		raw, e := m.store.Call(ctx, peer.Identity.Host, mesh.Request{Operation: "access_scope", Params: json.RawMessage(`{}`)})
 		if e != nil {
-			last = e
-			continue
+			return forwardCandidateOutcome{err: e}
 		}
 		var scope model.NodeAccessScope
 		if e = mesh.Decode(raw, &scope); e != nil || scope.Source != localHost || scope.Target != peer.Identity.Host || scope.Pair != peer.Pair || scope.Revision < 1 {
-			last = model.Err("forbidden", "first forward pair changed")
-			continue
+			return forwardCandidateOutcome{err: model.Err("forbidden", "first forward pair changed")}
 		}
 		until := time.Now().Add(meshsshrelay.MaxLifetime)
 		for _, stamp := range []time.Time{a.Expires, a.Origin.Expires, a.Destination.Expires} {
@@ -82,18 +78,15 @@ func (m *meshService) forwardSourceDial(ctx context.Context, workspaceID, target
 			DirectoryPin: a.Directory.Fingerprint, DirectorySPKI: a.Directory.SPKI, SourcePin: a.Origin.Fingerprint, TargetPin: a.Destination.Fingerprint, SSHHostKeyPin: strings.Repeat("0", 64), Service: service,
 			Path: append([]string(nil), candidate.path...), Hop: 1, Class: meshsshrelay.ClassForward, Expires: until, Pair: peer.Pair, EnrollmentRevision: scope.Revision}
 		if e = o.Validate(time.Now()); e != nil {
-			last = e
-			continue
+			return forwardCandidateOutcome{err: e}
 		}
 		outer, e := m.store.ClientTLS(peer)
 		if e != nil {
-			last = e
-			continue
+			return forwardCandidateOutcome{err: e}
 		}
 		inner, e := m.store.RoutedForwardTLS(a.Local, a.Destination, false)
 		if e != nil {
-			last = e
-			continue
+			return forwardCandidateOutcome{err: e}
 		}
 		check := func(c context.Context) error {
 			if err := holdCheck(c); err != nil {
@@ -120,9 +113,35 @@ func (m *meshService) forwardSourceDial(ctx context.Context, workspaceID, target
 		}
 		conn, e := meshsshrelay.Dial(ctx, peer.Identity.Address, outer, inner, o, check)
 		if e == nil {
-			return conn, o, nil
+			return forwardCandidateOutcome{conn: conn, route: o}
 		}
-		last = e
+		return forwardCandidateOutcome{err: e}
+	})
+
+}
+
+type forwardCandidateOutcome struct {
+	conn  *tls.Conn
+	route meshsshrelay.Open
+	err   error
+	stop  bool
+}
+
+// This is the production candidate loop. A native close failure ends route
+// selection before another original transport can be opened.
+func forwardSourceDialCandidates(candidates []graphRouteCandidate, attempt func(graphRouteCandidate) forwardCandidateOutcome) (*tls.Conn, meshsshrelay.Open, error) {
+	var last error
+	for _, candidate := range candidates {
+		result := attempt(candidate)
+		if result.conn != nil && result.err == nil {
+			return result.conn, result.route, nil
+		}
+		if result.stop || forwardSourceDialNativeDebt(result.err) {
+			return nil, meshsshrelay.Open{}, result.err
+		}
+		if result.err != nil {
+			last = result.err
+		}
 	}
 	if last == nil {
 		last = model.Err("route_unavailable", "no current exact TCP path begins with a pinned direct peer")
@@ -131,4 +150,9 @@ func (m *meshService) forwardSourceDial(ctx context.Context, workspaceID, target
 		return nil, meshsshrelay.Open{}, last
 	}
 	return nil, meshsshrelay.Open{}, last
+}
+
+func forwardSourceDialNativeDebt(err error) bool {
+	var nativeUncertain *meshsshrelay.NativeCloseUncertain
+	return errors.As(err, &nativeUncertain)
 }

@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -62,6 +63,9 @@ func TestForwardUnixOriginalBindAndNativeTerminal(t *testing.T) {
 	if _, err = os.Lstat(path); err != nil {
 		t.Fatalf("original bound socket missing: %v", err)
 	}
+	if err = bound.CheckBeforeApplicationBytes(context.Background()); err != nil {
+		t.Fatalf("fresh original post-admission gate refused live bound owner: %v", err)
+	}
 	close(workersJoined)
 	if err = bound.CloseAfterJoin(context.Background()); err != nil {
 		t.Fatalf("original native close and settlement failed: %v", err)
@@ -90,6 +94,205 @@ func TestForwardUnixOriginalBindAndNativeTerminal(t *testing.T) {
 	}
 	if proofErr != nil || !proof.Complete || !proof.Settled {
 		t.Fatalf("native terminal tombstone did not settle: %+v %v", proof, proofErr)
+	}
+}
+
+func TestForwardUnixPostAdmissionGateRejectsChangedOriginal(t *testing.T) {
+	for _, kind := range []string{"source_run", "storage_run", "pair_row", "elapsed"} {
+		t.Run(kind, func(t *testing.T) {
+			m, h, c, _, _ := newShortForwardUnixPairFixture(t)
+			p, err := c.IssueStoragePair(context.Background())
+			if err != nil {
+				t.Fatal(err)
+			}
+			bound, err := p.BindOriginal(context.Background(), make(chan struct{}))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err = bound.CheckBeforeApplicationBytes(context.Background()); err != nil {
+				t.Fatalf("live owner refused before changed original: %v", err)
+			}
+			switch kind {
+			case "source_run":
+				_, err = m.db.Exec(`UPDATE leases SET run='{}' WHERE id=?`, p.source)
+			case "storage_run":
+				_, err = m.db.Exec(`UPDATE leases SET run='{}' WHERE id=?`, p.storage)
+			case "pair_row":
+				_, err = m.db.Exec(`UPDATE forward_unix_pairs SET data=json_set(data,'$.revision',99) WHERE source_id=?`, p.source)
+			case "elapsed":
+				m.mu.Lock()
+				sample := m.leaseClockLast
+				sample.Tick = h.result.Clock.End + 1
+				m.leaseClockRead = func() (leaseclock.Sample, error) { return sample, nil }
+				m.mu.Unlock()
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err = bound.CheckBeforeApplicationBytes(context.Background()); err == nil {
+				t.Fatalf("post-admission gate accepted changed %s", kind)
+			}
+		})
+	}
+}
+
+func TestForwardUnixAcceptedOriginalCannotOutliveWorkerJoin(t *testing.T) {
+	m, h, c, _, _ := newShortForwardUnixPairFixture(t)
+	p, err := c.IssueStoragePair(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	lease, err := m.Inspect(p.storage)
+	if err != nil {
+		t.Fatal(err)
+	}
+	workersJoined := make(chan struct{})
+	bound, err := p.BindOriginal(context.Background(), workersJoined)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := make(chan *net.UnixConn, 1)
+	acceptErr := make(chan error, 1)
+	go func() {
+		accepted, e := bound.AcceptOriginal(context.Background())
+		result <- accepted
+		acceptErr <- e
+	}()
+	client, err := net.DialTimeout("unix", filepath.Join(lease.ManagedDir, p.data.SocketName), time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	var accepted *net.UnixConn
+	select {
+	case accepted = <-result:
+	case <-time.After(5 * time.Second):
+		t.Fatal("original accepted descriptor unavailable")
+	}
+	if err = <-acceptErr; err != nil || accepted == nil {
+		t.Fatalf("original accept failed: %v", err)
+	}
+	close(workersJoined) // deliberately false join while accepted FD is live
+	if err = bound.CloseAfterJoin(context.Background()); err == nil || p.data.Phase != "bound" || h.unixFault == "" {
+		t.Fatalf("premature worker join settled a live accepted FD: phase=%q fault=%q err=%v", p.data.Phase, h.unixFault, err)
+	}
+	if err = bound.CloseAcceptedOriginal(accepted); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestForwardUnixRemoteTransportDebtBlocksNativeTerminal(t *testing.T) {
+	m, h, c, _, _ := newShortForwardUnixPairFixture(t)
+	p, err := c.IssueStoragePair(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	workersJoined := make(chan struct{})
+	bound, err := p.BindOriginal(context.Background(), workersJoined)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := bound.MarkOriginalTransportCloseUncertain(); err != nil {
+		t.Fatal(err)
+	}
+	close(workersJoined)
+	if err := bound.CloseAfterJoin(context.Background()); err == nil {
+		t.Fatal("remote raw close debt reached native terminal")
+	}
+	if p.data.Phase != "bound" || h.unixFault == "" {
+		t.Fatalf("remote raw close debt released original terminal: phase=%q fault=%q", p.data.Phase, h.unixFault)
+	}
+	for _, item := range []struct{ id, state string }{{h.id, "needs_attention"}, {p.storage, "active"}} {
+		lease, inspectErr := m.Inspect(item.id)
+		if inspectErr != nil || lease.State != item.state {
+			t.Fatalf("remote raw close debt released %s: state=%q err=%v", item.id, lease.State, inspectErr)
+		}
+	}
+}
+
+func TestForwardUnixCloseJoinsAcceptedRegistrationRace(t *testing.T) {
+	m, h, c, joined, childJoined := newShortForwardUnixPairFixture(t)
+	p, err := c.IssueStoragePair(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	lease, err := m.Inspect(p.storage)
+	if err != nil {
+		t.Fatal(err)
+	}
+	workersJoined := make(chan struct{})
+	bound, err := p.BindOriginal(context.Background(), workersJoined)
+	if err != nil {
+		t.Fatal(err)
+	}
+	entered, release := make(chan struct{}), make(chan struct{})
+	bound.beforeAcceptedRegisterTest = func() { close(entered); <-release }
+	acceptedDone := make(chan error, 1)
+	go func() {
+		accepted, acceptErr := bound.AcceptOriginal(context.Background())
+		if accepted != nil {
+			acceptErr = errors.Join(acceptErr, bound.CloseAcceptedOriginal(accepted))
+		}
+		acceptedDone <- acceptErr
+	}()
+	client, err := net.DialTimeout("unix", filepath.Join(lease.ManagedDir, p.data.SocketName), time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	select {
+	case <-entered:
+	case <-time.After(5 * time.Second):
+		t.Fatal("accept did not enter original registration barrier")
+	}
+	close(workersJoined) // false caller join while Manager still owns an in-flight FD
+	finishDone := make(chan error, 1)
+	go func() { finishDone <- bound.CloseAfterJoin(context.Background()) }()
+	deadline := time.Now().Add(5 * time.Second)
+	for !bound.admissionStopped.Load() && time.Now().Before(deadline) {
+		time.Sleep(time.Millisecond)
+	}
+	if !bound.admissionStopped.Load() {
+		t.Fatal("close did not stop original admission")
+	}
+	select {
+	case err = <-finishDone:
+		t.Fatalf("false worker join settled in-flight accepted FD: %v", err)
+	case <-time.After(50 * time.Millisecond):
+	}
+	if p.data.Phase != "bound" {
+		t.Fatalf("in-flight accepted FD reached terminal phase: %q", p.data.Phase)
+	}
+	for _, id := range []string{h.id, p.storage} {
+		lease, inspectErr := m.Inspect(id)
+		if inspectErr != nil || lease.State != "active" {
+			t.Fatalf("in-flight accepted FD released %s charge: state=%q err=%v", id, lease.State, inspectErr)
+		}
+	}
+	close(release)
+	select {
+	case err = <-acceptedDone:
+		if err == nil {
+			t.Fatal("accepted FD escaped after original close")
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("accepted FD did not join close")
+	}
+	select {
+	case err = <-finishDone:
+		if err != nil {
+			t.Fatalf("original close did not settle after joined rejection: %v", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("native close waited on accepted registration")
+	}
+	close(childJoined)
+	if err = c.FinishAfterJoin(); err != nil {
+		t.Fatal(err)
+	}
+	close(joined)
+	if _, err = h.FinishAfterJoin(); err != nil {
+		t.Fatal(err)
 	}
 }
 

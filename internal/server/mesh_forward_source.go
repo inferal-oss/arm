@@ -289,6 +289,17 @@ func (r *forwardSource) run() {
 }
 
 func (r *forwardSource) open(ctx context.Context) (*tls.Conn, error) {
+	admitted, err := r.openAdmitted(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return admitted.Conn(), nil
+}
+
+// openAdmitted gives a future Unix worker a typed original after pinned inner
+// TLS and the destination's exact request acknowledgement. It receives no
+// local accepted connection or application bytes.
+func (r *forwardSource) openAdmitted(ctx context.Context) (*meshforward.AdmittedRoute, error) {
 	if _, err := r.handle.Remaining(ctx); err != nil {
 		return nil, err
 	}
@@ -298,13 +309,11 @@ func (r *forwardSource) open(ctx context.Context) (*tls.Conn, error) {
 	}
 	remaining, err := r.handle.Remaining(ctx)
 	if err != nil {
-		_ = remote.Close()
-		return nil, err
+		return nil, closeForwardOriginalAfterRefusal(remote, err)
 	}
 	binding, err := o.BindingDigest(time.Now())
 	if err != nil {
-		_ = remote.Close()
-		return nil, err
+		return nil, closeForwardOriginalAfterRefusal(remote, err)
 	}
 	ttl := time.Until(o.Expires)
 	if remaining < ttl {
@@ -314,24 +323,44 @@ func (r *forwardSource) open(ctx context.Context) (*tls.Conn, error) {
 		ttl = meshforward.MaxLifetime
 	}
 	if ttl <= 0 {
-		_ = remote.Close()
-		return nil, errors.New("TCP route expired")
+		return nil, closeForwardOriginalAfterRefusal(remote, errors.New("TCP route expired"))
 	}
 	q := meshforward.Request{Version: 1, Workspace: o.Workspace, Generation: o.Generation, Source: o.Source, Target: o.Target, SourcePin: o.SourcePin, TargetPin: o.TargetPin, Service: o.Service, GrantRevision: r.binding.GrantRevision, ConnectionID: local.ID(), TTL: ttl, RouteBindingHash: binding}
 	_ = remote.SetDeadline(time.Now().Add(meshsshrelay.RequestDeadline))
+	var admitted *meshforward.AdmittedRoute
 	if err = meshforward.WriteRequest(remote, q); err == nil {
-		err = meshforward.ReadAccepted(remote, q)
+		admitted, err = meshforward.ReadAdmittedRoute(remote, q)
 	}
 	if err != nil {
-		_ = remote.Close()
-		return nil, err
+		return nil, closeForwardOriginalAfterRefusal(remote, err)
 	}
 	if _, err = r.handle.Remaining(ctx); err != nil {
-		_ = remote.Close()
-		return nil, err
+		return nil, closeForwardOriginalAfterRefusal(remote, err)
+	}
+	if err := r.currentForwardAuthority(ctx); err != nil {
+		return nil, closeForwardOriginalAfterRefusal(remote, err)
 	}
 	_ = remote.SetDeadline(time.Time{})
-	return remote, nil
+	return admitted, nil
+}
+
+func closeForwardOriginalAfterRefusal(remote *tls.Conn, reason error) error {
+	applicationErr, nativeErr := meshsshrelay.CloseOriginalTLS(remote)
+	return errors.Join(reason, applicationErr, nativeErr)
+}
+
+func (r *forwardSource) currentForwardAuthority(ctx context.Context) error {
+	if _, err := r.handle.Remaining(ctx); err != nil {
+		return err
+	}
+	current, err := r.owner.owner.Manager.WorkspaceRouteAccess(ctx, r.binding.Workspace, r.authority.Origin.Host, r.binding.Target, workspace.RouteForward)
+	if err != nil || sourceAuthority(current) != r.authority {
+		return model.Err("forbidden", "original forwarding membership changed after destination admission")
+	}
+	if _, err := r.handle.Remaining(ctx); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (m *meshService) stopForwardSources() {

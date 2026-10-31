@@ -71,7 +71,7 @@ func (h *ForwardListener) Remaining(ctx context.Context) (time.Duration, error) 
 func (h *ForwardListener) remainingLocked(ctx context.Context) (time.Duration, error) {
 	m := h.manager
 	l, err := m.get(h.id)
-	if ctx == nil || ctx.Err() != nil || err != nil || m.closing || h.ctx.Err() != nil || h.settled || h.unixFault != "" || m.forwardListeners[h.id] != h || l.ID != h.id || l.PID != 0 || l.Process != nil || l.State != "active" || l.Revision != h.result.Revision || !reflect.DeepEqual(l.Clock, h.result.Clock) || !reflect.DeepEqual(l.Expires, h.result.Expires) || l.Request.Key != h.key || l.Host != h.result.Host || l.Owner != h.result.Owner || !reflect.DeepEqual(l.Request, h.request) {
+	if ctx == nil || ctx.Err() != nil || err != nil || m.closing || h.ctx.Err() != nil || h.settled || h.unixFault != "" || m.forwardListeners[h.id] != h || l.ID != h.id || l.PID != 0 || l.Process != nil || l.State != "active" || l.Revision != h.result.Revision || !forwardUnixDefaultRootLease(l) || !reflect.DeepEqual(l.Clock, h.result.Clock) || !reflect.DeepEqual(l.Expires, h.result.Expires) || l.Request.Key != h.key || l.Host != h.result.Host || l.Owner != h.result.Owner || !reflect.DeepEqual(l.Request, h.request) {
 		return 0, model.Err("lease_inactive", "original listener allocation changed")
 	}
 	remaining, err := m.leaseRemaining(l)

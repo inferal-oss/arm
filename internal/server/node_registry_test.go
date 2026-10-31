@@ -20,8 +20,12 @@ import (
 )
 
 func registryPair(t *testing.T, leftGrant, rightGrant mesh.Grant) (*Server, *Server, *mesh.Store, *mesh.Store) {
+	return registryPairWith(t, leftGrant, rightGrant, meshFixture)
+}
+
+func registryPairWith(t *testing.T, leftGrant, rightGrant mesh.Grant, makeFixture func(*testing.T) *Server) (*Server, *Server, *mesh.Store, *mesh.Store) {
 	t.Helper()
-	left, right := meshFixture(t), meshFixture(t)
+	left, right := makeFixture(t), makeFixture(t)
 	makeStore := func(s *Server, name string) *mesh.Store {
 		n, err := s.nodeMetadata()
 		if err != nil {

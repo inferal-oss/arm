@@ -242,7 +242,7 @@ func (c *ForwardUnixChild) IssueStoragePair(ctx context.Context) (pair *ForwardU
 		return nil, err
 	}
 	storageRemaining, err := m.leaseRemaining(currentStorage)
-	if err != nil || storageRemaining < remaining+forwardUnixCleanupWindow/2 || currentStorage.State != "active" || currentStorage.ID != storage.ID || currentStorage.Request.Key != key || currentStorage.Request.Kind != "storage" || currentStorage.Request.Resources != (model.Resources{Disk: forwardUnixDiskPromise}) || currentStorage.Host != h.result.Host || currentStorage.Owner != h.result.Owner || currentStorage.Artifact == nil || currentStorage.Artifact.Identity == nil || currentStorage.Artifact.Phase != "owned" || m.storage == nil {
+	if err != nil || storageRemaining < remaining+forwardUnixCleanupWindow/2 || !forwardUnixDefaultRootLease(currentStorage) || currentStorage.State != "active" || currentStorage.ID != storage.ID || currentStorage.Request.Key != key || currentStorage.Request.Kind != "storage" || currentStorage.Request.Resources != (model.Resources{Disk: forwardUnixDiskPromise}) || currentStorage.Host != h.result.Host || currentStorage.Owner != h.result.Owner || currentStorage.Artifact == nil || currentStorage.Artifact.Identity == nil || currentStorage.Artifact.Phase != "owned" || m.storage == nil {
 		return nil, model.Err("storage_unavailable", "exact dedicated forward Unix storage entitlement unavailable")
 	}
 	if err = m.storage.Check(*currentStorage.Artifact); err != nil {

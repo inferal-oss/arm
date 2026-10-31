@@ -116,7 +116,10 @@ func Dial(ctx context.Context, address string, outer, inner *tls.Config, o Open,
 		return nil, err
 	}
 	conn := tls.Client(raw, inner)
-	closeOnError := func(e error) (*tls.Conn, error) { _ = raw.Close(); return nil, e }
+	closeOnError := func(e error) (*tls.Conn, error) {
+		applicationErr, nativeErr := closeCarrierOriginal(raw)
+		return nil, errors.Join(e, applicationErr, nativeErr)
+	}
 	if err = revalidate(ctx); err != nil {
 		return closeOnError(err)
 	}

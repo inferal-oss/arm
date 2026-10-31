@@ -3,21 +3,29 @@ package server
 import (
 	"bufio"
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net"
 	"net/http"
+	"os"
 	"os/user"
+	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	"getarm.org/internal/local"
+	"getarm.org/internal/manager"
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/meshforward"
 	"getarm.org/internal/meshsshrelay"
 	"getarm.org/internal/model"
+	"getarm.org/internal/observe"
 	"getarm.org/internal/workspace"
 )
 
@@ -25,38 +33,11 @@ func TestForwardThreeNodesHTTPExactOriginalAndRevocation(t *testing.T) {
 	if !meshsshrelay.ForwardReviewEnabled {
 		t.Skip("development-only arm_forward_review build required; production authority is disabled")
 	}
-	directory, source, destination, id := graphStreamFixture(t)
+	directory, source, destination, id := graphStreamFixtureWith(t, shortForwardMeshFixture)
+	samplersStarted := time.Now()
 	directory.Manager.Start()
 	source.Manager.Start()
 	destination.Manager.Start()
-	deadline := time.Now().Add(5 * time.Second)
-	for {
-		status, e := directory.Manager.Status()
-		if e != nil {
-			t.Fatal(e)
-		}
-		if status.CPU != nil && status.CPU.Known && status.CPU.Available >= .0001 && status.Memory != nil && !status.Memory.Stale && status.Memory.Available >= 4<<20 {
-			break
-		}
-		if time.Now().After(deadline) {
-			t.Fatalf("no current relay CPU/memory samples: cpu=%+v memory=%+v", status.CPU, status.Memory)
-		}
-		time.Sleep(20 * time.Millisecond)
-	}
-	deadline = time.Now().Add(5 * time.Second)
-	for {
-		status, e := destination.Manager.Status()
-		if e != nil {
-			t.Fatal(e)
-		}
-		if status.CPU != nil && status.CPU.Known && status.CPU.Available >= .0001 && status.Memory != nil && !status.Memory.Stale && status.Memory.Available >= 4<<20 {
-			break
-		}
-		if time.Now().After(deadline) {
-			t.Fatalf("no destination CPU/memory samples: cpu=%+v memory=%+v", status.CPU, status.Memory)
-		}
-		time.Sleep(20 * time.Millisecond)
-	}
 	dirService, err := directory.workspaceService()
 	if err != nil {
 		t.Fatal(err)
@@ -69,6 +50,11 @@ func TestForwardThreeNodesHTTPExactOriginalAndRevocation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Observe original admission callbacks only; preserve every result and
+	// leave the existing native samplers, authority and lifetime unchanged.
+	admissionDiagnostic := &forwardAdmissionDiagnostic{epoch: time.Now()}
+	admissionDiagnostic.wrap("relay", directory, dirService.forwardRouted)
+	admissionDiagnostic.wrap("destination", destination, dstService.forwardRouted)
 	dirID, srcID, dstID := dirService.store.Config().Identity, srcService.store.Config().Identity, dstService.store.Config().Identity
 	if _, err := srcService.store.Resolve(dstID.Host); err == nil {
 		t.Fatal("source unexpectedly has direct destination enrollment")
@@ -154,6 +140,29 @@ func TestForwardThreeNodesHTTPExactOriginalAndRevocation(t *testing.T) {
 	}
 	forwardKey := local.ID()
 	startRaw, _ := json.Marshal(forwardSourceRequest{Key: forwardKey, Workspace: id, Target: dstID.Host, Service: "web", GrantRevision: 1, Bind: "127.0.0.1:0", TokenSHA256: digest, TTL: time.Minute, Reason: "three-node source listener test"})
+	// The first listener admission needs its own fresh source observation.
+	// Policy setup can outlive the startup CPU interval; a recent publication
+	// with an unknown or overlong original interval still cannot admit it.
+	listenerNeed := model.Resources{CPU: .0001, Memory: 4 << 20}
+	sourceReadyUntil := time.Now().Add(10 * time.Second)
+	for {
+		sourceStatus, statusErr := source.Manager.Status()
+		if statusErr != nil {
+			t.Fatal(statusErr)
+		}
+		if sourceStatus.CPU != nil && sourceStatus.CPU.Known && !sourceStatus.CPU.Stale &&
+			sourceStatus.CPU.Observation.Known && sourceStatus.CPU.Observation.Interval >= 100*time.Millisecond &&
+			sourceStatus.CPU.Observation.Interval <= observe.CPUObservationMaxGap &&
+			sourceStatus.CPU.Observation.At.After(samplersStarted) && sourceStatus.CPU.Available >= listenerNeed.CPU &&
+			sourceStatus.Memory != nil && !sourceStatus.Memory.Stale &&
+			sourceStatus.Memory.Observation.At.After(samplersStarted) && sourceStatus.Memory.Available >= listenerNeed.Memory {
+			break
+		}
+		if !time.Now().Before(sourceReadyUntil) {
+			t.Fatalf("no current post-Start source listener headroom for %+v: CPU=%+v memory=%+v", listenerNeed, sourceStatus.CPU, sourceStatus.Memory)
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
 	started, err := srcService.forwardSourceOperation(t.Context(), "mesh_forward_start", startRaw)
 	if err != nil {
 		t.Fatalf("source listener start: %v", err)
@@ -171,6 +180,32 @@ func TestForwardThreeNodesHTTPExactOriginalAndRevocation(t *testing.T) {
 	t.Cleanup(func() {
 		_, _ = srcService.forwardSourceOperation(context.Background(), "mesh_forward_stop", stopRaw)
 	})
+	// Setup and grant review can outlive the startup CPU interval. Require
+	// current post-Start observations from both actual admission owners just
+	// before the first request; never retry a connection or replace a refusal.
+	headroomReady := func(status model.Status) bool {
+		return status.CPU != nil && status.CPU.Known && !status.CPU.Stale &&
+			status.CPU.Observation.At.After(samplersStarted) && status.CPU.Available >= grant.Transit.CPU &&
+			status.Memory != nil && !status.Memory.Stale && status.Memory.Available >= grant.Transit.Memory
+	}
+	headroomUntil := time.Now().Add(5 * time.Second)
+	for {
+		relayStatus, err := directory.Manager.Status()
+		if err != nil {
+			t.Fatal(err)
+		}
+		destinationStatus, err := destination.Manager.Status()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if headroomReady(relayStatus) && headroomReady(destinationStatus) {
+			break
+		}
+		if !time.Now().Before(headroomUntil) {
+			t.Fatalf("no current post-Start forwarding headroom for %+v: relay CPU=%+v memory=%+v; destination CPU=%+v memory=%+v", grant.Transit, relayStatus.CPU, relayStatus.Memory, destinationStatus.CPU, destinationStatus.Memory)
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
 	localConn, err := net.DialTimeout("tcp", forwardStatus.Bind, 5*time.Second)
 	if err != nil {
 		t.Fatal(err)
@@ -181,6 +216,7 @@ func TestForwardThreeNodesHTTPExactOriginalAndRevocation(t *testing.T) {
 		t.Fatal(err)
 	}
 	localResponse, err := http.ReadResponse(bufio.NewReader(localConn), nil)
+	admissionDiagnostic.logInitialResult(t)
 	if err != nil {
 		// Wait for this original connection owner to publish its actual result;
 		// do not open another route and guess why the first one closed.
@@ -204,6 +240,103 @@ func TestForwardThreeNodesHTTPExactOriginalAndRevocation(t *testing.T) {
 	_ = localConn.Close()
 	if err != nil || string(localBody) != "POST:/source:hello" {
 		t.Fatalf("source response %q: %v", localBody, err)
+	}
+	// The private original Unix worker uses the same pinned B→A→C route and
+	// destination grant, but is never installed by public start/dispatch.
+	srcService.forwardSourcesMu.Lock()
+	original := srcService.forwardSources[forwardKey]
+	srcService.forwardSourcesMu.Unlock()
+	if original == nil {
+		t.Fatal("original source owner missing")
+	}
+	childJoined := make(chan struct{})
+	t.Cleanup(func() {
+		select {
+		case <-childJoined:
+		default:
+			close(childJoined)
+		}
+	})
+	child, err := original.handle.IssueUnixChild(t.Context(), childJoined)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pair, err := child.IssueStoragePair(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	worker, err := original.startPrivateUnixWorker(t.Context(), pair)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = worker.Close(cleanupCtx)
+	})
+	storageStatus, err := source.Manager.Status()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var unixPath, unixStorageID string
+	for _, lease := range storageStatus.Leases {
+		if lease.Request.Kind != "storage" || lease.Request.Reason != "Forward Unix source directory for "+original.handle.LeaseID() {
+			continue
+		}
+		unixStorageID = lease.ID
+		entries, readErr := os.ReadDir(lease.ManagedDir)
+		if readErr != nil {
+			t.Fatal(readErr)
+		}
+		for _, entry := range entries {
+			if strings.HasSuffix(entry.Name(), ".sock") {
+				unixPath = filepath.Join(lease.ManagedDir, entry.Name())
+			}
+		}
+	}
+	if unixPath == "" {
+		t.Fatal("original Unix socket not found in charged storage directory")
+	}
+	unixConn, err := net.DialTimeout("unix", unixPath, 5*time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = unixConn.SetDeadline(time.Now().Add(12 * time.Second))
+	if _, err = io.WriteString(unixConn, "POST /unix HTTP/1.1\r\nHost: web\r\nConnection: close\r\nContent-Length: 4\r\n\r\nmesh"); err != nil {
+		t.Fatal(err)
+	}
+	unixResponse, err := http.ReadResponse(bufio.NewReader(unixConn), nil)
+	if err != nil {
+		worker.mu.Lock()
+		cleanup, application, active := worker.cleanupErr, worker.applicationErr, len(worker.active)
+		worker.mu.Unlock()
+		t.Fatalf("original Unix response: %v; cleanup=%v application=%v active=%d", err, cleanup, application, active)
+	}
+	unixBody, err := io.ReadAll(unixResponse.Body)
+	_ = unixResponse.Body.Close()
+	_ = unixConn.Close()
+	if err != nil || string(unixBody) != "POST:/unix:mesh" {
+		t.Fatalf("original Unix routed response %q: %v", unixBody, err)
+	}
+	for deadline := time.Now().Add(2 * time.Second); time.Now().Before(deadline); {
+		worker.mu.Lock()
+		active := len(worker.active)
+		worker.mu.Unlock()
+		if active == 0 {
+			break
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	closeCtx, closeCancel := context.WithTimeout(t.Context(), 45*time.Second)
+	closeErr := worker.Close(closeCtx)
+	closeCancel()
+	if closeErr != nil {
+		activity := inspectForwardUnixCloseActivity(t.Context(), source.Manager, original.handle.LeaseID(), unixStorageID)
+		t.Fatalf("original Unix worker and storage did not settle: %v; original-process activity=%+v", closeErr, activity)
+	}
+	close(childJoined)
+	if err = child.FinishAfterJoin(); err != nil {
+		t.Fatal(err)
 	}
 	stopped, err := srcService.forwardSourceOperation(t.Context(), "mesh_forward_stop", stopRaw)
 	if err != nil || stopped.(forwardSourceStatus).State != "terminal" && stopped.(forwardSourceStatus).State != "needs_attention" {
@@ -477,4 +610,180 @@ func TestForwardThreeNodesHTTPExactOriginalAndRevocation(t *testing.T) {
 		conn.Close()
 		t.Fatal("revoked destination TCP grant still admitted")
 	}
+}
+
+func shortForwardMeshFixture(t *testing.T) *Server {
+	t.Helper()
+	var root string
+	for i := 0; i < 32 && root == ""; i++ {
+		var nonce [1]byte
+		if _, err := rand.Read(nonce[:]); err != nil {
+			t.Fatal(err)
+		}
+		candidate := filepath.Join("/private/tmp", hex.EncodeToString(nonce[:]))
+		if err := os.Mkdir(candidate, 0700); err == nil {
+			root = candidate
+		} else if !os.IsExist(err) {
+			t.Fatal(err)
+		}
+	}
+	if root == "" {
+		t.Fatal("short private mesh root unavailable")
+	}
+	t.Cleanup(func() { _ = os.RemoveAll(root) })
+	home := filepath.Join(root, "arm")
+	m, err := manager.Open(home, model.Resources{CPU: 2, Memory: 32 << 20, Disk: 8 << 20})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = m.Close() })
+	return &Server{Manager: m, home: home, lifecycleContext: context.Background()}
+}
+
+// This observer records the first real source admission. It never retries,
+// supplies authority, or changes a callback result. Later test traffic retains
+// the wrapper but recording is disabled after the first HTTP response result.
+type forwardAdmissionDiagnostic struct {
+	mu      sync.Mutex
+	epoch   time.Time
+	stopped bool
+	omitted uint64
+	events  []forwardAdmissionEvent
+}
+
+type forwardAdmissionEvent struct {
+	Role           string          `json:"role"`
+	Stage          string          `json:"stage"`
+	Boundary       string          `json:"boundary"`
+	AtNS           int64           `json:"at_ns"`
+	ElapsedNS      int64           `json:"elapsed_ns,omitempty"`
+	Category       string          `json:"category,omitempty"`
+	ErrorMessage   string          `json:"error_message,omitempty"`
+	MessageClipped bool            `json:"error_message_clipped,omitempty"`
+	Context        string          `json:"context"`
+	DeadlineLeftNS *int64          `json:"deadline_left_ns,omitempty"`
+	NativeSnapshot json.RawMessage `json:"native_snapshot,omitempty"`
+}
+
+func forwardAdmissionCategory(err error) string {
+	if err == nil {
+		return "ok"
+	}
+	if errors.Is(err, context.Canceled) {
+		return "context_canceled"
+	}
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "context_deadline"
+	}
+	if errors.Is(err, io.EOF) {
+		return "io_eof"
+	}
+	var typed *model.Error
+	if errors.As(err, &typed) {
+		return "model:" + typed.Code
+	}
+	return fmt.Sprintf("type:%T", err)
+}
+
+func (d *forwardAdmissionDiagnostic) record(role, stage, boundary string, ctx context.Context, started time.Time, err error, server *Server) {
+	d.mu.Lock()
+	stopped := d.stopped
+	d.mu.Unlock()
+	if stopped {
+		return
+	}
+	row := forwardAdmissionEvent{Role: role, Stage: stage, Boundary: boundary, AtNS: time.Since(d.epoch).Nanoseconds(), Context: forwardAdmissionCategory(ctx.Err())}
+	if boundary == "returned" {
+		row.ElapsedNS = time.Since(started).Nanoseconds()
+		row.Category = forwardAdmissionCategory(err)
+		if err != nil {
+			row.ErrorMessage = err.Error()
+			if len(row.ErrorMessage) > 2048 {
+				row.ErrorMessage = row.ErrorMessage[:2048]
+				row.MessageClipped = true
+			}
+		}
+	}
+	if deadline, ok := ctx.Deadline(); ok {
+		left := time.Until(deadline).Nanoseconds()
+		row.DeadlineLeftNS = &left
+	}
+	failed := boundary == "returned" && err != nil
+	if failed {
+		row.NativeSnapshot = json.RawMessage(`{"pending":true}`)
+	}
+	d.mu.Lock()
+	if d.stopped {
+		d.mu.Unlock()
+		return
+	}
+	if len(d.events) == 128 {
+		d.omitted++
+		d.mu.Unlock()
+		return
+	}
+	index := len(d.events)
+	d.events = append(d.events, row)
+	d.mu.Unlock()
+	if failed {
+		// Preserve the actual returned error BEFORE any optional snapshot IO.
+		// Read only after the original callback released its locks. Never
+		// start a sampler or replace its refusal with a later observation.
+		status, snapshotErr := server.Manager.Status()
+		snapshot, encodeErr := json.Marshal(struct {
+			AtNS     int64           `json:"at_ns"`
+			Reserved model.Resources `json:"reserved"`
+			CPU      any             `json:"cpu"`
+			Memory   any             `json:"memory"`
+			Error    string          `json:"error"`
+		}{time.Since(d.epoch).Nanoseconds(), status.Reserved, status.CPU, status.Memory, forwardAdmissionCategory(snapshotErr)})
+		if encodeErr != nil {
+			snapshot = json.RawMessage(`{"encoding_failed":true}`)
+		}
+		d.mu.Lock()
+		d.events[index].NativeSnapshot = snapshot
+		d.mu.Unlock()
+	}
+}
+
+func (d *forwardAdmissionDiagnostic) wrap(role string, server *Server, handler *meshsshrelay.Handler) {
+	authorize, reserve := handler.Authorize, handler.ReserveTransit
+	handler.Authorize = func(ctx context.Context, outer meshsshrelay.Outer, open meshsshrelay.Open) (meshsshrelay.Permit, error) {
+		started := time.Now()
+		d.record(role, "authorize", "entered", ctx, started, nil, server)
+		permit, err := authorize(ctx, outer, open)
+		d.record(role, "authorize", "returned", ctx, started, err, server)
+		return permit, err
+	}
+	handler.ReserveTransit = func(admission, lifetime context.Context, joined <-chan struct{}, outer meshsshrelay.Outer, open meshsshrelay.Open, permit meshsshrelay.Permit) (meshsshrelay.TransitReservation, error) {
+		started := time.Now()
+		d.record(role, "reserve_transit", "entered", admission, started, nil, server)
+		reservation, err := reserve(admission, lifetime, joined, outer, open, permit)
+		d.record(role, "reserve_transit", "returned", admission, started, err, server)
+		if check := reservation.CheckActive; check != nil {
+			reservation.CheckActive = func(ctx context.Context) error {
+				started := time.Now()
+				d.record(role, "check_active", "entered", ctx, started, nil, server)
+				err := check(ctx)
+				d.record(role, "check_active", "returned", ctx, started, err, server)
+				return err
+			}
+		}
+		return reservation, err
+	}
+}
+
+func (d *forwardAdmissionDiagnostic) logInitialResult(t *testing.T) {
+	t.Helper()
+	d.mu.Lock()
+	d.stopped = true
+	raw, err := json.Marshal(struct {
+		Events  []forwardAdmissionEvent `json:"events"`
+		Omitted uint64                  `json:"omitted"`
+	}{d.events, d.omitted})
+	d.mu.Unlock()
+	if err != nil {
+		t.Fatalf("initial forwarding admission diagnostic unavailable: %v", err)
+	}
+	t.Logf("initial forwarding admission diagnostic: %s", raw)
 }

@@ -56,6 +56,12 @@ func validForwardUnixPairClock(d *leaseclock.Deadline, max time.Duration) bool {
 	return d != nil && d.Version == 1 && d.Boot != "" && len(d.Boot) <= 256 && d.Anchor >= 0 && d.End > d.Anchor && d.End-d.Anchor <= int64(max) && !d.Wall.IsZero()
 }
 
+// Forwarding Unix pairs own the default storage root only. A persisted lease
+// cannot acquire named-root placement through a same-revision data change.
+func forwardUnixDefaultRootLease(l model.Lease) bool {
+	return l.Request.StoragePool == "" && l.StorageBinding == nil
+}
+
 func readForwardUnixPairLease(ctx context.Context, tx *sql.Tx, id string) (model.Lease, string, string, error) {
 	var l model.Lease
 	var raw, key string
@@ -65,7 +71,7 @@ func readForwardUnixPairLease(ctx context.Context, tx *sql.Tx, id string) (model
 		CASE WHEN typeof(request_key)='text' AND length(CAST(request_key AS BLOB))<=128 THEN request_key ELSE '' END,
 		CASE WHEN run IS NULL THEN 1 ELSE 0 END
 		FROM leases WHERE id=?`, id).Scan(&raw, &key, &runNull)
-	if err != nil || runNull != 1 || len(raw) > 65536 || len(key) > 128 || json.Unmarshal([]byte(raw), &l) != nil || l.ID != id || l.Request.Key != key {
+	if err != nil || runNull != 1 || len(raw) > 65536 || len(key) > 128 || json.Unmarshal([]byte(raw), &l) != nil || l.ID != id || l.Request.Key != key || !forwardUnixDefaultRootLease(l) {
 		return l, "", "", forwardUnixPairUnavailable()
 	}
 	canonical, err := json.Marshal(l)

@@ -17,9 +17,13 @@ import (
 )
 
 func graphStreamFixture(t *testing.T) (*Server, *Server, *Server, string) {
+	return graphStreamFixtureWith(t, meshFixture)
+}
+
+func graphStreamFixtureWith(t *testing.T, makeFixture func(*testing.T) *Server) (*Server, *Server, *Server, string) {
 	t.Helper()
-	a, b, as, _ := registryPair(t, mesh.Grant{Permissions: []string{"observe-host"}}, mesh.Grant{Permissions: []string{"observe-host"}})
-	c := meshFixture(t)
+	a, b, as, _ := registryPairWith(t, mesh.Grant{Permissions: []string{"observe-host"}}, mesh.Grant{Permissions: []string{"observe-host"}}, makeFixture)
+	c := makeFixture(t)
 	meta, e := c.nodeMetadata()
 	if e != nil {
 		t.Fatal(e)

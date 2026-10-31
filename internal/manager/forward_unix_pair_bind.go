@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"getarm.org/internal/model"
@@ -21,29 +22,35 @@ import (
 // only after the bound row and event have a positive durable acknowledgement.
 // No public route or accept worker is installed by this source cut.
 type ForwardUnixBound struct {
-	pair                    *ForwardUnixPair
-	directory               *storage.SourceDirectory
-	listener                *net.UnixListener
-	socket                  model.FileIdentity
-	joined                  <-chan struct{}
-	stopWatch               chan struct{}
-	watchDone               chan struct{}
-	stopOnce                sync.Once
-	closeOnce               sync.Once
-	closeErr                error
-	dirCloseOnce            sync.Once
-	dirCloseErr             error
-	dirCloseAttempted       bool
-	nativeMu                sync.Mutex
-	beforeNativeCleanupTest func() // fixed test seam while cleanup owns nativeMu
-	finishOnce              sync.Once
-	finishErr               error
+	pair                       *ForwardUnixPair
+	directory                  *storage.SourceDirectory
+	listener                   *net.UnixListener
+	socket                     model.FileIdentity
+	joined                     <-chan struct{}
+	stopWatch                  chan struct{}
+	watchDone                  chan struct{}
+	stopOnce                   sync.Once
+	closeOnce                  sync.Once
+	closeErr                   error
+	dirCloseOnce               sync.Once
+	dirCloseErr                error
+	dirCloseAttempted          bool
+	nativeMu                   sync.Mutex
+	acceptMu                   sync.Mutex // one original accept syscall at a time
+	admissionStopped           atomic.Bool
+	acceptedMu                 sync.Mutex
+	accepted                   map[*net.UnixConn]*forwardUnixAcceptedClose
+	beforeAcceptedRegisterTest func() // fixed barrier for close/accept join ordering
+	beforeNativeCleanupTest    func() // fixed test seam while cleanup owns nativeMu
+	finishOnce                 sync.Once
+	finishErr                  error
 }
 
 func (b *ForwardUnixBound) closeOriginal() error {
 	if b == nil || b.listener == nil {
 		return nil
 	}
+	b.admissionStopped.Store(true)
 	b.closeOnce.Do(func() { b.closeErr = b.listener.Close() })
 	return b.closeErr
 }
@@ -235,12 +242,19 @@ func forwardUnixListenerIdentity(listener *net.UnixListener, path string) error 
 // readyForNativePhase runs after the durable phase ACK and all preceding
 // directory IO. Its last read is the source's native elapsed lease clock;
 // process-context cancellation is not the entitlement oracle.
-func (p *ForwardUnixPair) readyForNativePhase(ctx context.Context, owner *ForwardUnixBound, provider *storage.Provider, workersJoined <-chan struct{}, phase string) error {
+func (p *ForwardUnixPair) readyForNativePhase(ctx context.Context, owner *ForwardUnixBound, provider *storage.Provider, workersJoined <-chan struct{}, phase string, constructing bool) error {
 	c, h := p.child, p.child.parent
 	m := h.manager
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if m.closing || p.shutdownRequested || !p.binding || p.native != owner || p.data.Phase != phase || phase != "bind_intent" && phase != "bound" || c.pair != p || c.released || h.unixChild != c || h.settled || h.unixFault != "" || h.ctx.Err() != nil || c.ctx.Err() != nil || m.forwardListeners[h.id] != h || m.storage != provider || provider.Identity() != p.data.StorageRoot {
+	if m.closing || p.shutdownRequested || p.binding != constructing || p.native != owner || p.data.Phase != phase || phase != "bind_intent" && phase != "bound" || !constructing && phase != "bound" || c.pair != p || c.released || h.unixChild != c || h.settled || h.unixFault != "" || h.ctx.Err() != nil || c.ctx.Err() != nil || m.forwardListeners[h.id] != h || m.storage != provider || provider.Identity() != p.data.StorageRoot {
+		return forwardUnixPairUnavailable()
+	}
+	if _, err := h.remainingLocked(ctx); err != nil {
+		return err
+	}
+	storageLease, err := m.get(p.storage)
+	if err != nil || !forwardUnixDefaultRootLease(storageLease) {
 		return forwardUnixPairUnavailable()
 	}
 	for _, joined := range []<-chan struct{}{workersJoined, c.joined, h.joined} {
@@ -328,7 +342,7 @@ func (p *ForwardUnixPair) BindOriginal(ctx context.Context, workersJoined <-chan
 		return nil, forwardUnixPairUnavailable()
 	}
 	lease, err := m.get(p.storage)
-	if err != nil || lease.Artifact == nil || lease.Artifact.Identity == nil || *lease.Artifact.Identity != p.data.StorageArtifact || lease.ManagedDir != m.storage.Path(p.storage) || m.storage.Identity() != p.data.StorageRoot {
+	if err != nil || !forwardUnixDefaultRootLease(lease) || lease.Artifact == nil || lease.Artifact.Identity == nil || *lease.Artifact.Identity != p.data.StorageArtifact || lease.ManagedDir != m.storage.Path(p.storage) || m.storage.Identity() != p.data.StorageRoot {
 		m.mu.Unlock()
 		return nil, forwardUnixPairUnavailable()
 	}
@@ -383,7 +397,7 @@ func (p *ForwardUnixPair) BindOriginal(ctx context.Context, workersJoined <-chan
 	if p.beforeNativeBindTest != nil {
 		p.beforeNativeBindTest()
 	}
-	if err = p.readyForNativePhase(ctx, owner, provider, workersJoined, "bind_intent"); err != nil {
+	if err = p.readyForNativePhase(ctx, owner, provider, workersJoined, "bind_intent", true); err != nil {
 		return nil, owner.fault(err)
 	}
 	if ctx.Err() != nil || c.ctx.Err() != nil {
@@ -429,7 +443,7 @@ func (p *ForwardUnixPair) BindOriginal(ctx context.Context, workersJoined <-chan
 	if p.afterBoundAckTest != nil {
 		p.afterBoundAckTest()
 	}
-	if err = p.readyForNativePhase(ctx, owner, provider, workersJoined, "bound"); err != nil {
+	if err = p.readyForNativePhase(ctx, owner, provider, workersJoined, "bound", true); err != nil {
 		return nil, owner.fault(err)
 	}
 	if ctx.Err() != nil || c.ctx.Err() != nil {
@@ -461,6 +475,52 @@ func (p *ForwardUnixPair) BindOriginal(ctx context.Context, workersJoined <-chan
 	return owner, nil
 }
 
+// CheckBeforeApplicationBytes is the final local ownership gate for a future
+// source worker. It must run after the remote endpoint has positively completed
+// pinned TLS and destination-grant admission, and before the worker reads or
+// copies any local application byte. It does not certify that remote admission:
+// the caller must obtain that proof independently. No public worker calls this
+// method yet.
+func (b *ForwardUnixBound) CheckBeforeApplicationBytes(ctx context.Context) error {
+	if b == nil || b.pair == nil || b.directory == nil || b.listener == nil || ctx == nil || ctx.Err() != nil {
+		return forwardUnixPairUnavailable()
+	}
+	b.nativeMu.Lock()
+	defer b.nativeMu.Unlock()
+	p := b.pair
+	m := p.child.parent.manager
+	m.mu.Lock()
+	if p.native != b || p.data.Phase != "bound" || p.data.Bound == nil || m.storage == nil {
+		m.mu.Unlock()
+		return forwardUnixPairUnavailable()
+	}
+	if _, err := p.child.parent.remainingLocked(ctx); err != nil {
+		m.mu.Unlock()
+		return err
+	}
+	provider := m.storage
+	lease, err := m.get(p.storage)
+	if err != nil || !forwardUnixDefaultRootLease(lease) || lease.Artifact == nil || lease.ManagedDir != provider.Path(p.storage) {
+		m.mu.Unlock()
+		return forwardUnixPairUnavailable()
+	}
+	path := filepath.Join(lease.ManagedDir, p.data.SocketName)
+	m.mu.Unlock()
+	if err := b.directory.Check(); err != nil {
+		return err
+	}
+	observed, err := b.directory.ObserveForwardSocket(ctx, p.data.SocketName)
+	if err != nil || observed.Directory != p.data.StorageArtifact || observed.Socket != b.socket || observed.Allocated > p.data.DiskBytes {
+		return errors.Join(err, forwardUnixPairUnavailable())
+	}
+	if err := forwardUnixListenerIdentity(b.listener, path); err != nil {
+		return err
+	}
+	// The native elapsed clock and exact durable rows are sampled last, after
+	// the potentially blocking directory and listener observations.
+	return p.readyForNativePhase(ctx, b, provider, b.joined, "bound", false)
+}
+
 // CloseAfterJoin stops admission, waits for the supplied original workers,
 // checks native close/unlink and records a distinct terminal proof. It may be
 // called again after a successful terminal ACK to retry ordinary settlement.
@@ -476,16 +536,37 @@ func (b *ForwardUnixBound) CloseAfterJoin(ctx context.Context) error {
 }
 
 func (b *ForwardUnixBound) finishNative(ctx context.Context) error {
-	b.nativeMu.Lock()
-	defer b.nativeMu.Unlock()
 	b.stopWatcher()
 	if err := b.closeOriginal(); err != nil {
-		return b.faultLocked(err)
+		return b.fault(err)
 	}
 	select {
 	case <-b.joined:
 	case <-ctx.Done():
-		return b.faultLocked(ctx.Err())
+		return b.fault(ctx.Err())
+	}
+	// The Manager's accept mutex is an in-flight token covering AcceptUnix,
+	// peer verification, registration and rejected-FD close. Stop admission
+	// first, then join that token outside nativeMu; a caller-supplied worker
+	// join cannot certify an FD still between AcceptUnix and registration.
+	b.acceptMu.Lock()
+	defer b.acceptMu.Unlock()
+	// A live accept may need nativeMu to reject and close its just-returned FD.
+	// Waiting for the worker join while holding that mutex would deadlock it.
+	b.nativeMu.Lock()
+	defer b.nativeMu.Unlock()
+	b.acceptedMu.Lock()
+	remainingAccepted := len(b.accepted)
+	b.acceptedMu.Unlock()
+	if remainingAccepted != 0 {
+		return b.faultLocked(forwardUnixPairUnavailable())
+	}
+	m := b.pair.child.parent.manager
+	m.mu.Lock()
+	sticky := b.pair.child.parent.unixFault
+	m.mu.Unlock()
+	if sticky != "" {
+		return b.faultLocked(model.Err("forward_unix_cleanup_uncertain", sticky))
 	}
 	if b.beforeNativeCleanupTest != nil {
 		b.beforeNativeCleanupTest()
@@ -545,6 +626,12 @@ func (b *ForwardUnixBound) settleStorage(ctx context.Context) error {
 		m.mu.Unlock()
 		if readErr != nil {
 			return readErr
+		}
+		if lease.State == "needs_attention" {
+			// The ordinary cleanup worker has reported a retained obligation.
+			// Its completed refusal cannot become success by waiting longer.
+			// Keep the original pair registered for explicit reconciliation.
+			return model.Err("forward_unix_cleanup_uncertain", "original forward Unix storage requires reconciliation; allocation remains charged")
 		}
 		select {
 		case <-ctx.Done():

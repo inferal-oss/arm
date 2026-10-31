@@ -7,6 +7,7 @@ import (
 	"crypto/tls"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -418,18 +419,18 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 		if e != nil {
 			return nil, e
 		}
-		socket.set(raw)
+		owned := socket.set(raw)
 		if err := revalidate(ctx); err != nil {
-			_ = raw.Close()
+			_ = socket.closeOriginal()
 			return nil, err
 		}
-		conn := tls.Client(raw, config)
+		conn := tls.Client(owned, config)
 		if e = conn.HandshakeContext(ctx); e != nil {
-			raw.Close()
+			_ = socket.closeOriginal()
 			return nil, e
 		}
 		if err := revalidate(ctx); err != nil {
-			_ = raw.Close()
+			_ = socket.closeOriginal()
 			return nil, err
 		}
 		return conn, nil
@@ -443,10 +444,13 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 	tr.CloseIdleConnections()
 	if e != nil {
 		socket.close()
-		return nil, e
+		return nil, errors.Join(e, socket.closeFailure())
 	}
 	abort := func() error { socket.close(); return ws.CloseNow() }
-	fail := func(e error) (net.Conn, error) { _ = abort(); return nil, e }
+	fail := func(e error) (net.Conn, error) {
+		applicationErr := abort()
+		return nil, errors.Join(e, applicationErr, socket.closeFailure())
+	}
 	if ws.Subprotocol() != protocol {
 		return fail(fmt.Errorf("SSH relay protocol differs"))
 	}
@@ -471,6 +475,7 @@ func DialCarrier(ctx context.Context, address string, policy *tls.Config, o Open
 	}
 	life, cancel := context.WithTimeout(ctx, min(MaxLifetime, time.Until(o.Expires)))
 	conn := newBounded(websocket.NetConn(life, ws, websocket.MessageBinary), cancel, abort)
+	conn.native = socket
 	ws.SetReadLimit(MaxPayloadBytes)
 	conn.startWatch(life, func() error { return revalidate(life) })
 	return conn, nil

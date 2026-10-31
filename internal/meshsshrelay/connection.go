@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -14,7 +15,8 @@ import (
 )
 
 type boundedConn struct {
-	abort func() error
+	abort  func() error
+	native *socketAbort
 	net.Conn
 	readMu, writeMu       sync.Mutex
 	readBytes, writeBytes int64
@@ -23,6 +25,7 @@ type boundedConn struct {
 	elapsed               func() time.Duration
 	cancel                context.CancelFunc
 	once                  sync.Once
+	closeErr              error
 	watchDone             chan struct{}
 }
 
@@ -41,15 +44,22 @@ func (c *boundedConn) Close() error {
 	return err
 }
 func (c *boundedConn) shutdown() error {
-	var err error
 	c.once.Do(func() {
 		c.cancel()
 		if c.abort != nil {
 			_ = c.abort()
 		}
-		err = c.Conn.Close()
+		c.closeErr = c.Conn.Close()
 	})
-	return err
+	return c.closeErr
+}
+
+// NativeCloseProof returns the cached first raw socket close result.
+func (c *boundedConn) NativeCloseProof() error {
+	if c.native == nil {
+		return fmt.Errorf("original relay socket close proof unavailable")
+	}
+	return c.native.closeOriginal()
 }
 func (c *boundedConn) startWatch(ctx context.Context, check func() error) {
 	c.watchDone = make(chan struct{})
@@ -125,32 +135,76 @@ func (c *boundedConn) watch(ctx context.Context, check func() error) {
 }
 
 type socketAbort struct {
-	mu     sync.Mutex
-	conn   net.Conn
-	closed bool
+	mu         sync.Mutex
+	conn       net.Conn
+	closed     bool
+	proofKnown bool
+	proofErr   error
 }
 
-func (s *socketAbort) set(c net.Conn) {
+// firstCloseConn is handed to the outgoing TLS/HTTP stack. Its implicit
+// close paths and explicit abort therefore share one first native result.
+type firstCloseConn struct {
+	net.Conn
+	once sync.Once
+	err  error
+}
+
+func (c *firstCloseConn) Close() error {
+	c.once.Do(func() { c.err = c.Conn.Close() })
+	return c.err
+}
+
+func (s *socketAbort) set(c net.Conn) net.Conn {
 	if t, ok := c.(*tls.Conn); ok {
 		c = t.NetConn()
 	}
+	owned := &firstCloseConn{Conn: c}
 	s.mu.Lock()
 	if s.closed {
+		err := owned.Close()
+		if s.proofKnown {
+			s.proofErr = errors.Join(s.proofErr, err)
+		} else {
+			s.proofErr = err
+			s.proofKnown = true
+		}
 		s.mu.Unlock()
-		_ = c.Close()
-		return
+		return owned
 	}
-	s.conn = c
+	s.conn = owned
 	s.mu.Unlock()
+	return owned
 }
 func (s *socketAbort) close() {
+	_ = s.closeOriginal()
+}
+
+func (s *socketAbort) closeOriginal() error {
 	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.closed = true
-	c := s.conn
-	s.mu.Unlock()
-	if c != nil {
-		_ = c.Close()
+	if !s.proofKnown && s.conn != nil {
+		s.proofErr = s.conn.Close()
+		s.proofKnown = true
 	}
+	if !s.proofKnown {
+		return fmt.Errorf("original relay socket close proof unavailable")
+	}
+	return s.proofErr
+}
+
+func (s *socketAbort) closeFailure() error {
+	s.mu.Lock()
+	hasOriginal := s.conn != nil || s.proofKnown
+	s.mu.Unlock()
+	if !hasOriginal {
+		return nil
+	}
+	if err := s.closeOriginal(); err != nil {
+		return &NativeCloseUncertain{Cause: err}
+	}
+	return nil
 }
 
 type captureHijacker struct {
@@ -161,6 +215,9 @@ type captureHijacker struct {
 func (w *captureHijacker) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	c, b, err := http.NewResponseController(w.ResponseWriter).Hijack()
 	if err == nil {
+		// The server's TLS owner already exists before Hijack; keep returning
+		// that stream. The outgoing DialTLSContext path installs our wrapper
+		// before TLS is constructed and is the original-close proof source.
 		w.socket.set(c)
 	}
 	return c, b, err
