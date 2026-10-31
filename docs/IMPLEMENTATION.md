@@ -6273,6 +6273,9 @@ soak windows pass four and one cases respectively on the same accepted images.
 Dependency acceptance requires final provenance, composed tests,
 reproducible assets, native embedding and browser review. Stock
 Semblance remains the requested default, with Terminal selectable.
+The tested upstream correction is available as
+[draft PR #243](https://github.com/inferal-oss/semblance/pull/243); publication
+does not qualify the prepared ARM backport or authorize an upstream merge.
 
 The subsequent actual-original resident check exposed a pressure composition
 defect: resident startup calls the new journal validation, but its closed base

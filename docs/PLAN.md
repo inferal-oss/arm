@@ -4918,6 +4918,9 @@ same accepted images, with distinct actual loader-read evidence and final pins.
 The [scoped record](validation/semblance-upstream-lifecycle-scoped-2026-10-31.json)
 does not establish full-suite or ARM dependency acceptance. Complete dependency provenance,
 assets, native embedding and browser checks precede onboarding UI composition.
+The tested upstream commit `246289b4` is published as
+[draft PR #243](https://github.com/inferal-oss/semblance/pull/243), linked to its
+issue and upstream plan. The ARM backport remains unintegrated and unqualified.
 Public pressure, forwarding and sync activation remain separate unfinished gates.
 
 

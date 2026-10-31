@@ -3,6 +3,14 @@
   "scope": "Selected upstream lifecycle correction; ARM dependency migration remains unaccepted",
   "upstream_base": "cbb976cfb0667aa21d1876ab8c8e40fcc5c3e0d2",
   "focused_source_patch_sha256": "6ca114c19ea103759feb17c5377c1754466994c25808ed1b43dfabfdda0ef462",
+  "upstream_publication": {
+    "commit": "246289b46317a85dad8f0ad0e41f588889899957",
+    "issue": "https://github.com/inferal-oss/semblance/issues/242",
+    "plan": "https://github.com/inferal-oss/semblance/issues/8",
+    "draft_pull_request": "https://github.com/inferal-oss/semblance/pull/243",
+    "reviewed_source_and_text_verified": true,
+    "merged_or_released": false
+  },
   "build_and_targeted_window": {
     "fresh_normal_backends": ["rust", "wat"],
     "abi_checks_each": 10,
@@ -23,7 +31,6 @@
   "original_waits_quiet_logs_nonforced_stop_closure_and_final_pins_checked": true,
   "earlier_failed_attempts_retained": true,
   "remaining": [
-    "Upstream issue, plan linkage and focused draft PR",
     "Final ARM dependency provenance and composed tests",
     "Reproducible ARM assets and native embedding",
     "Actual browser review and screenshots",

@@ -12794,6 +12794,10 @@ Full provenance, reproducible assets, ARM embedding, browser checks and
 subsequent onboarding composition remain open. The earlier
 103 RDF / 161 Node result belongs only to its recorded earlier ARM source;
 the new upstream result is not a completed ARM dependency migration.
+The published [draft PR #243](https://github.com/inferal-oss/semblance/pull/243)
+is verified at tested commit `246289b46317a85dad8f0ad0e41f588889899957`.
+Its issue, upstream plan link and public validation text match the reviewed
+scope. No upstream merge, release or ARM runtime acceptance is inferred.
 
 
 ## Onboarding saved-name continuation — scoped qualification
