@@ -65,6 +65,8 @@ type owner struct {
 	p1CurrentTried                                      bool
 	p1Current                                           *p1CurrentServiceCall
 	p1CurrentObservation                                *P1CurrentServiceObservation
+	p1CurrentProofSignTried                              bool
+	p1CurrentProofSign                                   *p1CurrentProofSignCall
 	openedFDs, closedFDs                                uint64
 	liveFDs                                             int
 }
