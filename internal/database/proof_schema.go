@@ -49,6 +49,67 @@ var resetSchema = []string{
 	`CREATE INDEX storage_exports_state ON storage_exports(state)`,
 }
 
+// This is an optional, indivisible warning-only control ledger group. Native
+// control has no settled-history reader yet, so any row remains a reset blocker.
+var pressureControlResetSchema = []struct{ kind, name, table, ddl string }{
+	{"table", "host_pressure_permits", "host_pressure_permits", `CREATE TABLE host_pressure_permits (lease TEXT PRIMARY KEY, revision INTEGER NOT NULL, data TEXT NOT NULL)`},
+	{"table", "host_pressure_controls", "host_pressure_controls", `CREATE TABLE host_pressure_controls (key TEXT PRIMARY KEY, epoch TEXT NOT NULL, state TEXT NOT NULL, data TEXT NOT NULL, result TEXT)`},
+	{"index", "host_pressure_controls_state", "host_pressure_controls", `CREATE INDEX host_pressure_controls_state ON host_pressure_controls(state)`},
+}
+
+// VerifyPressureControlSchema refuses a preexisting partial or altered ledger
+// before Manager.Open's CREATE IF NOT EXISTS statements can fill any gaps.
+// Absence is the only older shape accepted for initial installation.
+func VerifyPressureControlSchema(ctx context.Context, db *sql.DB) error {
+	rows, err := db.QueryContext(ctx, `SELECT length(CAST(type AS BLOB)),substr(type,1,33),
+		length(CAST(name AS BLOB)),substr(name,1,129),
+		length(CAST(tbl_name AS BLOB)),substr(tbl_name,1,129),
+		coalesce(length(CAST(sql AS BLOB)),0),substr(sql,1,4097)
+		FROM sqlite_schema WHERE lower(substr(name,1,129)) GLOB 'host_pressure_permit*'
+		OR lower(substr(name,1,129)) GLOB 'host_pressure_control*'
+		OR lower(substr(name,1,129)) GLOB 'sqlite_autoindex_host_pressure_permit*'
+		OR lower(substr(name,1,129)) GLOB 'sqlite_autoindex_host_pressure_control*'
+		OR lower(substr(tbl_name,1,129)) IN ('host_pressure_permits','host_pressure_controls')
+		ORDER BY substr(name,1,129) LIMIT 6`)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	expected := map[string][3]string{}
+	for _, object := range pressureControlResetSchema {
+		expected[object.name] = [3]string{object.kind, object.table, normalizedSchema(object.ddl)}
+	}
+	for _, table := range []string{"host_pressure_permits", "host_pressure_controls"} {
+		expected["sqlite_autoindex_"+table+"_1"] = [3]string{"index", table, ""}
+	}
+	seen := map[string]bool{}
+	for rows.Next() {
+		var kind, name, table string
+		var kindSize, nameSize, tableSize, ddlSize int64
+		var ddl sql.NullString
+		if err := rows.Scan(&kindSize, &kind, &nameSize, &name, &tableSize, &table, &ddlSize, &ddl); err != nil {
+			return err
+		}
+		if kindSize <= 0 || kindSize > 32 || nameSize <= 0 || nameSize > 128 ||
+			tableSize <= 0 || tableSize > 128 || ddlSize > 4096 {
+			return resetSchemaError("pressure control schema object exceeds bound")
+		}
+		object, ok := expected[name]
+		if !ok || seen[name] || kind != object[0] || table != object[1] ||
+			(ddl.Valid && normalizedSchema(ddl.String) != object[2]) || (!ddl.Valid && object[2] != "") {
+			return resetSchemaError("unsupported pressure control schema object %q", name)
+		}
+		seen[name] = true
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	if len(seen) != 0 && len(seen) != len(expected) {
+		return resetSchemaError("partial pressure control schema group")
+	}
+	return nil
+}
+
 // A later Manager may install this optional pre-bind retention group. All
 // objects must match exactly; any row remains an unsettled obligation until a
 // pair-aware reset reader is reviewed. Older databases without the group stay
@@ -181,7 +242,7 @@ var resetAutoIndexes = map[string]int{
 	"cargo_workloads": 1, "lease_reviews": 1, "lease_review_policies": 1,
 	"pool_lineage": 1, "pool_claim_bindings": 1,
 	"workspace_instances": 1, "workspace_directory_members": 1, "workspace_trusted_members": 1, "workspace_observations": 1, "workspace_operations": 1, "workspace_denies": 1, "workspace_clocks": 1,
-	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "host_pressure_state": 1, "host_pressure_outbox": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2, "ssh_key_fences": 2,
+	"metadata": 1, "leases": 2, "agents": 1, "messages": 1, "message_operations": 1, "usage_incidents": 1, "policy_outbox": 1, "host_pressure_state": 1, "host_pressure_outbox": 1, "host_pressure_permits": 1, "host_pressure_controls": 1, "agent_inbox": 1, "pools": 1, "pool_operations": 1, "cancelled_requests": 1, "budgets": 1, "budget_operations": 1, "lease_budget_bindings": 1, "gradle_workloads": 1, "storage_exports": 2, "mesh_operations": 1, "ssh_operations": 2, "ssh_key_fences": 2,
 	"forward_unix_pairs": 2,
 	"sync_operations":    1, "sync_effects": 1, "sync_baselines": 1, "sync_lease_bindings": 1, "sync_workspaces": 2, "sync_charged_scopes": 1,
 }
@@ -195,6 +256,11 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	reviewSeen := map[string]bool{}
 	forwardUnixObjects := map[string][3]string{}
 	forwardUnixSeen := map[string]bool{}
+	pressureControlObjects := map[string][3]string{}
+	pressureControlSeen := map[string]bool{}
+	for _, object := range pressureControlResetSchema {
+		pressureControlObjects[normalizedSchema(object.ddl)] = [3]string{object.kind, object.name, object.table}
+	}
 	for _, object := range forwardUnixGuardResetSchema {
 		forwardUnixObjects[normalizedSchema(object.ddl)] = [3]string{object.kind, object.name, object.table}
 	}
@@ -223,8 +289,8 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		syncObjects[normalizedSchema(object.ddl)] = struct{ name, kind, table string }{name, object.kind, object.table}
 	}
 	syncSeen := map[string]bool{}
-	// 147 baseline objects + 5 run-log + 7 Unix guard + 5 charged-scope objects.
-	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 165`)
+	// 164 reviewed objects plus the five physical control-ledger objects.
+	rows, err := tx.QueryContext(ctx, `SELECT substr(type,1,33),substr(name,1,129),substr(tbl_name,1,129),substr(sql,1,4097) FROM sqlite_schema ORDER BY name LIMIT 170`)
 	if err != nil {
 		return nil, err
 	}
@@ -239,7 +305,7 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 		if err := rows.Scan(&kind, &name, &table, &raw); err != nil {
 			return nil, err
 		}
-		if count > 164 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
+		if count > 169 || len(name) > 128 || len(table) > 128 || len(raw.String) > 4096 {
 			return nil, resetSchemaError("reset schema catalog exceeds bound")
 		}
 		if !raw.Valid && kind == "index" {
@@ -261,6 +327,16 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 			continue
 		}
 		normal := normalizedSchema(raw.String)
+		if identity, ok := pressureControlObjects[normal]; ok {
+			if kind != identity[0] || name != identity[1] || table != identity[2] || pressureControlSeen[name] {
+				return nil, resetSchemaError("pressure control schema object identity differs")
+			}
+			pressureControlSeen[name] = true
+			if kind == "table" {
+				catalog[table] = nil
+			}
+			continue
+		}
 		if identity, ok := forwardUnixObjects[normal]; ok {
 			if kind != identity[0] || name != identity[1] || table != identity[2] || forwardUnixSeen[name] {
 				return nil, resetSchemaError("forward Unix guard schema object identity differs")
@@ -370,6 +446,13 @@ func verifyResetSchema(ctx context.Context, tx *sql.Tx) (map[string][]string, er
 	}
 	if len(forwardUnixSeen) != 0 && len(forwardUnixSeen) != len(forwardUnixGuardResetSchema) {
 		return nil, resetSchemaError("partial forward Unix guard schema group")
+	}
+	if len(pressureControlSeen) != 0 && len(pressureControlSeen) != len(pressureControlResetSchema) {
+		return nil, resetSchemaError("partial pressure control schema group")
+	}
+	if len(pressureControlSeen) == 0 && (autoIndexes["sqlite_autoindex_host_pressure_permits_1"] ||
+		autoIndexes["sqlite_autoindex_host_pressure_controls_1"]) {
+		return nil, resetSchemaError("orphan pressure control constraint index")
 	}
 	// Version 1 predates workspace locators. Exact shape/version pairing is
 	// checked by readSync after metadata; neither supported shape is migrated.

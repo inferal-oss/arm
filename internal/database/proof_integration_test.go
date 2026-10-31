@@ -165,6 +165,42 @@ func TestSettledProofRefusesHostPressureControlState(t *testing.T) {
 		t.Fatal("unsupported native control state was treated as settled")
 	}
 }
+
+func TestSettledProofPressureControlEmptyAndRetainedRows(t *testing.T) {
+	home := proofFixture(t, false)
+	baseline, err := prove(t, home)
+	if err != nil || !baseline.Complete || !baseline.Settled || baseline.Tables["host_pressure_permits"] != 0 || baseline.Tables["host_pressure_controls"] != 0 {
+		t.Fatal("ordinary empty pressure ledger lost settled proof", baseline, err)
+	}
+	review, err := database.ReviewReset(context.Background(), home, "review empty pressure ledger", false)
+	if err != nil || review == nil || !review.Plan.Proof.Settled {
+		t.Fatal("ordinary empty pressure ledger lost reset review", err)
+	}
+	_ = review.Close()
+	for _, tc := range []struct{ table, insert string }{
+		{"host_pressure_permits", `INSERT INTO host_pressure_permits(lease,revision,data) VALUES('historical',1,'{}')`},
+		{"host_pressure_controls", `INSERT INTO host_pressure_controls(key,epoch,state,data) VALUES('historical','epoch','unknown','{}')`},
+	} {
+		edit(t, home, tc.insert)
+		proof, err := prove(t, home)
+		if err == nil && proof.Settled {
+			t.Fatal("unproved pressure history gained settled authority", tc.table)
+		}
+		edit(t, home, `DELETE FROM `+tc.table)
+	}
+}
+
+func TestPressureControlPartialSchemaRefusedBeforeOpenRepair(t *testing.T) {
+	home := proofFixture(t, false)
+	edit(t, home, `DROP INDEX host_pressure_controls_state`)
+	if proof, err := prove(t, home); err == nil || proof.Settled {
+		t.Fatal("partial control group gained settled proof", proof, err)
+	}
+	if m, err := manager.Open(home, model.Resources{}); err == nil {
+		_ = m.Close()
+		t.Fatal("ordinary Open repaired a partial control ledger")
+	}
+}
 func TestSettledProofRefusesUnknownSchemaAndEvidence(t *testing.T) {
 	for _, kind := range []string{"table", "trigger", "metadata", "duplicate", "null-time", "other-owner", "orphan-operation", "pending-delivery", "unknown-delivery", "missing-parent", "null-count", "missing-resource", "oversize-record", "pool-request-mismatch", "lost-pool-journal", "sequence-behind", "future-subpool", "token-constraint-collision"} {
 		t.Run(kind, func(t *testing.T) {

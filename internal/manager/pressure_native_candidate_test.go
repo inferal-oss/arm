@@ -64,6 +64,12 @@ func TestPressureOriginalNativeCandidateRequiresCurrentOwnerAndExplicitPolicy(t 
 	if _, ok := m.pressureOriginalNativeCandidate(l.ID, p); ok {
 		t.Fatal("policy alone granted native pause without an original-bound capability")
 	}
+	if m.bindPressureNativeGrant(l.ID, p) {
+		t.Fatal("policy alone minted an original-bound grant without an operator permit")
+	}
+	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture explicit operator permit"); err != nil {
+		t.Fatal("could not issue exact operator permit", err)
+	}
 	if !m.bindPressureNativeGrant(l.ID, p) {
 		t.Fatal("resolved CPU policy did not bind the current original owner")
 	}
@@ -71,6 +77,32 @@ func TestPressureOriginalNativeCandidateRequiresCurrentOwnerAndExplicitPolicy(t 
 	if !ok || candidate.job != m.jobs[l.ID] || candidate.id.LeaseID != l.ID || candidate.id.Generation == "" || candidate.remaining <= 0 ||
 		!m.pressureCandidateStillCurrent(candidate, p) {
 		t.Fatal("live original owner was not selected by explicit policy")
+	}
+	var permitRaw []byte
+	if err := m.db.QueryRow(`SELECT data FROM host_pressure_permits WHERE lease=?`, l.ID).Scan(&permitRaw); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := m.db.Exec(`UPDATE host_pressure_permits SET data=? WHERE lease=?`, permitRaw, l.ID); err != nil {
+		t.Fatal(err)
+	}
+	if m.pressureCandidateStillCurrent(candidate, p) {
+		t.Fatal("matching BLOB operator row restored native grant")
+	}
+	if _, err := m.db.Exec(`UPDATE host_pressure_permits SET data=? WHERE lease=?`, string(permitRaw), l.ID); err != nil {
+		t.Fatal(err)
+	}
+	if !m.pressureCandidateStillCurrent(candidate, p) {
+		t.Fatal("canonical operator permit did not restore same original candidate")
+	}
+	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 1, "fixture replacement permit"); err != nil {
+		t.Fatal(err)
+	}
+	if !m.bindPressureNativeGrant(l.ID, p) || m.pressureCandidateStillCurrent(candidate, p) {
+		t.Fatal("new same-policy permit revived an old candidate")
+	}
+	candidate, ok = m.pressureOriginalNativeCandidate(l.ID, p)
+	if !ok || candidate.permitRevision != 2 || !m.pressureCandidateStillCurrent(candidate, p) {
+		t.Fatal("fresh replacement permit did not select a fresh candidate")
 	}
 	changedPolicy := p
 	changedPolicy.Grace++
@@ -91,6 +123,12 @@ func TestPressureOriginalNativeCandidateRequiresCurrentOwnerAndExplicitPolicy(t 
 	}
 	if m.pressureCandidateStillCurrent(candidate, p) {
 		t.Fatal("changed lease revision retained stale control eligibility")
+	}
+	if m.bindPressureNativeGrant(l.ID, p) {
+		t.Fatal("stale operator permit minted grant for renewed lease revision")
+	}
+	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 2, "fixture revised lease permit"); err != nil {
+		t.Fatal("could not reissue exact revised operator permit", err)
 	}
 	if !m.bindPressureNativeGrant(l.ID, p) {
 		t.Fatal("fresh lease revision did not rebind its exact original owner")
@@ -118,6 +156,10 @@ func TestPressureNativeControlRefusesUnjournaledAction(t *testing.T) {
 	threshold.AllowPause = true
 	p.Resources[pressure.CPU], p.MaxPauseJobs = threshold, 1
 	m.mu.Lock()
+	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture unjournaled-action permit"); err != nil {
+		m.mu.Unlock()
+		t.Fatal(err)
+	}
 	if !m.bindPressureNativeGrant(l.ID, p) {
 		m.mu.Unlock()
 		t.Fatal("fixture lacked original-bound policy grant")
@@ -148,6 +190,10 @@ func TestPressurePausedOriginalRevocationPrecedesResumeAndRetainsCharges(t *test
 	threshold.AllowPause = true
 	p.Resources[pressure.CPU], p.MaxPauseJobs = threshold, 1
 	m.mu.Lock()
+	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture revoked-lease permit"); err != nil {
+		m.mu.Unlock()
+		t.Fatal(err)
+	}
 	if !m.bindPressureNativeGrant(l.ID, p) {
 		m.mu.Unlock()
 		t.Fatal("fixture lacked resolved original-bound grant")
@@ -217,6 +263,10 @@ func TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue(t 
 	}
 	setHostPressureCPU(m, now, tick, 0.1)
 	m.mu.Lock()
+	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture staged-control permit"); err != nil {
+		m.mu.Unlock()
+		t.Fatal(err)
+	}
 	if !m.bindPressureNativeGrant(l.ID, p) {
 		m.mu.Unlock()
 		t.Fatal("fixture lacked resolved original-bound grant")
@@ -430,6 +480,10 @@ func TestPressureDegradedExpiryUsesCapturedOriginalDuringReservedEffect(t *testi
 	threshold.AllowPause = true
 	p.Resources[pressure.CPU], p.MaxPauseJobs = threshold, 1
 	m.mu.Lock()
+	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture degraded-expiry permit"); err != nil {
+		m.mu.Unlock()
+		t.Fatal(err)
+	}
 	if !m.bindPressureNativeGrant(l.ID, p) {
 		m.mu.Unlock()
 		t.Fatal("fixture lacked original-bound grant")

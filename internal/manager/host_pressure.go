@@ -55,9 +55,25 @@ func (m *Manager) loadHostPressure() error {
 		if err = json.Unmarshal(raw, &m.pressureState); err != nil {
 			return fmt.Errorf("host pressure state is invalid: %w", err)
 		}
-		if len(m.pressureState.Pauses) != 0 || len(m.pressureState.Unresolved) != 0 {
-			return errors.New("host pressure native control obligations require a controller capable of reconciliation")
-		}
+	}
+	if err := m.validatePressurePermitRowsAtStartup(); err != nil {
+		return err
+	}
+	if err := m.validatePressureControlRowsAtStartup(); err != nil {
+		return err
+	}
+	if err := m.recoverPressureControlIntents(); err != nil {
+		return err
+	}
+	unknown, err := m.pressureUnknownControlRows()
+	if err != nil {
+		return err
+	}
+	if len(unknown) != 0 {
+		return errors.New("host pressure unknown native effects require original-owner reconciliation")
+	}
+	if len(m.pressureState.Pauses) != 0 || len(m.pressureState.Unresolved) != 0 {
+		return errors.New("host pressure native control obligations require a controller capable of reconciliation")
 	}
 	// Native CLI delivery may have happened before a crash. The durable inbox
 	// remains available; an uncertain attempt is never replayed automatically.

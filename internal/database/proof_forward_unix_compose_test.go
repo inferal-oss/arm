@@ -9,7 +9,8 @@ import (
 // The prior catalog ceiling was 147 objects. Run history contributes two
 // tables and three implicit indexes (5); the forwarding guard contributes one
 // table, two implicit indexes and four triggers (7). The composed ceiling is
-// therefore 159 objects, with LIMIT 160 to detect one excess object.
+// therefore 159 objects. The charged sync scope adds five, and the exact
+// pressure control group adds five more: 169 with LIMIT 170 for one excess.
 func TestForwardUnixGuardAndRunProofCatalogCensus(t *testing.T) {
 	home := proofFixture(t, false)
 	db, err := sql.Open("sqlite", filepath.Join(home, "state.db"))
@@ -17,18 +18,21 @@ func TestForwardUnixGuardAndRunProofCatalogCensus(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
-	var runs, guard, total int
+	var runs, guard, controls, total int
 	if err = db.QueryRow(`SELECT count(*) FROM sqlite_schema WHERE name IN ('proxy_runs','proxy_run_chunks') OR name GLOB 'sqlite_autoindex_proxy_runs_*' OR name GLOB 'sqlite_autoindex_proxy_run_chunks_*'`).Scan(&runs); err != nil {
 		t.Fatal(err)
 	}
 	if err = db.QueryRow(`SELECT count(*) FROM sqlite_schema WHERE name='forward_unix_pairs' OR name GLOB 'forward_unix_*_guard' OR name GLOB 'sqlite_autoindex_forward_unix_pairs_*'`).Scan(&guard); err != nil {
 		t.Fatal(err)
 	}
+	if err = db.QueryRow(`SELECT count(*) FROM sqlite_schema WHERE name IN ('host_pressure_permits','host_pressure_controls','host_pressure_controls_state','sqlite_autoindex_host_pressure_permits_1','sqlite_autoindex_host_pressure_controls_1')`).Scan(&controls); err != nil {
+		t.Fatal(err)
+	}
 	if err = db.QueryRow(`SELECT count(*) FROM sqlite_schema`).Scan(&total); err != nil {
 		t.Fatal(err)
 	}
-	if runs != 5 || guard != 7 || total > 159 {
-		t.Fatalf("composed schema object census differs: run=%d guard=%d total=%d", runs, guard, total)
+	if runs != 5 || guard != 7 || controls != 5 || total > 169 {
+		t.Fatalf("composed schema object census differs: run=%d guard=%d controls=%d total=%d", runs, guard, controls, total)
 	}
 	proof, err := prove(t, home)
 	if err != nil || !proof.Complete || !proof.Settled {

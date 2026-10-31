@@ -201,6 +201,24 @@ func (p *proofReader) readOther() error {
 	if err := p.readForwardUnixPairs(); err != nil {
 		return err
 	}
+	// A native control ledger has no independent settled-effect proof yet.
+	// Even a durable refusal or abandoned intent retains its history for a
+	// future pair-aware reader. Empty ledgers are ordinary warning-only state.
+	for _, table := range []string{"host_pressure_permits", "host_pressure_controls"} {
+		if err := p.walk(table, func(r proofRow) error {
+			key := "lease"
+			if table == "host_pressure_controls" {
+				key = "key"
+			}
+			id, err := r.text(key)
+			if err != nil {
+				return err
+			}
+			return p.block(table, id, "Native pressure control history has no settled-effect proof")
+		}); err != nil {
+			return err
+		}
+	}
 	if err := p.walk("host_pressure_state", func(r proofRow) error {
 		id, e := r.text("id")
 		if e != nil {

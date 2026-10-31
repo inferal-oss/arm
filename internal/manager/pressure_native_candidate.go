@@ -19,26 +19,28 @@ import (
 // pressure action and current elapsed entitlement. Never persist job or infer
 // it from a recovered PID.
 type pressureNativeCandidate struct {
-	id            pressure.JobID
-	job           *job
-	owner         *childowner.Owner
-	cmd           *exec.Cmd
-	leaseRevision int
-	remaining     time.Duration
-	policyDigest  [32]byte
+	id             pressure.JobID
+	job            *job
+	owner          *childowner.Owner
+	cmd            *exec.Cmd
+	leaseRevision  int
+	permitRevision int64
+	remaining      time.Duration
+	policyDigest   [32]byte
 }
 
 // pressureNativeGrant is minted only for an exact current original job and
 // resolved CPU policy. It lives on that job, never in a lease row or journal.
-// A later policy/revision/epoch change invalidates it; no recovered process
-// can reconstruct it. The policy source and durable grant decision still need
-// central integration before this can be used by the runtime.
+// A later policy/permit/revision/epoch change invalidates it; no recovered
+// process can reconstruct it. The private operator permit writer still needs
+// an authenticated operator route before this can be used by the runtime.
 type pressureNativeGrant struct {
-	leaseID       string
-	leaseRevision int
-	owner         *job
-	policyDigest  [32]byte
-	epoch         string
+	leaseID        string
+	leaseRevision  int
+	owner          *job
+	policyDigest   [32]byte
+	permitRevision int64
+	epoch          string
 }
 
 func pressurePolicyHash(p pressure.Policy) ([32]byte, bool) {
@@ -49,8 +51,8 @@ func pressurePolicyHash(p pressure.Policy) ([32]byte, bool) {
 	return sha256.Sum256(b), true
 }
 
-// bindPressureNativeGrant is an unused source cut. Its future caller must
-// supply a resolved, authorized profile policy, not a request-controlled flag.
+// bindPressureNativeGrant is an unused source cut. It requires a separate
+// exact operator permit for the resolved policy, never a request flag.
 // Caller holds Manager.mu.
 func (m *Manager) bindPressureNativeGrant(id string, policy pressure.Policy) bool {
 	threshold, cpuEnabled := policy.Resources[pressure.CPU]
@@ -70,10 +72,11 @@ func (m *Manager) bindPressureNativeGrant(id string, policy pressure.Policy) boo
 		return false
 	}
 	digest, ok := pressurePolicyHash(policy)
-	if !ok || m.pressureEpoch == "" {
+	permit, permitted := m.pressurePermitCurrent(id, l, j, policy)
+	if !ok || !permitted || m.pressureEpoch == "" {
 		return false
 	}
-	j.pressureGrant = &pressureNativeGrant{leaseID: id, leaseRevision: l.Revision, owner: j, policyDigest: digest, epoch: m.pressureEpoch}
+	j.pressureGrant = &pressureNativeGrant{leaseID: id, leaseRevision: l.Revision, owner: j, policyDigest: digest, permitRevision: permit.Revision, epoch: m.pressureEpoch}
 	return true
 }
 
@@ -85,7 +88,8 @@ func (m *Manager) pressureOriginalBindingFields(id string, l model.Lease, j *job
 	return j != nil && m.jobs[id] == j && j.sshRuntime == nil && m.sshTransports[id] == nil &&
 		j.cmd != nil && j.cmd.Process != nil && j.childOwner != nil && j.done != nil &&
 		l.ID == id && l.Host == j.leaseHost && l.Owner == j.leaseOwner &&
-		reflect.DeepEqual(l.Request, j.leaseRequest) && j.identity != nil && l.Process != nil &&
+		reflect.DeepEqual(l.Request, j.leaseRequest) && reflect.DeepEqual(l.Clock, j.leaseDeadline) &&
+		reflect.DeepEqual(l.Expires, j.leaseExpires) && j.identity != nil && l.Process != nil &&
 		l.PID > 0 && l.PID == j.cmd.Process.Pid && j.identity.PID == l.PID && j.identity.PGID == l.PID &&
 		j.identity.UID == l.Owner && j.identity.Start != "" && j.identity.Namespace != "" &&
 		reflect.DeepEqual(l.Process, j.identity)
@@ -127,9 +131,10 @@ func (m *Manager) pressureOriginalNativeCandidate(id string, policy pressure.Pol
 		return none, false
 	}
 	digest, ok := pressurePolicyHash(policy)
+	permit, permitted := m.pressurePermitCurrent(id, l, j, policy)
 	grant := j.pressureGrant
-	if !ok || grant == nil || grant.owner != j || grant.leaseID != id || grant.leaseRevision != l.Revision ||
-		grant.epoch != m.pressureEpoch || grant.policyDigest != digest {
+	if !ok || !permitted || grant == nil || grant.owner != j || grant.leaseID != id || grant.leaseRevision != l.Revision ||
+		grant.epoch != m.pressureEpoch || grant.policyDigest != digest || grant.permitRevision != permit.Revision {
 		return none, false
 	}
 	remaining, err := m.leaseRemaining(l)
@@ -145,7 +150,8 @@ func (m *Manager) pressureOriginalNativeCandidate(id string, policy pressure.Pol
 	sum := sha256.Sum256(identity)
 	return pressureNativeCandidate{
 		id:  pressure.JobID{LeaseID: id, ExecutionID: id, Generation: hex.EncodeToString(sum[:]), OwnershipID: m.pressureEpoch},
-		job: j, owner: j.childOwner, cmd: j.cmd, leaseRevision: l.Revision, remaining: remaining, policyDigest: digest,
+		job: j, owner: j.childOwner, cmd: j.cmd, leaseRevision: l.Revision, permitRevision: permit.Revision,
+		remaining: remaining, policyDigest: digest,
 	}, true
 }
 
@@ -159,5 +165,5 @@ func (m *Manager) pressureCandidateStillCurrent(candidate pressureNativeCandidat
 	}
 	current, ok := m.pressureOriginalNativeCandidate(candidate.id.LeaseID, policy)
 	return ok && current.id == candidate.id && current.job == candidate.job && current.leaseRevision == candidate.leaseRevision &&
-		current.policyDigest == candidate.policyDigest
+		current.policyDigest == candidate.policyDigest && current.permitRevision == candidate.permitRevision
 }

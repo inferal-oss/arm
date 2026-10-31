@@ -39,6 +39,70 @@ func TestResetSchemaRetainsSQLiteTokenAndConstraintBoundaries(t *testing.T) {
 	}
 }
 
+func TestPressureControlOptionalSchemaIsWholeAndExact(t *testing.T) {
+	for _, damage := range []string{"", "partial", "changed", "extra", "complete-uppercase", "partial-alias", "oversized-ddl", "oversized-name"} {
+		t.Run(damage, func(t *testing.T) {
+			db, err := sql.Open("sqlite", filepath.Join(t.TempDir(), "pressure.db"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			for _, query := range resetSchema {
+				if _, err := db.Exec(query); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := VerifyPressureControlSchema(t.Context(), db); err != nil {
+				t.Fatal("absent optional group refused", err)
+			}
+			for i, object := range pressureControlResetSchema {
+				if damage == "partial-alias" && i != 0 {
+					break
+				}
+				ddl := object.ddl
+				if damage == "complete-uppercase" || damage == "partial-alias" {
+					ddl = strings.ToUpper(ddl)
+				}
+				if damage == "oversized-ddl" && i == 0 {
+					ddl = strings.Replace(ddl, " (", strings.Repeat(" ", 4097)+"(", 1)
+				}
+				if _, err := db.Exec(ddl); err != nil {
+					t.Fatal(err)
+				}
+			}
+			switch damage {
+			case "partial":
+				_, err = db.Exec(`DROP INDEX host_pressure_controls_state`)
+			case "changed":
+				_, err = db.Exec(`DROP INDEX host_pressure_controls_state`)
+				if err == nil {
+					_, err = db.Exec(`CREATE INDEX host_pressure_controls_state ON host_pressure_controls(epoch)`)
+				}
+			case "extra":
+				_, err = db.Exec(`CREATE INDEX host_pressure_controls_extra ON host_pressure_controls(epoch)`)
+			case "oversized-name":
+				_, err = db.Exec(`CREATE INDEX host_pressure_controls_` + strings.Repeat("x", 4097) + ` ON host_pressure_controls(epoch)`)
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			startupErr := VerifyPressureControlSchema(t.Context(), db)
+			tx, err := db.BeginTx(t.Context(), nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, proofErr := verifyResetSchema(t.Context(), tx)
+			_ = tx.Rollback()
+			if damage == "" && (startupErr != nil || proofErr != nil) {
+				t.Fatal("exact complete optional group refused", startupErr, proofErr)
+			}
+			if damage != "" && (startupErr == nil || proofErr == nil) {
+				t.Fatal("partial or altered group gained authority", startupErr, proofErr)
+			}
+		})
+	}
+}
+
 func TestResetSchemaMissingObjectsAreDeterministicReadableRefusals(t *testing.T) {
 	for _, drops := range [][]string{
 		{`DROP TABLE host_pressure_state`},
