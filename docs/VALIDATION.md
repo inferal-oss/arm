@@ -12641,3 +12641,27 @@ accounting, while the test independently verifies retained unended claims.
 Typed placement refusal and zero local application bytes remain required.
 These results do not enable public forwarding or establish checked native
 socket-buffer accounting, Linux runtime or full-suite acceptance.
+
+## Sync enrollment foundation: scoped evidence
+
+The [normalized record](validation/sync-enrollment-foundation-scoped-2026-10-31.json)
+binds the ten source/contract files integrated as `ff1b805e`. Normal and race
+each pass 10 roots / 19 named cases, with identical package-qualified rosters
+and no skips. The selected, home and owner-lock replacement cases exercise the
+post-backing-probe recheck. Syncfs vet passes; Linux amd64 and ARM64 test
+binaries have verified ELF target headers and hashes and were not executed.
+
+An earlier selected run had 18 passes and one native-quota skip and remains
+unaccepted. The corrected run observes unknown quota with zero usable evidence;
+this is refusal evidence, not positive quota or native XFS acceptance. Qualified
+inert before/during cancellation witnesses are retained for byte-identical
+controller bodies; new cancellation executions are not claimed for the final
+test-only successor.
+
+Five original validation commands and eight outer commands return zero, with
+exact untruncated quiet output, ordinary nonforced shutdown, verified closure
+and unchanged final source hashes, modes and Git state. Tested and integrated
+syncfs/syncscope package and module objects match; the intervening forwarding
+changes have no owned or package overlap. Persistent production enrollment,
+Manager wiring, full-quota backing headroom, writer exclusion and public sync
+remain unaccepted.

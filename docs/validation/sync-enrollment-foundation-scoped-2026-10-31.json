@@ -1,0 +1,95 @@
+{
+  "schema": "arm.scoped-validation/v1",
+  "date": "2026-10-31",
+  "component": "read-only-sync-enrollment-foundation",
+  "source_base": "790f2174824add8a2cd0847a35d101bfdb6c0f83",
+  "source_file_sha256": {
+    "docs/SYNC-PRODUCTION-ENROLLMENT-CONTRACT.md": "89609271d21daa90bb42fdf7c9b230be1f26f8889ddef3c9d8d544fbe7ca60d6",
+    "internal/syncfs/backing_headroom.go": "718df3bfcf6505e2e130ef8be30a532be1f2bbb57f6a44477c0fe0b126fc119a",
+    "internal/syncfs/backing_headroom_darwin.go": "73d64c13f4f13691e95b0dc0e19d64a553b028fdafb1d395b142ce2dadd65a82",
+    "internal/syncfs/backing_headroom_linux.go": "ef8e16fe792d7f0c8017eea1503a3e166dd1c8bd553df864ad61cee0158b70c8",
+    "internal/syncfs/backing_headroom_linux_other.go": "f9ee299669772b1578cbbcca7147740221cc1a27912bcb748469bc03280ecc39",
+    "internal/syncfs/enrollment_record.go": "3615444f33412e0d27b5c3aed4e7bf04970e821fa6b2f8b0d93bdc8c64792fe4",
+    "internal/syncfs/enrollment_record_test.go": "e5e27a20a7308e81b32df9eb408e678fd2af04e2f5dbb3b44e64d1fff4857a19",
+    "internal/syncfs/preopen_enrollment.go": "54cff6e1d0b9bf44fab396a601e2575ab4b4f0476a0113f582c5a2f264aef48e",
+    "internal/syncfs/preopen_enrollment_test.go": "e7fb891fbbc090ea6411855244d30da370f46c067eaa10de7e132e22352fe6b5",
+    "internal/syncfs/quota_probe_test.go": "c7e677786f9d515ff9c0358da7ed9d258091a771c88966c5aea0af7c9a5a91f0"
+  },
+  "normal": {
+    "roots": 10,
+    "named": 19,
+    "passed": 19,
+    "skipped": 0
+  },
+  "race": {
+    "roots": 10,
+    "named": 19,
+    "passed": 19,
+    "skipped": 0
+  },
+  "complete_package_qualified_rosters_equal": true,
+  "later_probe_replacement_cases_passed": [
+    "selected",
+    "home",
+    "owner-lock"
+  ],
+  "vet_packages": [
+    "./internal/syncfs"
+  ],
+  "linux_compile_only": {
+    "amd64": {
+      "sha256": "cb693f505e910e3b121bd49f8bf24fda196cae7a12b0ba6f7c5fb742ead9ed32",
+      "bytes": 39505942,
+      "elf_machine": 62,
+      "executed": false
+    },
+    "arm64": {
+      "sha256": "8027b520c6015d843399c768d0bafdf960f6b033a2a3005b4e12ee4eafccb26c",
+      "bytes": 36693662,
+      "elf_machine": 183,
+      "executed": false
+    }
+  },
+  "linux_execution": false,
+  "native_quota_observation": {
+    "unknown_returned_zero_usable_evidence": {
+      "normal": true,
+      "race": true
+    },
+    "positive_quota_or_native_xfs_accepted": false
+  },
+  "earlier_selected_run": {
+    "passed": 18,
+    "skipped": 1,
+    "accepted": false
+  },
+  "test_only_correction": "An unknown quota query must return no usable evidence; the test asserts this refusal instead of skipping. Production quota behavior is unchanged.",
+  "cancellation_controls": {
+    "qualified_before_and_during_inert_witnesses": true,
+    "controller_bodies_identical_to_final_gate": true,
+    "new_final_gate_cancellation_executions_claimed": false
+  },
+  "execution_integrity": {
+    "five_original_validation_commands_and_eight_outer_commands_returned_zero": true,
+    "quiet_output_exact_and_untruncated": true,
+    "ordinary_nonforced_stop_and_postjoin_closure_verified": true,
+    "final_source_hashes_modes_and_git_state_unchanged": true
+  },
+  "composition": {
+    "later_checkpoint": "0111c4fd68b86a29cd684c12cacf213ed77f0f78",
+    "owned_paths_and_syncfs_syncscope_modules_unchanged": true,
+    "tested_and_integrated_package_module_git_objects_equal": {
+      "internal/syncfs": "de662aba4f54028867c8884bb6dcdffa4f24094a",
+      "internal/syncscope": "a70c6fad9a149a9dd2ff94573ee6e406f9505e69",
+      "go.mod": "b9679877850aab8e689d8abcab92e009381278f9",
+      "go.sum": "4ad452644a1fda56b7a04aad3542747fde897087"
+    }
+  },
+  "remaining_gates": [
+    "Persistent production enrollment before startup writes and Manager admission wiring.",
+    "Independent backing full-quota headroom and positive native XFS acceptance.",
+    "Complete writer exclusion and reviewed public push/pull/bidirectional effects."
+  ],
+  "public_sync_enabled": false,
+  "integrated_source_commit": "ff1b805e457d7a1d669422f3fd34cd55f9c36056"
+}

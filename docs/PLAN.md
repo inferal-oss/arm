@@ -1094,7 +1094,7 @@ retain their assignments and the source-specific gates recorded below.
 | Pressure control journal — `codex/pressure-control-journal-currentbdc` | Reviewed feature `236db270` is integrated with current resident and constructor behavior. Normal/race each pass 29 roots / 75 named cases, with two-package vet and qualified cancellation controls. | Authenticated public permits, broader native/model/crash-recovery acceptance and policy activation remain open. Ordinary behavior stays warning-only; native pausing remains disabled. |
 | Forwarding worker — `codex/forward-final-pressure-compose` | Reviewed feature `824955b7` integrates the bounded private Unix worker and original-close charge guards. Full component normal/race each pass 62 roots / 112 names; final pressure composition each passes 11 roots / 33 names, with six-package vet and four Linux ARM64 compile-only artifacts. | Public TCP activation, complete readiness/recovery, checked native socket-buffer accounting and broader platform acceptance remain open. Earlier unsuccessful attempts remain unsuccessful. |
 | Provider lifecycle — `codex/provider-pair-c3-hooks` | Focused C3 hook source and a proposed 121-root roster are available for independent review. | Current storage/native/sync composition, causal runtime and original finalizer checks remain required. C4/C5 and rollout remain open; paired factory stays disabled. |
-| Public sync — `codex/sync-native-enrollment-backing` | Read-only enrollment/backing inputs `f07d5a18` are under independent review; backing-sample provenance needs a correction. | Persistent exclusive enrollment before startup writes, independent full-quota backing headroom, complete writer exclusion and reviewed public push/pull/bidirectional workflow remain unfinished. |
+| Public sync — `codex/sync-native-enrollment-backing` | Reviewed foundation `ff1b805e` integrates held enrollment records, backing probes and pre-Open rechecks. Normal/race each pass 10 roots / 19 names, with syncfs vet and Linux amd64/arm64 compile-only outputs. | Persistent production enrollment before startup writes, Manager admission, independent full-quota backing headroom, complete writer exclusion and reviewed public push/pull/bidirectional workflow remain unfinished. Positive native XFS acceptance is not established. |
 | Semblance dependency — `codex/semblance-8ced16a-arm-ui` | Exact upstream draft pin `8ced16a` with explicit compatibility overlays is prepared for source/API review. | Compose the numeric adapter with current log-window source, rebuild the engine and embedded assets, validate provenance/compatibility and capture current desktop/narrow behavior. Stock Semblance remains the default; Terminal remains selectable. Upstream drafts are unmerged. |
 
 Run-list and storage both touch terminal presentation; integrate reviewed focused
@@ -1920,7 +1920,7 @@ source review alone does not establish runtime acceptance or production enableme
 | `codex/forward-final-pressure-compose` | Private binder `25d60cc` is extended by reviewed worker feature `824955b7`. Full component normal/race each pass 62 roots / 112 names; pressure composition each passes 11 roots / 33 names, with six-package vet and four Linux ARM64 compile-only artifacts. | Public TCP worker/factory activation, complete readiness/recovery, checked native socket-buffer accounting and broader platform/runtime acceptance remain open. |
 | `codex/provider-pair-c3-current` | Unused primitives are integrated as `53938db`; current full-hook source is reviewed, with 198 finite roots proposed and unrun. | Correct atomic cancellation-marker publication and the final complete phase-budget check before running the reviewed controls and separate test windows. C4/C5, named-root accounting and public activation remain separate. |
 | `codex/pressure-control-journal-currentbdc` | Reviewed twelve-file feature `236db270` preserves current resident ownership and constructor behavior. Normal/race each pass 29 roots / 75 names, with two-package vet and qualified cancellation controls. | Authenticated public permits, broader native/model/crash-recovery gates and policy activation remain open. Native pausing stays disabled. |
-| `codex/sync-native-enrollment-backing` | Read-only enrollment and backing prerequisites remain unintegrated. The final root recheck correction is untested. | Add the causal later-probe root-replacement control, review the current-main projection and run scoped checks. Persistent enrollment, independent backing, all-writer exclusion and reviewed bidirectional effects remain required for public sync. |
+| `codex/sync-native-enrollment-backing` | Reviewed foundation `ff1b805e` passes 10 roots / 19 names in normal/race, including later-probe root and owner-lock replacements, syncfs vet and two Linux compile-only targets. Unknown native quota is explicitly refused without usable evidence. | Persistent production enrollment, Manager admission, independent backing, all-writer exclusion, positive native XFS proof and reviewed bidirectional effects remain required for public sync. |
 | `codex/numeric-182-d879`, `codex/sparkline-155-d879` and `codex/semblance-8ced16a-406-ui` | Focused upstream commits `22ba77db` / `8ced16a4` are submitted as draft PRs #226 / #227. ARM's current-main dependency projection is under review; retained assets are not evidence of a new rebuild. | Close final abort/deadline checks in the unlaunched runner, validate the final composed dependency and assets, and capture actual browser evidence. No upstream merge or release is authorized by this record. |
 
 ### Survey reconciliation: integrated work and remaining feature delivery
@@ -4863,3 +4863,16 @@ and four Linux ARM64 compile-only targets. Earlier failed attempts are retained
 as failures. Public TCP activation, complete readiness/recovery and checked
 native socket-buffer accounting remain separate gates; Linux execution and
 full-suite acceptance are not established.
+
+## Read-only sync enrollment foundation integration
+
+Reviewed feature `ff1b805e` integrates held enrollment records, backing-space
+probes and a pre-Open candidate without wiring Manager admission or public
+sync effects. The [scoped record](validation/sync-enrollment-foundation-scoped-2026-10-31.json)
+records 10 roots / 19 names in both normal and race modes, syncfs vet and
+Linux amd64/arm64 compilation only. Earlier native-quota unavailability remains
+an unavailable observation; the corrected test verifies zero usable evidence.
+Positive native XFS/full-quota headroom, persistent production enrollment,
+complete writer exclusion and reviewed bidirectional effects remain open.
+Original-key read-only recovery is already integrated through `f60c8c3e` and
+the later charged-scope work; it is not reimported from its older branch.

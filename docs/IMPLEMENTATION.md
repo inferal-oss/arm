@@ -6185,3 +6185,18 @@ Relays remain bounded transport for general TCP; destination-local service
 grants retain endpoint authority. This milestone adds no public worker/factory
 activation. Complete readiness/recovery, checked native socket-buffer
 accounting and broader platform evidence remain required.
+
+## Held sync enrollment and pre-Open checks
+
+Reviewed feature `ff1b805e` adds a private canonical enrollment record, held-root
+and owner-lock checks, backing-space probes and a pre-Open candidate. After the
+later backing probe, it rechecks all held roots, their native identity, the
+named record and the exact owner lock before returning. It does not open a
+Manager or reserve resources.
+
+Unknown native quota returns no usable evidence. The regression test now
+asserts this refusal rather than skipping; production probe behavior is
+unchanged. Manager admission and public push/pull/bidirectional effects remain
+unwired. Persistent production enrollment, independent full-quota headroom,
+complete writer exclusion and positive native XFS proof are still required;
+see the [production contract](SYNC-PRODUCTION-ENROLLMENT-CONTRACT.md).
