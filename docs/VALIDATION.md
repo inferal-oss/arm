@@ -12618,6 +12618,8 @@ unchanged final source hashes, modes and Git state.
 This is selected component and test-owned native-fixture evidence. It does not
 establish production pause activation, authenticated public permits, complete
 suite, Linux runtime, physical sleep/wake or broad crash-recovery acceptance.
+It did not cover actual-original resident startup, which subsequently fails at
+the new journal validation because the closed resident schema lacks its tables.
 
 ## Private forwarding worker: component and pressure composition
 
@@ -12685,6 +12687,16 @@ production refusals, original joins and charges; their complete composed
 execution remains pending. Controlled topology/headroom is modeled evidence,
 not native backing, quota or throughput acceptance. No factory activation or
 full-feature acceptance follows from these component results.
+
+A later split Kubernetes composition reaches the actual-original resident
+startup and fails with missing `host_pressure_permits`. Its first subset has
+37 passing roots / 120 passing named cases, one failed root and no skips;
+later subsets, race checks and vet do not run. This is a real pressure/resident
+startup composition finding, distinct from prior aggregate time-limit failures.
+Completed same-source provider and storage components retain their scoped
+evidence; neither the failed windows nor the full 224-root composition are
+accepted. The correction must preserve the closed schema, original ownership
+and warning-only pressure boundary without automatic repair or native pausing.
 
 
 ## Onboarding saved-name continuation — scoped qualification

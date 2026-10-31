@@ -6184,8 +6184,9 @@ Reviewed feature `236db270` integrates bounded optional-schema verification,
 durable control intent/result records and exact permit-revision and original
 acknowledged-deadline checks. Startup verifies the namespace before repair-like
 DDL can obscure a partial schema. Recovery retains uncertain native intent
-without replaying the action. Current resident ownership, accounting and
-constructor outcomes are preserved.
+without replaying the action. Constructor and original-ownership fences remain.
+Later actual-original resident startup exposes missing pressure journal tables
+in its closed schema; resident compatibility requires the pending correction.
 
 Selected controlled fixtures exercise only their own admitted original child.
 The default policy remains warning-only; authenticated public permit handling
@@ -6241,6 +6242,14 @@ the current run still exposes a stale derived validation result after palette
 disposal. Dependency acceptance requires that lifecycle correction, composed
 tests, reproducible assets, native embedding and browser review. Stock
 Semblance remains the requested default, with Terminal selectable.
+
+The subsequent actual-original resident check exposes a pressure composition
+defect: resident startup calls the new journal validation, but its closed base
+schema lacks `host_pressure_permits` and the companion control objects.
+The scoped pressure journal tests did not cover this startup boundary.
+Correction and validation are pending; no schema repair, migration or weakened
+original-owner check is authorized by this finding. Provider activation remains
+disabled.
 
 
 ## Saved onboarding names: current composition
