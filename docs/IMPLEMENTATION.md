@@ -5970,3 +5970,45 @@ scoped evidence as `bc28e38`. Every qualified runtime, module and embedded input
 is identical to the reviewed snapshot. SQLite remains the unmodified official
 driver. No new Root caller is activated and no running backend or managed child
 is changed by this integration.
+
+## Distinct original DB, Manager and Server current validation
+
+DB, Manager and Server now retain independent once-only current operations tied
+to the same original authenticated challenge/charge and Root lifetime. Completed
+prepared lineage is required but never reused as current evidence; prepared
+flags/results/functions and pure bounded query/row DATA stay unchanged. Actual
+current calls and all partial handles/attempts/errors are retained before effects.
+
+The DB uses its same original binding/claim/pool and sole completed Connect,
+fresh original native claim and original-owned canonical/selected-file checks,
+then a fresh bounded selected-file query. Manager snapshots all standing fields
+under actual Manager.mu and releases it before service/native/DB methods. It
+validates fresh settings and standing/native state, calls actual DB-current and
+its completion selector, and owns a distinct ReadOnly-requested transaction with
+three bounded core queries. Only normal complete queries receive explicit public
+Rows.Close; only all successful queries reach normal Commit. No unconditional
+rollback/close/Commit handles partial/error/abnormal/unreturned work. DB current
+completion is checked both before and after Manager's own transaction.
+
+The Server remains unstarted, with no Manager pointer installed. It validates its
+own fresh original claim and uses a current-only method on the exact existing
+original Manager borrower. This links the same completed Manager current call,
+challenge/charge/ServerClaim and actual DB-current completion. No prepared
+Borrower DATA adapter, Manager getter, new owner/pool/Connect or native issuer
+is introduced. Completion selectors hold publication locks only for local
+snapshots and final identity rechecks; foreign checks occur after unlocking.
+
+The aggregate current SQL budget is four queries, at most nine rows, thirteen
+Next, nine Scan, four explicit normal Rows.Close, one BeginTx and one normal
+Commit. Projected byte prefixes are capped before Scan; settings canonical bytes
+are bounded to 16 KiB. ReadOnly is an API request, not kernel enforcement. Existing
+native-owner and DB canonical helpers retain their bounded owned auxiliary path
+opens/closes and uncertainty; these are not zero-open or atomic VFS observations.
+Driver/automatic transaction/cancellation/runtime costs remain opaque and charged.
+
+Only final normal metadata is added to original DB/Manager/Server finishes;
+direct recovery, sticky/active/publication/accounting behavior remains. New result
+publication follows original finish. No new Root caller, context/timer, schema,
+worker or public-start activation is added. Actual private Root protocol and
+no-pending proof gate, parent observations, retirement and live job continuity
+remain separate gates; DATA/normal API observations issue no Ready/Closed/credit.

@@ -12420,3 +12420,40 @@ source SHA256/Git-blob pairs and thirteen raw package-qualified run/pass pairs
 agree with the audited result. Later changes are documentation only; no test or
 binary was rerun for composition. This preserves selected normal DATA/refusal
 qualification and every stated current-native and live-upgrade limitation.
+
+## Original current bindings — selected normal refusal and DATA qualification
+
+[Normalized evidence](validation/resident-current-bindings-normal-2026-10-31.json)
+maps all nine reviewed Go SHA256/Git-blob pairs to source commit
+`66d39ff091cfaee571837b80357d918bfcb06490` and its exact 3,297-file/1,912-Go snapshot.
+All eight roots/18 unique package-qualified raw run/pass pairs pass without skips
+or failures. Three new roots reject inert prepared flags and nil/foreign/unissued
+current owners/bindings/selectors before native/SQL effects. Five existing roots
+preserve prepared refusal and pure bounded selected-file/core-schema projection
+behavior, including two groups of five subtests. Synthetic flags/row DATA are not
+successful original prepared/current/native or transaction fixtures.
+
+Default vet passes for six affected packages. A native command build passes with
+Go 1.27.3, CGO disabled and `GOFLAGS=-buildvcs=false` on all six graph/test/vet/build
+commands. Its 74,629,410-byte artifact has SHA256
+`33594beda025f6429c4290d644df6ae3c645dfdf0d859b9c59c23b617d6505a3`
+and was never executed. The actual graph contains 838 packages/88 official modules;
+mod/ZIP/expanded-source Hash1/go.sum authentication agrees PRE/POST, including
+unmodified SQLite v1.60.1, under the same cache/network fence.
+
+Independent review verifies six original Go and owning-wrapper exit-zero joins,
+twelve output hashes, candidate/working source and support/proposal pins, and
+68 preserved whole-file/function contracts. The wave took 57.627981 seconds with
+no alarm; new temporary inventories are empty and prior failed evidence/scratch
+stays retained. This is selected normal host qualification, not a race/full-suite/
+Linux run, native-Closed or release-credit observation. Raw records stay private.
+
+No actual successful original current/view/claim/native/SQL/Rows/Tx/pool/Connect,
+Env/Proof/secret/socket/timer/entropy fixture, genuine role or helper is exercised.
+Pure cancellation contexts in existing refusal tests create no timer. Actual
+positive eligibility, cross-component current completion/consumption, Root
+protocol/no-pending proof gate, parent observations and parent-reference retirement
+remain unverified or unimplemented as documented. Workers/schema/controller/
+admission/assets, API/UI replacement, public `arm start`, managed-run/proxy/log/
+heartbeat/finish/renew/cancel/expiry/accounting upgrade survival and shutdown/
+recovery remain unaccepted.

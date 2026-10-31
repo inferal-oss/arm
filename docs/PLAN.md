@@ -4699,3 +4699,23 @@ boundaries. It must retain independent once-only calls and prepared evidence.
 Root orchestration/proof/no-pending checks, parent observations and retirement,
 workers and public startup remain later gates. Live managed-job/proxy continuity
 across an upgrade remains unverified.
+
+## Original current DB, Manager and Server checks — reviewed normal scope
+
+The existing upgrade task continues on `codex/resident-current-bindings` from
+`e8715ff`, with focused source commit `66d39ff091cfaee571837b80357d918bfcb06490`.
+Distinct once-only DB/Manager/Server current operations and exact completed-current
+selectors are implemented without Root callers. Independent source and selected
+normal reviews pass; composed landing remains an integration gate. The
+[normalized result](validation/resident-current-bindings-normal-2026-10-31.json)
+records eight roots/18 named refusal and row-DATA cases, six-package vet and a
+native compile-only command build.
+
+Actual successful original current/native/SQL/Rows/Tx/pool/view behavior remains
+unexercised. Next is construction reconciliation for actual private Root protocol
+orchestration, fresh cross-component commitments/no-pending proof gate and parent
+post-Start journal/native/nonce checks. Parent-owned reference retirement, workers/
+schema/controller/admission/assets, API/UI replacement and public first/repeat/
+concurrent `arm start` remain open. Actual positive eligibility, managed-run/proxy
+upgrade survival and shutdown/recovery remain unaccepted. Prior failed records,
+preserved branches and separately passing scopes retain their classifications.

@@ -1,0 +1,246 @@
+{
+  "boundaries": [
+    "Selected normal host synthetic DATA/refusal qualification, not a race/full-suite or Linux execution.",
+    "Three new roots reject nil/zero/foreign-self/inert prepared flags and unissued/copied binding/current completion selectors before native/SQL effects. Five existing prepared/refusal/pure-row projection roots include two groups of five subtests. Synthetic returned flags do not represent completed positive original calls.",
+    "No actual successful original current/view/claim/native/SQL/Rows/Tx/pool/Connect, genuine role/helper, Env/Proof/secret/socket/timer/entropy fixture ran. Pure cancel contexts in existing refusal tests create no timer. The command artifact was never executed.",
+    "All current methods remain unactivated. A successful compile or row-DATA validation cannot prove current native authority, actual SQL behavior, no-pending global state, Closed or resource release credit.",
+    "Original prepared operations/results/read1/birth2, C4b public view, C4c1 current journals/observation/census links, original native issuer, official driver/module/schema and Root/startup callsites remain unchanged outside the stated original operation metadata.",
+    "Actual positive native/funding/environment eligibility, prepared SQL/native/journal and current service/fence/DB/Manager/Server completion and consumption behavior remain unexercised.",
+    "Actual Root ACK/challenge/proof/no-pending gate, parent postStart journal/native/nonce observations, parent-owned reference retirement/Process.Release remain unimplemented.",
+    "Worker-capable schema/controller/admission/assets, API/UI replacement, public first/repeat/concurrent arm start, managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/accounting upgrade survival and core shutdown/recovery remain open."
+  ],
+  "implemented_source_contract": {
+    "Manager": "Same actual Manager/native claim/view/standing charge/existing Server binding/schema-Tx lineage. Snapshot all standing fields under actual Manager.mu, release before service/DB/native. Fresh settings hash, actual DB-current and its completion, own distinct ReadOnly-requested Tx/three closed bounded queries, normal Commit only after all checks. Actual DB-current completion rechecked before and after own Commit.",
+    "SQL_direct_API_bounds": {
+      "BeginTx_max": 1,
+      "Next_max": 13,
+      "Scan_max": 9,
+      "explicit_normal_RowsClose_max": 4,
+      "limitation": "Bounded API inputs/outputs, not measured execution/RSS or native enforcement. ReadOnly is API request; driver/automatic transaction/cancellation work remains opaque. No unconditional cleanup through partial/error/abnormal/unreturned work.",
+      "normal_Commit_max": 1,
+      "projected_byte_prefixes_max": 13196,
+      "queries": 4,
+      "rows_max": 9,
+      "settings_canonical_retained_max_bytes": 16384
+    },
+    "Server": "Fresh actual own Server claim/view and existing original Manager borrower, unstarted with no Manager installed. Current-only method on exact existing binding links same completed Manager current call/view/charge/ServerClaim and actual DB-current, never prepared Borrower DATA or exposed Manager getter.",
+    "activation": "No Root callers of new Manager/Server current validators. New Manager body alone calls DB-current; new Server body/completion selectors consult the original current-only Manager binding. No runtime activation.",
+    "boundaries": "Prepared files/functions/schema/query DATA remain unchanged; separate current Rows/Tx/query arrays are retained. No new pool/Connect, native issuer, module/schema/worker or Root change. Actual Root must later prove all current calls normal and none pending before W2; end checks alone cannot prevent premature proof.",
+    "completion_and_locking": "Publication mutexes hold only local identity/retention. Completion selectors snapshot, unlock for actual foreign view/DB/binding checks, then recheck same completed/no-active call. New result publication follows original directly deferred finish; finish changes are final normal metadata only, preserving direct recover/sticky/active/accounting behavior.",
+    "database": "Same actual original binding/claim/pool and one completed physical Connect. Fresh original native claim, existing original-owned canonical/selected-file validation, new bounded selected-file query and retained Rows/count/scan/errors. Exact current completion selector requires final normal same call/view/charge and no active DB work.",
+    "native_costs": "Three fresh original claim effects plus separate DB canonical helper. Existing original-owned bounded auxiliary path walks and retained partial close uncertainty remain; no zero-open/held-only, borrowed-closer, atomic pathname or VFS-inode assertion.",
+    "ownership": "Independent currentTried/current-call records with same original authenticated challenge, charge, independent Root context and completed original prepared lineage. No prepared flag reset or prepared results as current evidence."
+  },
+  "normal_qualification": {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "-buildvcs=false",
+    "Go_version": "1.27.3",
+    "actual_dependency_graph": {
+      "POST_authenticated_modules": 88,
+      "PRE_POST_equal": true,
+      "PRE_authenticated_modules": 88,
+      "authentication": "Actual referenced official mod/ZIP/expanded-source Hash1 and go.sum; no replacements, downloads, cache seeding or dependency-cache write relaxation.",
+      "packages": 838,
+      "referenced_official_modules": 88,
+      "sqlite": "modernc.org/sqlite@v1.60.1"
+    },
+    "genuine_role_or_native_positive_fixtures": 0,
+    "helper_subprocesses": 0,
+    "native_command_compile_only": {
+      "artifact_bytes": 74629410,
+      "artifact_executed": false,
+      "artifact_sha256": "33594beda025f6429c4290d644df6ae3c645dfdf0d859b9c59c23b617d6505a3",
+      "result": "pass",
+      "target": {
+        "GOARCH": "arm64",
+        "GOOS": "darwin"
+      }
+    },
+    "new_refusal_named_results": 3,
+    "new_refusal_roots": 3,
+    "real_secret_or_entropy_access": false,
+    "relevant_existing_roots": 5,
+    "root_count": 8,
+    "supervision": {
+      "active_elapsed_seconds": 57.627981,
+      "all_original_Go_commands_joined_exit_zero": true,
+      "candidate_and_working_source_files_verified": 3297,
+      "command_stream_hashes_verified": 12,
+      "failed_predecessors_and_scratch_retained": true,
+      "new_temporary_inventories_empty": true,
+      "original_Go_commands": 6,
+      "owning_wrapper_joined_exit_zero": true,
+      "proposal_members_verified": 18,
+      "protected_function_and_file_contracts_verified": 68,
+      "protected_working_files_verified": 3288,
+      "reviewed_working_Go_files_verified": 9,
+      "sampled_stop_alarm": false,
+      "source_support_and_proposal_pins_unchanged": true,
+      "support_pins_verified": 441
+    },
+    "test_packages": [
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestCurrentDatabaseRejectsPreparedFlagsAndUnissuedBindingsBeforeEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedDatabaseValidationRefusesBeforePoolOrCloseEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/alias"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/duplicate"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/no-main"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/wrong-path"
+          }
+        ],
+        "package": "getarm.org/internal/database",
+        "root_tests": [
+          "TestCurrentDatabaseRejectsPreparedFlagsAndUnissuedBindingsBeforeEffects",
+          "TestPreparedDatabaseValidationRefusesBeforePoolOrCloseEffects",
+          "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestCurrentManagerAndBorrowerRejectPreparedFlagsWithoutOriginalCurrentCall"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedManagerRefusesUnopenedForeignAndMissingBindings"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/blob-marker"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/ddl-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/format-five"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/generation-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/not-table"
+          }
+        ],
+        "package": "getarm.org/internal/manager",
+        "root_tests": [
+          "TestCurrentManagerAndBorrowerRejectPreparedFlagsWithoutOriginalCurrentCall",
+          "TestPreparedManagerRefusesUnopenedForeignAndMissingBindings",
+          "TestPreparedSchemaProjectionsRequireExactBoundedCoreState"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestCurrentServerRejectsPreparedFlagsWithoutActualCurrentManagerBorrower"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedServerRefusesUnopenedAndForeignBeforeNative"
+          }
+        ],
+        "package": "getarm.org/internal/server",
+        "root_tests": [
+          "TestCurrentServerRejectsPreparedFlagsWithoutActualCurrentManagerBorrower",
+          "TestPreparedServerRefusesUnopenedAndForeignBeforeNative"
+        ]
+      }
+    ],
+    "unique_package_qualified_named_run_pass_pairs": 18,
+    "vet": {
+      "packages": [
+        "getarm.org/internal/database",
+        "getarm.org/internal/manager",
+        "getarm.org/internal/server",
+        "getarm.org/internal/server/challengeview",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    }
+  },
+  "schema": 1,
+  "scope": "Distinct original current database, Manager and Server operations: selected normal synthetic DATA/refusal qualification",
+  "source": {
+    "base_commit": "e8715ff21f069564430e2a8440d17d792b7e7604",
+    "feature_commit": "66d39ff091cfaee571837b80357d918bfcb06490",
+    "protected_function_and_file_contracts_verified": 68,
+    "qualified_Go_files": 1912,
+    "qualified_source_files": 3297,
+    "qualified_source_manifest_sha256": "a187d155dca2afc31bcb0b4ccc9f71a8698f7cf474adedbee8a4736e1aba857d",
+    "reviewed_Go_files": {
+      "internal/database/resident_current.go": {
+        "git_blob": "be126e9a11e06e4585da3e0991956e8770af97a3",
+        "sha256": "9da09850c85b8f5cc3655a6093aa181ed8c309f770a68b5c436b414a1d1aca22"
+      },
+      "internal/database/resident_current_test.go": {
+        "git_blob": "39486eaf45f3160692fc387bcb3c1c8ab87bbf25",
+        "sha256": "de08dfdd05fff6439156633dd795c9d97e19e2a5742faa64ed853379cb99abaf"
+      },
+      "internal/database/resident_open.go": {
+        "git_blob": "34ae64631a358c3518cdf57bbfdff9e83697adff",
+        "sha256": "596743395ad73e7209a6e68eadc5cdae4db1a2fadea492798b244651d4bbbf46"
+      },
+      "internal/manager/resident_current.go": {
+        "git_blob": "ff0186b8bc3a45c697e23c8e44ca7f4fb6d7e5a3",
+        "sha256": "3f8be752200d4c42a4a551a66cd7d936b81741750bd11642115dee1a83397d5a"
+      },
+      "internal/manager/resident_current_test.go": {
+        "git_blob": "43c200824912c3b1e9781ced7d565cdd2a15591f",
+        "sha256": "47e96833b06e68122ed5f61b7e5244877909de65fc0e0b12b28323da0e2d6d26"
+      },
+      "internal/manager/resident_manager.go": {
+        "git_blob": "b2cbcbd532dc55a862a800ba89e3e9a2ff184eaf",
+        "sha256": "9cefcb3f4fc127094ad626835278d067c4bdf100f22ab87751f0136a75387a58"
+      },
+      "internal/server/resident_server.go": {
+        "git_blob": "9f37c08a8feae88b18c110adcbd71e077fcf9f70",
+        "sha256": "7bad87b40f545bd9aa411d6d6c5f55322ec25caa7eecc5d677654076d9afa4d4"
+      },
+      "internal/server/resident_server_current.go": {
+        "git_blob": "a7a8d1ff132cd0830e68931c2d05a9d8c84fbc1e",
+        "sha256": "6f3ca41dc3f1724ab12d599ab5ca6c3d93664ee30fb4cb251e93d51b8fbcad0f"
+      },
+      "internal/server/resident_server_current_test.go": {
+        "git_blob": "f2953cbd469910556b2ee4fbcb1060fbf3353999",
+        "sha256": "3a8ba071268998f83a9630b51d448f653f9b53a61d347f3b473d68cc70bc943f"
+      }
+    }
+  },
+  "status": "scoped_normal_qualification_pass"
+}
