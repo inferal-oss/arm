@@ -6012,3 +6012,9 @@ publication follows original finish. No new Root caller, context/timer, schema,
 worker or public-start activation is added. Actual private Root protocol and
 no-pending proof gate, parent observations, retirement and live job continuity
 remain separate gates; DATA/normal API observations issue no Ready/Closed/credit.
+
+Coordinator composition retains DB/Manager/Server-current source as `1a35f11`
+and scoped evidence as `5719b26`. Every qualified runtime, module and embedded
+input matches the reviewed snapshot. SQLite remains the unmodified official
+driver. No new Root caller is activated and no running backend or managed child
+is changed by this integration.

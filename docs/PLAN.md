@@ -4719,3 +4719,18 @@ schema/controller/admission/assets, API/UI replacement and public first/repeat/
 concurrent `arm start` remain open. Actual positive eligibility, managed-run/proxy
 upgrade survival and shutdown/recovery remain unaccepted. Prior failed records,
 preserved branches and separately passing scopes retain their classifications.
+
+## Current DB/Manager/Server composition accepted
+
+The coordinator integrated source `66d39ff` as `1a35f11` and scoped evidence
+`ac779dc` as `5719b26`. All 3,297 qualified tracked inputs, including 1,912 Go
+files, match exactly at source composition. Later scoped documentation/evidence
+do not change runtime inputs. The selected normal result is accepted without
+repeating execution or widening its successful-original/native/SQL scope.
+
+Next is a bounded construction reconciliation for the actual private Root
+protocol, fresh cross-component commitments and no-pending proof gate, with
+parent post-Start observations and retained phase/entropy/deadline ownership.
+Product edits and execution require separate reviewed cuts. Parent-owned
+reference retirement, workers and public startup remain later gates. Actual
+managed-job/proxy continuity across an upgrade remains unverified.

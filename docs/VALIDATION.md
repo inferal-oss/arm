@@ -12457,3 +12457,11 @@ remain unverified or unimplemented as documented. Workers/schema/controller/
 admission/assets, API/UI replacement, public `arm start`, managed-run/proxy/log/
 heartbeat/finish/renew/cancel/expiry/accounting upgrade survival and shutdown/
 recovery remain unaccepted.
+
+Coordinator composition accepts source `1a35f11` and scoped evidence `5719b26`.
+Independent comparison verifies all 3,297 qualified inputs, including 1,912 Go
+files and every module and embedded input. The normalized evidence hash, nine
+source SHA256/Git-blob pairs and eighteen raw package-qualified run/pass pairs
+agree with the audited result. Later changes are documentation only; no test or
+binary was rerun for composition. This retains selected normal refusal/DATA
+qualification and every stated current-native/SQL and live-upgrade limitation.
