@@ -396,6 +396,9 @@ func (a *app) human(v any) error {
 	return err
 }
 func (a *app) reportError(err error) {
+	if a.reportResidentAuthorizationError(err) {
+		return
+	}
 	var api *model.Error
 	if !errors.As(err, &api) {
 		code := "operation_failed"

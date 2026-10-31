@@ -50,7 +50,8 @@ type app struct {
 	externalDispatch              bool
 	stopSignals                   func()
 	// catalogFlags stops a handler at its parsing boundary before any effect.
-	catalogFlags func(*flag.FlagSet, bool)
+	catalogFlags          func(*flag.FlagSet, bool)
+	residentAuthorization *residentAuthorizationContext // actual owner retained through shared command finish
 }
 
 func Main(args []string, in io.Reader, out, errout io.Writer) int {
@@ -115,6 +116,15 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 // finishCommand preserves operation-specific recovery guidance on interruption.
 func (a *app) finishCommand(code int, e error) int {
 	if !a.externalDispatch && a.ctx.Err() != nil {
+		var resident *residentAuthorizationError
+		if errors.As(e, &resident) {
+			a.reportError(e)
+			return 130
+		}
+		if recovery := a.retainedResidentAuthorizationFailure(e); recovery != nil {
+			a.reportError(recovery)
+			return 130
+		}
 		var detail *model.Error
 		if errors.As(e, &detail) && detail.Code == "activation_outcome_unknown" {
 			a.reportError(detail)
@@ -301,6 +311,8 @@ func (a *app) command(args []string) (int, error) {
 		return a.daemon(cmd, args)
 	case "config":
 		return a.configCommand(args)
+	case "resident":
+		return a.residentCommand(args)
 	case "acquire", "run":
 		return a.acquire(cmd, args)
 	case "proxy":
