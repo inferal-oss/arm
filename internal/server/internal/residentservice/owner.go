@@ -22,6 +22,8 @@ type OriginalDebit struct {
 	record *DebitRecord
 }
 type owner struct {
+	parentReferences                                    *ServiceParentReferenceOwner
+	parentRetirement                                    *serviceParentRetirement
 	buildFromOriginalGrant                              bool
 	p1Child                                             *residentrefs.ServiceOriginal
 	p1Journal                                           *residentrefs.JournalView
@@ -65,8 +67,8 @@ type owner struct {
 	p1CurrentTried                                      bool
 	p1Current                                           *p1CurrentServiceCall
 	p1CurrentObservation                                *P1CurrentServiceObservation
-	p1CurrentProofSignTried                              bool
-	p1CurrentProofSign                                   *p1CurrentProofSignCall
+	p1CurrentProofSignTried                             bool
+	p1CurrentProofSign                                  *p1CurrentProofSignCall
 	openedFDs, closedFDs                                uint64
 	liveFDs                                             int
 }
@@ -133,6 +135,9 @@ func (p *ParentPending) begin(kind string) (*operation, error) {
 	defer o.mu.Unlock()
 	if o.active != nil {
 		return nil, ErrPending
+	}
+	if o.parentRetirement != nil {
+		return nil, ErrInvalid
 	}
 	if o.firstError != nil {
 		return nil, o.firstError

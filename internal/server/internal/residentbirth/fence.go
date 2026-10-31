@@ -28,6 +28,8 @@ const maxIntentBytes = 16 << 10
 type FreshFence struct{ owner *fenceOwner }
 type PreparedFence struct{ owner *fenceOwner }
 type fenceOwner struct {
+	parentReferences                                            *FenceParentReferenceOwner
+	parentRetirement                                            *fenceParentRetirement
 	mu                                                          sync.Mutex // publication only, never held through native calls
 	self                                                        *FreshFence
 	path                                                        string
@@ -44,9 +46,9 @@ type fenceOwner struct {
 	prepareTried, bindTried, bound, beforeStartTried            bool
 	journalIssued, writeTried, intentCommitted, writerWithdrawn bool
 	shortSealTried                                              bool
-	withdrawOriginal, shortSealOriginal                          *fenceOperation
-	postStartTried                                               bool
-	postStart                                                    *p1ParentPostStartCall
+	withdrawOriginal, shortSealOriginal                         *fenceOperation
+	postStartTried                                              bool
+	postStart                                                   *p1ParentPostStartCall
 	journal                                                     *LaunchJournal
 	intent                                                      []byte
 	verification                                                []byte
@@ -58,13 +60,13 @@ type fenceOwner struct {
 	createdDirectory, createdLedger                             bool
 }
 type fenceOperation struct {
-	owner       *fenceOwner
-	ctx         context.Context
-	kind, phase string
-	abnormal    bool
+	owner          *fenceOwner
+	ctx            context.Context
+	kind, phase    string
+	abnormal       bool
 	normalFinished bool // final original metadata, not native closure
 	finalError     error
-	cause       any
+	cause          any
 }
 type fenceFD struct {
 	file               *os.File
@@ -140,6 +142,9 @@ func (h *FreshFence) begin(ctx context.Context, kind string, prepared *PreparedF
 	}
 	if o.active != nil {
 		return nil, ErrFencePending
+	}
+	if o.parentRetirement != nil {
+		return nil, errOriginalFence
 	}
 	if o.firstError != nil {
 		return nil, o.firstError

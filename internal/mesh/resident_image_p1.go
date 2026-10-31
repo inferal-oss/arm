@@ -30,6 +30,7 @@ type residentImageP1State struct {
 	tried, bound              bool
 	validated, shortSealTried bool
 	firstError                error
+	parentRetired             bool
 	proof                     RuntimeProof
 }
 type residentImageP1Operation struct {
@@ -67,6 +68,9 @@ func (p *ResidentImageP1Pending) begin(kind string) (*residentImageP1Operation, 
 	}
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	if p.parentRetired {
+		return nil, errResidentImageP1Original
+	}
 	if p.firstError != nil {
 		return nil, p.firstError
 	}

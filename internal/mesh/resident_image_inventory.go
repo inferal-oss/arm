@@ -25,7 +25,7 @@ func (p *ResidentImagePinPending) InventoryOriginal(ctx context.Context) (invent
 		return inventory, errResidentPinOriginal
 	}
 	p.mu.Lock()
-	if !p.ready || p.active != nil || p.firstError != nil || p.p1InventoryTried {
+	if p.parentRetirement != nil || !p.ready || p.active != nil || p.firstError != nil || p.p1InventoryTried {
 		p.mu.Unlock()
 		return inventory, errResidentPinOriginal
 	}

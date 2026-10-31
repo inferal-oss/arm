@@ -67,9 +67,9 @@ type residentParentProtocolCall struct {
 	bodyError, finalError                          error
 }
 
-func (r *residentParentPending) parentProtocolLocked(c *residentParentProtocolCall) bool {
+func (r *residentParentPending) parentProtocolBindingsLocked(c *residentParentProtocolCall) bool {
 	p := r.prepareOperation
-	if c == nil || c != r.protocol || c.owner != r || r.firstError != nil || p == nil || p.kind != "prepare" || !p.normalFinished || p.abnormal || p.finalError != nil || !r.prepared || c.op == nil || c.op != r.launchOperation || r.active != c.op || c.op.kind != "launch-and-transfer" || c.op.normalFinished || c.op.abnormal || !sameResidentProtocolContextData(c.ctx, c.op.ctx) || !r.startAttempted || !r.startReturned || r.startError != nil || r.process == nil || c.process != r.process || c.command == nil || c.command != r.command || c.command.Process != c.process || c.service != r.service || c.service == nil || c.debit != r.debit || c.debit == nil || c.group != r.group || c.group == nil || c.image != r.image || c.image == nil || c.pin != r.pin || c.pin == nil || c.fence != r.fence || c.fence == nil || c.preparedFence != r.preparedFence || c.preparedFence == nil || c.journal != r.journal || c.journal == nil || !sameResidentProtocolFrameData(c.bootstrapFrame, r.frame) || len(c.intent) == 0 || !bytes.Equal(c.intent, r.intent) {
+	if c == nil || c != r.protocol || c.owner != r || r.firstError != nil || p == nil || p.kind != "prepare" || !p.normalFinished || p.abnormal || p.finalError != nil || !r.prepared || c.op == nil || c.op != r.launchOperation || c.op.kind != "launch-and-transfer" || c.op.abnormal || !sameResidentProtocolContextData(c.ctx, c.op.ctx) || !r.startAttempted || !r.startReturned || r.startError != nil || r.process == nil || c.process != r.process || c.command == nil || c.command != r.command || c.command.Process != c.process || c.service != r.service || c.service == nil || c.debit != r.debit || c.debit == nil || c.group != r.group || c.group == nil || c.image != r.image || c.image == nil || c.pin != r.pin || c.pin == nil || c.fence != r.fence || c.fence == nil || c.preparedFence != r.preparedFence || c.preparedFence == nil || c.journal != r.journal || c.journal == nil || !sameResidentProtocolFrameData(c.bootstrapFrame, r.frame) || len(c.intent) == 0 || !bytes.Equal(c.intent, r.intent) {
 		return false
 	}
 	s := c.start
@@ -86,6 +86,10 @@ func (r *residentParentPending) parentProtocolLocked(c *residentParentProtocolCa
 	}
 	return true
 }
+func (r *residentParentPending) parentProtocolLocked(c *residentParentProtocolCall) bool {
+	return r.parentProtocolBindingsLocked(c) && r.active == c.op && !c.op.normalFinished
+}
+
 func (r *residentParentPending) parentProtocolGate(c *residentParentProtocolCall) error {
 	if r == nil || r.self != r || r.mu == nil {
 		return errResidentParentOriginal

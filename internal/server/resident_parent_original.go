@@ -38,12 +38,15 @@ type residentParentPending struct {
 	bound                               [13]*os.File
 	environment                         []string
 	service                             *residentservice.ParentPending
+	serviceReferences                   *residentservice.ServiceParentReferenceOwner
 	debit                               *residentservice.OriginalDebit
 	group                               *residentservice.P1ServiceGroup
 	selectors                           residentservice.P1ServiceSelectors
 	pin                                 *mesh.ResidentImagePinPending
+	pinReferences                       *mesh.PinParentReferenceOwner
 	image                               *mesh.ResidentImageP1Pending
 	fence                               *residentbirth.FreshFence
+	fenceReferences                     *residentbirth.FenceParentReferenceOwner
 	preparedFence                       *residentbirth.PreparedFence
 	journal                             *residentbirth.LaunchJournal
 	bootstrap                           p1RootBootstrap
@@ -53,6 +56,7 @@ type residentParentPending struct {
 	prepareOperation, launchOperation   *residentParentOperation
 	protocol                            *residentParentProtocolCall
 	protocolPhases                      [4]*residentProtocolPhase
+	retirement                          *residentParentRetirementCall
 	prepareTried, prepared, launchTried bool
 	startAttempted, startReturned       bool
 	startError                          error
@@ -100,7 +104,7 @@ func newResidentParentPending(home, key string, settings daemonconfig.Settings) 
 	}
 	root.command = &exec.Cmd{Dir: "/", ExtraFiles: make([]*os.File, 13), SysProcAttr: &syscall.SysProcAttr{Setsid: true}}
 	root.extra = root.command.ExtraFiles
-	root.service, resultErr = residentservice.NewP1ExistingGrantParentPending(home)
+	root.service, root.serviceReferences, resultErr = residentservice.NewP1ExistingGrantParentWithReferences(home)
 	return root, resultErr
 }
 func (r *residentParentPending) beginOriginal(ctx context.Context, kind string) (*residentParentOperation, error) {
@@ -244,7 +248,7 @@ func (r *residentParentPending) prepareOriginalBody(ctx context.Context) (err er
 	r.command.Path = path
 	r.command.Args = []string{path, mesh.ResidentP1CoreRole}
 	r.phaseOriginal("funded_actual_current_A_capture_and_exclusive_readonly_pin")
-	r.pin, err = r.group.NewOriginalImagePinPending()
+	r.pin, r.pinReferences, err = r.group.NewOriginalImagePinWithParentReferences()
 	if err != nil {
 		return err
 	}
@@ -258,7 +262,7 @@ func (r *residentParentPending) prepareOriginalBody(ctx context.Context) (err er
 		return err
 	}
 	r.phaseOriginal("actual_exclusive_fresh_fence_and_six_reference_binding")
-	r.fence, err = residentbirth.NewFreshFencePending(r.group, r.pin, r.command)
+	r.fence, r.fenceReferences, err = residentbirth.NewFreshFenceWithParentReferences(r.group, r.pin, r.command)
 	if err != nil {
 		return err
 	}

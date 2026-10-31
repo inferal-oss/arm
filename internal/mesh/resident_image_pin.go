@@ -20,6 +20,8 @@ import (
 // partial effects and errors remain retained; there is no error cleanup API.
 type ResidentImagePinPending struct{ *residentImagePinState }
 type residentImagePinState struct {
+	parentReferences                                *PinParentReferenceOwner
+	parentRetirement                                *pinParentRetirement
 	expectedHome                                    *ResidentImagePinHomeData // selectors only, never funding authority
 	expectedHomeChecked                             bool                      // set ONLY by actual held-FD native check
 	p1Binding                                       *ResidentImageP1Pending
@@ -260,7 +262,7 @@ func (o *ResidentImagePinPending) PrepareOriginal(ctx context.Context) (resultEr
 		o.mu.Unlock()
 		return e
 	}
-	if o.tried || o.active != nil {
+	if o.parentRetirement != nil || o.tried || o.active != nil {
 		o.mu.Unlock()
 		return errResidentPinOriginal
 	}
