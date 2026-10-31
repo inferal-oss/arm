@@ -16,10 +16,12 @@ type titleFixture struct {
 	result   agentsessions.TitleResult
 	roots    []string
 	deadline time.Time
+	calls    int
 }
 
 func (f *titleFixture) DiscoverTitles(ctx context.Context, roots []string) agentsessions.TitleResult {
 	f.roots = roots
+	f.calls++
 	f.deadline, _ = ctx.Deadline()
 	return f.result
 }
@@ -32,13 +34,13 @@ func TestProjectTitlesCatalogBudgets(t *testing.T) {
 		roots = append(roots, projectDir(t, base, fmt.Sprintf("root-%02d", i)))
 	}
 	writeJSON(t, home+"/.codex-global-state.json", map[string]any{"active-workspace-roots": roots})
-	fixture := &titleFixture{}
+	fixture := &titleFixture{result: agentsessions.TitleResult{Titles: []agentsessions.Title{{Directory: roots[16], Name: "Later worktree task", Updated: time.Now()}}}}
 	for i := 0; i < agentsessions.Limit+1; i++ {
 		fixture.result.Titles = append(fixture.result.Titles, agentsessions.Title{Directory: roots[0], Name: fmt.Sprintf("Name %03d", i), Updated: time.Now()})
 	}
 	start := time.Now()
 	got := (WithTitles{Adapter: Codex{Home: home}, Source: fixture}).Discover(t.Context())
-	if len(fixture.roots) != 16 || len(got.Projects) != 17 || len(got.Projects[0].Names) != agentsessions.Limit || len(got.Warnings) != 1 || fixture.deadline.IsZero() || fixture.deadline.After(start.Add(9*time.Second)) {
+	if len(fixture.roots) != 17 || fixture.calls != 1 || len(got.Projects) != 17 || len(got.Projects[0].Names) != agentsessions.Limit-1 || !reflect.DeepEqual(got.Projects[16].Names, []string{"Later worktree task"}) || len(got.Warnings) != 0 || fixture.deadline.IsZero() || fixture.deadline.After(start.Add(9*time.Second)) {
 		t.Fatal("catalog budget changed", len(fixture.roots), len(got.Projects), len(got.Projects[0].Names), got.Warnings, fixture.deadline)
 	}
 }

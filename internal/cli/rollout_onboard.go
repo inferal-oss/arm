@@ -16,7 +16,6 @@ import (
 	"charm.land/lipgloss/v2"
 	"getarm.org/internal/activation"
 	"getarm.org/internal/agentprojects"
-	"getarm.org/internal/agents"
 	"getarm.org/internal/agentsessions"
 	"getarm.org/internal/install"
 	"getarm.org/internal/model"
@@ -84,8 +83,7 @@ func (a *app) rolloutOnboard(args []string) error {
 	}
 	var adapters []agentprojects.Adapter
 	if *adapter == "all" || *adapter == "codex" {
-		binary, _ := agents.Binary("codex")
-		adapters = append(adapters, agentprojects.WithTitles{Adapter: agentprojects.Codex{Home: *codexHome}, Source: agentsessions.Codex{Home: *codexHome, Binary: binary}})
+		adapters = append(adapters, agentprojects.WithTitles{Adapter: agentprojects.Codex{Home: *codexHome}, Source: agentsessions.CodexStored{Home: *codexHome}})
 	}
 	if *adapter == "all" || *adapter == "claude" {
 		adapters = append(adapters, agentprojects.Claude{Home: *claudeHome, ConfigFile: *claudeConfig})

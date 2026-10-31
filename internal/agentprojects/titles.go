@@ -22,14 +22,14 @@ func (a WithTitles) Discover(ctx context.Context) Result {
 	if a.Source == nil || ctx.Err() != nil || len(out.Projects) == 0 {
 		return out
 	}
-	// The native reader accepts at most 16 exact roots. Directory suggestions
-	// beyond that limit remain available, without inferred titles.
+	// Send the bounded catalog once, so later worktree suggestions are not
+	// silently excluded. The source retains one global response/time budget.
 	roots := []string{}
-	for _, p := range out.Projects[:min(16, len(out.Projects))] {
+	for _, p := range out.Projects[:min(maxProjects, len(out.Projects))] {
 		roots = append(roots, p.Directory)
 	}
 	if len(out.Projects) > len(roots) {
-		out.Warnings = append(out.Warnings, "Session names are limited to the first 16 suggested directories; other directories remain selectable.")
+		out.Warnings = append(out.Warnings, "Session name root limit reached; other directories remain selectable.")
 	}
 	ctx, cancel := context.WithTimeout(ctx, 8*time.Second)
 	defer cancel()
