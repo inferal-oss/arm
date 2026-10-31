@@ -2,6 +2,7 @@ package residentservice
 
 import (
 	"context"
+	"getarm.org/internal/mesh"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,7 +19,11 @@ import (
 // Root must retain this ACTUAL group/debit before runtime/image/fence effects.
 type P1ServiceGroup struct{ *p1ServiceState }
 type p1ServiceState struct {
+	pinTried                                                         bool
+	pin                                                              *mesh.ResidentImagePinPending
+	pinError                                                         error
 	environment                                                      []string
+	shortSealTried, shortSealed, transferTried                       bool
 	self                                                             *P1ServiceGroup
 	parent                                                           *ParentPending
 	debit                                                            *OriginalDebit

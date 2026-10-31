@@ -22,6 +22,7 @@ type OriginalDebit struct {
 	record *DebitRecord
 }
 type owner struct {
+	buildFromOriginalGrant                              bool
 	p1Child                                             *residentrefs.ServiceOriginal
 	p1Journal                                           *residentrefs.JournalView
 	p1IDs                                               residentrefs.ServiceIdentities
@@ -180,6 +181,16 @@ func (p *ParentPending) begin(kind string) (*operation, error) {
 			return nil, ErrInvalid
 		}
 		o.p1.beforeStartTried = true
+	case "p1-short-seal":
+		if o.p1 == nil || !o.p1.bound || !o.writerWithdrawn || !o.p1.beforeStartTried || o.p1.shortSealTried {
+			return nil, ErrInvalid
+		}
+		o.p1.shortSealTried = true
+	case "p1-transfer":
+		if o.p1 == nil || !o.p1.shortSealed || !o.writerWithdrawn || o.p1.transferTried || o.writerSent || o.channel != nil {
+			return nil, ErrInvalid
+		}
+		o.p1.transferTried = true
 	default:
 		return nil, ErrInvalid
 	}
@@ -213,6 +224,9 @@ func (o *owner) finish(op *operation, normal *bool, resultErr *error) {
 			}
 			if op.kind == "p1-funding" {
 				o.p1.fundingChecked = true
+			}
+			if op.kind == "p1-short-seal" {
+				o.p1.shortSealed = true
 			}
 			if op.kind == "p1-binding" {
 				o.p1.bound = true
@@ -283,6 +297,14 @@ func (o *owner) openBody(ctx context.Context) error {
 		return err
 	}
 	grant := journal.records[0].Grant
+	if o.buildFromOriginalGrant {
+		if grant.Intent.Profile.RequireP1Environment() != nil {
+			return ErrInvalid
+		}
+		o.mu.Lock()
+		o.build = grant.Intent.Profile.Build
+		o.mu.Unlock()
+	}
 	if grant.Intent.Home != o.path || grant.Intent.HomeID != o.files.home.id || grant.Intent.Profile.Build != o.build {
 		return ErrInvalid
 	}
@@ -298,6 +320,7 @@ func (o *owner) openBody(ctx context.Context) error {
 
 type readOperation struct {
 	owner         *owner
+	stage         string
 	data          []byte
 	before, after os.FileInfo
 	bytes, calls  int
@@ -308,10 +331,32 @@ type readOperation struct {
 func (o *owner) readOriginalJournal(ctx context.Context) (decodedJournal, error) {
 	call := &readOperation{owner: o}
 	o.mu.Lock()
-	if len(o.reads) >= 4 {
+	if o.active == nil || o.active.owner != o {
 		o.mu.Unlock()
 		return decodedJournal{}, ErrInvalid
 	}
+	p1 := o.p1 != nil || o.buildFromOriginalGrant
+	limit := 4
+	if p1 {
+		limit = 5
+	}
+	if len(o.reads) >= limit {
+		o.mu.Unlock()
+		return decodedJournal{}, ErrInvalid
+	}
+	prior := make([]string, 0, len(o.reads))
+	for _, read := range o.reads {
+		if p1 && (read == nil || read.owner != o || !read.finished || read.firstError != nil) {
+			o.mu.Unlock()
+			return decodedJournal{}, ErrInvalid
+		}
+		prior = append(prior, read.stage)
+	}
+	if err := journalReadBudgetData(p1, prior, o.active.kind); err != nil {
+		o.mu.Unlock()
+		return decodedJournal{}, err
+	}
+	call.stage = o.active.kind
 	o.reads = append(o.reads, call)
 	o.mu.Unlock()
 	fail := func(err error) (decodedJournal, error) {

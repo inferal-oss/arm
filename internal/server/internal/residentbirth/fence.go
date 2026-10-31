@@ -43,6 +43,7 @@ type fenceOwner struct {
 	prepared                                                    *PreparedFence
 	prepareTried, bindTried, bound, beforeStartTried            bool
 	journalIssued, writeTried, intentCommitted, writerWithdrawn bool
+	shortSealTried                                              bool
 	journal                                                     *LaunchJournal
 	intent                                                      []byte
 	verification                                                []byte
@@ -105,7 +106,7 @@ var errOriginalFence = errors.New("original composed fence holder required")
 // This first cut binds CONFIG ABSENCE: a config.toml entry refuses. A future
 // parsed-config owner must be reviewed before optional config support is added.
 func NewFreshFencePending(group *residentservice.P1ServiceGroup, pin *mesh.ResidentImagePinPending, command *exec.Cmd) (*FreshFence, error) {
-	if pin == nil || group == nil || group.CheckOriginalCommand(command) != nil {
+	if pin == nil || group == nil || group.CheckOriginalCommand(command) != nil || group.CheckOriginalImagePin(pin) != nil {
 		return nil, errOriginalFence
 	}
 	selectors, err := group.SelectorsOriginal()
@@ -173,6 +174,11 @@ func (h *FreshFence) begin(ctx context.Context, kind string, prepared *PreparedF
 				return nil, errOriginalFence
 			}
 			o.beforeStartTried = true
+		case "short-seal":
+			if !o.bound || !o.intentCommitted || !o.writerWithdrawn || !o.beforeStartTried || o.shortSealTried {
+				return nil, errOriginalFence
+			}
+			o.shortSealTried = true
 		default:
 			return nil, errOriginalFence
 		}

@@ -20,6 +20,8 @@ import (
 // partial effects and errors remain retained; there is no error cleanup API.
 type ResidentImagePinPending struct{ *residentImagePinState }
 type residentImagePinState struct {
+	expectedHome                                    *ResidentImagePinHomeData // selectors only, never funding authority
+	expectedHomeChecked                             bool                      // set ONLY by actual held-FD native check
 	p1Binding                                       *ResidentImageP1Pending
 	p1ValidationCount                               uint8
 	mu                                              sync.Mutex
@@ -159,6 +161,9 @@ func (o *ResidentImagePinPending) retain(fd int) (*residentPinFile, error) {
 	return f, err
 }
 func (o *ResidentImagePinPending) open(ctx context.Context, parent int, name string, flags int) (*residentPinFile, error) {
+	if o.expectedHome != nil && !o.expectedHomeChecked && flags&(unix.O_WRONLY|unix.O_RDWR|unix.O_CREAT|unix.O_TRUNC|unix.O_APPEND) != 0 {
+		return nil, errResidentPinOriginal
+	}
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -229,6 +234,9 @@ func (o *ResidentImagePinPending) walkHome(ctx context.Context) (*residentPinFil
 	return current, o.private(current, true, 0700)
 }
 func (o *ResidentImagePinPending) mkdir(ctx context.Context, parent *residentPinFile, name string) (*residentPinFile, error) {
+	if o.expectedHome != nil && !o.expectedHomeChecked {
+		return nil, errResidentPinOriginal
+	}
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -285,6 +293,9 @@ func (o *ResidentImagePinPending) prepare(ctx context.Context) error {
 	}
 	o.homeFile, err = o.walkHome(ctx)
 	if err != nil {
+		return err
+	}
+	if err = o.checkExpectedHeldHomeOriginal(ctx); err != nil {
 		return err
 	}
 	o.images, err = o.mkdir(ctx, o.homeFile, "resident-images")

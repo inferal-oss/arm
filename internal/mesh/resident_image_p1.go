@@ -20,16 +20,17 @@ const ResidentP1CoreRole = "--arm-resident-core-v1"
 // binds only the three image originals; it issues no funding/process authority.
 type ResidentImageP1Pending struct{ *residentImageP1State }
 type residentImageP1State struct {
-	extraFiles   []*os.File
-	boundFiles   [13]*os.File
-	mu           sync.Mutex
-	self         *ResidentImageP1Pending
-	pin          *ResidentImagePinPending
-	command      *exec.Cmd
-	active       *residentImageP1Operation
-	tried, bound bool
-	firstError   error
-	proof        RuntimeProof
+	extraFiles                []*os.File
+	boundFiles                [13]*os.File
+	mu                        sync.Mutex
+	self                      *ResidentImageP1Pending
+	pin                       *ResidentImagePinPending
+	command                   *exec.Cmd
+	active                    *residentImageP1Operation
+	tried, bound              bool
+	validated, shortSealTried bool
+	firstError                error
+	proof                     RuntimeProof
 }
 type residentImageP1Operation struct {
 	kind     string
@@ -77,6 +78,11 @@ func (p *ResidentImageP1Pending) begin(kind string) (*residentImageP1Operation, 
 			return nil, errResidentImageP1Original
 		}
 		p.tried = true
+	} else if kind == "short-seal" {
+		if !p.bound || !p.validated || p.shortSealTried {
+			return nil, errResidentImageP1Original
+		}
+		p.shortSealTried = true
 	} else if kind != "validate" || !p.bound {
 		return nil, errResidentImageP1Original
 	}
@@ -100,6 +106,9 @@ func (p *ResidentImageP1Pending) finish(op *residentImageP1Operation, normal *bo
 	} else {
 		if *result != nil && p.firstError == nil {
 			p.firstError = *result
+		}
+		if *result == nil && op.kind == "validate" {
+			p.validated = true
 		}
 		if *result == nil && op.kind == "bind" {
 			p.bound = true
