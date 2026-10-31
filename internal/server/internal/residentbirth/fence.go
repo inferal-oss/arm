@@ -44,6 +44,9 @@ type fenceOwner struct {
 	prepareTried, bindTried, bound, beforeStartTried            bool
 	journalIssued, writeTried, intentCommitted, writerWithdrawn bool
 	shortSealTried                                              bool
+	withdrawOriginal, shortSealOriginal                          *fenceOperation
+	postStartTried                                               bool
+	postStart                                                    *p1ParentPostStartCall
 	journal                                                     *LaunchJournal
 	intent                                                      []byte
 	verification                                                []byte
@@ -59,6 +62,8 @@ type fenceOperation struct {
 	ctx         context.Context
 	kind, phase string
 	abnormal    bool
+	normalFinished bool // final original metadata, not native closure
+	finalError     error
 	cause       any
 }
 type fenceFD struct {
@@ -179,11 +184,22 @@ func (h *FreshFence) begin(ctx context.Context, kind string, prepared *PreparedF
 				return nil, errOriginalFence
 			}
 			o.shortSealTried = true
+		case "p1-post-start":
+			if o.postStartTried || o.postStart != nil || !o.postStartPreparedLocked(prepared) {
+				return nil, errOriginalFence
+			}
+			o.postStartTried = true
 		default:
 			return nil, errOriginalFence
 		}
 	}
 	op := &fenceOperation{owner: o, ctx: ctx, kind: kind, phase: "registered_before_effect"}
+	if kind == "withdraw" {
+		o.withdrawOriginal = op
+	}
+	if kind == "short-seal" {
+		o.shortSealOriginal = op
+	}
 	o.active = op
 	return op, nil
 }
@@ -253,6 +269,9 @@ func (o *fenceOwner) finish(op *fenceOperation, normal *bool, resultErr *error) 
 		}
 	}
 	o.createdDirectory, o.createdLedger = o.state.createdDirectory, o.state.createdLedger
+	if *normal && !op.abnormal {
+		op.normalFinished, op.finalError = true, *resultErr
+	}
 	o.mu.Unlock()
 	if cause != nil {
 		panic(cause)
