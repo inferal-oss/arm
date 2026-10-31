@@ -5660,3 +5660,17 @@ nonclosing command aliases. Review found no blocking issue in this bounded cut;
 selected refusal tests and affected vet pass. Existing state and config.toml
 entries refuse. Successful preparation and complete child/reference handoff are
 unvalidated, and the actual root/start path is not supplied by these primitives.
+
+
+## Resident child-reference candidate boundary
+
+The private candidate uses one process-wide fixed-reference inventory, retains
+component recipients before delegation and supplies nonclosing views to the
+original service, image, fence, native, database and server owners. A companion
+schema-2 profile binds an explicit bounded execution environment; legacy
+schema-1 encoding remains unchanged. Selected data/refusal and official-driver
+API controls are qualified in two separate scopes, with the first overall
+attempt still failed. No positive inherited native materialization, funded
+profile, root acknowledgment or worker activation follows. The parent launch
+successor was excluded from both runs and remains under review. No candidate
+implementation is integrated by this evidence publication.

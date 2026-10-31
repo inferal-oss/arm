@@ -4409,3 +4409,18 @@ packages. The source supports only fresh inventories with configuration absent.
 Positive funded preparation, thirteen-reference child delegation, actual launch
 and acknowledgment, public start and run/proxy continuity remain open. The newer
 child-reference draft is outside this qualification; no candidate source is landed.
+
+
+## Resident child bindings and execution environment — separate scoped results
+
+Coordinator review accepts the private child-reference V3 and schema-2 execution
+environment V2 candidates' bounded data/refusal evidence. The first 112-case
+attempt failed at its storage guard after 102 passing observations; its module
+authentication reached the precheck only. A separately allocated run passed the
+remaining ten cases and default vet for all eight affected packages, with
+complete module authentication before and after. These scopes are retained
+separately in the [normalized record](validation/resident-child-bindings-scoped-2026-10-30.json).
+No candidate product source is landed. Parent launch review has outstanding
+pre-effect home-identity and transfer-reporting corrections; actual root
+acknowledgment, admitted worker activation, public start and original job/log
+continuity remain implementation and acceptance gates.

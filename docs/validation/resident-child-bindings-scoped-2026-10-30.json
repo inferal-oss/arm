@@ -1,0 +1,969 @@
+{
+  "boundaries": {
+    "active_job_or_proxy_upgrade_continuity": false,
+    "core_role_dispatch": false,
+    "full_product_acceptance": false,
+    "inherited_native_materialization": false,
+    "native_Closed": false,
+    "official_driver": "modernc.org/sqlite@v1.60.1",
+    "official_returned_Conn_unwrapped": true,
+    "parent_sole_Start_qualified": false,
+    "physical_driver_and_pool_native_state_opaque": true,
+    "positive_P1_grant_or_measured_profile": false,
+    "public_arm_start": false,
+    "root_ACK_or_current_authority_or_parent_retirement": false,
+    "single_112case_cohort_pass": false,
+    "single_official_physical_Connect_policy_retained": true,
+    "storage_reclamation_credit": false,
+    "worker_activation_or_replacement": false
+  },
+  "limitations": [
+    "The original102test observations came from an overallFAILED attempt with official module authentication PRE only. They are not relabeled a successful112case cohort.",
+    "The separately successful10case/default-vet scope reused exact unchanged source, derived its own actual consumer/module graph, and authenticated all69referenced official modules PRE and POST.",
+    "Both scopes have independently verified exact package-qualified raw test pairs and original command joins. No parent successor was overlaid or invoked.",
+    "These DATA/refusal/official API controls establish no positive resource/native lineage, measurement truth, worker readiness, native closure or run/proxy continuity."
+  ],
+  "original_attempt": {
+    "actual_graph_packages": 802,
+    "actual_package_qualified_test_run_pass_pairs": [
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentActualProcessAndCommandMismatchBeforeEffects"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentEvidenceVersionAndExactValueBinding"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentEvidenceVersionAndExactValueBinding/fixture"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentEvidenceVersionAndExactValueBinding/legacy"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentEvidenceVersionAndExactValueBinding/mismatch"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentEvidenceVersionAndExactValueBinding/missing"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentLegacyCanonicalBytesAndHashUnchanged"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentProfileIntentDebitHashSensitivityAndCopyOwnership"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/debug-injection"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/duplicate"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/empty"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/heap-above-claim"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/heap-off"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/loader-injection"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/missing"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/noncanonical-number"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/nul"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/overflow"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/oversize"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/reordered"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/wrong-env-schema"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestExecutionEnvironmentStrictSchema2DataAndRefusals/zero"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestP1ChildPendingNeverCallsLegacyFourFDReceiver"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestP1CommandCompositionZeroAndUnfundedRefuse"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestP1ServiceGroupMissingOriginalDebitRefusesBeforeEffects"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestP1ServiceGroupZeroHolderRefusesBeforeEffects"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorCopiedZeroAndCancelledPendingRefuse"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceCanonicalData"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceCanonicalData/duplicate-field"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceCanonicalData/noncanonical"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceCanonicalData/oversize"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceCanonicalData/trailing-object"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceCanonicalData/unknown-field"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/artifact-hash"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/claim-too-small"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/duplicate-artifact"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/empty-interval"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/fixture"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-cost-scope"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-raw"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-workload"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/no-unknowns"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/nonfinite"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/runtime"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/source"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/unreferenced-artifact"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorEvidenceRefusesIncompleteData/zero-bound"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/absent-files"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/missing-home"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/partial-lock"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceCopiedAndCancelledHoldersIssueNoCharge"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/extra-state"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/missing-grant"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/nonfinite"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/unknown-platform"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/wrong-debit"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/wrong-root"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/zero"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/chain"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/checksum"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/oversize"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/trailing"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/truncated-header"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/truncated-payload"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/damaged-journal"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/fifo-journal"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/fifo-lock"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServicePendingMissingAuthorizationRetainsOriginalFailure"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedImagePendingCancellationAndBorrowedCloseRefuseBeforeEffects"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal/abnormal-remains-pending"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal/cancel-one-and-publish-other"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal/capacity"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentImageInventoryOriginalZeroCopiedAndUnpreparedRefuse"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentImageP1OriginalUnpreparedPinRefusesBeforeEffects"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentImageP1OriginalZeroCopiedAndForeignCommandRefuse"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentImagePinOriginalCancelledBeforeEffectsRetainsFailure"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentImagePinOriginalInvalidInputsRefuse"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentImagePinOriginalZeroAndCopiedHolderRefuse"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentRuntimeOriginalCancelledBeforeEffectsRetainsFailure"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentRuntimeOriginalZeroAndCopiedHolderRefuse"
+      },
+      {
+        "package": "getarm.org/internal/mesh",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentRuntimeSourceRetirementForeignOrCopiedRefusesBeforeEffects"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "pass": true,
+        "run": true,
+        "test": "TestComposedFreshFenceRequiresOriginalFundedServiceGroup"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "pass": true,
+        "run": true,
+        "test": "TestComposedFreshFenceZeroHoldersAndNonclosingJournalRefuse"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal/abnormal-remains-pending"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal/cancel-one-and-publish-other"
+      },
+      {
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal/capacity"
+      },
+      {
+        "package": "getarm.org/internal/residentrefs",
+        "pass": true,
+        "run": true,
+        "test": "TestFixedChildNonclosingViewsRefuseBeforeMaterialization"
+      },
+      {
+        "package": "getarm.org/internal/residentrefs",
+        "pass": true,
+        "run": true,
+        "test": "TestFixedChildPendingRegistersAllBeforeEffectsAndRejectsCopies"
+      },
+      {
+        "package": "getarm.org/internal/residentrefs",
+        "pass": true,
+        "run": true,
+        "test": "TestFixedChildPureOneWayDelegationRejectsForeignCopiedAndReplay"
+      },
+      {
+        "package": "getarm.org/internal/residentrefs",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal"
+      },
+      {
+        "package": "getarm.org/internal/residentrefs",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal/abnormal-remains-pending"
+      },
+      {
+        "package": "getarm.org/internal/residentrefs",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal/cancel-one-and-publish-other"
+      },
+      {
+        "package": "getarm.org/internal/residentrefs",
+        "pass": true,
+        "run": true,
+        "test": "TestInheritedQueueDataCancellationCapacityPublicationAndAbnormal/capacity"
+      },
+      {
+        "package": "getarm.org/internal/residentrefs",
+        "pass": true,
+        "run": true,
+        "test": "TestOriginalFrameDataBoundsIncludeCompleteHeader"
+      }
+    ],
+    "actual_referenced_module_versions": {
+      "github.com/BurntSushi/toml": "v1.6.0",
+      "github.com/coder/websocket": "v1.8.15",
+      "github.com/creack/pty": "v1.1.24",
+      "github.com/davecgh/go-spew": "v1.1.2-0.20180830191138-d8f796af33cc",
+      "github.com/dustin/go-humanize": "v1.0.1",
+      "github.com/ebitengine/purego": "v0.11.2",
+      "github.com/emicklei/go-restful/v3": "v3.13.0",
+      "github.com/fxamacker/cbor/v2": "v2.9.1",
+      "github.com/go-logr/logr": "v1.4.3",
+      "github.com/go-openapi/jsonpointer": "v1.0.0",
+      "github.com/go-openapi/jsonreference": "v1.0.0",
+      "github.com/go-openapi/swag": "v0.27.1",
+      "github.com/go-openapi/swag/cmdutils": "v0.27.1",
+      "github.com/go-openapi/swag/conv": "v0.27.1",
+      "github.com/go-openapi/swag/fileutils": "v0.27.1",
+      "github.com/go-openapi/swag/jsonutils": "v0.27.1",
+      "github.com/go-openapi/swag/loading": "v0.27.1",
+      "github.com/go-openapi/swag/mangling": "v0.27.1",
+      "github.com/go-openapi/swag/netutils": "v0.27.1",
+      "github.com/go-openapi/swag/pools": "v0.27.1",
+      "github.com/go-openapi/swag/stringutils": "v0.27.1",
+      "github.com/go-openapi/swag/typeutils": "v0.27.1",
+      "github.com/go-openapi/swag/yamlutils": "v0.27.1",
+      "github.com/google/gnostic-models": "v0.7.0",
+      "github.com/google/renameio/v2": "v2.0.2",
+      "github.com/google/shlex": "v0.0.0-20191202100458-e7afc7fbc510",
+      "github.com/google/uuid": "v1.6.0",
+      "github.com/gorilla/websocket": "v1.5.4-0.20250319132907-e064f32e3674",
+      "github.com/json-iterator/go": "v1.1.12",
+      "github.com/landlock-lsm/go-landlock": "v0.0.0-20250303204525-1544bccde3a3",
+      "github.com/mattn/go-isatty": "v0.0.24",
+      "github.com/mmcloughlin/md4": "v0.1.2",
+      "github.com/moby/spdystream": "v0.5.1",
+      "github.com/modern-go/concurrent": "v0.0.0-20180306012644-bacd9c7ef1dd",
+      "github.com/modern-go/reflect2": "v1.0.3-0.20250322232337-35a7c28c31ee",
+      "github.com/munnerz/goautoneg": "v0.0.0-20191010083416-a7dc8b61c822",
+      "github.com/ncruces/go-strftime": "v1.0.0",
+      "github.com/pelletier/go-toml/v2": "v2.4.3",
+      "github.com/remyoudompheng/bigfft": "v0.0.0-20230129092748-24d4a6f8daec",
+      "github.com/spf13/pflag": "v1.0.10",
+      "github.com/x448/float16": "v0.8.4",
+      "go.yaml.in/yaml/v2": "v2.4.4",
+      "go.yaml.in/yaml/v3": "v3.0.4",
+      "golang.org/x/crypto": "v0.58.0",
+      "golang.org/x/net": "v0.60.0",
+      "golang.org/x/oauth2": "v0.36.0",
+      "golang.org/x/sync": "v0.24.0",
+      "golang.org/x/sys": "v0.49.0",
+      "golang.org/x/term": "v0.47.0",
+      "golang.org/x/text": "v0.43.0",
+      "golang.org/x/time": "v0.15.0",
+      "google.golang.org/protobuf": "v1.36.12-0.20260120151049-f2248ac996af",
+      "gopkg.in/evanphx/json-patch.v4": "v4.13.0",
+      "gopkg.in/inf.v0": "v0.9.1",
+      "k8s.io/api": "v0.37.1",
+      "k8s.io/apimachinery": "v0.37.1",
+      "k8s.io/client-go": "v0.37.1",
+      "k8s.io/klog/v2": "v2.140.0",
+      "k8s.io/kube-openapi": "v0.0.0-20260721132016-d427ff9ee9ad",
+      "k8s.io/streaming": "v0.37.1",
+      "k8s.io/utils": "v0.0.0-20260626114624-be93311217bd",
+      "modernc.org/libc": "v1.77.1",
+      "modernc.org/mathutil": "v1.7.1",
+      "modernc.org/memory": "v1.12.1",
+      "modernc.org/sqlite": "v1.60.1",
+      "sigs.k8s.io/json": "v0.0.0-20250730193827-2d320260d730",
+      "sigs.k8s.io/randfill": "v1.0.0",
+      "sigs.k8s.io/structured-merge-diff/v6": "v6.4.2",
+      "sigs.k8s.io/yaml": "v1.6.0"
+    },
+    "all_original_FIFO_and_Go_envelopes_joined": true,
+    "command_output_sha256": {
+      "command-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-00.stdout": "9335fbc7a439daf05781a0a39a629b2a0023c9b8d0918f74c542fafe501d7cac",
+      "command-01.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-01.stdout": "4294928ec0ce1c76a71e453c5cda88120be41fcf8af05b956c0f97f2e1418ca1",
+      "command-02.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-02.stdout": "e1338b9d952efe3314ecefaa9811f027cddd1915fa38b9c76e3d22ab20d778be",
+      "command-03.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-03.stdout": "460fd3035e822e0afc6fea410cd87a558c28c5a8104db82f9d55a4b407ed5b20",
+      "command-04.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-04.stdout": "0378666f145aaa4c3139b7130aaea7f55226ff2fde391915efc49d52ec592b75",
+      "command-05.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-05.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commands_started": 6,
+    "completed_named_results": 102,
+    "completed_test_roots": 37,
+    "database_named_tests_reached": 0,
+    "default_vet_started": false,
+    "not_completed_qualification": true,
+    "official_mod_ZIP_expandedHash1_post_count": 0,
+    "official_mod_ZIP_expandedHash1_pre_count": 69,
+    "original_Go_envelopes_joined": 6,
+    "owned_compiler_temporaries_retained": true,
+    "planned_named_results": 112,
+    "planned_test_roots": 47,
+    "qualified_commands_including_graph": 5,
+    "server_tests_started": false,
+    "source_support_pins_unchanged": true,
+    "status": "FAILED_STORAGE_GUARD_NO_RETRY",
+    "storage_alarm_requested": true,
+    "within100work115active_envelope": true
+  },
+  "schema": 1,
+  "scope": "fixed13_child_bindings_schema2_environment_DATA_refusal_and_official_SQLite_API_primitives",
+  "separate_remaining_scope": {
+    "actual_graph_packages": 802,
+    "actual_package_qualified_test_run_pass_pairs": [
+      {
+        "package": "getarm.org/internal/database",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentDatabaseForeignBindingsAndStopsRefuse"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentDatabaseOriginalClaimBeforePhysicalEffects"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentPreparedFIFORefusesBeforeReadWriteOpen"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentStandardCancelledConnectRetainsOriginalCall"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentStandardConnectorKeepsActualConnInterfacesAndTypes"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentStandardOpenFailureKeepsPoolAndOpaqueNativeObligation"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentStandardPoolCloseDoesNotCertifyNativeClosure"
+      },
+      {
+        "package": "getarm.org/internal/database",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentStandardPoolDiscardCannotReconnect"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "pass": true,
+        "run": true,
+        "test": "TestOriginalChildPendingOwnsAllThirteenBeforeEffectsAndRejectsCopy"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "pass": true,
+        "run": true,
+        "test": "TestP1BootstrapWorstCaseCapacityRefusesOversizeBeforeNamespaceEffects"
+      }
+    ],
+    "actual_referenced_module_versions": {
+      "github.com/BurntSushi/toml": "v1.6.0",
+      "github.com/coder/websocket": "v1.8.15",
+      "github.com/creack/pty": "v1.1.24",
+      "github.com/davecgh/go-spew": "v1.1.2-0.20180830191138-d8f796af33cc",
+      "github.com/dustin/go-humanize": "v1.0.1",
+      "github.com/ebitengine/purego": "v0.11.2",
+      "github.com/emicklei/go-restful/v3": "v3.13.0",
+      "github.com/fxamacker/cbor/v2": "v2.9.1",
+      "github.com/go-logr/logr": "v1.4.3",
+      "github.com/go-openapi/jsonpointer": "v1.0.0",
+      "github.com/go-openapi/jsonreference": "v1.0.0",
+      "github.com/go-openapi/swag": "v0.27.1",
+      "github.com/go-openapi/swag/cmdutils": "v0.27.1",
+      "github.com/go-openapi/swag/conv": "v0.27.1",
+      "github.com/go-openapi/swag/fileutils": "v0.27.1",
+      "github.com/go-openapi/swag/jsonutils": "v0.27.1",
+      "github.com/go-openapi/swag/loading": "v0.27.1",
+      "github.com/go-openapi/swag/mangling": "v0.27.1",
+      "github.com/go-openapi/swag/netutils": "v0.27.1",
+      "github.com/go-openapi/swag/pools": "v0.27.1",
+      "github.com/go-openapi/swag/stringutils": "v0.27.1",
+      "github.com/go-openapi/swag/typeutils": "v0.27.1",
+      "github.com/go-openapi/swag/yamlutils": "v0.27.1",
+      "github.com/google/gnostic-models": "v0.7.0",
+      "github.com/google/renameio/v2": "v2.0.2",
+      "github.com/google/shlex": "v0.0.0-20191202100458-e7afc7fbc510",
+      "github.com/google/uuid": "v1.6.0",
+      "github.com/gorilla/websocket": "v1.5.4-0.20250319132907-e064f32e3674",
+      "github.com/json-iterator/go": "v1.1.12",
+      "github.com/landlock-lsm/go-landlock": "v0.0.0-20250303204525-1544bccde3a3",
+      "github.com/mattn/go-isatty": "v0.0.24",
+      "github.com/mmcloughlin/md4": "v0.1.2",
+      "github.com/moby/spdystream": "v0.5.1",
+      "github.com/modern-go/concurrent": "v0.0.0-20180306012644-bacd9c7ef1dd",
+      "github.com/modern-go/reflect2": "v1.0.3-0.20250322232337-35a7c28c31ee",
+      "github.com/munnerz/goautoneg": "v0.0.0-20191010083416-a7dc8b61c822",
+      "github.com/ncruces/go-strftime": "v1.0.0",
+      "github.com/pelletier/go-toml/v2": "v2.4.3",
+      "github.com/remyoudompheng/bigfft": "v0.0.0-20230129092748-24d4a6f8daec",
+      "github.com/spf13/pflag": "v1.0.10",
+      "github.com/x448/float16": "v0.8.4",
+      "go.yaml.in/yaml/v2": "v2.4.4",
+      "go.yaml.in/yaml/v3": "v3.0.4",
+      "golang.org/x/crypto": "v0.58.0",
+      "golang.org/x/net": "v0.60.0",
+      "golang.org/x/oauth2": "v0.36.0",
+      "golang.org/x/sync": "v0.24.0",
+      "golang.org/x/sys": "v0.49.0",
+      "golang.org/x/term": "v0.47.0",
+      "golang.org/x/text": "v0.43.0",
+      "golang.org/x/time": "v0.15.0",
+      "google.golang.org/protobuf": "v1.36.12-0.20260120151049-f2248ac996af",
+      "gopkg.in/evanphx/json-patch.v4": "v4.13.0",
+      "gopkg.in/inf.v0": "v0.9.1",
+      "k8s.io/api": "v0.37.1",
+      "k8s.io/apimachinery": "v0.37.1",
+      "k8s.io/client-go": "v0.37.1",
+      "k8s.io/klog/v2": "v2.140.0",
+      "k8s.io/kube-openapi": "v0.0.0-20260721132016-d427ff9ee9ad",
+      "k8s.io/streaming": "v0.37.1",
+      "k8s.io/utils": "v0.0.0-20260626114624-be93311217bd",
+      "modernc.org/libc": "v1.77.1",
+      "modernc.org/mathutil": "v1.7.1",
+      "modernc.org/memory": "v1.12.1",
+      "modernc.org/sqlite": "v1.60.1",
+      "sigs.k8s.io/json": "v0.0.0-20250730193827-2d320260d730",
+      "sigs.k8s.io/randfill": "v1.0.0",
+      "sigs.k8s.io/structured-merge-diff/v6": "v6.4.2",
+      "sigs.k8s.io/yaml": "v1.6.0"
+    },
+    "all_original_FIFO_and_Go_envelopes_joined": true,
+    "command_output_sha256": {
+      "command-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-00.stdout": "9335fbc7a439daf05781a0a39a629b2a0023c9b8d0918f74c542fafe501d7cac",
+      "command-01.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-01.stdout": "6485dd1d6e75de8c818f291e0513c2a3f30d31936e62cc5de4537808937d194d",
+      "command-02.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-02.stdout": "0e18b6d74fad316d987680cabd67d898a2d06b97af679d53a8c31f5d07948680",
+      "command-03.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-03.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commands_started": 4,
+    "default_vet_packages": [
+      "./internal/residentrefs",
+      "./internal/mesh",
+      "./internal/server/internal/residentservice",
+      "./internal/server/internal/residentbirth",
+      "./internal/server/internal/nativeowner",
+      "./internal/database",
+      "./internal/server",
+      "./internal/manager"
+    ],
+    "default_vet_result": "pass",
+    "named_results": 10,
+    "new_temp_roots_empty": true,
+    "no_prune_deletion_or_disposition_commands": true,
+    "official_mod_ZIP_expandedHash1_post_count": 69,
+    "official_mod_ZIP_expandedHash1_pre_count": 69,
+    "official_pre_post_equal": true,
+    "original_Go_envelopes_joined": 4,
+    "original_failed_temp_roster_unchanged": true,
+    "separate_new_storage_envelope_failed_monitor_unchanged": true,
+    "source_support_pins_unchanged": true,
+    "status": "SCOPED_PASS",
+    "storage_alarm_requested": false,
+    "test_roots": 10,
+    "within100work115active_envelope": true
+  },
+  "source": {
+    "Go_file_count": 1842,
+    "affected_Go_count": 32,
+    "affected_Go_files_sha256": {
+      "internal/database/resident_connector.go": "4f046ae76966ea04a374c91a36d1d5e6cef09bf9d504a6359d3dd87f8af32811",
+      "internal/database/resident_open.go": "c3fc3dec2c373896305cafb8889ad6743c6cd595787b15384f9dbb3eda1664e0",
+      "internal/database/resident_prepared_binding.go": "6a245bfb62f830293c20e53ba9c541e141164c2d7feaed165af3d56a573afc96",
+      "internal/mesh/inherited_image.go": "89e6efcf1c7ed596a11319651c57ec2083f7a3356af063d2cb4c8e03f1ced268",
+      "internal/mesh/inherited_image_test.go": "33927f8165da11f1250b8fc9d4b54a4d78d9041537b9743c6519724d93b383c0",
+      "internal/mesh/inherited_queue_data_test.go": "bf68e8e80cad092a064e5e918c4032e8e3bb362e31591c7c824f13db18ff9b49",
+      "internal/mesh/runtime_identity.go": "baaf24cf06dcee05eb33c1e7d26a4d8c1c3990fc19828a2ab3d95c2746127aa1",
+      "internal/mesh/runtime_identity_original.go": "e287e92811dcb2abb64753611ed7893da4ab521a60b710bacab3cbc1ff0b4e53",
+      "internal/residentrefs/child.go": "32a2628054f4e097d1d43c2270cef72397eb222884000eeffce4e5724b7a1daa",
+      "internal/residentrefs/child_test.go": "52eb3a3588ac7b478063d878dd3b61fb358f3857b6c1bfe968a154e603073d4f",
+      "internal/residentrefs/composed.go": "97e3424f72e80b6dfa8fffb48d7136ee51b3984a23f35bd1480cca0b52ea465c",
+      "internal/residentrefs/control.go": "21268b07294bde4c391ebc76b0884b10e26f23087cef31d97f6718d251c16894",
+      "internal/residentrefs/inherited_queue_data_test.go": "198a3edf85b1ba94845efe43392b5b8c36750d100ff16f2d485c389b77b8761c",
+      "internal/residentrefs/views.go": "cb3f5829be4dfa5bac8b4403d70de4dd5cf7b39207fb560e9d74ebd59ca4055a",
+      "internal/server/internal/nativeowner/inherited_fence.go": "5d42bf163303d94600fc311c9bbe04410a6bc4b30af05fb33544db5fcfc98ee6",
+      "internal/server/internal/nativeowner/owner.go": "1ac8fcb66379e0e6db319a2d2f0b83bfadf4fe4f94da534902a7a659744056df",
+      "internal/server/internal/nativeowner/views.go": "e909af064c2fe57d23f77236083b9a38ebc8f6e6ce7bfe97c363a44301fa7b2f",
+      "internal/server/internal/residentbirth/inherited.go": "79e890b7e3472416b7e9c19e5f084203234bd7f9c3c3bc45318bbe45032591cb",
+      "internal/server/internal/residentbirth/inherited_queue_data_test.go": "aac04e1c208d0454e9e2b0b9a46b5e51f8fa31fbd127c0d7d63013d3571f9dbb",
+      "internal/server/internal/residentservice/execution_environment.go": "fe5808b40880841d5d4a87e1788dc109f5c1ced84ead9f0fca90d62412ea1ae2",
+      "internal/server/internal/residentservice/execution_environment_test.go": "387798f279eeaeb7bea854d42d06ae4004eb74e9499edd3e8527f1d98fb65b7f",
+      "internal/server/internal/residentservice/handoff.go": "f43772789cce0ac51386dfccb57ec8ae41c614cbce8e8f76301d7e95d6d70320",
+      "internal/server/internal/residentservice/model.go": "dc78288821a14716e00b151f64844cd5ff92eb493c84a27a77a91101f26758c8",
+      "internal/server/internal/residentservice/operator.go": "2da137cce64122e5c93ce99df0a4a79708c1416365ca52fc56ca2806b3370633",
+      "internal/server/internal/residentservice/operator_evidence.go": "28c3d42ccb0186996e42a32d16217a0a7349a7dce0183f2e82371b93bab3b58c",
+      "internal/server/internal/residentservice/owner.go": "82d75a42b6f7999aa9af126b1b515130811b3cf164c91e6bffeabfe15a72511e",
+      "internal/server/internal/residentservice/p1_child.go": "d8bda45b6e8305c4651a6cc7b9659c67783de2912710542d04627f463a1e3deb",
+      "internal/server/internal/residentservice/p1_child_test.go": "22e78c347f5efcbf1348154ee0281b9c2347bec4cfa55026f012ec4dfcc552d8",
+      "internal/server/internal/residentservice/p1_group.go": "4327c8c5a137217cf8986a443dc8121c7b93c5e62ee1bc9204d0745166ebcd20",
+      "internal/server/resident_bootstrap_capacity.go": "2b6cbfb8deb89eb2287fb9dd9684a6848e6f9c2a296fed3dab606bdf3996422b",
+      "internal/server/resident_child_original.go": "a4d28e47a5177a3bc962e16cae409af48129a268382e911d150edaadef5f43ca",
+      "internal/server/resident_child_original_test.go": "ee1278c3d883ec07c84f23278e0a3973f58a38a876db2bac84d304c17303abd2"
+    },
+    "all_other_base_files_unchanged": true,
+    "composed_manifest_sha256": "215ee8f67d666dfa860fb715a6f7fde5b2edb9bcdc1d6b80abebd133e46ba124",
+    "file_count": 3193,
+    "modified_Go_count": 11,
+    "new_Go_count": 21,
+    "parent_successor_included": false,
+    "qualified_base_manifest_sha256": "79e24d440efd1dd6a58574d6641f8fdfa9ca5bb45465d03e0ffa24e81d0f261c",
+    "reviewed_child_packet_manifest_sha256": "8c92222a185156995fbe9f46af2e98b9779946bd5f7f7612a3f1d54d51238c28",
+    "reviewed_profile_packet_manifest_sha256": "d9108f054acb95cb1ba4aebacb21958a87dc48139df0806871bcdbb69bdd5d3b"
+  }
+}

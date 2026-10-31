@@ -12062,3 +12062,33 @@ inventory, fence, journal, bind, Start, child acknowledgment, native closure or
 upgrade continuity. Configuration support, later-main equivalence and the newer
 child-reference source are not accepted by this record. Raw operational evidence
 remains outside version control; no candidate product source is integrated.
+
+
+## Resident child bindings — failed cohort and separate remaining pass
+
+The [normalized record](validation/resident-child-bindings-scoped-2026-10-30.json)
+binds 32 affected Go inputs to the 3,193-file/1,842-Go-file candidate closure.
+Coordinator review checked the exact package-qualified raw run/pass pairs,
+12 original and eight remaining output hashes, both 69-module maps, source and
+support pins, and original command joins. Both scopes used normal CGO-disabled
+host qualification; no parent successor was included.
+
+The first planned 47-root/112-case attempt failed at its storage guard after
+37 roots/102 passing observations. Six started Go commands and the FIFO control
+were joined; the database compile was interrupted before tests, and server tests
+and default vet did not start. Its official-module authentication reached only
+the precheck; compiler temporaries remain retained without reclamation credit.
+
+A new storage allocation ran the exact unchanged source for ten database/server
+roots/cases and default vet across all eight affected packages. All four commands
+and the FIFO control joined with exit 0 in 33.991 seconds, without an alarm.
+The actual graph contained 802 packages/69 official modules, including the
+unmodified SQLite v1.60.1 driver; module/archive/expanded-source authentication
+matched before and after. New temporary inventories were empty and the failed
+attempt's retained inventory was unchanged. This is a separate scoped pass, not
+a successful single 112-case cohort.
+
+No current-main rerun, native Linux execution, positive P1 resource grant or
+profile measurement, inherited native materialization, parent Start, root
+acknowledgment, native closure, public start, worker replacement or original
+run/proxy continuity is accepted. Raw operational records remain private.
