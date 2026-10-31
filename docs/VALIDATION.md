@@ -12005,3 +12005,20 @@ This is unintegrated source qualification, not current-main or binary acceptance
 No positive capture/pin/reference-close/binding, native Start, child image/ACK,
 real funding, root/Manager/database/Server activation or original-child upgrade
 continuity was exercised. Earlier wrapper/permission failures remain separate.
+
+## Resident service/P1 group — normal data and refusal qualification
+
+The frozen 3,165-file candidate manifest is
+`7d0699080f9ae880fc05a6e979587e53e0a41550ed4695e4cc891380bd87ae06`.
+Eleven service roots/49 named cases and eight image refusal roots passed,
+along with default vet for both affected packages. The actual dependency graph
+contained 660 packages/51 official modules, authenticated before and after;
+the SQLite driver was not referenced by this cohort. Four original commands
+and the FIFO control joined with exit 0 in 15.460 seconds, with unchanged
+source/tool pins and empty temporary inventories. Coordinator review checked
+the eight command-output hashes and all 57 unique raw run/pass pairs.
+
+This is normal, CGO-disabled qualification of unintegrated older-base source.
+It does not establish a successful funding debit, native service channel,
+withdrawal/send, composed root, child acknowledgment, public start, upgrade or
+child-process continuity. No current-main rerun or Linux runtime is claimed.

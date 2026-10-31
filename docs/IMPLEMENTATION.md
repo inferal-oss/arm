@@ -5632,3 +5632,13 @@ reference and binds nonclosing image aliases to one exact private command.
 Review corrected cancellation and ownership-test coverage. Only pre-effect
 refusal paths and package vet are qualified; successful pin/close/binding and
 actual root/child handoff have not run. Current product behavior is unchanged.
+
+## Resident service handoff candidate
+
+The private service-group candidate binds nonclosing service aliases to one
+private command and retains the original debit and channel ownership. Review
+separates irreversible writer withdrawal from observed delivery bytes; neither
+withdrawal nor a completed write establishes child acknowledgment. Only data
+and refusal paths are qualified. The actual combined launch, child startup and
+worker replacement remain unimplemented gates; no candidate source is landed
+by this record.

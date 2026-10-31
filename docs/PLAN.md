@@ -4380,3 +4380,14 @@ command/image binding. Positive native effects remain untested. Actual service
 funding, fresh-fence/all-thirteen-reference composition, sender/child/ACK and
 public start/worker/run/proxy continuity remain separate implementation and
 validation gates. This record does not land or activate the candidate.
+
+## Resident service handoff group — scoped refusal qualification
+
+Coordinator review accepts the private service-group V2 candidate's normal
+qualification: 19 roots/57 named cases and vet for the two affected packages.
+The candidate distinguishes writer withdrawal from actual frame delivery and
+keeps an incomplete handoff uncertain. Four original commands and the FIFO
+control joined successfully. This older-base source is not integrated or
+activated. Positive funded withdrawal, the complete thirteen-reference root,
+actual sender/child acknowledgment and original run/proxy continuity remain
+implementation and validation gates.
