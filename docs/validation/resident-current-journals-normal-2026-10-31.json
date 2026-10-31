@@ -1,0 +1,227 @@
+{
+  "boundaries": [
+    "Selected normal host synthetic DATA/refusal qualification, not a race run, full suite or Linux execution.",
+    "Tests use serialized journal DATA and inert/unprepared original holders only: exact service prefix/third-frame chain, launch intent/footer/full hash, mutation/overflow/count/truncation/extension refusal, JSON and zero/copied/foreign refusals. Existing tests preserve original read-stage/legacy limits and prepared/footer/auth refusals.",
+    "No genuine role, original positive view/grant/current read2/read3, actual Env snapshot, current-A Proof, secret, entropy, socket/FD, timer/deadline, native fixture or helper ran. The compiled command was never executed.",
+    "Completed read2 own-IO-scope cancellation and pending current/W2 consumption ordering remain unexercised; future actual Root orchestration must establish all normal completions and no pending work before proof.",
+    "Public challenge view semantics, original fixed13/globallegacy4, birth2/read1/debit, old parent five-stage/legacy read guards, existing prepared/RootBound/footer operations, native issuer, DB/Manager/Server, original driver/modules and Root callsites remain unchanged.",
+    "Actual unused-grant/environment eligibility, prepared native/SQL/read-transaction and journal append/sync/current positives and measured whole-root funding remain unverified.",
+    "Separate DB/Manager/Server-current, actual Root ACK/challenge/proof and parent postStart observations/nonce, parent-owned reference retirement/Process.Release remain unimplemented.",
+    "Worker-capable schema/controller/admission/assets, API/UI replacement, public first/repeat/concurrent arm start, managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/accounting upgrade survival and core shutdown/recovery remain open."
+  ],
+  "implemented_source_contract": {
+    "activation": "New current service/fence methods have no Root callers. DB/Manager/Server-current and Root proof orchestration are separate work.",
+    "authority_limit": "Bounded DATA and recorded normal current-call linkage do not issue native admission, Ready, atomic filesystem stability, Closed or release credit. Future Root must prove no pending current work before W2.",
+    "current_service_owner": "Once-only actual current call and sole original observation handle published to owner and empty caller destination before effects; same original prepared/auth/read2/charge/image/custody/birth/RootBound lineage.",
+    "fresh_service_Env_A": "Retain one actual Env snapshot before matching exact own grant/canonical Env/profile; same original inherited current-A Proof/custody with no new capture/Verify/hash issuer. Actual ambient snapshot allocation remains opaque; declared byte bounds do not prove RSS.",
+    "launch_current_read3": {
+      "Stat_calls": 2,
+      "bytes": "Same completed original service-current observation and own completed footer; exact intent prefix/known footer, closed frame, footer/full-file hashes and same authenticated context links. No Verify rerun/footer retry/write/Sync/empty-ledger.",
+      "max_ReadAt_calls": 32,
+      "max_bytes": 20480
+    },
+    "locking_and_context": "No service/fence publication mutex spans census/foreign/native work. Current work uses independent Root lifetime structurally provided by future Root; no canceled challenge IO scope or new context/timer constructor.",
+    "normal_completion": "Service finish unchanged. Inherited fence finish adds final normal metadata only; original direct recovery/abnormal/active behavior remains. Current result publication follows directly deferred original finish.",
+    "observation_lifecycle": "Pending/error/abnormal/foreign/copied/active/consumed observations refuse. Completed handle checks final normal current result and actual same-census service/fence pointers. Footer retains the same actual service child. No from-DATA/getter/reissuer/closer/Ready constructor; JSON value/pointer/wrapper/decode refuse.",
+    "private_view_check": "Only the exact retained active service current op/view/charge/observation may use private local issued-view checking. Public challenge ValidateOriginal active refusal is unchanged. Six fixed pure census-phase checks release the service mutex and recheck local identity afterward.",
+    "service_current_read2": {
+      "Stat_calls": 2,
+      "bytes": "Exact original two-record birth prefix and own written record3 suffix, valid three-record chain and THIRD-FRAME chain digest. Separate read2 record, never old reads/journal/debit overwrite.",
+      "max_ReadAt_calls": 32,
+      "max_bytes": 1048576
+    }
+  },
+  "normal_qualification": {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "-buildvcs=false",
+    "Go_version": "1.27.3",
+    "actual_dependency_graph": {
+      "POST_authenticated_modules": 88,
+      "PRE_POST_equal": true,
+      "PRE_authenticated_modules": 88,
+      "authentication": "Actual referenced official mod/ZIP/expanded-source Hash1 and go.sum; no replacements, downloads, cache seeding or dependency-cache write relaxation.",
+      "packages": 832,
+      "referenced_official_modules": 88,
+      "sqlite": "modernc.org/sqlite@v1.60.1"
+    },
+    "genuine_role_or_native_positive_fixtures": 0,
+    "helper_subprocesses": 0,
+    "native_command_compile_only": {
+      "artifact_bytes": 74610194,
+      "artifact_executed": false,
+      "artifact_sha256": "28deaa8f29ac32863294fed13fd10c8460b562c83af2a610808ef42e6a96bdbb",
+      "result": "pass",
+      "target": {
+        "GOARCH": "arm64",
+        "GOOS": "darwin"
+      }
+    },
+    "new_DATA_refusal_named_results": 6,
+    "new_DATA_refusal_roots": 6,
+    "real_secret_or_entropy_access": false,
+    "relevant_existing_roots": 7,
+    "root_count": 13,
+    "supervision": {
+      "active_elapsed_seconds": 43.793294,
+      "all_original_Go_commands_joined_exit_zero": true,
+      "candidate_and_working_source_files_verified": 3290,
+      "command_stream_hashes_verified": 12,
+      "failed_predecessors_and_scratch_retained": true,
+      "new_temporary_inventories_empty": true,
+      "original_Go_commands": 6,
+      "owning_wrapper_joined_exit_zero": true,
+      "proposal_members_verified": 18,
+      "protected_function_and_file_contracts_verified": 67,
+      "protected_working_files_verified": 3282,
+      "reviewed_working_Go_files_verified": 8,
+      "sampled_stop_alarm": false,
+      "source_support_and_proposal_pins_unchanged": true,
+      "support_pins_verified": 392
+    },
+    "test_packages": [
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestFixedChildNonclosingViewsRefuseBeforeMaterialization"
+          },
+          {
+            "result": "pass",
+            "test": "TestOriginalServiceFenceLinkRejectsInertCopiedAndForeignCensus"
+          }
+        ],
+        "package": "getarm.org/internal/residentrefs",
+        "root_tests": [
+          "TestFixedChildNonclosingViewsRefuseBeforeMaterialization",
+          "TestOriginalServiceFenceLinkRejectsInertCopiedAndForeignCensus"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestP1CurrentLaunchJournalDataRequiresExactIntentFooterAndHashes"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1CurrentLaunchRequiresActualFooterAndServiceObservationBeforeEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterRequiresActualVerifiedFenceAndCompletedService"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1PreFooterPrefixEOFDataRequiresExactOriginalBytes"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "root_tests": [
+          "TestP1CurrentLaunchJournalDataRequiresExactIntentFooterAndHashes",
+          "TestP1CurrentLaunchRequiresActualFooterAndServiceObservationBeforeEffects",
+          "TestP1FooterRequiresActualVerifiedFenceAndCompletedService",
+          "TestP1PreFooterPrefixEOFDataRequiresExactOriginalBytes"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestLegacyJournalBudgetDataRetainsFourReadLimit"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ChallengeRequiresActualCompletedRootBoundBeforeSecretUse"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1CurrentServiceJournalDataRequiresExactBirthAndThirdFrameChain"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1CurrentServiceObservationRejectsJSONAndUnissuedCopies"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1CurrentServiceRequiresActualPreparedAuthBeforeEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1PreStartJournalBudgetDataExactStagesAndRefusals"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1RootBoundRequiresActualPreparedCallBeforeEffects"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "root_tests": [
+          "TestLegacyJournalBudgetDataRetainsFourReadLimit",
+          "TestP1ChallengeRequiresActualCompletedRootBoundBeforeSecretUse",
+          "TestP1CurrentServiceJournalDataRequiresExactBirthAndThirdFrameChain",
+          "TestP1CurrentServiceObservationRejectsJSONAndUnissuedCopies",
+          "TestP1CurrentServiceRequiresActualPreparedAuthBeforeEffects",
+          "TestP1PreStartJournalBudgetDataExactStagesAndRefusals",
+          "TestP1RootBoundRequiresActualPreparedCallBeforeEffects"
+        ]
+      }
+    ],
+    "unique_package_qualified_named_run_pass_pairs": 13,
+    "vet": {
+      "packages": [
+        "getarm.org/internal/residentrefs",
+        "getarm.org/internal/server/internal/residentbirth",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/internal/server/challengeview",
+        "getarm.org/internal/server",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    }
+  },
+  "schema": 1,
+  "scope": "Original service current read2 and inherited launch current read3: selected normal synthetic DATA/refusal qualification",
+  "source": {
+    "base_commit": "bc0b28c74ae0600da452376f375415a5eb300fc8",
+    "feature_commit": "fbc56ead8d1c808ee4e9547eeb4a273243bc7cd5",
+    "protected_function_and_file_contracts_verified": 67,
+    "qualified_Go_files": 1906,
+    "qualified_source_files": 3290,
+    "qualified_source_manifest_sha256": "005f773eba883d2839efb45551928b2b2d4f8036c46267be536608c1a43fd659",
+    "reviewed_Go_files": {
+      "internal/residentrefs/current_link.go": {
+        "git_blob": "c25509d5076e250d4d0595a488487f710c9d6c04",
+        "sha256": "a6d7b12a45cca077c3083fb1618c64e95cd9c7312a3e7e504e3ada1674c51aa2"
+      },
+      "internal/residentrefs/current_link_test.go": {
+        "git_blob": "813bda0f232690cde0f72e462e88cb3da75ba7ce",
+        "sha256": "dd5a928a4d9c5f6995f73c893b7cc197d83ef5dde2223af7673f03da5c669523"
+      },
+      "internal/server/internal/residentbirth/current_journal.go": {
+        "git_blob": "0166f1505ecf12d2dff3234a505bd689b55d312b",
+        "sha256": "cac3329c2b3fc4a2bcb514a9004bc8dfbe6613eedf25bbaee1f88651235c897c"
+      },
+      "internal/server/internal/residentbirth/current_journal_test.go": {
+        "git_blob": "3a020a905f9dbc46263bf79b1e400e9ae1e8a0b1",
+        "sha256": "b896e96734745f59cd28a87c2f29d3258d6e3b0bcecf60697611587ab4f3e7de"
+      },
+      "internal/server/internal/residentbirth/inherited.go": {
+        "git_blob": "46be6061ad8dc88886b34698db059fa5a0a341e4",
+        "sha256": "ab97934205cfd18b8e9d1b23d07d92a52c942d602363c562bb675e3caf9d5514"
+      },
+      "internal/server/internal/residentservice/owner.go": {
+        "git_blob": "49e227ee99a61ab0b5ed74dcc240e28e76c67fbc",
+        "sha256": "6511839266e75aecbb9c2d9b4b668531406909082bc415dd28dfa240b53c6182"
+      },
+      "internal/server/internal/residentservice/p1_current.go": {
+        "git_blob": "4db72ae91fbc8bb650a7ad7eb553817e3349339f",
+        "sha256": "a288fb150a7efbfd09ff1a7586eb1251a216a43747899dc8bdc1f873621e5f02"
+      },
+      "internal/server/internal/residentservice/p1_current_test.go": {
+        "git_blob": "7120a6fe5c45fb84e81413c31732f2d71cdd038b",
+        "sha256": "44133b6e10c7a31368de834143d926acb79ab68083d8c8609fc7a039e19452a9"
+      }
+    }
+  },
+  "status": "scoped_normal_qualification_pass"
+}

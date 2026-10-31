@@ -5924,3 +5924,43 @@ source as `e492c48` and scoped evidence as `dcb0867`. All qualified runtime, mod
 and embedded inputs match exactly. The official SQLite driver remains unchanged.
 No new Root protocol caller is activated and no running backend or managed child
 is changed by this integration.
+
+## Original current service and launch journal observations
+
+The service now has a distinct once-only current operation, separate from its
+prepared and RootBound calls. It publishes its actual call and sole original
+observation handle before effects. A private issued-view path accepts only this
+exact retained active current op/view/charge/observation. Public challenge-view
+active refusal remains unchanged. Local publication locks are released before
+census/image/native/foreign work and exact local identity is rechecked afterward.
+Six fixed phase checks retain actual pure-census check outcomes.
+
+A new separately retained service read2 uses at most 1 MiB, 32 ReadAt calls and
+two Stat calls. Current bytes must equal the immutable original two-record birth
+prefix plus the exact own written record3 suffix, forming the valid three-record
+chain. Its service digest remains the third-frame chain SHA, not whole-file SHA.
+The old read1/reads slice, birth journal and original debit remain untouched.
+The same current operation retains a fresh actual Env snapshot, matches its own
+grant/canonical Env/profile and checks the same original inherited current-A
+Proof/custody. No new capture/Verify/hash issuer or reentrant prepared/environment
+operation is used. Ambient snapshot allocation is opaque until after the call;
+bounded declared inputs do not establish an RSS bound or resource grant.
+
+The nonclosing service observation validates only after final normal completion.
+It refuses pending/error/abnormal/foreign/copied/active/consumed states and JSON
+reconstruction. The fence proves the same actual service child retained by its
+own completed footer and exact service/fence census pointers, rather than matching
+home-ID DATA alone. A separate once-only launch read3 uses at most 20 KiB,
+32 ReadAt calls and two Stat calls; it verifies the exact original intent/known
+footer, closed frame, footer/full-file hashes and same authenticated context links.
+Before/after identity/size/time checks are point observations, not atomic stability.
+No Verify rerun, footer retry, write, Sync or empty-ledger authority is added.
+
+Result publication follows directly deferred original finish. The service finish
+is unchanged; inherited fence finish adds final normal metadata only, preserving
+its original recovery, abnormal and active-operation behavior. Current work uses
+the independent original Root lifetime structurally supplied by future Root,
+not the canceled challenge IO scope; no context/timer constructor is introduced.
+New methods remain unactivated with no Root callers. DB/Manager/Server-current,
+actual proof/no-pending gate, parent observations, retirement, workers/public
+startup and real managed-job/proxy upgrade continuity remain separate gates.

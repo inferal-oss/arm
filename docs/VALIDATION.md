@@ -12375,3 +12375,40 @@ agree with the audited result. Later changes are documentation only; no test or
 binary was rerun for composition. This accepts selected normal DATA/refusal
 qualification while retaining every stated successful-original-phase, native and
 live-upgrade limitation.
+
+## Original current journals — selected normal DATA/refusal qualification
+
+[Normalized evidence](validation/resident-current-journals-normal-2026-10-31.json)
+maps all eight reviewed Go SHA256/Git-blob pairs to source commit
+`fbc56ead8d1c808ee4e9547eeb4a273243bc7cd5` and its exact 3,290-file/1,906-Go snapshot.
+All 13 roots/13 unique package-qualified raw run/pass pairs pass without skips,
+failures or subtests. Six new roots cover exact serialized service birth/third-
+frame-chain DATA, launch intent/footer/full-hash DATA, mutations/truncation/
+extension/count/overflow/hash disagreement, exact census inert/copied/foreign
+refusals, unprepared current/observation/selector refusal and opaque JSON refusal.
+Seven existing controls preserve original pre-Start/legacy read limits and
+prepared/auth/footer refusal behavior.
+
+Default vet passes for six affected packages. A native command build passes with
+Go 1.27.3, CGO disabled and `GOFLAGS=-buildvcs=false` on all six graph/test/vet/build
+commands. Its 74,610,194-byte artifact has SHA256
+`28deaa8f29ac32863294fed13fd10c8460b562c83af2a610808ef42e6a96bdbb`
+and was never executed. The actual graph contains 832 packages/88 official modules;
+mod/ZIP/expanded-source Hash1/go.sum authentication agrees PRE/POST, including
+unmodified SQLite v1.60.1, under the same cache/network fence.
+
+Independent review verifies six original Go and owning-wrapper exit-zero joins,
+twelve output hashes, candidate/working source and support/proposal pins, and
+67 preserved whole-file/function contracts. The wave took 43.793294 seconds with
+no alarm; new temporary inventories are empty and prior failed evidence/scratch
+stays retained. This is selected normal host qualification, not a race/full-suite/
+Linux run, native-Closed or release-credit observation. Raw records stay private.
+
+No successful original current/read2/read3/view/grant, actual Env/Proof/secret,
+socket/FD/timer/native fixture, genuine role or helper is exercised. Completed
+read2 own-scope cancellation and pending-current/W2 ordering remain unverified.
+Actual native/funding/prepared SQL/journal/environment eligibility, DB/Manager/
+Server-current, Root handoff/proof/no-pending gate and parent-reference retirement
+remain open. Workers/schema/controller/admission/assets, API/UI replacement,
+public `arm start`, managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/
+accounting upgrade survival and shutdown/recovery remain unaccepted.

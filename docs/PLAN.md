@@ -4664,3 +4664,23 @@ challenge view. Prepared validators must remain once-only. Source expansion and
 validation require their own reviewed cut and allocation. Root protocol wiring,
 parent-owned reference retirement, workers and public startup remain later gates;
 actual managed-child continuity across an upgrade remains unverified.
+
+## Original current service and launch journals — reviewed normal scope
+
+The existing upgrade task continues on `codex/resident-current-journals` from
+`bc0b28c`, with focused source commit `fbc56ead8d1c808ee4e9547eeb4a273243bc7cd5`.
+Distinct once-only service read2 and inherited launch read3, the original service
+observation handle and exact census link are implemented without Root callers.
+Independent source and selected normal reviews pass; composed landing remains
+an integration gate. The [normalized result](validation/resident-current-journals-normal-2026-10-31.json)
+records 13 roots/13 named DATA/refusal cases, six-package vet and a native
+compile-only command build.
+
+Successful original current/read2/read3/view/Env/Proof/native behavior is not
+exercised. Distinct DB/Manager/Server-current operations, actual Root proof and
+no-pending gate, parent post-Start observations/nonce and parent-owned reference
+retirement remain next gates. Workers/schema/controller/admission/assets, API/UI
+replacement and public first/repeat/concurrent `arm start` remain open. Actual
+positive funding/prepared/journal/environment eligibility, managed-run/proxy
+upgrade survival and shutdown/recovery remain unaccepted. Prior branches,
+failed records and separately passing scopes retain their classifications.
