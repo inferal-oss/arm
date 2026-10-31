@@ -1,0 +1,1095 @@
+{
+  "version": 1,
+  "scope": "Unused saved-chat catalog and display grouping component",
+  "code_commit": "12e9d0d",
+  "source_sha256": {
+    "internal/agentprojects/hierarchy.go": "7e9934738763691d05500ddd9b9e3f9b208c8f3da2d537093760b28fb2de1ba9",
+    "internal/agentprojects/hierarchy_test.go": "b7f86b16157da53dfd611259113dfd025268777179f5dae679b02acbf9e7ee88",
+    "internal/agentsessions/claude_saved.go": "c68a8cd3aa54b8dde8a9e74ac939ac3ab8492c2e796c025b417fa4ffd16ccee9",
+    "internal/agentsessions/claude_saved_test.go": "40bbfa0ad672deea829993c6d6fdc54f8866e099f1e89a7e53ae30de814ceb70",
+    "internal/agentsessions/codex_saved.go": "e37f9f0d928116cec8ed8d2a00f9c666f3c5b8b97777d877ec86da627fab4793",
+    "internal/agentsessions/codex_saved_test.go": "0e3deec75df2444afc32c8f1aeba78b282ab6d3567dd2c5c02f7deae9cae5e87",
+    "internal/agentsessions/saved.go": "8dc5262ed764c77ea931f2a1ac452bb45f19e87aef51694b90deb04bb34197e9"
+  },
+  "unchanged_protected_sha256": {
+    "cmd/arm/main.go": "3c5e3c644f84b4538215e69752f61c5d74fbbcf40b9d164470db22dcdcbd6be6",
+    "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+    "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+    "internal/agentprojects/discovery.go": "7aca6ea4f3e05613ba44d61aa83bf0d86495106dd5f14f1f30d453f07baa1a7d",
+    "internal/agentprojects/groups.go": "5639ea9e8fa240879706327188beb324224420bbbef7479c95867a926a5e2a23",
+    "internal/agentprojects/titles.go": "2033c1685764d0da1a843124b7df695b09fa87192812c41875152ce6776f5ae1",
+    "internal/agentprojects/titles_test.go": "1fa0f720007ee97a63e70cb54ed9e1f8f93260e93ea0712863677a27680d4cb2",
+    "internal/agentsessions/codex.go": "b54c1af8ff83928014868805457f03c64496010020e672ce59ada18e2e1e6190",
+    "internal/agentsessions/codex_stored.go": "0f8805d8642c0ee1a9d2e9cc927c9ff999645f0430439ca2e8bb5f477269fb30",
+    "internal/agentsessions/sessions.go": "9419b623cdae60418ac370d465f7dc259f18e794ea373c582c92f06a141bcfd0",
+    "internal/agentsessions/sessions_test.go": "4d2d79da972fd4d5489dc3628656fd7bf508ea2cd8f0a81593afd72298b40325",
+    "internal/agentsessions/titles.go": "3bfe4aa1af38084816371b829a857f72c7b82608e0591ea963d0ab33dbc6c383",
+    "internal/cli/onboard_tree.go": "aad75a155d41062554a8d24183b5f097ddae21b980911449794a42aaaba69b5c",
+    "internal/cli/onboard_tree_test.go": "bcb445ea5d8dbca3458183d94c63b12fe17c8765f63d29c568b8034f32bb1e5a",
+    "internal/cli/rollout_activation.go": "576a5aa0fbdb5a2a2a94b09aef8a0dad96a632d9689e79baaaca6e2825f572a2",
+    "internal/cli/rollout_discover_tui.go": "68725f8c9bc399a6618272a2612ddffbe6ac04bd74985512360539472d3c1426",
+    "internal/cli/rollout_onboard.go": "4200ae11b7423a72e7003b71f861e415f3f7c3f8743fc88787e0916edcbeb165",
+    "internal/cli/rollout_onboard_stored_test.go": "8472acde4dfafb819dbe6a8dfb2fb70dd524bf3f45674f4ca49f973a64c97b45",
+    "internal/cli/rollout_onboard_test.go": "afc3bf07f0cb3e7162667d1108adbf6c807757faeea1cb361cbd8e527ab23b67",
+    "internal/cli/rollout_onboard_typeahead_test.go": "48882aa66b202025ed3d40fb3cec33c755a4c86f841de4a3c533ee57efe51697",
+    "internal/gitmeta/git.go": "b761302094db0f77c4237012bbd41afcf93b9e33931a5448a237808ff064e036",
+    "internal/gitmeta/git_test.go": "945d1c2477c889e791e13a2263d351be5440d13bb25e875297cbe9d0a3f048e7",
+    "internal/rollout/onboard_batch.go": "addf135059ed15f00a8712d328e4e67d00bed14500d082949d35cc49a35b9b8d",
+    "internal/rollout/onboard_batch_test.go": "211abac814159bea253551d34713244286ff890a9ffc7a1fabba66bdb2a4d2b5",
+    "internal/rollout/rollout.go": "8e7d4e078426d28fc0b7c82eac7fb1f25bbd743c97b94be8c3e33777850c7dac"
+  },
+  "cohort": {
+    "new": {
+      "roots": 22,
+      "named_cases": 65,
+      "codex_roots": 7,
+      "claude_roots": 5,
+      "producer_roots": 10
+    },
+    "legacy_readers_projects": {
+      "roots": 22,
+      "named_cases": 43,
+      "agentsessions_roots": 15,
+      "agentprojects_roots": 7
+    },
+    "pure_tree_consumers": {
+      "roots": 8,
+      "named_cases": 8
+    }
+  },
+  "first_source": {
+    "execution": "unrun",
+    "findings": "Static review found final producer cancellation, Claude exact-directory cancellation, and cross-probe Git relationship consistency gaps",
+    "successor": "Corrected before first execution with deterministic actual-work observers, conservative relationship invalidation and unique512named boundary regression; not a failed runtime attempt"
+  },
+  "qualified_phases": {
+    "normal": {
+      "result": "pass",
+      "outer_originals_natural_zero": true,
+      "original_go_handle_reaped": true,
+      "fifo_joined": true,
+      "output_eof": true,
+      "forced": false,
+      "truncated": false,
+      "source_inputs_verified": 1964,
+      "protected_inputs_verified": 25,
+      "tool_pins_unchanged": true,
+      "temporary_inventories_empty": true,
+      "final_scratch_sample_positive_stable": true,
+      "phase_seconds": 21.899,
+      "whole_seconds": 22.31,
+      "root_tests": 52,
+      "named_cases": 116,
+      "skips": 0,
+      "failures": 0,
+      "roster": [
+        {
+          "package": "agentprojects",
+          "name": "TestDiscoveryCanonicalPathsCancellationAndBudgets"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestDiscoveryKeepsSelectedAndSessionHintsAtCatalogLimit"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestDiscoveryMissingUnsafeAndUnsupportedMetadataIsReadOnly"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCanceledSnapshotAndSourceBounds"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCanceledSnapshotAndSourceBounds/diagnostic"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCanceledSnapshotAndSourceBounds/sessions"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCanceledSnapshotAndSourceBounds/warnings"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyChangedGitRelationshipsFallBackTogether"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/git-common"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/multiple-primary"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/root-common"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCombinedChildLimitPreservesAdapterCoverage"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyConflictingGitIdentitiesFallBackTogether"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyFinalCancellationDiscardsBuiltSnapshot"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyGitRootsCountTowardDirectoryAndGroupLimits"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyReferenceConflictsContextAndCopiedDisplay"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyTextAndLegacyNameBounds"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyUnknownPrimaryDoesNotTrimCommonPath"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyVerifiedGitRootsAndExactDirectoryFallback"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestNativeProjectDiscoveryMergesDirectoriesWithoutPrivateContent"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestProjectTitlesCatalogBudgets"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestProjectTitlesExactAssociationSharedDirectoriesAndFallback"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestProjectTitlesSanitizeAndBoundRendering"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCancellationAfterFirstDirectoryValidation"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/cancel"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/home"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/marker"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/marker-directory"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/marker-root"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/replace-directory"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/replace-marker"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersConflictsAndUnsupportedRecords"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds/aggregate"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds/entries"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds/record"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds/symlink"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersScopeAndNoNativeIdentity"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSessionMarkersAreBoundedAndUnverified"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesCancellationJoinsProxy"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/malformed"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/missing"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/named"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/renamed"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/unavailable"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataUsesReadOnlyAPIAndIgnoresConversationFields"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/canceled"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-connection"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-database"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-home"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-rows"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-session_index.jsonl"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-state_5.sqlite"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/home-replaced"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/index-replaced"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/main-replaced"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/missing-index-appears"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/directory"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/malformed-line"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/missing"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/oversized"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/symlink"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/unknown-layout"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogNameRecordAndTailBounds"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogNamesUnnamedAndExactScope"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/aggregate-1025"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/canonical-only-and-conflicting-cwd"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/named-513-refuses-before-remaining"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/terminal-duplicate"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/unique-named-capacity"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRequiresExplicitScope"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/extent"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/generated"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/view"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/wal"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit/2"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit/513"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesCatalogAndIndexBounds"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesContextCancellationAndReaderCleanup"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesDetectChangedSnapshot"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesExactSharedLatestAndLaterDirectory"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesFilterUnnamedHistoryAndQuotedPaths"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/fifo-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/malformed-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/missing-db"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/missing-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/oversized-db"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/oversized-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/symlink-db"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/symlink-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesNeverUsesPromptFallback"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesReadCommittedWALWithoutLogicalWrites"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/generated"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/missing-column"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/nontext"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/stored-generated"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/view"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/virtual"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestNativeMetadataMissingUnsafeAndMalformed"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeBoundsAndEmptyProject"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeEnterUsesLatestMatchedChildAndExplicitSets"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeKeysKeepClientHomeAndNativeContext"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeParentToggleCoversHiddenSnapshotChildren"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeRejectsOversizedTextBeforeCopying"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeRejectsUnprovenDirectoryMembership"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeSnapshotCopiesAndFallbackLabels"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeUncheckedChatsPreserveProjectOnlySelection"
+        }
+      ]
+    },
+    "race": {
+      "result": "pass",
+      "outer_originals_natural_zero": true,
+      "original_go_handle_reaped": true,
+      "fifo_joined": true,
+      "output_eof": true,
+      "forced": false,
+      "truncated": false,
+      "source_inputs_verified": 1964,
+      "protected_inputs_verified": 25,
+      "tool_pins_unchanged": true,
+      "temporary_inventories_empty": true,
+      "final_scratch_sample_positive_stable": true,
+      "phase_seconds": 28.601,
+      "whole_seconds": 29.186,
+      "root_tests": 52,
+      "named_cases": 116,
+      "skips": 0,
+      "failures": 0,
+      "roster": [
+        {
+          "package": "agentprojects",
+          "name": "TestDiscoveryCanonicalPathsCancellationAndBudgets"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestDiscoveryKeepsSelectedAndSessionHintsAtCatalogLimit"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestDiscoveryMissingUnsafeAndUnsupportedMetadataIsReadOnly"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCanceledSnapshotAndSourceBounds"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCanceledSnapshotAndSourceBounds/diagnostic"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCanceledSnapshotAndSourceBounds/sessions"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCanceledSnapshotAndSourceBounds/warnings"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyChangedGitRelationshipsFallBackTogether"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/git-common"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/multiple-primary"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/root-common"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyCombinedChildLimitPreservesAdapterCoverage"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyConflictingGitIdentitiesFallBackTogether"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyFinalCancellationDiscardsBuiltSnapshot"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyGitRootsCountTowardDirectoryAndGroupLimits"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyReferenceConflictsContextAndCopiedDisplay"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyTextAndLegacyNameBounds"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyUnknownPrimaryDoesNotTrimCommonPath"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestHierarchyVerifiedGitRootsAndExactDirectoryFallback"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestNativeProjectDiscoveryMergesDirectoriesWithoutPrivateContent"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestProjectTitlesCatalogBudgets"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestProjectTitlesExactAssociationSharedDirectoriesAndFallback"
+        },
+        {
+          "package": "agentprojects",
+          "name": "TestProjectTitlesSanitizeAndBoundRendering"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCancellationAfterFirstDirectoryValidation"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/cancel"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/home"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/marker"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/marker-directory"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/marker-root"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/replace-directory"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/replace-marker"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersConflictsAndUnsupportedRecords"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds/aggregate"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds/entries"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds/record"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersEntryAndByteBounds/symlink"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSavedMarkersScopeAndNoNativeIdentity"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestClaudeSessionMarkersAreBoundedAndUnverified"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesCancellationJoinsProxy"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/malformed"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/missing"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/named"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/renamed"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/unavailable"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexMetadataUsesReadOnlyAPIAndIgnoresConversationFields"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/canceled"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-connection"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-database"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-home"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-rows"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-session_index.jsonl"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-state_5.sqlite"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/home-replaced"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/index-replaced"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/main-replaced"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/missing-index-appears"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/directory"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/malformed-line"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/missing"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/oversized"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/symlink"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/unknown-layout"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogNameRecordAndTailBounds"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogNamesUnnamedAndExactScope"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/aggregate-1025"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/canonical-only-and-conflicting-cwd"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/named-513-refuses-before-remaining"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/terminal-duplicate"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/unique-named-capacity"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogRequiresExplicitScope"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/extent"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/generated"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/view"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/wal"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit/2"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit/513"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesCatalogAndIndexBounds"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesContextCancellationAndReaderCleanup"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesDetectChangedSnapshot"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesExactSharedLatestAndLaterDirectory"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesFilterUnnamedHistoryAndQuotedPaths"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/fifo-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/malformed-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/missing-db"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/missing-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/oversized-db"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/oversized-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/symlink-db"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/symlink-index"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesNeverUsesPromptFallback"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesReadCommittedWALWithoutLogicalWrites"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/generated"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/missing-column"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/nontext"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/stored-generated"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/view"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestCodexStoredNamesRejectUnsupportedSchemas/virtual"
+        },
+        {
+          "package": "agentsessions",
+          "name": "TestNativeMetadataMissingUnsafeAndMalformed"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeBoundsAndEmptyProject"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeEnterUsesLatestMatchedChildAndExplicitSets"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeKeysKeepClientHomeAndNativeContext"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeParentToggleCoversHiddenSnapshotChildren"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeRejectsOversizedTextBeforeCopying"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeRejectsUnprovenDirectoryMembership"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeSnapshotCopiesAndFallbackLabels"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeUncheckedChatsPreserveProjectOnlySelection"
+        }
+      ]
+    },
+    "vet": {
+      "result": "pass",
+      "outer_originals_natural_zero": true,
+      "original_go_handle_reaped": true,
+      "fifo_joined": true,
+      "output_eof": true,
+      "forced": false,
+      "truncated": false,
+      "source_inputs_verified": 1964,
+      "protected_inputs_verified": 25,
+      "tool_pins_unchanged": true,
+      "temporary_inventories_empty": true,
+      "final_scratch_sample_positive_stable": true,
+      "phase_seconds": 3.83,
+      "whole_seconds": 4.25,
+      "packages": [
+        "agentsessions",
+        "agentprojects",
+        "gitmeta",
+        "rollout",
+        "cli"
+      ],
+      "test_bodies_run": 0,
+      "original_output_bytes": 0
+    },
+    "build": {
+      "result": "pass",
+      "outer_originals_natural_zero": true,
+      "original_go_handle_reaped": true,
+      "fifo_joined": true,
+      "output_eof": true,
+      "forced": false,
+      "truncated": false,
+      "source_inputs_verified": 1964,
+      "protected_inputs_verified": 25,
+      "tool_pins_unchanged": true,
+      "temporary_inventories_empty": true,
+      "final_scratch_sample_positive_stable": true,
+      "phase_seconds": 3.187,
+      "whole_seconds": 3.665,
+      "test_bodies_run": 0,
+      "original_output_bytes": 0,
+      "artifact": {
+        "bytes": 74755970,
+        "sha256": "5dea52ff219542dc2162e97b791bb0284425ede788a9bb5137ac409e09d8a891",
+        "executed": false
+      }
+    }
+  },
+  "fixture_process_scope": "Owned SQLite/files, pure grouping probe substitutes; legacy owned shell scripts exec the compiled test helper over stdio or a fixed sleep canceled by the existing deadline. No actual native client/proxy/server/socket route.",
+  "limitations": [
+    "No actual client metadata read or real Git grouping probe",
+    "No real policy/backend/enrollment/delivery/PTY/full-suite/Linux acceptance",
+    "Legacy title/parser/native APIs, batch, Git resolver and state schema unchanged except explicit evolution of the new display request",
+    "Unused component: wizard, explicit binding mapping and activation handoff remain unfinished",
+    "Caller/resource observations are cooperative and sampled; no kernel bound, measured shared-cache growth, total-disk bound or physical-reclamation credit; prior failed artifacts and retained envelopes persist"
+  ]
+}

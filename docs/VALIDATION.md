@@ -12987,3 +12987,49 @@ No live client metadata, real repository grouping, real policy/backend,
 enrollment, delivery or terminal capture is accepted by this unused foundation.
 No installed binary or running job was changed; retained scratch obligations
 and unmeasured shared-cache growth imply no physical-reclamation credit.
+
+## Saved-chat catalog and hierarchy producer — scoped evidence
+
+Seven Codex fixture roots cover explicit-scope refusal; named and unnamed
+exact-directory results; missing/malformed/unsafe index handling; the 1,025-row
+combined window, 513th named-row refusal, canonical aliases and terminal
+duplicates; schema/extents/read-only WAL behavior; actual-close observers with
+injected failures, cancellation and source replacement; and name/tail bounds.
+Five Claude roots cover marker-only provenance and scope, duplicate/conflict
+handling, entry/record/aggregate byte limits, and close/cancellation/stability
+discard, including cancellation after the first actual exact-directory
+validation with no subsequent metadata opens. These are owned synthetic
+fixtures, not native client compatibility.
+
+Ten producer roots cover Git/directory grouping and unknown-primary labels,
+combined adapter child limits and coverage, added-root/directory/group bounds,
+raw text/legacy-name limits, native-reference context and copied display,
+cancellation/source limits, conflicting Git identity/relationship fallback,
+multiple-primary ambiguity, and cancellation after a complete build at the
+final return boundary. Pure probe
+substitutes model reviewed resolver outputs; they do not execute Git.
+
+The first source's cancellation and cross-probe relationship findings remain
+static review findings with no execution. The successor also adds 512 unique
+named rows plus an unnamed row, expecting one query, exactly 512 observed rows,
+512 retained references and explicit truncation. New successor coverage is
+22 roots/65 named cases.
+
+Code `12e9d0d` passes fresh normal and race cohorts with exactly equal complete
+52-root/116-case run/pass key sets and no skips or failures: 22 new roots/65
+cases, 22 legacy reader/project roots/43 cases and eight pure-tree consumer
+roots. The [normalized evidence](validation/onboard-project-catalog-scoped-2026-10-31.json)
+includes seven source and 25 unchanged protected hashes. Five-package vet passes;
+the native CLI artifact is compiled and verified, never executed. Original
+Go/helper/FIFO processes naturally return zero and join with output EOF;
+source/tool pins remain unchanged, temporary inventories are empty and final
+sampled scratch observations are positive and stable.
+
+Legacy fixture process coverage uses owned shell scripts that execute the
+compiled test helper over stdio, or a fixed sleep canceled by the existing
+deadline. It does not exercise an actual native client/proxy/server/socket.
+No actual client metadata, Git grouping probe, policy/backend operation,
+enrollment, delivery, PTY, full suite or Linux acceptance is claimed. This is
+an unused catalog/group component; wizard and activation wiring remain pending.
+Retained earlier failures, scratch envelopes and unmeasured shared-cache growth
+imply no kernel, total-disk or physical-reclamation credit.

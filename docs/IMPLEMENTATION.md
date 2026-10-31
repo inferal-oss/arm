@@ -6362,3 +6362,48 @@ onboarding-only single-save/review/cancellation/uncertain-outcome boundary.
 The existing single-change APIs, native identity/title readers, state schema
 and installed binary remain unchanged. Catalog/group producers, wizard wiring
 and activation handoff remain separate unfinished source slices.
+
+## Saved-chat catalog and hierarchy producer — scoped qualification
+
+The additive display request explicitly distinguishes exact directories from
+one whole client home. Codex reads only supported explicit saved names and
+physical `id`/`cwd` database columns in one verified read-only connection and
+transaction, using normal SQLite locking. A bounded named-priority query and
+one remaining-row query retain at most 512 references while observing at most
+1,025 raw rows. A 513th named row refuses before the second query. Canonical
+stored UUIDs, observed conflicts and repeated terminal sentinel IDs prevent
+first/last-row association guesses. Safe missing names allow warned UUID-only
+display; unsafe index files or failed extent/identity guards refuse the snapshot.
+Unsupported individual name records are omitted without inventing titles.
+
+Claude's additive reader covers only bounded local `sessionId`/`cwd` markers.
+It supplies neither saved historical titles nor native Project membership or
+activation identities. Both readers discard results after cancellation,
+stability failure or close error. Original title and native-session APIs remain
+unchanged. Source file extents and retained/observed rows bound supported input,
+not total SQLite I/O, heap, quiescence or kernel preemption. Normal SQLite
+WAL/SHM reader bookkeeping is permitted.
+
+The new hierarchy producer shares one caller-respecting 15-second budget and
+the existing bounded Git resolver across one pass. It counts all adapters,
+explicit child cwds and added verified roots together, limits raw text before
+sanitizing, and refuses unrepresentable output before consumer snapshot copying.
+Conflicting common/root identities fall back to exact directory groups. A
+primary-root label requires actual verified probe evidence; no root is derived
+by trimming a Git path. All grouping is display-only. Code `12e9d0d` passes
+the exact normal/race 52-root/116-case cohort, affected five-package vet and
+compile-only native CLI build. The [normalized evidence](validation/onboard-project-catalog-scoped-2026-10-31.json)
+records source/protected hashes and complete rosters. No actual client metadata,
+Git grouping, policy, backend, delivery or terminal flow is accepted by these
+synthetic fixtures. The catalog remains unused by the wizard.
+
+The qualified review successor checks caller cancellation at the final producer
+return boundary and between Claude exact-directory validations and metadata
+opens. Private pass-local observers let fixtures cancel after actual work;
+production supplies no observers. Git consistency now includes root-to-Git/common,
+Git-to-common and primary-root relationships, invalidating every affected probe
+rather than selecting a map-order or lexicographic winner. These are static
+review corrections to the preserved unexecuted first source, not observed
+runtime failures. Display membership does not supply authoritative bindings:
+the future wizard must retain and freshly verify each explicit checkout-root
+association, including nested linked worktrees, before policy review.

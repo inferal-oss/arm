@@ -5052,3 +5052,36 @@ separate activation handoff. Unchecked chats remain activation omissions, not
 project-policy exclusions. Discovery, user-facing wiring and actual activation
 are not completed by this milestone. Earlier failed fixture setup and retained
 scratch/cache uncertainty remain preserved.
+
+## Saved-chat catalog and hierarchy producer — scoped qualification
+
+Continuation owner `codex/onboard-project-catalog` starts from the accepted
+foundation composition `40bb43a`. Code `12e9d0d` adds bounded display discovery
+and Git/exact-directory grouping with synthetic fixtures. Whole-client scope
+requires an explicit enum and one configured canonical client home. It does not
+widen an absent directory list. Legacy title/native discovery, the batch API,
+Git helper and state schema stay unchanged.
+
+The producer applies combined limits of 512 chats, 128 groups, 512 directory
+paths (including added Git roots) and 8 MiB of display text across both adapters.
+Adapter-specific diagnostics retain missing, unsupported and truncated coverage;
+an omitted adapter is not reported as having no chats. Verified common Git
+directories supply display grouping only; unknown primary checkouts use a
+truthful representative. No broader policy binding follows from a group.
+
+Independent review accepts this unused component within its synthetic scope.
+Normal and race runs each pass the exact 52-root/116-case roster, affected
+five-package vet passes and the native CLI compiles without being executed.
+See the [normalized evidence](validation/onboard-project-catalog-scoped-2026-10-31.json).
+No actual client metadata or Git grouping probe has run. Wizard, batch-review
+and activation-handoff integration remain pending; the full checkbox hierarchy
+feature is not yet complete.
+
+Static review of the first unexecuted source found final-return cancellation,
+Claude exact-directory cancellation and cross-probe Git relationship gaps.
+The qualified successor adds deterministic cancellation controls and invalidates
+all contradictory root/Git/common or primary-root relationships. A unique
+512-named-chat fixture strengthens the no-second-query boundary. The first
+source remains unrun. These are corrected static findings, not failed runtime
+attempts. Explicit checkout-root mapping still needs retention and revalidation
+before policy wiring; `Group.Directories` is display membership, not a binding list.
