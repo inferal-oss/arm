@@ -4791,3 +4791,18 @@ API/UI replacement and public first/repeat/concurrent `arm start` remain open.
 Actual eligibility, managed-run/proxy upgrade survival and shutdown/recovery
 remain unaccepted. Prior failed records, preserved branches and separately
 passing scopes retain their classifications.
+
+## Parent postStart fence composition accepted
+
+The coordinator integrated source `9b25de6` as `7d57ff8` and scoped evidence
+`5362cd0` as `005eeb5`. All 3,303 qualified tracked inputs, including 1,916 Go
+files, match exactly at source composition. Later scoped documentation/evidence
+do not change runtime inputs. The selected normal result is accepted without
+repeating execution or widening its successful-original/postStart/native scope.
+
+Next is the bounded child CurrentProof signer cut, followed by private Root
+protocol/context/entropy/fresh commitment and no-pending proof sequencing. The
+parent's Rack-only selectors retain their phase boundary; later Root phases
+must retain the actual normal pre-challenge call facts. Reference retirement,
+workers and public startup remain later gates. Actual managed-job/proxy
+continuity across an upgrade remains unverified.

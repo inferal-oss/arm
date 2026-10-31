@@ -12542,3 +12542,11 @@ private Root protocol/phase contexts/nonce/fresh commitment/no-pending gate,
 parent retirement, workers/controller/schema/admission/assets/API/UI, public
 `arm start`, actual eligibility, managed-run/proxy upgrade survival and shutdown/
 recovery remain unaccepted.
+
+Coordinator composition accepts source `7d57ff8` and scoped evidence `005eeb5`.
+Independent comparison verifies all 3,303 qualified inputs, including 1,916 Go
+files and every module and embedded input. The normalized evidence hash, three
+source SHA256/Git-blob pairs and forty raw package-qualified run/pass pairs agree
+with the audited result. Later changes are documentation only; no test or binary
+was rerun for composition. This preserves selected normal DATA/refusal evidence
+and every stated original-postStart/native and live-upgrade limitation.

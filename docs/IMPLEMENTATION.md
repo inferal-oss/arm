@@ -6100,3 +6100,9 @@ Rack-only completed selectors correctly refuse after challenge advancement;
 future Root must retain actual normal pre-challenge call facts. No new Root
 caller, child signer, phase/context/entropy work, worker/schema or public-start
 activation is added. Normal DATA/API observations issue no Ready/Closed/credit.
+
+Coordinator composition retains parent postStart fence source as `7d57ff8` and
+scoped evidence as `005eeb5`. Every qualified runtime, module and embedded input
+is identical to the reviewed snapshot. SQLite remains the unmodified official
+driver. No new Root caller is activated and no running backend or managed child
+is changed by this integration.
