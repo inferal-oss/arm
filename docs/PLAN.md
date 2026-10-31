@@ -4894,14 +4894,22 @@ Integration preserves every tested runtime, test, module and asset input;
 only the three delivery documents differ. Earlier failed attempts remain
 failed. Existing incompatible databases are not repaired or migrated.
 
-The C3 provider owner must compose its reviewed hooks on this dependency and
-complete the reviewed three-window 224-root normal/race roster before source
-integration. Its factory stays disabled. Semblance's limited lifecycle source
-checks pass 103 RDF and 161 Node cases; the owner-indexed upstream successor
-still needs final cost/lifecycle review and execution. Complete dependency
-provenance, assets, native embedding and browser checks precede onboarding UI
-composition. Public pressure, forwarding and sync activation remain separate
-unfinished gates.
+The C3 provider owner, `codex/provider-pair-c3-final224`, has composed its hooks
+on this dependency. Two windows pass 103 roots / 601 names and 75 roots / 204
+names in both normal and race modes, including all 14 mandatory named controls
+and targeted vet. The remaining 46-root window fails its first normal subset
+at `TestCargoBuildUsesAttachedManagedStorage`: the managed Cargo outcome remains
+unknown despite completed build output. Later subsets, race and vet are unrun.
+The full 224-root composition is unaccepted and its factory stays disabled.
+Source diagnosis and a bounded diagnostic must distinguish completion cleanup
+from End/expiry cancellation without weakening native ownership or accounting.
+
+Semblance's limited lifecycle source checks pass 103 RDF and 161 Node cases.
+The owner-indexed upstream successor has completed source review, but its
+required fresh engine build is not qualified; ABI, typecheck and all 69
+generic regression cases remain unrun on that source. Complete dependency provenance,
+assets, native embedding and browser checks precede onboarding UI composition.
+Public pressure, forwarding and sync activation remain separate unfinished gates.
 
 
 ## Onboarding saved names continuation — qualified source

@@ -6251,12 +6251,22 @@ durable charges and original native joins while separating controlled storage
 observations from physical backing authority. They await complete composed
 validation and are not integrated behavior.
 
+The current composition passes 178 roots / 805 names in each of normal and
+race modes, with all 14 mandatory controls and targeted vet. The remaining
+window fails a managed Cargo storage test: successful build output does not
+establish a completed managed outcome or original group quiescence. The core
+Cargo finalizer is unchanged, but the prepared C3 End/expiry paths can add
+generic cancellation alongside dedicated Cargo cancellation. The actual
+failure route remains unresolved; no production correction or full composition
+acceptance is claimed.
+
 The prepared Semblance dependency and ARM palette compatibility fix also remain
 unintegrated. Exact collection membership enables stock lazy entry validation;
 an earlier run exposes a stale derived validation result after palette
 disposal. A limited source correction passes 103 RDF and 161 Node cases;
-the owner-indexed upstream successor still needs cost/lifecycle review and
-execution. Dependency acceptance requires final provenance, composed tests,
+the owner-indexed upstream successor has completed source review. Its required
+fresh engine build is not qualified, so ABI, typecheck and its 69 regression
+cases remain unrun. Dependency acceptance requires final provenance, composed tests,
 reproducible assets, native embedding and browser review. Stock
 Semblance remains the requested default, with Terminal selectable.
 

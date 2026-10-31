@@ -12729,6 +12729,36 @@ checks. It does not establish full-suite, resident race, other-platform,
 physical sleep/wake or full provider acceptance. Existing schemas are not
 repaired or migrated; native pausing and public workers remain disabled.
 
+## Provider and Semblance qualification: remaining failures
+
+On the current provider candidate composed over `fcbde196`, two independent
+windows pass 103 roots / 601 names and 75 roots / 204 names in both normal
+and race modes. Independent raw-report review verifies equal package-qualified
+run/pass sets, no failures or skips, all 14 mandatory named controls, targeted
+vet, original Wait and output joins, exact quiet logs, ordinary nonforced stop,
+closure and unchanged source/tool pins. These are 178 scoped roots, not full
+224-root acceptance.
+
+The remaining 46-root window fails `TestCargoBuildUsesAttachedManagedStorage`
+in its first normal subset: 19 roots / 26 names pass, one named test fails and
+none skip. Build output reports completion, while the managed Cargo outcome
+remains unknown after an unqualified original group cancellation. Later normal
+subsets, race and vet do not run. The outer validation processes and backend
+have qualified joins and closure; that does not establish the Cargo job's group
+quiescence. Source diagnosis cannot yet distinguish normal completion cleanup
+from the prepared C3 End/expiry cancellation paths. No fixture-only cause,
+relaxed native authority, released obligations or accepted full composition is
+inferred. Earlier failed windows remain failed.
+
+The reviewed owner-indexed Semblance source is also unqualified at runtime.
+Its required fresh engine build fails, so neither ABI check, strict typecheck
+nor the eight targeted entries, including all 69 generic regression cases,
+run. Immutable source/input checks and ordinary backend cleanup pass, but this
+does not qualify fresh images, exact quiet-log readback, the dependency or its
+later cost/soak gate. The earlier 103 RDF / 161 Node source result belongs only
+to its recorded earlier source. Full provenance, reproducible assets, ARM
+embedding, browser checks and subsequent onboarding composition remain open.
+
 
 ## Onboarding saved-name continuation — scoped qualification
 
