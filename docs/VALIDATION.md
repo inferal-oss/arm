@@ -12739,3 +12739,26 @@ permitted; no zero-original-file-effect claim transfers from the diagnostic.
 Native API/identity/liveness, installed-binary replacement, full-suite, Linux and
 terminal-render acceptance remain outside this scope. Earlier failures and
 cleanup/storage uncertainty remain retained independently.
+
+
+## Saved onboarding names: independent composed verification
+
+The coordinator reviewed the exact final source and integrated it over `5c67af8`.
+All six owned Go files match source `076b518`; unrelated published inputs and
+both sides of documentation append conflicts are preserved. Fresh qualification
+on `e3f39b5` binds 1,949 Go/module inputs: normal passes 25 roots/46 unique named
+run/pass pairs; race passes 22 roots/43 pairs, with exact package-qualified
+rosters and no failures or skips. Three-package vet and native `cmd/arm`
+compilation pass. The [normalized composed record](validation/rollout-onboard-saved-names-composed-2026-10-31.json)
+retains the new compile-only artifact hash, separately from the owner binary
+that performed the earlier public read-only catalog compatibility check.
+
+Independent raw-record review confirms natural zero exits for the original
+Go/helper/FIFO processes, positive joins and output EOF, unchanged source/tool
+and selected SDK pins, empty temporary inventories and positive final owned
+scratch observations. Later changes are documentation/evidence only. No new
+private metadata read, backend, enrollment or installed-binary change occurred.
+The prior warning remains unattributed; earlier failed records, unmeasured
+shared-cache growth and retained scratch obligations remain unchanged. These
+scoped checks do not establish full-suite, Linux, terminal-render or native
+session identity/liveness acceptance.

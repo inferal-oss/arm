@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "feature": "Saved onboarding names: composed-source qualification",
+  "status": "reviewed and qualified for integration",
+  "source": {
+    "composed_head": "e3f39b55eb6a8c4ed356e8d38007ab4a830317b0",
+    "integration_base": "5c67af8",
+    "owner_source": "076b518d10b37466f48ac6d66cbd3aa0ce64429d",
+    "integrated_source": "caafb1657dc1a1e746c8a6be2eee76b0952fd2a8",
+    "owner_evidence": "3c0ffae2b1040cd89485bb01b38ad70067331744",
+    "integrated_evidence": "e3f39b55eb6a8c4ed356e8d38007ab4a830317b0",
+    "go_module_input_count": 1949,
+    "go_module_input_manifest_sha256": "8b2c1c222d09e02a35879fdcbffaa4808f61e52c77cd21ff1a4adec831bcd8be",
+    "feature_files_sha256": {
+      "internal/agentprojects/titles.go": "2033c1685764d0da1a843124b7df695b09fa87192812c41875152ce6776f5ae1",
+      "internal/agentprojects/titles_test.go": "1fa0f720007ee97a63e70cb54ed9e1f8f93260e93ea0712863677a27680d4cb2",
+      "internal/agentsessions/codex_stored.go": "0f8805d8642c0ee1a9d2e9cc927c9ff999645f0430439ca2e8bb5f477269fb30",
+      "internal/agentsessions/codex_stored_test.go": "811574f8095d26564f65906c26b66794482084b30b332caf167a735f4d1580ae",
+      "internal/cli/rollout_onboard.go": "926a25b4bf14c21d6a52e322f98b7e3bf9ab6f63b482fdbf61cea67703ae6835",
+      "internal/cli/rollout_onboard_stored_test.go": "8472acde4dfafb819dbe6a8dfb2fb70dd524bf3f45674f4ca49f973a64c97b45"
+    },
+    "qualification": "Six feature Go files match the independently qualified owner source. Other published backend changes are preserved; this record qualifies affected onboarding packages and native compilation, not all backend features."
+  },
+  "normal": {
+    "status": "passed",
+    "root_tests": 25,
+    "unique_named_run_pass_pairs": 46,
+    "failures": 0,
+    "skips": 0,
+    "roster": [
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesExactSharedLatestAndLaterDirectory"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesFilterUnnamedHistoryAndQuotedPaths"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesReadCommittedWALWithoutLogicalWrites"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesRejectUnsupportedSchemas"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesContextCancellationAndReaderCleanup"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesCatalogAndIndexBounds"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesDetectChangedSnapshot"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesNeverUsesPromptFallback"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexMetadataUsesReadOnlyAPIAndIgnoresConversationFields"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestClaudeSessionMarkersAreBoundedAndUnverified"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestNativeMetadataMissingUnsafeAndMalformed"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexMetadataTitlesCancellationJoinsProxy"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestNativeProjectDiscoveryMergesDirectoriesWithoutPrivateContent"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestDiscoveryMissingUnsafeAndUnsupportedMetadataIsReadOnly"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestDiscoveryCanonicalPathsCancellationAndBudgets"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestDiscoveryKeepsSelectedAndSessionHintsAtCatalogLimit"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestProjectTitlesCatalogBudgets"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestProjectTitlesExactAssociationSharedDirectoriesAndFallback"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestProjectTitlesSanitizeAndBoundRendering"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardStoredNamesWithoutNativeBinary"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback"
+      },
+      {
+        "package": "cli",
+        "name": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply"
+      }
+    ]
+  },
+  "race": {
+    "status": "passed",
+    "root_tests": 22,
+    "unique_named_run_pass_pairs": 43,
+    "failures": 0,
+    "skips": 0,
+    "roster": [
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesExactSharedLatestAndLaterDirectory"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesFilterUnnamedHistoryAndQuotedPaths"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesReadCommittedWALWithoutLogicalWrites"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesRejectUnsupportedSchemas"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesContextCancellationAndReaderCleanup"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesCatalogAndIndexBounds"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesDetectChangedSnapshot"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesNeverUsesPromptFallback"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexMetadataUsesReadOnlyAPIAndIgnoresConversationFields"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestClaudeSessionMarkersAreBoundedAndUnverified"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestNativeMetadataMissingUnsafeAndMalformed"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity"
+      },
+      {
+        "package": "agentsessions",
+        "name": "TestCodexMetadataTitlesCancellationJoinsProxy"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestNativeProjectDiscoveryMergesDirectoriesWithoutPrivateContent"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestDiscoveryMissingUnsafeAndUnsupportedMetadataIsReadOnly"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestDiscoveryCanonicalPathsCancellationAndBudgets"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestDiscoveryKeepsSelectedAndSessionHintsAtCatalogLimit"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestProjectTitlesCatalogBudgets"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestProjectTitlesExactAssociationSharedDirectoriesAndFallback"
+      },
+      {
+        "package": "agentprojects",
+        "name": "TestProjectTitlesSanitizeAndBoundRendering"
+      }
+    ]
+  },
+  "vet": {
+    "status": "passed",
+    "packages": [
+      "internal/agentsessions",
+      "internal/agentprojects",
+      "internal/cli"
+    ]
+  },
+  "native_build": {
+    "status": "passed",
+    "package": "cmd/arm",
+    "bytes": 74739074,
+    "sha256": "385999df3afaec0c0b51d123cc18c5ba7cb0046aaa8e8a67763d246b04c2eb70",
+    "executed": false
+  },
+  "review": {
+    "exact_package_qualified_root_rosters": true,
+    "raw_run_pass_pairs_independently_checked": true,
+    "original_go_helper_fifo_natural_zero_exits": true,
+    "original_handles_joined_and_output_eof": true,
+    "forced_or_truncated": false,
+    "source_tool_and_selected_sdk_pins_unchanged": true,
+    "positive_final_owned_scratch_enumerations": true,
+    "temporary_inventories_empty": true,
+    "unrelated_published_files_preserved": true,
+    "documentation_conflicts": "Both complete appended records preserved. Current implementation description updated without erasing prior scoped evidence."
+  },
+  "compatibility": {
+    "scope": "Earlier owner-built artifact only; see owner evidence. One approved public JSON onboarding operation found usable saved names with exact directory context.",
+    "new_composed_binary_executed": false,
+    "warning_count": 1,
+    "warning_cause": "unattributed; no retained text or additional read"
+  },
+  "limits": [
+    "Normal SQLite WAL/SHM bookkeeping is permitted; main data and schema remain read-only.",
+    "No new native client API, backend, enrollment, installed-binary replacement or private metadata read in composed qualification.",
+    "No full Go suite, Linux runtime or terminal-render acceptance.",
+    "Cooperative resource claims and sampled owned scratch are not kernel limits or total I/O/heap bounds. Shared-cache growth remains unmeasured, retained scratch obligations persist and no physical reclamation credit is claimed.",
+    "Earlier offline-WAL failure and other diagnostic failures retain their original classifications."
+  ]
+}

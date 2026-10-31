@@ -6241,3 +6241,15 @@ the current run still exposes a stale derived validation result after palette
 disposal. Dependency acceptance requires that lifecycle correction, composed
 tests, reproducible assets, native embedding and browser review. Stock
 Semblance remains the requested default, with Terminal selectable.
+
+
+## Saved onboarding names: current composition
+
+The saved-name reader is integrated as `caafb16` over newer published backend
+changes. Its six feature Go files match the reviewed owner source exactly;
+ordinary native session APIs, module dependencies and policy/admission behavior
+remain unchanged. The [composed qualification](validation/rollout-onboard-saved-names-composed-2026-10-31.json)
+records fresh normal/race onboarding tests, affected vet and native compilation.
+The composed binary was not executed; the earlier successful public catalog
+compatibility check belongs to its recorded owner-built artifact. Installation
+and running ARM processes were not changed by this integration.

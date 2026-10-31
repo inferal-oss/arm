@@ -4902,3 +4902,20 @@ validation, retained scratch and cleanup uncertainty keep their classifications;
 no physical reclamation is claimed. No production helper, module change, default
 backend, real enrollment or installed binary change is included. Native API,
 identity/liveness, full-suite and Linux acceptance remain outside this scope.
+
+
+## Saved onboarding names composition accepted
+
+The coordinator integrated source `076b518` as `caafb16` and owner evidence
+`3c0ffae` as `e3f39b5`, preserving the newer published backend work and both
+complete documentation records. Independent review verifies the exact six
+feature Go images and unchanged module/native session contracts. On the
+composed source, normal tests pass 25 roots/46 named cases, race tests pass
+22 roots/43 named cases, three-package vet and native command compilation pass.
+The [composed record](validation/rollout-onboard-saved-names-composed-2026-10-31.json)
+binds all 1,949 Go/module inputs and the unexecuted composed build artifact.
+
+The earlier owner-binary public CLI compatibility result remains separately
+scoped, including its unattributed warning. The installed binary is unchanged.
+Full-suite, Linux, terminal rendering and native identity/liveness acceptance
+remain unclaimed; retained failures and scratch obligations are preserved.
