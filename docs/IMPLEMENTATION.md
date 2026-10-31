@@ -6264,7 +6264,9 @@ open; no full composition acceptance is claimed.
 The proposed successful-completion cleanup correction passes its normal
 regressions but fails a race-mode settlement assertion. A separate two-selector
 correction preserves dedicated Cargo cancellation and the generic fallback in
-scoped End/Close tests; expiry refusal-code qualification remains incomplete.
+scoped End/Close tests. A test-only expiry successor passes normal and race
+checks plus targeted vet, including the exact ordinary format refusal, empty
+Status and preservation of attached schema objects during owned fixture cleanup.
 Neither correction is integrated. The [scoped record](validation/cargo-cancellation-corrections-scoped-2026-10-31.json)
 separates those results from full composition and production activation.
 

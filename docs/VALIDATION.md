@@ -12781,7 +12781,13 @@ with two passes and failures of the custody-refusal child and parent; its
 race phase is unrun. The failing assertion accepts only one refusal code, so
 its message does not prove ordinary availability was granted. The actual
 returned error was not recorded; classify the refusal before changing the
-fence or its expected contract. Original test/proxy/backend Waits and pipe
+fence or its expected contract. A later test-only successor leaves production
+unchanged and passes one root / four names in both normal and race modes,
+plus targeted Manager vet. It checks the ordinary workspace-format refusal
+and empty Status, known owned-schema restoration, preservation of attached
+index/trigger/view objects and the retained CPU charge after restoration.
+This does not capture the earlier run's returned code or qualify the prior
+End/Close cohorts on a combined source. Original test/proxy/backend Waits and pipe
 joins, quiet logs, ordinary nonforced stop, closure and final input hashes
 pass separately for these windows. Failed fixtures remain retained.
 

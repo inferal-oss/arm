@@ -4912,10 +4912,13 @@ Two focused corrections have passed source review, but their runtime gates are
 incomplete. The completion-cleanup candidate passes six roots / nine names in
 normal mode and fails its normal-exit settlement assertion in race mode; vet
 is unrun. The separate Cargo cancellation-selector candidate passes three
-roots / eight names in both modes plus targeted vet. Its expiry cohort fails
-one refusal-code assertion in normal mode; expiry race is unrun. That assertion
-does not establish that availability was granted. Classify the actual refusal
-before changing the fence or test expectation. The eventual combined roster
+roots / eight names in both modes plus targeted vet. The earlier expiry cohort
+fails a refusal-code assertion; it does not establish that availability was
+granted. A test-only successor checks the ordinary workspace-format refusal
+and empty Status, and safely restores only its exact owned fixture schema.
+Its one root / four names pass normal and race modes plus targeted vet, including
+index, trigger and view preservation negatives. Production guards are unchanged.
+The eventual combined roster
 adds five roots to the original 224; all 229 require composed qualification.
 
 Semblance's limited lifecycle source checks pass 103 RDF and 161 Node cases.

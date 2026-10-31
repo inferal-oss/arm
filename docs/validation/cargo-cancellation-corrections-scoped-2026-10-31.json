@@ -25,13 +25,23 @@
     "expiry_normal": {"roots": 1, "names": 4, "passed": 2, "failed": 2},
     "expiry_failed_leaf": "TestCargoC3ValidatedExpiryKeepsDedicatedCancellation/custody_refusal",
     "expiry_race": "unrun",
-    "expiry_failure_limit": "Assertion requires one refusal code; actual error was not recorded. No availability grant is inferred."
+    "expiry_failure_limit": "Assertion requires one refusal code; actual error was not recorded. No availability grant is inferred.",
+    "expiry_test_only_successor": {
+      "production_unchanged": true,
+      "roots_each_mode": 1,
+      "names_passed_each_mode": 4,
+      "modes": ["normal", "race"],
+      "targeted_manager_vet": "passed",
+      "ordinary_workspace_format_refusal_and_empty_status": "passed",
+      "known_owned_schema_restoration_and_index_trigger_view_preservation": "passed",
+      "retained_cpu_charge_after_fixture_restoration": "passed",
+      "does_not_capture_earlier_returned_code_or_qualify_combined_source": true
+    }
   },
   "original_waits_pipe_joins_quiet_logs_nonforced_stop_closure_and_final_input_hashes_checked": true,
   "failed_fixtures_and_unknown_obligations_preserved": true,
   "remaining": [
     "Completion-cleanup race failure diagnosis and correction",
-    "Expiry refusal classification and exact contract check",
     "Final normal/race and affected vet qualification",
     "Original attached-storage and lifecycle/finality reproduction",
     "Current-main composition and full 229-root inventory"
