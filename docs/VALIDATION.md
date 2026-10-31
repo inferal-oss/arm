@@ -13244,3 +13244,12 @@ concurrent startup and actual A-to-B managed-run/proxy survival remain open.
 Quiet heartbeat/finish, renewal, cancellation, expiry, native closure/accounting,
 Linux eligibility and VM setup receive no acceptance from these checks. No
 installed backend or real job was replaced or terminated.
+
+Independent composition review verifies all sixteen changed Git blobs against
+the qualified source, both 61-case raw normal/race rosters and all 88 public
+module hash records against the original receipts. Source `75ed890` plus notes
+`7d695cb` preserves every qualified Go/module/runtime/asset/test image; differences
+from the validation snapshot are documentation only, including upstream notes
+through `8d4b666`. Those differences require no repeated runtime qualification,
+and no rebuilt binary or additional native acceptance is asserted. The open
+native retirement, worker/public-start and real job-survival gates above remain.

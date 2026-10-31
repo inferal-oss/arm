@@ -6531,3 +6531,9 @@ format/admission, assets, actual API/UI readiness and public `arm start` have no
 been activated. Successful native retirement and real upgrade/job continuity
 still require genuine fixtures. The later worker design must keep all existing
 unextracted UI/API/domain/reporting operations on their resident ownership paths.
+
+The independently reviewed composition is `75ed890` (source) and `7d695cb`
+(evidence/notes), preserving upstream documentation through `8d4b666`. All
+qualified Go, module, runtime, asset and test images are unchanged. The private
+component remains unwired; this integration changes no installed backend or job
+and does not activate the proposed public startup/worker interface.

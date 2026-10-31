@@ -5265,3 +5265,17 @@ Completion still requires real A-to-B public upgrade evidence for original
 managed jobs and CLI proxy children, including output, quiet heartbeat, finish,
 renew, cancel, expiry and failed-candidate continuity. The selected refusal/seal
 checks do not establish that behavior or native closure/resource credit.
+
+## Original parent reference retirement: reviewed composition
+
+Focused source `6229d722` composes as `75ed890`, with normalized evidence and
+delivery notes `8e1244bd` as `7d695cb`. Independent review verifies both exact
+61-case normal/race rosters, original command joins, official module records,
+temporary inventories and source images. The composed result preserves the
+upstream documentation at `8d4b666`; every Go, module, runtime, asset and test
+image remains identical to the qualified snapshot. No redundant test run or
+new machine-code identity is claimed for documentation-only differences.
+
+This accepts the private component's source and scoped qualification. Successful
+native retirement, resident/controller operation, replaceable workers and actual
+public upgrade/job continuity remain required before the upgrade feature is done.
