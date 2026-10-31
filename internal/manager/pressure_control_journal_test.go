@@ -40,15 +40,12 @@ func newPressureJournalFixture(t *testing.T) (*Manager, pressure.Policy, pressur
 	setHostPressureCPU(m, now, tick, 0.1)
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture operator pressure permit"); err != nil {
+	if err := issueInitialPressurePermitForFixtureLocked(m, l.ID, p, "fixture operator pressure permit"); err != nil {
 		t.Fatal(err)
 	}
-	if !m.bindPressureNativeGrant(l.ID, p) {
-		t.Fatal("explicit operator permit did not bind exact original")
-	}
-	candidate, ok := m.pressureOriginalNativeCandidate(l.ID, p)
-	if !ok {
-		t.Fatal("fixture lacks current original candidate")
+	candidate, err := bindPressureNativeCandidateForFixtureLocked(m, l.ID, p, m.jobs[l.ID])
+	if err != nil {
+		t.Fatal("fixture lacks current original candidate", err)
 	}
 	a := stagedPressureAction(pressure.RequestPause, candidate, m.pressureEpoch, 1)
 	record := pressure.PauseRecord{Job: candidate.id, Reason: pressure.CPU, Incident: 1, Phase: pressure.PausePending,
@@ -219,8 +216,9 @@ func TestPressureControlJournalPermitReplacementRefusesOldClaim(t *testing.T) {
 	if _, err := m.db.Exec(`UPDATE host_pressure_permits SET revision=?,data=? WHERE lease=?`, permit.Revision, string(raw), candidate.id.LeaseID); err != nil {
 		t.Fatal(err)
 	}
-	if !m.bindPressureNativeGrant(candidate.id.LeaseID, p) {
-		t.Fatal("replacement permit did not bind original")
+	fresh, bindErr := bindPressureNativeCandidateForFixtureLocked(m, candidate.id.LeaseID, p, candidate.job)
+	if bindErr != nil {
+		t.Fatal("replacement permit did not bind original", bindErr)
 	}
 	if m.pressureCandidateStillCurrent(candidate, p) {
 		t.Fatal("old candidate crossed a permit replacement")
@@ -228,8 +226,7 @@ func TestPressureControlJournalPermitReplacementRefusesOldClaim(t *testing.T) {
 	if _, err := m.claimPressureControlIntent(a.Key, candidate, p); !errors.Is(err, errPressureControlRefused) {
 		t.Fatal("old permit intent was claimed after replacement", err)
 	}
-	fresh, ok := m.pressureOriginalNativeCandidate(candidate.id.LeaseID, p)
-	if !ok || fresh.permitRevision != candidate.permitRevision+1 {
+	if fresh.permitRevision != candidate.permitRevision+1 {
 		t.Fatal("fresh permit failed to create a separate eligible candidate")
 	}
 }
@@ -288,11 +285,8 @@ func TestPressureOriginalDeadlineBindingAndAckedRenewal(t *testing.T) {
 	if _, err := m.issuePressurePermitAsOperator(id, p, candidate.permitRevision, "renewed original permit"); err != nil {
 		t.Fatal(err)
 	}
-	if !m.bindPressureNativeGrant(id, p) {
-		t.Fatal("acknowledged renewed original did not bind new permit")
-	}
-	fresh, ok := m.pressureOriginalNativeCandidate(id, p)
-	if !ok || fresh.leaseRevision <= candidate.leaseRevision || !m.pressureCandidateStillCurrent(fresh, p) {
+	fresh, bindErr := bindPressureNativeCandidateForFixtureLocked(m, id, p, candidate.job)
+	if bindErr != nil || fresh.leaseRevision <= candidate.leaseRevision {
 		t.Fatal("renewed original lost explicit pressure eligibility")
 	}
 }

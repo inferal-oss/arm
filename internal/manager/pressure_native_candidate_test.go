@@ -1,12 +1,14 @@
 package manager
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"sync"
 	"syscall"
@@ -41,6 +43,173 @@ func persistStagedPressureState(t *testing.T, m *Manager, s pressure.State) {
 	m.pressureState = s
 }
 
+// These helpers are only for positive fixture setup. Owner.Wait can briefly
+// hold the original owner's mutex while observing the child. The production
+// pressure gate intentionally refuses that window without waiting under m.mu.
+// Each helper returns with m.mu held, as it was on entry.
+func pressureFixtureYieldLocked(m *Manager) {
+	m.mu.Unlock()
+	runtime.Gosched()
+	m.mu.Lock()
+}
+
+type pressureFixtureLedger struct {
+	permits, controls, outbox, stateRows int
+	stateRaw, memoryState                string
+}
+
+func pressureFixtureLedgerLocked(m *Manager, id string) (pressureFixtureLedger, error) {
+	var ledger pressureFixtureLedger
+	if err := m.db.QueryRow(`SELECT count(*) FROM host_pressure_permits WHERE lease=?`, id).Scan(&ledger.permits); err != nil {
+		return ledger, err
+	}
+	if err := m.db.QueryRow(`SELECT count(*) FROM host_pressure_controls`).Scan(&ledger.controls); err != nil {
+		return ledger, err
+	}
+	if err := m.db.QueryRow(`SELECT count(*) FROM host_pressure_outbox`).Scan(&ledger.outbox); err != nil {
+		return ledger, err
+	}
+	if err := m.db.QueryRow(`SELECT count(*),coalesce(max(data),'') FROM host_pressure_state`).Scan(&ledger.stateRows, &ledger.stateRaw); err != nil {
+		return ledger, err
+	}
+	state, err := json.Marshal(m.pressureState)
+	if err != nil {
+		return ledger, err
+	}
+	ledger.memoryState = string(state)
+	return ledger, nil
+}
+
+// Only expected=0 has a typed refusal entirely before its SQL INSERT. A SQL
+// error or any changed permit, grant, original, or control ledger is terminal.
+// CAS replacements use the one-shot production writer directly.
+func issueInitialPressurePermitForFixtureLocked(m *Manager, id string, p pressure.Policy, reason string) error {
+	l, err := m.get(id)
+	if err != nil {
+		return err
+	}
+	j := m.jobs[id]
+	if j == nil || j.childOwner == nil || j.identity == nil || j.pressureGrant != nil {
+		return fmt.Errorf("initial permit fixture lacks an ungranted original")
+	}
+	owner, cmd, epoch := j.childOwner, j.cmd, m.pressureEpoch
+	identity, err := json.Marshal(j.identity)
+	if err != nil {
+		return err
+	}
+	baseline, err := pressureFixtureLedgerLocked(m, id)
+	if err != nil {
+		return err
+	}
+	if baseline.permits != 0 || baseline.controls != 0 || baseline.outbox != 0 {
+		return fmt.Errorf("initial permit fixture has a permit or control ledger row: %+v", baseline)
+	}
+	deadline := time.Now().Add(time.Second)
+	for {
+		if !time.Now().Before(deadline) {
+			return fmt.Errorf("initial permit fixture deadline passed before issue")
+		}
+		current, getErr := m.get(id)
+		remaining, remainingErr := m.leaseRemaining(l)
+		ledger, ledgerErr := pressureFixtureLedgerLocked(m, id)
+		currentIdentity, identityErr := json.Marshal(j.identity)
+		if getErr != nil || remainingErr != nil || remaining <= 0 || ledgerErr != nil || ledger != baseline ||
+			!reflect.DeepEqual(current, l) || m.jobs[id] != j || j.childOwner != owner || j.cmd != cmd ||
+			identityErr != nil || !bytes.Equal(currentIdentity, identity) || m.pressureEpoch != epoch || j.pressureGrant != nil ||
+			j.pressureEffectActive || j.originalCancellationRequested {
+			return fmt.Errorf("initial permit fixture changed before issue: get=%v remaining=%v ledger=%v", getErr, remainingErr, ledgerErr)
+		}
+		if !time.Now().Before(deadline) {
+			return fmt.Errorf("initial permit fixture deadline passed during preflight")
+		}
+		_, err = m.issuePressurePermitAsOperator(id, p, 0, reason)
+		if err == nil {
+			if !time.Now().Before(deadline) {
+				return fmt.Errorf("initial permit was inserted after fixture deadline")
+			}
+			return nil
+		}
+		if err != errPressureControlRefused {
+			return err
+		}
+		ledger, ledgerErr = pressureFixtureLedgerLocked(m, id)
+		if ledgerErr != nil || ledger != baseline || m.jobs[id] != j || j.childOwner != owner ||
+			j.cmd != cmd || j.pressureGrant != nil || j.pressureEffectActive || j.originalCancellationRequested {
+			return fmt.Errorf("initial permit refusal left an uncertain write: ledger=%v grant=%v", ledgerErr, j.pressureGrant)
+		}
+		if !time.Now().Before(deadline) {
+			return fmt.Errorf("initial permit fixture never observed the original ready: %w", err)
+		}
+		pressureFixtureYieldLocked(m)
+	}
+}
+
+func bindPressureNativeCandidateForFixtureLocked(m *Manager, id string, p pressure.Policy, original *job) (pressureNativeCandidate, error) {
+	var none pressureNativeCandidate
+	l, err := m.get(id)
+	if err != nil {
+		return none, err
+	}
+	permit, err := m.readPressurePermit(id)
+	if err != nil {
+		return none, err
+	}
+	if original == nil || original.childOwner == nil || m.jobs[id] != original {
+		return none, fmt.Errorf("grant fixture lost its captured original")
+	}
+	owner, cmd := original.childOwner, original.cmd
+	deadline := time.Now().Add(time.Second)
+	for {
+		if !time.Now().Before(deadline) {
+			return none, fmt.Errorf("grant fixture deadline passed before attempt")
+		}
+		current, getErr := m.get(id)
+		currentPermit, permitErr := m.readPressurePermit(id)
+		remaining, remainingErr := m.leaseRemaining(l)
+		if getErr != nil || permitErr != nil || remainingErr != nil || remaining <= 0 ||
+			!reflect.DeepEqual(current, l) || !reflect.DeepEqual(currentPermit, permit) ||
+			m.jobs[id] != original || original.childOwner != owner || original.cmd != cmd ||
+			original.pressureEffectActive || original.originalCancellationRequested {
+			return none, fmt.Errorf("grant fixture changed original or permit: get=%v permit=%v remaining=%v", getErr, permitErr, remainingErr)
+		}
+		if !time.Now().Before(deadline) {
+			return none, fmt.Errorf("grant fixture deadline passed during preflight")
+		}
+		if m.bindPressureNativeGrant(id, p) {
+			candidate, ok := m.pressureOriginalNativeCandidate(id, p)
+			if ok && candidate.job == original && candidate.owner == owner && candidate.cmd == cmd &&
+				candidate.permitRevision == permit.Revision && m.pressureCandidateStillCurrent(candidate, p) {
+				if !time.Now().Before(deadline) {
+					return none, fmt.Errorf("grant fixture succeeded after deadline")
+				}
+				return candidate, nil
+			}
+		}
+		if !time.Now().Before(deadline) {
+			return none, fmt.Errorf("grant fixture never observed the captured original ready")
+		}
+		pressureFixtureYieldLocked(m)
+	}
+}
+
+func pressureCandidateCurrentForFixtureLocked(m *Manager, candidate pressureNativeCandidate, p pressure.Policy) bool {
+	deadline := time.Now().Add(time.Second)
+	for {
+		if !time.Now().Before(deadline) {
+			return false
+		}
+		if m.pressureCandidateStillCurrent(candidate, p) {
+			return time.Now().Before(deadline)
+		}
+		if m.jobs[candidate.id.LeaseID] != candidate.job || candidate.job == nil ||
+			candidate.job.childOwner != candidate.owner || candidate.job.pressureEffectActive ||
+			candidate.job.originalCancellationRequested || !time.Now().Before(deadline) {
+			return false
+		}
+		pressureFixtureYieldLocked(m)
+	}
+}
+
 func TestPressureOriginalNativeCandidateRequiresCurrentOwnerAndExplicitPolicy(t *testing.T) {
 	m := newManager(t)
 	r := request(local.ID())
@@ -67,16 +236,12 @@ func TestPressureOriginalNativeCandidateRequiresCurrentOwnerAndExplicitPolicy(t 
 	if m.bindPressureNativeGrant(l.ID, p) {
 		t.Fatal("policy alone minted an original-bound grant without an operator permit")
 	}
-	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture explicit operator permit"); err != nil {
+	if err := issueInitialPressurePermitForFixtureLocked(m, l.ID, p, "fixture explicit operator permit"); err != nil {
 		t.Fatal("could not issue exact operator permit", err)
 	}
-	if !m.bindPressureNativeGrant(l.ID, p) {
-		t.Fatal("resolved CPU policy did not bind the current original owner")
-	}
-	candidate, ok := m.pressureOriginalNativeCandidate(l.ID, p)
-	if !ok || candidate.job != m.jobs[l.ID] || candidate.id.LeaseID != l.ID || candidate.id.Generation == "" || candidate.remaining <= 0 ||
-		!m.pressureCandidateStillCurrent(candidate, p) {
-		t.Fatal("live original owner was not selected by explicit policy")
+	candidate, err := bindPressureNativeCandidateForFixtureLocked(m, l.ID, p, m.jobs[l.ID])
+	if err != nil || candidate.id.LeaseID != l.ID || candidate.id.Generation == "" || candidate.remaining <= 0 {
+		t.Fatal("live original owner was not selected by explicit policy", err)
 	}
 	var permitRaw []byte
 	if err := m.db.QueryRow(`SELECT data FROM host_pressure_permits WHERE lease=?`, l.ID).Scan(&permitRaw); err != nil {
@@ -91,17 +256,18 @@ func TestPressureOriginalNativeCandidateRequiresCurrentOwnerAndExplicitPolicy(t 
 	if _, err := m.db.Exec(`UPDATE host_pressure_permits SET data=? WHERE lease=?`, string(permitRaw), l.ID); err != nil {
 		t.Fatal(err)
 	}
-	if !m.pressureCandidateStillCurrent(candidate, p) {
+	if !pressureCandidateCurrentForFixtureLocked(m, candidate, p) {
 		t.Fatal("canonical operator permit did not restore same original candidate")
 	}
 	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 1, "fixture replacement permit"); err != nil {
 		t.Fatal(err)
 	}
-	if !m.bindPressureNativeGrant(l.ID, p) || m.pressureCandidateStillCurrent(candidate, p) {
+	fresh, bindErr := bindPressureNativeCandidateForFixtureLocked(m, l.ID, p, m.jobs[l.ID])
+	if bindErr != nil || m.pressureCandidateStillCurrent(candidate, p) {
 		t.Fatal("new same-policy permit revived an old candidate")
 	}
-	candidate, ok = m.pressureOriginalNativeCandidate(l.ID, p)
-	if !ok || candidate.permitRevision != 2 || !m.pressureCandidateStillCurrent(candidate, p) {
+	candidate = fresh
+	if candidate.permitRevision != 2 {
 		t.Fatal("fresh replacement permit did not select a fresh candidate")
 	}
 	changedPolicy := p
@@ -130,11 +296,8 @@ func TestPressureOriginalNativeCandidateRequiresCurrentOwnerAndExplicitPolicy(t 
 	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 2, "fixture revised lease permit"); err != nil {
 		t.Fatal("could not reissue exact revised operator permit", err)
 	}
-	if !m.bindPressureNativeGrant(l.ID, p) {
-		t.Fatal("fresh lease revision did not rebind its exact original owner")
-	}
-	current, ok := m.pressureOriginalNativeCandidate(l.ID, p)
-	if !ok || current.leaseRevision != l.Revision || current.id != candidate.id {
+	current, bindErr := bindPressureNativeCandidateForFixtureLocked(m, l.ID, p, original)
+	if bindErr != nil || current.leaseRevision != l.Revision || current.id != candidate.id {
 		t.Fatal("same original owner lost identity after a fresh lease revision")
 	}
 	if original.childOwner == nil || !original.childOwner.Active() {
@@ -156,18 +319,39 @@ func TestPressureNativeControlRefusesUnjournaledAction(t *testing.T) {
 	threshold.AllowPause = true
 	p.Resources[pressure.CPU], p.MaxPauseJobs = threshold, 1
 	m.mu.Lock()
-	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture unjournaled-action permit"); err != nil {
+	// Force the same busy-owner gate seen by the original Wait. A typed
+	// initial-permit refusal must leave no SQL row, grant, or control effect.
+	j := m.jobs[l.ID]
+	if j == nil || j.childOwner == nil {
+		m.mu.Unlock()
+		t.Fatal("fixture lacks captured original owner")
+	}
+	before, err := pressureFixtureLedgerLocked(m, l.ID)
+	if err != nil {
 		m.mu.Unlock()
 		t.Fatal(err)
 	}
-	if !m.bindPressureNativeGrant(l.ID, p) {
+	ownerMu := (*sync.Mutex)(unsafe.Pointer(reflect.ValueOf(j.childOwner).Elem().FieldByName("mu").UnsafeAddr()))
+	var refused error
+	func() {
+		ownerMu.Lock()
+		defer ownerMu.Unlock()
+		_, refused = m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture busy-owner permit")
+	}()
+	after, ledgerErr := pressureFixtureLedgerLocked(m, l.ID)
+	if refused != errPressureControlRefused || ledgerErr != nil || after != before ||
+		j.pressureGrant != nil || j.pressureEffectActive {
 		m.mu.Unlock()
-		t.Fatal("fixture lacked original-bound policy grant")
+		t.Fatal("busy original owner issued or reserved pressure authority", refused, ledgerErr)
 	}
-	candidate, ok := m.pressureOriginalNativeCandidate(l.ID, p)
+	if err := issueInitialPressurePermitForFixtureLocked(m, l.ID, p, "fixture unjournaled-action permit"); err != nil {
+		m.mu.Unlock()
+		t.Fatal(err)
+	}
+	candidate, err := bindPressureNativeCandidateForFixtureLocked(m, l.ID, p, m.jobs[l.ID])
 	m.mu.Unlock()
-	if !ok {
-		t.Fatal("fixture lacked current native candidate")
+	if err != nil {
+		t.Fatal("fixture lacked current native candidate", err)
 	}
 	a := pressure.Action{Kind: pressure.RequestPause, Key: "uncommitted-control", Job: candidate.id}
 	result, err := m.applyPressureNativeControl(a, p)
@@ -190,18 +374,14 @@ func TestPressurePausedOriginalRevocationPrecedesResumeAndRetainsCharges(t *test
 	threshold.AllowPause = true
 	p.Resources[pressure.CPU], p.MaxPauseJobs = threshold, 1
 	m.mu.Lock()
-	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture revoked-lease permit"); err != nil {
+	if err := issueInitialPressurePermitForFixtureLocked(m, l.ID, p, "fixture revoked-lease permit"); err != nil {
 		m.mu.Unlock()
 		t.Fatal(err)
 	}
-	if !m.bindPressureNativeGrant(l.ID, p) {
+	candidate, bindErr := bindPressureNativeCandidateForFixtureLocked(m, l.ID, p, m.jobs[l.ID])
+	if bindErr != nil {
 		m.mu.Unlock()
-		t.Fatal("fixture lacked resolved original-bound grant")
-	}
-	candidate, ok := m.pressureOriginalNativeCandidate(l.ID, p)
-	if !ok {
-		m.mu.Unlock()
-		t.Fatal("fixture lacked current original owner")
+		t.Fatal("fixture lacked current original owner", bindErr)
 	}
 	err = candidate.job.childOwner.Pause() // Test-owned effect; runtime controller stays disconnected.
 	m.mu.Unlock()
@@ -263,18 +443,14 @@ func TestPressureNativeControlRequiresDurableCurrentFenceForOwnedStopContinue(t 
 	}
 	setHostPressureCPU(m, now, tick, 0.1)
 	m.mu.Lock()
-	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture staged-control permit"); err != nil {
+	if err := issueInitialPressurePermitForFixtureLocked(m, l.ID, p, "fixture staged-control permit"); err != nil {
 		m.mu.Unlock()
 		t.Fatal(err)
 	}
-	if !m.bindPressureNativeGrant(l.ID, p) {
+	candidate, bindErr := bindPressureNativeCandidateForFixtureLocked(m, l.ID, p, m.jobs[l.ID])
+	if bindErr != nil {
 		m.mu.Unlock()
-		t.Fatal("fixture lacked resolved original-bound grant")
-	}
-	candidate, ok := m.pressureOriginalNativeCandidate(l.ID, p)
-	if !ok {
-		m.mu.Unlock()
-		t.Fatal("fixture lacked current original owner")
+		t.Fatal("fixture lacked current original owner", bindErr)
 	}
 	pause := stagedPressureAction(pressure.RequestPause, candidate, m.pressureEpoch, 1)
 	record := pressure.PauseRecord{Job: candidate.id, Reason: pressure.CPU, Incident: 1, Phase: pressure.PausePending,
@@ -480,18 +656,14 @@ func TestPressureDegradedExpiryUsesCapturedOriginalDuringReservedEffect(t *testi
 	threshold.AllowPause = true
 	p.Resources[pressure.CPU], p.MaxPauseJobs = threshold, 1
 	m.mu.Lock()
-	if _, err := m.issuePressurePermitAsOperator(l.ID, p, 0, "fixture degraded-expiry permit"); err != nil {
+	if err := issueInitialPressurePermitForFixtureLocked(m, l.ID, p, "fixture degraded-expiry permit"); err != nil {
 		m.mu.Unlock()
 		t.Fatal(err)
 	}
-	if !m.bindPressureNativeGrant(l.ID, p) {
+	candidate, bindErr := bindPressureNativeCandidateForFixtureLocked(m, l.ID, p, m.jobs[l.ID])
+	if bindErr != nil {
 		m.mu.Unlock()
-		t.Fatal("fixture lacked original-bound grant")
-	}
-	candidate, ok := m.pressureOriginalNativeCandidate(l.ID, p)
-	if !ok {
-		m.mu.Unlock()
-		t.Fatal("fixture lacked exact original candidate")
+		t.Fatal("fixture lacked exact original candidate", bindErr)
 	}
 	j := candidate.job
 	j.pressureEffectActive = true
