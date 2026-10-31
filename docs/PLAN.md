@@ -4827,3 +4827,16 @@ replacement and public first/repeat/concurrent `arm start` remain open. Actual
 eligibility, managed-run/proxy upgrade survival and shutdown/recovery remain
 unaccepted. Earlier source findings, failed records, preserved branches and
 separately passing scopes retain their classifications.
+
+## Child current-proof composition accepted
+
+The coordinator integrated source `275858f` as `c13da4f` and scoped evidence
+`c6df485` as `3a9f719`. All 3,306 qualified tracked inputs, including 1,918 Go
+files, match exactly at source composition. Subsequent changes are scoped
+documentation/evidence only. The selected normal result is accepted without
+repeating execution or extending its pure context/refusal scope.
+
+Next is the private Root parent/child protocol, retaining actual normal Start
+and original phase/context/entropy/current/fresh-commitment/no-pending facts.
+Parent reference retirement, workers and public startup remain later gates.
+Actual managed-job/proxy continuity across an upgrade remains unverified.

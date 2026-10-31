@@ -6144,3 +6144,11 @@ fresh canonical and no-pending completion before signing and again before W2.
 W2 consumes the phase even on partial/error; consumption alone cannot prevent
 premature send during pending SQL/native work. No Root caller, send, new view/
 issuer, worker/schema/public-start activation, Ready/Closed or credit is added.
+
+## Composed original child proof signer
+
+The coordinator composed reviewed signer source as `c13da4f` and its scoped
+evidence as `3a9f719`. Every qualified runtime, module and embedded input is
+identical to the reviewed snapshot. The official SQLite driver stays unchanged.
+This integration adds no Root caller or public startup activation and changes
+no running backend or managed child.

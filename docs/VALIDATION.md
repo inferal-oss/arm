@@ -12587,3 +12587,14 @@ protocol/phase contexts/nonce/normal Start/fresh commitment/no-pending proof,
 parent retirement, workers/controller/schema/admission/assets/API/UI, public
 `arm start`, genuine eligibility, managed-run/proxy upgrade survival and
 shutdown/recovery remain unaccepted.
+
+## Original child proof signer composition verification
+
+The composed source `c13da4f` matches all 3,306 qualified tracked inputs from
+manifest `74e0894ab73fc82892ccbd595adceb78f8dc1ff0e2b80006a1c1590619ee941e`.
+Evidence `3a9f719` preserves the three source SHA-256/Git-blob pairs, six raw
+package-qualified run/pass pairs, six-target vet and compile-only artifact.
+The coordinator independently checked the original command joins, stream
+hashes, official dependency authentication and unchanged inputs. Later changes
+are documentation only; no tests or binary were rerun for composition. Actual
+signing, Root handoff, public startup and live child continuity remain untested.
