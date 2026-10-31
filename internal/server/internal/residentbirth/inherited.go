@@ -54,13 +54,16 @@ type inheritedFenceState struct {
 	bytesRead             int
 	footerTried           bool
 	footer                *p1RootBoundFooterCall
+	currentTried          bool
+	current               *p1CurrentFenceCall
 	firstError            error
 }
 type inheritedFenceOperation struct {
-	done     chan struct{}
-	kind     string
-	abnormal bool
-	cause    any
+	done           chan struct{}
+	kind           string
+	abnormal       bool
+	normalFinished bool // final normal metadata only, never native closure
+	cause          any
 }
 
 func NewInheritedFencePending(rootContext context.Context, custody *residentrefs.FenceOriginal) (*InheritedFencePending, error) {
@@ -156,6 +159,12 @@ func (p *InheritedFencePending) begin(waitContext context.Context, kind string) 
 				return nil, errOriginalFence
 			}
 			s.footerTried = true
+		} else if kind == "p1-current-journal" {
+			if s.currentTried || s.current != nil || s.footer == nil {
+				s.mu.Unlock()
+				return nil, errOriginalFence
+			}
+			s.currentTried = true
 		}
 		op := &inheritedFenceOperation{kind: kind, done: make(chan struct{})}
 		s.active = op
@@ -185,6 +194,7 @@ func (s *inheritedFenceState) finish(op *inheritedFenceOperation, normal *bool, 
 		}
 		s.active = nil
 		close(op.done)
+		op.normalFinished = true
 	}
 	s.mu.Unlock()
 	if cause != nil {

@@ -62,6 +62,9 @@ type owner struct {
 	p1AckSign                                           *p1BoundAckSignCall
 	p1ChallengeAuth                                     *p1ChallengeAuthCall
 	p1ChallengeView                                     *CurrentChallengeView
+	p1CurrentTried                                      bool
+	p1Current                                           *p1CurrentServiceCall
+	p1CurrentObservation                                *P1CurrentServiceObservation
 	openedFDs, closedFDs                                uint64
 	liveFDs                                             int
 }
