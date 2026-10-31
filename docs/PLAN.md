@@ -4596,3 +4596,22 @@ exchange and its required post-Start observations before source expansion.
 Actual grant, prepared SQL/native and journal-write positives, parent-reference
 disposition, workers, public startup and live continuity remain separate gates.
 No running backend or managed work was changed by this integration.
+
+## Resident handoff payload codecs — reviewed normal scope
+
+The existing upgrade task continues on `codex/resident-handoff-codecs` from
+`6a2afc9`, with focused source commit `9dd13908cb8f073dd401b978ebe7a82bcfe0ba07`.
+Closed typed HMAC payload DATA and exact pre-debit wire capacity are implemented;
+actual control phase allowances and handoff operations remain separate work.
+Source and scoped normal review pass; composed landing remains an integration
+gate. The [normalized result](validation/resident-handoff-codecs-normal-2026-10-31.json)
+records 12 roots/45 named DATA cases, affected vet and a native compile-only build.
+
+The stateless codec accepts an exact valid replay as DATA; future original phase
+owners must enforce once-only/consumed rules. Actual control slots/view/bridge/
+signers, separate current journal/native/SQL checks and Root ACK/challenge/proof
+orchestration remain unimplemented. Parent-owned reference retirement, workers,
+worker-capable schema/controller/admission/assets, API/UI replacement and public
+first/repeat/concurrent `arm start` remain open. Actual positive native/funding/
+environment gates, managed-run/proxy upgrade survival and shutdown/recovery are
+unaccepted; prior failed and separately passing scopes retain their classifications.

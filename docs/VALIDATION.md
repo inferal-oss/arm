@@ -12281,3 +12281,43 @@ qualified source snapshot, including all 1,887 Go files and every module and
 embedded input. Only the later scoped documentation and normalized evidence
 differ. This accepts source composition for the selected normal result without
 a second execution or any broader native/runtime claim.
+
+## Resident handoff payload codecs — normal DATA qualification
+
+The [normalized evidence](validation/resident-handoff-codecs-normal-2026-10-31.json)
+maps ten reviewed Go inputs to source commit
+`9dd13908cb8f073dd401b978ebe7a82bcfe0ba07` and the exact 3,275-file/1,893-Go
+qualified snapshot. All 12 selected roots/45 unique package-qualified raw run/pass
+pairs pass without skips or failures. Nine new roots/42 names cover canonical
+typed HMAC roundtrips, independently authenticated invalid headers/context, wrong
+key/type/domain/expected nonce/context, cross-byte bounds, exact full-wire sizing
+and canonical profile Env hashing/overflow. Three existing roots preserve prior
+bootstrap/RootBound capacity and original unused-reader refusal behavior.
+
+An explicit case confirms that exact valid replay remains valid stateless DATA.
+No phase ownership or native authority follows from successful decoding. Tests use
+only synthetic DATA keys/nonces; no actual secret/entropy, helper, role, endpoint
+or positive native fixture is exercised. Original control and native paths remain.
+
+Default vet passes for four affected packages. A native darwin/arm64 command build
+passes with Go 1.27.3, CGO disabled and `GOFLAGS=-buildvcs=false` on all six
+graph/test/vet/build commands. Its 74,571,106-byte artifact has SHA256
+`8de4e65b420782e37990a2602a362ed13de16fddafd5e7814827e63df26fdba9`
+and was never executed. The actual graph contains 829 packages/88 official modules;
+actual mod/ZIP/expanded-source Hash1/go.sum authentication matches PRE/POST,
+including unmodified SQLite v1.60.1, with the same cache/network fence.
+
+Independent review verifies six original Go and owning-wrapper exit-zero joins,
+twelve output hashes, complete candidate/working source/support/proposal pins and
+thirty preserved full-file/function contracts. The wave took 45.436697 seconds
+without an alarm; new temporary inventories are empty and prior failed evidence/
+scratch stays retained. This is selected normal host DATA qualification, not a
+race/full-suite/Linux run, native-Closed or release-credit observation.
+
+Actual unused-grant/Env selection, prepared SQL/read transaction/native binding,
+journal append/sync/current positives and measured whole-root funding remain
+unexercised. Fixed phase/view/bridge/signers/current operations, Root ACK/challenge/
+proof and parent-owned reference retirement are unimplemented. Worker/schema/
+controller/admission/assets, API/UI replacement, public `arm start`, original
+managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/accounting upgrade survival
+and shutdown/recovery remain open. Raw operational records and binaries stay private.

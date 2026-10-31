@@ -1,0 +1,359 @@
+{
+  "boundaries": [
+    "Selected normal host DATA qualification, not a race run, full suite or Linux execution.",
+    "Stateless codec authenticates bytes and expected-context/nonce/type/domain DATA; it cannot enforce once-only/replay/consumed state or issue an original authenticated phase/native authority.",
+    "Only fixed synthetic DATA keys/nonces were used; no real secret getter, entropy request, transport, endpoint, timer/deadline or positive native fixture ran.",
+    "The compiled command was never executed; actual unused original grant/Env selection, prepared SQL/read transaction/native binding, journal append/sync/current positives and measured whole-root funding remain unexercised.",
+    "Original control allowances, fixed references, birth2/read1/debit, parent five-stage budget, official driver, original Root/Start/RootBound/native paths and schema remain unchanged.",
+    "Actual phase/view/bridge/signers/current-read/native checks and Root ACK/challenge/proof orchestration, C5 parent-owned reference retirement/Process.Release remain unimplemented.",
+    "Worker-capable schema/controller/admission/assets, API/UI replacement, public first/repeat/concurrent arm start, managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/accounting upgrade survival and core shutdown/recovery remain open."
+  ],
+  "implemented_DATA_contract": {
+    "MAC": "HMAC-SHA256 of exact type domain bytes, one NUL byte and canonical unsigned typed Body JSON; lowercase64hex and constant-time comparison.",
+    "canonical_decode": "Input bounded before JSON decode, unknown/duplicate/alias/trailing/noncanonical forms refused, strict header/hex/context counters and generic errors.",
+    "cross_counter_check": "Footer greater than52 framing bytes and <=4096, total launch<=20480 and greater than footer; bounded subtraction requires a positive original intent<=16384. Actual bytes/content remain original-owner checks.",
+    "domains": [
+      "arm-resident-bound-ack-v1",
+      "arm-resident-current-challenge-v1",
+      "arm-resident-current-proof-v1"
+    ],
+    "environment": "Same exact <=8KiB canonical OWN grant RuntimeEnvironment representation as prepared service; no ambient snapshot or extra native read.",
+    "full_wire_max_bytes": 16384,
+    "outer_header_bytes": 36,
+    "payload_max_bytes": 16348,
+    "payload_types": [
+      "bound_ack/schema1/seq1",
+      "current_challenge/schema1/seq2",
+      "current_proof/schema1/seq2"
+    ],
+    "pending_phase": "prepared-unstarted-worker-pending",
+    "pre_debit_capacity": "Exact known original grant A/profile/settings/Env/key commitments; maximal not-yet-known fixed fields and placeholder MAC/nonce, wrapped once with actual existing outer encoder. Existing original unused-read provenance/Env validation and parent pre-debit call order remain.",
+    "stateless_exact_replay_is_valid_DATA": true
+  },
+  "normal_qualification": {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "-buildvcs=false",
+    "Go_version": "1.27.3",
+    "actual_dependency_graph": {
+      "POST_authenticated_modules": 88,
+      "PRE_POST_equal": true,
+      "PRE_authenticated_modules": 88,
+      "authentication": "Actual referenced official mod/ZIP/expanded-source Hash1 and go.sum; no replacements, downloads, cache seeding or dependency-cache write relaxation.",
+      "packages": 829,
+      "referenced_official_modules": 88,
+      "sqlite": "modernc.org/sqlite@v1.60.1"
+    },
+    "genuine_role_or_native_positive_fixtures": 0,
+    "helper_subprocesses": 0,
+    "native_command_compile_only": {
+      "artifact_bytes": 74571106,
+      "artifact_executed": false,
+      "artifact_sha256": "8de4e65b420782e37990a2602a362ed13de16fddafd5e7814827e63df26fdba9",
+      "result": "pass",
+      "target": {
+        "GOARCH": "arm64",
+        "GOOS": "darwin"
+      }
+    },
+    "new_DATA_named_results": 42,
+    "new_DATA_roots": 9,
+    "real_secret_or_entropy_access": false,
+    "relevant_existing_roots": 3,
+    "root_count": 12,
+    "supervision": {
+      "active_elapsed_seconds": 45.436697,
+      "all_original_Go_commands_joined_exit_zero": true,
+      "candidate_and_working_source_files_verified": 3275,
+      "command_stream_hashes_verified": 12,
+      "failed_predecessors_and_scratch_retained": true,
+      "new_temporary_inventories_empty": true,
+      "original_Go_commands": 6,
+      "owning_wrapper_joined_exit_zero": true,
+      "proposal_members_verified": 17,
+      "protected_function_and_file_contracts_verified": 30,
+      "protected_working_files_verified": 3265,
+      "reviewed_working_Go_files_verified": 10,
+      "sampled_stop_alarm": false,
+      "source_support_and_proposal_pins_unchanged": true,
+      "support_pins_verified": 272
+    },
+    "test_packages": [
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestHandoffAuthenticatedBodyDataRejectsSemanticMisbinding"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffAuthenticatedBodyDataRejectsSemanticMisbinding/context"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffAuthenticatedBodyDataRejectsSemanticMisbinding/domain"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffAuthenticatedBodyDataRejectsSemanticMisbinding/kind"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffAuthenticatedBodyDataRejectsSemanticMisbinding/nonce"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffAuthenticatedBodyDataRejectsSemanticMisbinding/phase"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffAuthenticatedBodyDataRejectsSemanticMisbinding/schema"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffAuthenticatedBodyDataRejectsSemanticMisbinding/sequence"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing/alias"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing/duplicate"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing/leading-space"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing/oversize"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing/trailing-json"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing/trailing-space"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing/truncated"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing/unknown-body"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing/unknown-envelope"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/digest-case"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/digest-hex"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/footer-header-only"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/footer-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/generation"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/image-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/image-zero"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/intent-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/launch-no-intent"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/launch-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/service-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffContextDataRejectsCrossFieldBounds/service-short"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffMACTypeAndExpectedNonceContextData"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffTypedPayloadDataRoundTripAndCapacity"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffTypedPayloadDataRoundTripAndCapacity/bound-ack"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffTypedPayloadDataRoundTripAndCapacity/challenge"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffTypedPayloadDataRoundTripAndCapacity/proof"
+          },
+          {
+            "result": "pass",
+            "test": "TestStatelessHandoffCodecAcceptsExactReplayAsData"
+          }
+        ],
+        "package": "getarm.org/internal/residentprotocol",
+        "root_tests": [
+          "TestHandoffAuthenticatedBodyDataRejectsSemanticMisbinding",
+          "TestHandoffCanonicalPayloadDataRejectsAliasesAndTrailing",
+          "TestHandoffContextDataRejectsCrossFieldBounds",
+          "TestHandoffMACTypeAndExpectedNonceContextData",
+          "TestHandoffTypedPayloadDataRoundTripAndCapacity",
+          "TestStatelessHandoffCodecAcceptsExactReplayAsData"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestHandoffCapacityDataIncludesExactlyOneOuterHeaderAndCrossBounds"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffPreDebitCapacityDataRequiresKnownEnvAndImage"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffPreDebitCapacityDataRequiresKnownEnvAndImage/environment"
+          },
+          {
+            "result": "pass",
+            "test": "TestHandoffPreDebitCapacityDataRequiresKnownEnvAndImage/image"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1BootstrapWorstCaseCapacityRefusesOversizeBeforeNamespaceEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestRootBoundPreflightDataRejectsBeforeDebitCapacityOverflow"
+          }
+        ],
+        "package": "getarm.org/internal/server",
+        "root_tests": [
+          "TestHandoffCapacityDataIncludesExactlyOneOuterHeaderAndCrossBounds",
+          "TestHandoffPreDebitCapacityDataRequiresKnownEnvAndImage",
+          "TestP1BootstrapWorstCaseCapacityRefusesOversizeBeforeNamespaceEffects",
+          "TestRootBoundPreflightDataRejectsBeforeDebitCapacityOverflow"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestP1EnvironmentCommitmentDataUsesExactCanonicalProfile"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1LaunchCapacityRequiresActualOpenedUnusedReadBeforeSelectors"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "root_tests": [
+          "TestP1EnvironmentCommitmentDataUsesExactCanonicalProfile",
+          "TestP1LaunchCapacityRequiresActualOpenedUnusedReadBeforeSelectors"
+        ]
+      }
+    ],
+    "unique_package_qualified_named_run_pass_pairs": 45,
+    "vet": {
+      "packages": [
+        "getarm.org/internal/residentprotocol",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/internal/server",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    }
+  },
+  "schema": 1,
+  "scope": "Closed resident handoff typed payload/HMAC codecs and exact pre-debit full-wire capacity: normal DATA qualification",
+  "source": {
+    "base_commit": "6a2afc99794edf75f0d5d3b7ac71d754934f806c",
+    "feature_commit": "9dd13908cb8f073dd401b978ebe7a82bcfe0ba07",
+    "protected_function_and_file_contracts_verified": 30,
+    "qualified_Go_files": 1893,
+    "qualified_source_files": 3275,
+    "qualified_source_manifest_sha256": "c78342acacfe971126e98d8dda9a90121240d54930c256874b7c8706d2918fbd",
+    "reviewed_Go_files": {
+      "internal/residentprotocol/handoff_codec.go": {
+        "git_blob": "270fed27592ecb415c63be7a2eb12237b19f5bb1",
+        "sha256": "3ef6516f7afee2ec4cefd88e4927c1da192709fa3ac1f44e161a2956c5390c50"
+      },
+      "internal/residentprotocol/handoff_data.go": {
+        "git_blob": "d3fb83ac3637929971646dbffc79e265a37f9589",
+        "sha256": "615d83828aea478b0eb7d0641ff6895899cd1115f6a2efcc9e182f2ee31d6d1e"
+      },
+      "internal/residentprotocol/handoff_test.go": {
+        "git_blob": "a6e1956edc32f8fe4ad58d9551bc538c0021d173",
+        "sha256": "b439be51bce7a23c7498f6f7cfd942c6090a4e87b172e3842bd7e7b3fc2adb5a"
+      },
+      "internal/server/internal/residentservice/execution_environment.go": {
+        "git_blob": "5322946e00cec429e4abb8bc2e5f9ca240858c33",
+        "sha256": "b3e3b472f0269b486c30700725b4548c440c80275b6c0802e25d80f83ba7af5e"
+      },
+      "internal/server/internal/residentservice/p1_environment_commitment_test.go": {
+        "git_blob": "855a00f7ff1f4101aef7dcae56b61fd63c1a153d",
+        "sha256": "aacb209ebf0997e8f1ca0bd4e350ce325a497baae8907bc3f40171078a23d153"
+      },
+      "internal/server/resident_bootstrap_capacity.go": {
+        "git_blob": "28ba7ad69aed9d9b3d42e5ea85a1742f58c528dc",
+        "sha256": "8b504150c20be9f2c668ca06ddc6a5e035423f4289fb32b0ac3493e47d0f4b04"
+      },
+      "internal/server/resident_child_original_test.go": {
+        "git_blob": "d58ca689e755bec482ba12562bbcc4102f9e4b86",
+        "sha256": "d1eea2cd57a752c44595535fe6fb19fe1644e0512dc2ee6a60ca8e74c2d183a7"
+      },
+      "internal/server/resident_handoff_capacity.go": {
+        "git_blob": "bc14c9f0ea91df6030d2d2149b429aa2d800804d",
+        "sha256": "d4bfafd886fce555bd66f5237d50c6fd5e160d3cc90c8f1be8f6367da646b5cb"
+      },
+      "internal/server/resident_handoff_capacity_test.go": {
+        "git_blob": "db58b1ba71acbf062fbd4efcd666b6812c644b62",
+        "sha256": "cf6c10d51bf0224a305a46b504ce037ff4ba87aaf99671756ba4b5ffc9bcf8b8"
+      },
+      "internal/server/resident_rootbound_test.go": {
+        "git_blob": "6c17031f3a7a6fc40071bd08233f48d5d070abc5",
+        "sha256": "cf65fb50482e70a04777f0a767c0e27d1db6d2b7df9dad131a00b96bf0e292c2"
+      }
+    }
+  },
+  "status": "scoped_normal_qualification_pass"
+}

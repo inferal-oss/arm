@@ -5842,3 +5842,34 @@ Coordinator composition retains this source as `581958f` and its scoped evidence
 as `a5e18c6`. All runtime, module and embedded inputs match the qualified snapshot.
 The later documentation changes establish that source equivalence, without
 claiming actual journal execution, an authenticated handoff or a live upgrade.
+
+## Closed resident handoff payload DATA and pre-debit wire capacity
+
+The new standard-library-only `residentprotocol` package encodes and decodes three
+closed typed payloads: BoundAck, CurrentChallenge and CurrentProof. It requires
+exact schema/domain/kind/sequence/pending phase, lowercase digests/nonce/MAC and
+bounded cross-field byte declarations. Input is bounded before JSON decoding;
+unknown-field/EOF checks and canonical byte roundtrip reject duplicate, alias,
+trailing and noncanonical forms. HMAC-SHA256 covers the exact type-specific domain,
+one NUL byte and canonical unsigned typed body; MAC and nonce comparisons use
+constant-time byte comparison. Errors expose no payload values.
+
+These functions handle DATA only. They issue no original owner/view or native
+permission and retain no replay state. Decoding an exact valid replay succeeds;
+future original phase owners must reject repeated operations. No actual transport,
+signer, real secret access, entropy or deadline operation is introduced here.
+
+The existing unused-grant selector additionally derives the exact canonical
+profile Env hash using the same 8 KiB representation limit as prepared service
+validation. Its original owner/read1/unused provenance guard remains intact, with
+no ambient snapshot or extra read. Pre-debit sizing now includes all three future
+payload schemas with exact known A/profile/settings/Env/key commitments and
+maximal fixed-width unknown fields. The actual existing outer encoder wraps each
+capacity payload once, including its 36-byte header within the 16 KiB wire limit.
+Footer/launch counters require a positive original intent remainder at most
+16 KiB, using bounded subtraction. Placeholder MAC/nonce bytes provide capacity
+DATA; only lengths leave the server wrapper.
+
+Actual current-owner authentication, native/journal checks, fixed protocol slots,
+Root orchestration and parent-reference retirement remain separate unimplemented
+gates. Worker/schema/public-start activation and live upgrade acceptance remain open.
