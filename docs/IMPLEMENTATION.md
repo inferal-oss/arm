@@ -6106,3 +6106,41 @@ scoped evidence as `005eeb5`. Every qualified runtime, module and embedded input
 is identical to the reviewed snapshot. SQLite remains the unmodified official
 driver. No new Root caller is activated and no running backend or managed child
 is changed by this integration.
+
+## Child proof signing from the exact completed service-current call
+
+The child service now owns one fixed once-only current-proof signing call.
+It retains exact current observation/call, issued view, charge, prepared/
+RootBound/auth/ack/birth/image/custody/read2 pointers before census or own-secret
+encoding. Context derives from that actual completed current call; nonce comes
+from the actual issued authenticated view. The supplied context must be the
+same current lifetime. Both actual values are checked for comparability before
+interface equality: a comparable type can contain an interface holding a slice
+or map that would panic on equality. The identity helper calls no Context
+methods and introduces no context/deadline/timer constructor.
+
+Before active registration, the old private metadata-only completed-current
+predicate checks prior normal lineage. Active work uses a narrow exact-owned-
+proof-call gate preserving all original current/read2/Env/image/six-phase result
+requirements. Public active-view/current validators and all old function
+bodies remain unchanged; active is never cleared to bypass them. Three fixed
+pure census checks occur before encoding, after frame encoding and after the
+output copy. They release the owner mutex for actual phase validation and
+retain context/census attempt/return/error records before exact local rechecks.
+No new current journal, actual Env/image/native/SQL operation is performed.
+
+The same own secret and closed CurrentProof payload encoder feed exactly one
+full-frame encoder. Payload/frame attempts/results and one output copy remain
+retained; return aliases that output. The future unchanged endpoint adds the
+fourth logical wire copy within the existing 16-KiB full-frame limit. Codec/
+profile/Env canonical/hash/reflection/runtime costs remain additional and opaque.
+Final result publication follows the unchanged original direct finish/recover
+and requires actual final normal/nil-error state. Old read-scope cancellation
+is not consulted again to revoke completed normal IO facts.
+
+The signer proves only own service/current/auth lineage. The sole future
+private Root must establish actual launch/fence/native/DB/Manager/Server current,
+fresh canonical and no-pending completion before signing and again before W2.
+W2 consumes the phase even on partial/error; consumption alone cannot prevent
+premature send during pending SQL/native work. No Root caller, send, new view/
+issuer, worker/schema/public-start activation, Ready/Closed or credit is added.

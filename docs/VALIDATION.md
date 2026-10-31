@@ -12550,3 +12550,40 @@ source SHA256/Git-blob pairs and forty raw package-qualified run/pass pairs agre
 with the audited result. Later changes are documentation only; no test or binary
 was rerun for composition. This preserves selected normal DATA/refusal evidence
 and every stated original-postStart/native and live-upgrade limitation.
+
+## Original child current-proof signer — selected normal context/refusal scope
+
+[Normalized evidence](validation/resident-child-proof-normal-2026-10-31.json)
+records six roots and six unique raw named run/pass pairs in one service-package
+selection. Three new roots cover pure actual-context comparability, unissued/
+copied current lineage and unchanged public active refusals; three existing
+PURE/refusal roots remain selected. The context helper regression embeds
+Context with interface-held slice/map values and checks both operand orders,
+comparable controls and nil. It invokes no Context methods/timer or positive
+holder. Type-level comparability was a source finding corrected before this
+wave; no earlier executed failing test is claimed. No failure or skip occurred.
+
+The actual six-consumer dependency graph contains 839 packages and 88 official
+modules. Official mod/ZIP/expanded-source Hash1/go.sum authentication agrees
+before and after, including unmodified SQLite 1.60.1. Uniform
+`GOFLAGS=-buildvcs=false`, read-only dependency cache and network refusal remain.
+Six-target default vet and native command compilation pass. The retained
+74,632,994-byte artifact has its SHA-256 in normalized evidence and was never
+executed.
+
+All four original Go commands and owning wrapper joined with exit zero; eight
+raw stream hashes and exact rosters agree. All 3,306 candidate/working inputs,
+1,918 Go files, 559 support/SDK pins and 18 proposal files including the manifest
+remain unchanged. Two inserted private owner fields preserve all old function
+bodies and 3,303 whole tracked files. Three temporary inventories are empty,
+with no sampled-stop alarm. The run completed in 42.881064 seconds. Earlier
+source and failed runtime evidence/artifacts/scratch remain retained. Raw
+operational records stay private; selected normal host evidence is not a race/
+full-suite/Linux run or native-Closed/release-credit observation.
+
+No successful actual signer/secret/auth/current/phase/census/native/journal/Env/
+Proof/SQL/role/helper/socket/RNG/timer fixture is exercised. Actual private Root
+protocol/phase contexts/nonce/normal Start/fresh commitment/no-pending proof,
+parent retirement, workers/controller/schema/admission/assets/API/UI, public
+`arm start`, genuine eligibility, managed-run/proxy upgrade survival and
+shutdown/recovery remain unaccepted.

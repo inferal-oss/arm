@@ -4806,3 +4806,24 @@ parent's Rack-only selectors retain their phase boundary; later Root phases
 must retain the actual normal pre-challenge call facts. Reference retirement,
 workers and public startup remain later gates. Actual managed-job/proxy
 continuity across an upgrade remains unverified.
+
+## Original child current-proof signer — reviewed normal scope
+
+The existing upgrade task continues on `codex/resident-child-current-proof`
+from `fdce18f`, with focused source commit `275858f7be00c6cd4bb092e72329826b96a64ddf`.
+The once-only child current-proof signer and narrow exact active-call gate are
+implemented without Root callers. Independent corrected-source and selected
+normal reviews pass; composed landing remains an integration gate. The
+[normalized result](validation/resident-child-proof-normal-2026-10-31.json)
+records six context-DATA/refusal roots/named results, six-package vet and a
+native compile-only command build. A type-comparability source finding was
+corrected before the executed wave; its nested-value regression passes.
+
+Actual successful signing/secret/auth/current/phase/census/native behavior
+remains unexercised. Next are actual private Root parent/child protocol and
+phase-context/nonce/normal Start/fresh commitment/no-pending proof gates.
+Parent-owned retirement, workers/schema/controller/admission/assets, API/UI
+replacement and public first/repeat/concurrent `arm start` remain open. Actual
+eligibility, managed-run/proxy upgrade survival and shutdown/recovery remain
+unaccepted. Earlier source findings, failed records, preserved branches and
+separately passing scopes retain their classifications.
