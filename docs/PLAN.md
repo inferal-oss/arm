@@ -4908,6 +4908,15 @@ message, then report a cleanup permission refusal and retain an uncertain
 settlement. Neither run exercises End, expiry or generic cancellation. A focused
 normal-completion cleanup correction and renewed composition checks remain open;
 the diagnostic does not establish native kernel ordering or clear obligations.
+Two focused corrections have passed source review, but their runtime gates are
+incomplete. The completion-cleanup candidate passes six roots / nine names in
+normal mode and fails its normal-exit settlement assertion in race mode; vet
+is unrun. The separate Cargo cancellation-selector candidate passes three
+roots / eight names in both modes plus targeted vet. Its expiry cohort fails
+one refusal-code assertion in normal mode; expiry race is unrun. That assertion
+does not establish that availability was granted. Classify the actual refusal
+before changing the fence or test expectation. The eventual combined roster
+adds five roots to the original 224; all 229 require composed qualification.
 
 Semblance's limited lifecycle source checks pass 103 RDF and 161 Node cases.
 The owner-indexed upstream successor has completed source review and passes
@@ -4921,6 +4930,9 @@ assets, native embedding and browser checks precede onboarding UI composition.
 The tested upstream commit `246289b4` is published as
 [draft PR #243](https://github.com/inferal-oss/semblance/pull/243), linked to its
 issue and upstream plan. The ARM backport remains unintegrated and unqualified.
+The backport source and its composition preserving the newer onboarding
+foundation have passed review. Dependency builds/tests, reproducible assets,
+native embedding and current browser checks remain open.
 Public pressure, forwarding and sync activation remain separate unfinished gates.
 
 

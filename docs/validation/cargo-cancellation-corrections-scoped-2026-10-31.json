@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "scope": "Unintegrated Cargo cancellation corrections on the prepared C3 source",
+  "candidate_base": "fcbde196613fd9dc6130a6c7b48325ad5db7d9f5",
+  "completion_cleanup": {
+    "focused_patch_sha256": "5d3460bd67975dc0e673b6092e9397e34206d6dcdc7cfaecd95bb175c9da1f60",
+    "source_review": "clear",
+    "old_code_control": "Intended normal-exit assertion failed; remains a failed test",
+    "normal": {"roots": 6, "names": 9, "passed": 9, "failed": 0},
+    "race": {"roots": 6, "names": 9, "passed": 7, "failed": 2},
+    "race_failed_leaf": "TestCargoFinishedCleanupPreservesOriginalExitAndFailure/normal_exit",
+    "race_failure": "Settlement assertion; cause unresolved",
+    "vet": "unrun"
+  },
+  "dedicated_cargo_cancellation_selection": {
+    "focused_patch_sha256": "e4b57d50490abdf93de7d74e92947e47f5a004169235705cfbea5e32b4454b34",
+    "source_review": "clear",
+    "old_selectors_control": "Both selected End and expiry assertions failed; remains a failed test",
+    "end_close_generic_cohorts": {
+      "roots_each_mode": 3,
+      "names_passed_each_mode": 8,
+      "modes": ["normal", "race"],
+      "targeted_manager_vet": "passed"
+    },
+    "expiry_normal": {"roots": 1, "names": 4, "passed": 2, "failed": 2},
+    "expiry_failed_leaf": "TestCargoC3ValidatedExpiryKeepsDedicatedCancellation/custody_refusal",
+    "expiry_race": "unrun",
+    "expiry_failure_limit": "Assertion requires one refusal code; actual error was not recorded. No availability grant is inferred."
+  },
+  "original_waits_pipe_joins_quiet_logs_nonforced_stop_closure_and_final_input_hashes_checked": true,
+  "failed_fixtures_and_unknown_obligations_preserved": true,
+  "remaining": [
+    "Completion-cleanup race failure diagnosis and correction",
+    "Expiry refusal classification and exact contract check",
+    "Final normal/race and affected vet qualification",
+    "Original attached-storage and lifecycle/finality reproduction",
+    "Current-main composition and full 229-root inventory"
+  ],
+  "corrections_integrated": false,
+  "public_factory_enabled": false
+}

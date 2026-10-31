@@ -12766,6 +12766,30 @@ or independent descendant quiescence. End/expiry cancellation overlap remains
 a separate source concern. No permission error is reclassified as absence, no
 sticky uncertainty is erased and no unknown obligation is released.
 
+The successful-completion cleanup candidate passes all six selected roots /
+nine names in normal mode. Race mode runs the same nine names, with seven
+passes and failures of the normal-exit child and parent on a settlement
+assertion; vet is unrun. An old-code control fails the intended assertion
+that successful completion must preserve the helper's normal exit. This does
+not establish the race failure's cause or qualify the candidate.
+
+The separate cancellation-selector candidate passes post-spawn End, Close and
+non-Cargo fallback cohorts: three roots / eight names in each of normal and
+race modes, plus targeted Manager vet. The old selectors fail both selected
+End/expiry controls. The new expiry cohort runs four names in normal mode,
+with two passes and failures of the custody-refusal child and parent; its
+race phase is unrun. The failing assertion accepts only one refusal code, so
+its message does not prove ordinary availability was granted. The actual
+returned error was not recorded; classify the refusal before changing the
+fence or its expected contract. Original test/proxy/backend Waits and pipe
+joins, quiet logs, ordinary nonforced stop, closure and final input hashes
+pass separately for these windows. Failed fixtures remain retained.
+
+The [scoped record](validation/cargo-cancellation-corrections-scoped-2026-10-31.json)
+does not qualify either correction, current-main composition, the original
+storage reproduction or the combined 229-root inventory. Earlier failures
+remain failures and public activation remains disabled.
+
 The corrected owner-indexed Semblance source passes a separate scoped build
 and test window on upstream base `cbb976cf`: normal fresh Rust/WAT builds,
 ten ABI checks per backend, strict typecheck and all 177 unique qualified

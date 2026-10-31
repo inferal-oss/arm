@@ -6261,6 +6261,12 @@ diagnostic failures take the normal validated-Finished cleanup path
 and retain a permission refusal as uncertain settlement. End/expiry paths are
 unobserved in those runs. The native cause and production correction remain
 open; no full composition acceptance is claimed.
+The proposed successful-completion cleanup correction passes its normal
+regressions but fails a race-mode settlement assertion. A separate two-selector
+correction preserves dedicated Cargo cancellation and the generic fallback in
+scoped End/Close tests; expiry refusal-code qualification remains incomplete.
+Neither correction is integrated. The [scoped record](validation/cargo-cancellation-corrections-scoped-2026-10-31.json)
+separates those results from full composition and production activation.
 
 The prepared Semblance dependency and ARM palette compatibility fix also remain
 unintegrated. Exact collection membership enables stock lazy entry validation;
