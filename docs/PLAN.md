@@ -4470,3 +4470,22 @@ public start and original run/proxy continuity remain open. The worker boundary
 direction now includes independently admitted retained assets, worst-case receipt
 reservations before effects and predecessor joins before route publication; its
 concrete schema/native/resource implementations are still review gates.
+
+
+## Resident core entry ownership — source-only continuation
+
+The existing upgrade task continues on `codex/resident-root-ack` from reviewed
+`ee09574`. Protocol review accepts the original entry/Root retention direction,
+with separate post-Start observations and no relaxation of the original debit
+birth invariant. The bounded C1 source cut covers early private-role selection,
+outer abnormal-unwind retention, in-place Root initialization, the sole fixed
+reference factory's destination publication and constructor ordering. Source and
+focused validation review remain required before integration; no runtime window
+is active. ACK/footer writes, parent-reference retirement, public startup and
+worker activation are outside C1.
+
+The private prepared format-4 Root cannot gain worker tables automatically. Final
+public fresh startup requires a separately reviewed worker-capable original
+schema/writer constructor selected before the one original database install and
+bound to actual native/grant/profile/source ownership. No format-4 migration,
+second pool/Manager or metadata-selected authority follows from this plan.
