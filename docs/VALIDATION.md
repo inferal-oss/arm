@@ -12773,6 +12773,22 @@ assertion; vet is unrun. An old-code control fails the intended assertion
 that successful completion must preserve the helper's normal exit. This does
 not establish the race failure's cause or qualify the candidate.
 
+One unchanged-contract race observation subsequently fails before the target
+settlement assertion. Its exact one root / two named entries, preserved source
+and original cleanup records are checked, but a required settlement trace term
+is absent: the observation is inconclusive, with no retry or historical cause
+claim. A separately reviewed five-line serial-fixture successor sets only the
+normal-exit fixture's inherited helper exit grace to zero and restores the
+environment after checked cleanup. The parent race detector retains its
+already initialized options; the same helper retains instrumentation,
+pending-report handling and race-failure status. Omitting the optional grace
+reduces discovery of new at-exit races. Under that distinct contract, the
+old-code race control fails its intended cancellation assertion, while the
+corrected candidate passes all six roots / nine names in normal and race
+modes plus targeted Manager/childowner vet. Original waits, logs, nonforced
+stop, closure, final inputs and source bytes are checked. Earlier failures
+remain unchanged, and combined current-main qualification remains open.
+
 The separate cancellation-selector candidate passes post-spawn End, Close and
 non-Cargo fallback cohorts: three roots / eight names in each of normal and
 race modes, plus targeted Manager vet. The old selectors fail both selected

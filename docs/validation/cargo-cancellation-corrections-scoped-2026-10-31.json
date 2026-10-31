@@ -10,7 +10,28 @@
     "race": {"roots": 6, "names": 9, "passed": 7, "failed": 2},
     "race_failed_leaf": "TestCargoFinishedCleanupPreservesOriginalExitAndFailure/normal_exit",
     "race_failure": "Settlement assertion; cause unresolved",
-    "vet": "unrun"
+    "vet": "unrun",
+    "single_same_contract_observation": {
+      "roots": 1,
+      "names": 2,
+      "test_verdict": "failed",
+      "classification": "inconclusive",
+      "required_settlement_term_missing": true,
+      "historical_cause_established": false,
+      "original_closure_and_preserved_source_checks": "passed",
+      "retries": 0
+    },
+    "serial_fixture_successor": {
+      "source_review": "clear",
+      "scope": "Only normal_exit inherits atexit_sleep_ms=0 through a serial restored test environment; parent detector startup options unchanged",
+      "coverage_limit": "Optional helper exit grace is omitted, reducing discovery of new at-exit races; instrumentation, pending-report handling and race-failure status remain",
+      "old_production_race_control": {"roots": 1, "names": 2, "intended_failure": true, "verdict": "failed"},
+      "normal": {"roots": 6, "names": 9, "passed": 9, "failed_skipped": 0},
+      "race": {"roots": 6, "names": 9, "passed": 9, "failed_skipped": 0},
+      "targeted_manager_childowner_vet": "passed",
+      "original_closure_final_inputs_and_source_bytes_checked": true,
+      "does_not_requalify_earlier_failures_or_establish_their_cause": true
+    }
   },
   "dedicated_cargo_cancellation_selection": {
     "focused_patch_sha256": "e4b57d50490abdf93de7d74e92947e47f5a004169235705cfbea5e32b4454b34",
@@ -41,7 +62,7 @@
   "original_waits_pipe_joins_quiet_logs_nonforced_stop_closure_and_final_input_hashes_checked": true,
   "failed_fixtures_and_unknown_obligations_preserved": true,
   "remaining": [
-    "Completion-cleanup race failure diagnosis and correction",
+    "Composed completion cleanup, dedicated cancellation and corrected expiry source",
     "Final normal/race and affected vet qualification",
     "Original attached-storage and lifecycle/finality reproduction",
     "Current-main composition and full 229-root inventory"

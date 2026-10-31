@@ -4909,9 +4909,17 @@ settlement. Neither run exercises End, expiry or generic cancellation. A focused
 normal-completion cleanup correction and renewed composition checks remain open;
 the diagnostic does not establish native kernel ordering or clear obligations.
 Two focused corrections have passed source review, but their runtime gates are
-incomplete. The completion-cleanup candidate passes six roots / nine names in
+incomplete. The earlier completion-cleanup candidate passes six roots / nine names in
 normal mode and fails its normal-exit settlement assertion in race mode; vet
-is unrun. The separate Cargo cancellation-selector candidate passes three
+is unrun.
+The single same-contract race observation also fails before the targeted
+settlement assertion and is inconclusive. A separately reviewed serial-fixture
+successor omits only the synthetic helper's optional race exit grace, retaining
+the original cancellation oracle and production bounds. It passes six roots /
+nine names in both modes and targeted vet; its old-code race control fails as
+intended. The parent detector keeps its startup options; helper late-race
+discovery is reduced. Earlier failures are not requalified or explained.
+The separate Cargo cancellation-selector candidate passes three
 roots / eight names in both modes plus targeted vet. The earlier expiry cohort
 fails a refusal-code assertion; it does not establish that availability was
 granted. A test-only successor checks the ordinary workspace-format refusal

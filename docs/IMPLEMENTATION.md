@@ -6261,9 +6261,15 @@ diagnostic failures take the normal validated-Finished cleanup path
 and retain a permission refusal as uncertain settlement. End/expiry paths are
 unobserved in those runs. The native cause and production correction remain
 open; no full composition acceptance is claimed.
-The proposed successful-completion cleanup correction passes its normal
-regressions but fails a race-mode settlement assertion. A separate two-selector
-correction preserves dedicated Cargo cancellation and the generic fallback in
+The earlier successful-completion cleanup candidate passes its normal
+regressions but fails a race-mode settlement assertion.
+The single unchanged-contract observation is inconclusive. A test-only serial
+fixture successor removes the synthetic helper's optional race exit grace,
+preserving the cancellation oracle and production limits. It passes normal,
+race and targeted vet checks, with the old-code race control failing as intended.
+The parent detector keeps its startup options; helper late-race discovery is
+reduced. No earlier failure is requalified or explained by this result.
+A separate two-selector correction preserves dedicated Cargo cancellation and the generic fallback in
 scoped End/Close tests. A test-only expiry successor passes normal and race
 checks plus targeted vet, including the exact ordinary format refusal, empty
 Status and preservation of attached schema objects during owned fixture cleanup.
