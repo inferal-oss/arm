@@ -1,0 +1,855 @@
+{
+  "version": 1,
+  "scope": "Unused hierarchical onboarding foundation only",
+  "code_commit": "8cdf1a0",
+  "source_sha256": {
+    "internal/agentsessions/saved.go": "82426ce1e116b96ac715cea48af4c68270244dfac2ceadabcdfe60d010c98b17",
+    "internal/agentprojects/groups.go": "5639ea9e8fa240879706327188beb324224420bbbef7479c95867a926a5e2a23",
+    "internal/cli/onboard_tree.go": "aad75a155d41062554a8d24183b5f097ddae21b980911449794a42aaaba69b5c",
+    "internal/cli/onboard_tree_test.go": "bcb445ea5d8dbca3458183d94c63b12fe17c8765f63d29c568b8034f32bb1e5a",
+    "internal/gitmeta/git.go": "b761302094db0f77c4237012bbd41afcf93b9e33931a5448a237808ff064e036",
+    "internal/gitmeta/git_test.go": "945d1c2477c889e791e13a2263d351be5440d13bb25e875297cbe9d0a3f048e7",
+    "internal/rollout/onboard_batch.go": "addf135059ed15f00a8712d328e4e67d00bed14500d082949d35cc49a35b9b8d",
+    "internal/rollout/onboard_batch_test.go": "211abac814159bea253551d34713244286ff890a9ffc7a1fabba66bdb2a4d2b5"
+  },
+  "unchanged_protected_sha256": {
+    "cmd/arm/main.go": "3c5e3c644f84b4538215e69752f61c5d74fbbcf40b9d164470db22dcdcbd6be6",
+    "go.mod": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+    "go.sum": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+    "internal/agentprojects/discovery.go": "7aca6ea4f3e05613ba44d61aa83bf0d86495106dd5f14f1f30d453f07baa1a7d",
+    "internal/agentprojects/titles.go": "2033c1685764d0da1a843124b7df695b09fa87192812c41875152ce6776f5ae1",
+    "internal/agentprojects/titles_test.go": "1fa0f720007ee97a63e70cb54ed9e1f8f93260e93ea0712863677a27680d4cb2",
+    "internal/agentsessions/codex.go": "b54c1af8ff83928014868805457f03c64496010020e672ce59ada18e2e1e6190",
+    "internal/agentsessions/codex_stored.go": "0f8805d8642c0ee1a9d2e9cc927c9ff999645f0430439ca2e8bb5f477269fb30",
+    "internal/agentsessions/sessions.go": "9419b623cdae60418ac370d465f7dc259f18e794ea373c582c92f06a141bcfd0",
+    "internal/agentsessions/sessions_test.go": "4d2d79da972fd4d5489dc3628656fd7bf508ea2cd8f0a81593afd72298b40325",
+    "internal/agentsessions/titles.go": "3bfe4aa1af38084816371b829a857f72c7b82608e0591ea963d0ab33dbc6c383",
+    "internal/cli/rollout_activation.go": "576a5aa0fbdb5a2a2a94b09aef8a0dad96a632d9689e79baaaca6e2825f572a2",
+    "internal/cli/rollout_discover_tui.go": "68725f8c9bc399a6618272a2612ddffbe6ac04bd74985512360539472d3c1426",
+    "internal/cli/rollout_onboard.go": "4200ae11b7423a72e7003b71f861e415f3f7c3f8743fc88787e0916edcbeb165",
+    "internal/cli/rollout_onboard_stored_test.go": "8472acde4dfafb819dbe6a8dfb2fb70dd524bf3f45674f4ca49f973a64c97b45",
+    "internal/cli/rollout_onboard_test.go": "afc3bf07f0cb3e7162667d1108adbf6c807757faeea1cb361cbd8e527ab23b67",
+    "internal/cli/rollout_onboard_typeahead_test.go": "48882aa66b202025ed3d40fb3cec33c755a4c86f841de4a3c533ee57efe51697",
+    "internal/rollout/rollout.go": "8e7d4e078426d28fc0b7c82eac7fb1f25bbd743c97b94be8c3e33777850c7dac"
+  },
+  "new_fixture_roots": {
+    "tree": 8,
+    "git_metadata": 5,
+    "onboarding_batch": 8
+  },
+  "additional_existing_roots": {
+    "rollout_without_native_repository_creation": 11,
+    "onboarding_cli": 15
+  },
+  "first_attempt": {
+    "result": "failed",
+    "roots_reached": 47,
+    "named_cases_reached": 88,
+    "failed_root": "TestOnboardBatchCapacityRefusesBeforeSave",
+    "failed_children": [
+      "projects",
+      "bindings",
+      "history",
+      "request",
+      "context"
+    ],
+    "failure_stage": "Owned fixture state directory absent during direct seed save; refusal assertions not reached",
+    "later_phases": "not started",
+    "fix": "Create exactly the owned fixture directory with mode0700 before seed save; preserve all assertions and production code"
+  },
+  "corrected_phases": {
+    "normal": {
+      "result": "pass",
+      "original_exit": 0,
+      "original_processes_joined": true,
+      "output_eof": true,
+      "forced": false,
+      "truncated": false,
+      "source_inputs_verified": 1958,
+      "tool_pins_unchanged": true,
+      "temporary_inventories_empty": true,
+      "final_scratch_sample_positive": true,
+      "phase_seconds": 4.971,
+      "whole_seconds": 5.335,
+      "roots": 47,
+      "named_cases": 88,
+      "skips": 0,
+      "failures": 0,
+      "roster": [
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeBoundsAndEmptyProject"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeEnterUsesLatestMatchedChildAndExplicitSets"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeKeysKeepClientHomeAndNativeContext"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeParentToggleCoversHiddenSnapshotChildren"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeRejectsOversizedTextBeforeCopying"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeRejectsUnprovenDirectoryMembership"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeSnapshotCopiesAndFallbackLabels"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeUncheckedChatsPreserveProjectOnlySelection"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardCanSaveDisabledProjectWithoutInstructions"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy/apply"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy/decline"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=false"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=true"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=false"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=true"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=false"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=true"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardReadinessAndStaleReviewCannotApply"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/ctrl+c/failure"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/ctrl+c/success"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/esc/failure"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/esc/success"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/q/failure"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/q/success"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardStoredNamesWithoutNativeBinary"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadEditingNavigationAndNoMatch"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadLatestQueryWinsBeforeEnter"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPasteManualAndCancellation"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/Zebra_needle"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/j"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/k"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/projects/second"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/q"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/\u65e5\u672c\u8a9e"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataCancellationJoinsOriginalProbe"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataClosedProbeSeparateAndLinkedRelationships"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataClosedProbeSeparateAndLinkedRelationships/false"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataClosedProbeSeparateAndLinkedRelationships/true"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataRejectsChangedDirectoryAndMissingExecutable"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataSharedProbeAndOutputBudgets"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/bare"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/failure"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/stderr-limit"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/stdout-limit"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/unsupported"
+        },
+        {
+          "package": "rollout",
+          "name": "TestClockRollbackAndRosterDoNotImplyLiveness"
+        },
+        {
+          "package": "rollout",
+          "name": "TestConcurrentApplyCannotConsumeOneReviewTwice"
+        },
+        {
+          "package": "rollout",
+          "name": "TestDirectoryOverlapSymlinksAndClientMappingsContainAdoption"
+        },
+        {
+          "package": "rollout",
+          "name": "TestDisabledReadsAndDeniedWritesCreateNothing"
+        },
+        {
+          "package": "rollout",
+          "name": "TestLedgerMissingVersionUnknownFieldsAndNonregularFilesRefuse"
+        },
+        {
+          "package": "rollout",
+          "name": "TestManualCohortRequiresSeparateAcknowledgment"
+        },
+        {
+          "package": "rollout",
+          "name": "TestNewSessionsUseOriginalStartAndNotNewTasks"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchAtomicProjectsApplyTimeAndNoop"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCancellationBeforeSaveAndLateSuccess"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/bindings"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/context"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/history"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/projects"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/request"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/action"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/identities"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/kind"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/mode"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/owner"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/reason"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchPossibleSaveFailureRetainsUnknown"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchProjectSnapshotsAndAffectedIdentitiesAreCopied"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/binding"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/context"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/state"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchSharedGitBudgetSpansPreflightAndLockedRecheck"
+        },
+        {
+          "package": "rollout",
+          "name": "TestPauseRevokeAndDisabledPreserveExistingParticipationRecords"
+        },
+        {
+          "package": "rollout",
+          "name": "TestReviewDigestBindsStateRequestAndCanonicalDirectory"
+        },
+        {
+          "package": "rollout",
+          "name": "TestStaleIdentitiesCannotInheritInvitationsOrEnrollment"
+        },
+        {
+          "package": "rollout",
+          "name": "TestUnsupportedProtocolBoundsAndCorruptLedgerFailClosed"
+        }
+      ]
+    },
+    "race": {
+      "result": "pass",
+      "original_exit": 0,
+      "original_processes_joined": true,
+      "output_eof": true,
+      "forced": false,
+      "truncated": false,
+      "source_inputs_verified": 1958,
+      "tool_pins_unchanged": true,
+      "temporary_inventories_empty": true,
+      "final_scratch_sample_positive": true,
+      "phase_seconds": 28.133,
+      "whole_seconds": 28.678,
+      "roots": 47,
+      "named_cases": 88,
+      "skips": 0,
+      "failures": 0,
+      "roster": [
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeBoundsAndEmptyProject"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeEnterUsesLatestMatchedChildAndExplicitSets"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeKeysKeepClientHomeAndNativeContext"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeParentToggleCoversHiddenSnapshotChildren"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeRejectsOversizedTextBeforeCopying"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeRejectsUnprovenDirectoryMembership"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeSnapshotCopiesAndFallbackLabels"
+        },
+        {
+          "package": "cli",
+          "name": "TestOnboardTreeUncheckedChatsPreserveProjectOnlySelection"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardCanSaveDisabledProjectWithoutInstructions"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy/apply"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy/decline"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=false"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=true"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=false"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=true"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=false"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=true"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardReadinessAndStaleReviewCannotApply"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/ctrl+c/failure"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/ctrl+c/success"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/esc/failure"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/esc/success"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/q/failure"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/q/success"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardStoredNamesWithoutNativeBinary"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadEditingNavigationAndNoMatch"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadLatestQueryWinsBeforeEnter"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPasteManualAndCancellation"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/Zebra_needle"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/j"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/k"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/projects/second"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/q"
+        },
+        {
+          "package": "cli",
+          "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/\u65e5\u672c\u8a9e"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataCancellationJoinsOriginalProbe"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataClosedProbeSeparateAndLinkedRelationships"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataClosedProbeSeparateAndLinkedRelationships/false"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataClosedProbeSeparateAndLinkedRelationships/true"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataRejectsChangedDirectoryAndMissingExecutable"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataSharedProbeAndOutputBudgets"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/bare"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/failure"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/stderr-limit"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/stdout-limit"
+        },
+        {
+          "package": "gitmeta",
+          "name": "TestGitMetadataUnsupportedAndFailedProbesStayCharged/unsupported"
+        },
+        {
+          "package": "rollout",
+          "name": "TestClockRollbackAndRosterDoNotImplyLiveness"
+        },
+        {
+          "package": "rollout",
+          "name": "TestConcurrentApplyCannotConsumeOneReviewTwice"
+        },
+        {
+          "package": "rollout",
+          "name": "TestDirectoryOverlapSymlinksAndClientMappingsContainAdoption"
+        },
+        {
+          "package": "rollout",
+          "name": "TestDisabledReadsAndDeniedWritesCreateNothing"
+        },
+        {
+          "package": "rollout",
+          "name": "TestLedgerMissingVersionUnknownFieldsAndNonregularFilesRefuse"
+        },
+        {
+          "package": "rollout",
+          "name": "TestManualCohortRequiresSeparateAcknowledgment"
+        },
+        {
+          "package": "rollout",
+          "name": "TestNewSessionsUseOriginalStartAndNotNewTasks"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchAtomicProjectsApplyTimeAndNoop"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCancellationBeforeSaveAndLateSuccess"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/bindings"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/context"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/history"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/projects"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchCapacityRefusesBeforeSave/request"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/action"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/identities"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/kind"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/mode"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/owner"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchDedupOrderingAndConflicts/reason"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchPossibleSaveFailureRetainsUnknown"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchProjectSnapshotsAndAffectedIdentitiesAreCopied"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/binding"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/context"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/state"
+        },
+        {
+          "package": "rollout",
+          "name": "TestOnboardBatchSharedGitBudgetSpansPreflightAndLockedRecheck"
+        },
+        {
+          "package": "rollout",
+          "name": "TestPauseRevokeAndDisabledPreserveExistingParticipationRecords"
+        },
+        {
+          "package": "rollout",
+          "name": "TestReviewDigestBindsStateRequestAndCanonicalDirectory"
+        },
+        {
+          "package": "rollout",
+          "name": "TestStaleIdentitiesCannotInheritInvitationsOrEnrollment"
+        },
+        {
+          "package": "rollout",
+          "name": "TestUnsupportedProtocolBoundsAndCorruptLedgerFailClosed"
+        }
+      ]
+    },
+    "vet": {
+      "result": "pass",
+      "original_exit": 0,
+      "original_processes_joined": true,
+      "output_eof": true,
+      "forced": false,
+      "truncated": false,
+      "source_inputs_verified": 1958,
+      "tool_pins_unchanged": true,
+      "temporary_inventories_empty": true,
+      "final_scratch_sample_positive": true,
+      "phase_seconds": 3.094,
+      "whole_seconds": 3.446,
+      "packages": [
+        "agentsessions",
+        "agentprojects",
+        "gitmeta",
+        "rollout",
+        "cli"
+      ],
+      "test_bodies_run": 0
+    },
+    "build": {
+      "result": "pass",
+      "original_exit": 0,
+      "original_processes_joined": true,
+      "output_eof": true,
+      "forced": false,
+      "truncated": false,
+      "source_inputs_verified": 1958,
+      "tool_pins_unchanged": true,
+      "temporary_inventories_empty": true,
+      "final_scratch_sample_positive": true,
+      "phase_seconds": 2.331,
+      "whole_seconds": 2.739,
+      "test_bodies_run": 0,
+      "artifact": {
+        "bytes": 74755954,
+        "sha256": "d96f3b574ec322a72da1983bc19fa292c3ef1647944c9af3c210b0d6dc619edb",
+        "executed": false
+      }
+    }
+  },
+  "limitations": [
+    "Synthetic owned Git helpers; no live repository grouping compatibility claim",
+    "No live client metadata read, policy/backend operation, enrollment, delivery or terminal capture",
+    "Whole-client catalog, hierarchy producers, wizard and activation handoff remain unwired",
+    "Legacy single-change methods, persisted state schema and native APIs unchanged",
+    "Sampled cooperative resource observations imply no kernel bound, measured shared-cache growth or physical-reclamation credit; failed scratch and prior uncertainty remain retained"
+  ]
+}

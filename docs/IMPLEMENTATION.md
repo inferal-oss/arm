@@ -6309,3 +6309,40 @@ The [composed qualification](validation/rollout-onboard-typeahead-composed-2026-
 records fresh normal tests and native compilation. Earlier owner race/vet
 evidence remains source-specific. This integration changes no installed ARM
 binary or running jobs and adds no client metadata read.
+
+## Hierarchical onboarding foundation — scoped qualification
+
+The display-only saved-session reference keeps adapter, client home and
+native UUID separate from names, ARM identities and delivery capabilities. The
+tree reducer maintains independent project-policy and activation-recipient sets.
+Parent toggles cover all snapshot children, including hidden filtered/collapsed
+rows; child overrides preserve project-only selections and mixed counts. Exact
+directory evidence is required for every child. Canonical filesystem/Git
+membership remains the producer's responsibility; lexical reference validation
+does not establish it. Metadata is bounded before copying, including an 8 MiB
+aggregate text/path limit. The producer IO limits remain separate.
+
+An additive Git metadata helper uses the documented
+[absolute-path and common-directory options](https://git-scm.com/docs/git-rev-parse)
+with isolated system/global configuration, no inherited Git overrides, optional
+locks disabled and one closed probe vector. It bounds captured stdout/stderr and
+charges failed probes/observed bytes to one caller-respecting operation budget.
+Common-directory evidence groups display only; a primary checkout is known only
+from actual root/git/common results, including separate-Git-dir repositories.
+No primary root is derived by trimming a path.
+
+The onboarding-only batch API keeps legacy single-change methods and
+the persisted state schema intact. A versioned review-context digest seals UI
+scope/recipient selections without granting identity authority. One 15-second
+operation context and shared probe/output budget cover read-only preflight and
+the locked recheck. All changes transition in a private working state, with
+copied project summaries and deduplicated affected identities, before one save.
+Apply-time cutoffs, byte-preserving no-ops and typed possible-save uncertainty
+are explicit. Code commit `8cdf1a0` passes the scoped normal/race cohort of 47
+roots and 88 named cases, affected five-package vet and compile-only native CLI
+build. The [normalized evidence](validation/onboard-project-foundation-scoped-2026-10-31.json)
+retains the first failed capacity-fixture setup separately from the later
+fixture-only correction and passing refusal assertions. This is an unused
+foundation: whole-client catalog discovery, hierarchy producers, wizard wiring
+and activation handoff remain unfinished. It does not complete the user-facing
+hierarchy feature or establish native client/Git compatibility.

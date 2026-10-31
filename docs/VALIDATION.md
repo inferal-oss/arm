@@ -12919,3 +12919,45 @@ only. No new metadata read, PTY capture, backend, real enrollment or installed
 binary change occurred. Full-suite/Linux and measured UI latency remain
 unverified; cooperative claims and sampled scratch imply no kernel bounds,
 measured shared-cache growth or physical-reclamation credit.
+
+## Hierarchical onboarding foundation — scoped evidence and retained failure
+
+Eight pure-tree fixture roots cover complete hidden-child parent toggles, child
+overrides and project-only state, latest-query/context-parent Enter behavior,
+native-reference home separation, copied snapshots, explicit directory
+membership and bounded raw metadata. An explicit selected set remains available
+when a no-match filter hides every row; the future footer must show its counts.
+
+Five Git helper roots use owned synthetic process substitutes to exercise closed
+argv/config isolation, separate-Git-dir/linked relationships, unsupported/bare
+refusal, bounded output, shared accounting, cancellation and replaced directory
+identity. Eight onboarding-batch roots cover one-save atomic policy changes,
+apply-time cutoffs/no-ops, snapshot/state/binding drift, conflicts, cancellation,
+possible-save unknown outcomes, copied aggregate plans, capacity refusal and a
+shared probe budget spanning preflight plus locked normalization.
+
+The first normal run reached all 47 selected roots/88 named cases. Git helper
+and CLI packages passed; all five capacity subcases failed while seeding an
+absent owned fixture state directory, before their capacity/refusal assertions.
+This remains a failed normal run and does not establish those refusal controls.
+The subsequent conditional race/vet/build phases were canceled without running.
+Original processes joined with output EOF; source/tool pins stayed unchanged,
+temporary inventories were empty and the final sampled scratch observation was
+positive. Failed scratch and earlier cleanup uncertainty remain retained.
+
+The correction creates only that exact owned fixture directory before
+the direct seed save. It preserves every refusal/byte-preservation assertion and
+all production save/lock/API code. The corrected code in `8cdf1a0` passes fresh
+normal and race runs with identical 47-root/88-case package-qualified rosters,
+no skips or failures, five-package vet and compile-only native CLI build. All
+five capacity refusal children now reach and pass their original assertions.
+The [normalized evidence](validation/onboard-project-foundation-scoped-2026-10-31.json)
+records exact source/protected-file hashes and rosters. Original Go/helper/FIFO
+processes naturally return zero, join with output EOF, and retain unchanged
+source/tool pins, empty temporary inventories and positive stable final sampled
+scratch observations. The compiled artifact is verified and never executed.
+These observations imply no kernel resource bound, measured shared-cache growth
+or physical reclamation; retained envelopes and earlier uncertainty persist.
+No live native metadata, native Git grouping, real policy/backend, enrollment, delivery or
+terminal capture was executed. Discovery and wizard wiring remain unfinished;
+earlier acceptance scopes do not transfer.

@@ -4992,3 +4992,42 @@ manual entry and confirmation/cancellation behavior are accepted within these
 model tests. No new metadata read, PTY capture, backend, real enrollment or
 installed-binary change occurred. Full-suite/Linux and measured UI latency
 remain outside acceptance; retained scratch obligations are unchanged.
+
+## Hierarchical project onboarding — foundation qualified, wiring pending
+
+Continuation owner: `codex/onboard-project-tree`, based on `fb85cdc`. The request
+is a checkbox tree of client projects with indented child sessions. Checking a
+parent selects every discovered child in the reviewed snapshot, including hidden
+filtered/collapsed rows; children remain individually adjustable and the parent
+shows mixed state and selected/total counts. Selection keys must retain exact
+adapter, client home and native session context separately from display names.
+
+Current directory/name catalogs do not establish native Project membership or
+ARM session identity. Supported membership evidence and truthful directory/Git
+fallback grouping require review before new discovery or schema changes. The
+user confirmed that unchecking a chat leaves it unactivated while project policy
+still covers the directory; child checkboxes are not policy exclusions. Checked
+display rows do not identify, enroll, invite, revoke or send to sessions by
+themselves. Policy changes and activation delivery retain separate reviews.
+
+The reviewed design covers hierarchy evidence, snapshot limits,
+exact reviewed scope and selected children, duplicate/overlapping bindings,
+batch revision/hash semantics, cancellation/recovery, and compatible JSON.
+Code commit `8cdf1a0` defines separate display-only references, exact directory
+membership validation and a tri-state tree reducer. It also adds bounded Git
+metadata reads and an onboarding-only batch API with one operation deadline,
+shared probe/output budget, one locked recheck and one save. Existing single-
+change methods and persisted state schema remain unchanged. The first normal run
+reached all 47 selected roots/88 named cases but failed five capacity-fixture setup cases
+before their refusal assertions. A fixture-only owned-directory setup correction
+preserves those assertions and production code. The corrected foundation passes
+47 roots/88 named cases in both normal and race runs, five-package vet and
+compile-only native CLI build. Independent review accepts this component scope;
+the first run remains failed and its later phases were unstarted. See the
+[normalized evidence](validation/onboard-project-foundation-scoped-2026-10-31.json).
+There has been no live client metadata or real policy operation. Discovery,
+wizard and activation-handoff wiring remain pending. The constructor bounds
+metadata before copying; producers still establish canonical filesystem/Git
+membership, and activation must verify current recipient facts independently.
+Existing default-no review, explicit acknowledgment and separately reviewed
+activation delivery remain required.
