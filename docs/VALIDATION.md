@@ -12123,3 +12123,32 @@ post authentication; its separate remaining ten-case/vet/auth pass retains its
 own scope. This later parent 130-case pass is a different exact composition and
 does not rewrite either earlier result. No native Closed or storage credit is
 inferred from these test and command joins.
+
+
+## Current resident composition — CLI, accounting and command compilation
+
+The [normalized result](validation/resident-current-composition-normal-2026-10-30.json)
+binds all 89 focused Go paths and the tested 3,242-file/1,864-Go composition.
+All 14 selected roots/67 unique package-qualified named cases pass: ten CLI roots
+cover resident recovery, shared cancellation, existing onboarding/name isolation
+and activation/startup uncertainty; four Manager roots cover exact standing
+accounting and refusal boundaries. Default vet passes for CLI and Manager.
+A native darwin/arm64 command build passes with Go 1.27.3, CGO disabled and VCS
+stamping disabled; the binary is retained privately and was not executed.
+
+The actual graph contains 801 packages/84 official modules. Every referenced
+module's mod/archive/expanded-source Hash1 authentication matches before and
+after, including unmodified SQLite v1.60.1. Coordinator postchecks verified all
+67 raw run/pass pairs, ten output hashes, all source/support/proposal pins, native
+artifact hash and original five Go/FIFO exit-zero joins. The allocation took
+54.172 seconds without an alarm; new temporary inventories are empty and all
+older scratch remains retained/charged. The final pre-submit check corrected
+missing local proposal metadata before any execution; no runtime retry occurred.
+
+This normal host qualification closes the selected current-main composition gate,
+not a full suite, race run, Linux execution or positive resident/native grant.
+Actual birth, core dispatch/ACK/reference handling, admitted workers, public
+startup and live managed-run/proxy child/log/heartbeat/renew/cancel/expiry/accounting
+continuity remain unaccepted. No process join here establishes native Closed or
+physical storage reclamation. Earlier failed and separately passing scopes retain
+their original classifications. Raw operational records and binaries stay private.

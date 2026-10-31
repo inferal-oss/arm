@@ -4452,3 +4452,21 @@ Genuinely distinct B API/HTML/assets must preserve original managed runs and CLI
 proxy children, logs/quiet heartbeat, finish without workers, renew/cancel/expiry
 and terminal accounting. Worker schema/controller proposals and core shutdown/
 unresolved-core reconciliation remain separate unsupported gates.
+
+
+## Resident prerequisite and parent source — current composition accepted
+
+Coordinator composition accepts the focused prerequisite cuts and separate parent
+source through `32ddeed`, preserving all current onboarding and terminal changes.
+Documentation conflicts retain both existing records and the new scoped notes.
+The [current-composition result](validation/resident-current-composition-normal-2026-10-30.json)
+closes the selected CLI/reporting/accounting compatibility and command-build gate:
+14 roots/67 named cases, affected vet, and native command compilation pass.
+
+These source prerequisites do not activate resident startup or an upgrade. Actual
+whole-root measured funding, fixed-reference birth, core role/ACK/current-authority
+and parent-reference disposition, admitted worker/controller/schema/API activation,
+public start and original run/proxy continuity remain open. The worker boundary
+direction now includes independently admitted retained assets, worst-case receipt
+reservations before effects and predecessor joins before route publication; its
+concrete schema/native/resource implementations are still review gates.

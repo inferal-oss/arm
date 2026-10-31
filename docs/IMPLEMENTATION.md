@@ -5711,3 +5711,19 @@ review of any further read/resource bound. No public `arm start` callsite or cor
 role dispatch invokes this composition. Manager loops/first-worker readiness,
 worker-capable schema/admission/routing and A-to-B continuity are not enabled.
 Native/library/task closure remains opaque where not positively observed.
+
+
+## Current composition of resident prerequisites
+
+The reviewed source is composed with the current onboarding and terminal work.
+Explicit offline resident authorization and its shared error reporting preserve
+selected-home recovery after interruption, including late cancellation after a
+nil command result. Existing onboarding policy outcomes, display-name isolation
+and startup/activation uncertainty keep their prior behavior. Original standing
+accounting retains exact quantities and refuses unbound/overflow cases.
+
+This delivers reviewed prerequisite source and a private unused parent launch
+composition. It supplies no public resident-core entry, acknowledgment/reference
+retirement, worker activation or live upgrade. The official SQLite driver/module
+and raw-connection boundary remain unchanged. No running service or installation
+is changed by source integration.

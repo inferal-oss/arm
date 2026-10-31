@@ -1,0 +1,678 @@
+{
+  "allocation": {
+    "CPU_ceiling": 2,
+    "GOMAXPROCS": 1,
+    "GOMEMLIMIT": "1536MiB",
+    "active_teardown_limit_seconds": 115,
+    "all164owned_roots_and_prior_failed_debt_counted": true,
+    "cooperative_memory_bytes": 2147483648,
+    "end_owned_storage_bytes": 6646120448,
+    "network_denied_and_existing_modules_readonly": true,
+    "no_cleanup_or_reclamation_credit": true,
+    "output_cap_bytes": 16777216,
+    "owned_storage_cap_bytes": 7516192768,
+    "peak_sampled_owned_storage_bytes": 6871412736,
+    "sampled_stop_bytes": 6979321856,
+    "shared_FIFO_no_slot_override": true,
+    "work_seconds": 100
+  },
+  "coverage": [
+    "Typed resident authorization and exact selected-home recovery survive normal and interrupted shared command finish.",
+    "Cancellation before mutation and late cancellation after nil results do not fabricate committed authorization.",
+    "Existing onboarding pending-write outcomes, session-name display/scope isolation, activation uncertainty and startup uncertainty retain their reporting behavior.",
+    "Standing subtotal overflow, exact integer projection, unbound admission refusal and legacy resource shape controls pass.",
+    "Native command compiles from the exact composed source; the resulting executable is not run."
+  ],
+  "earlier_scopes": {
+    "original_112case_attempt_remains_failed": true,
+    "parent53root130case_pass_is_separate_exact_source": true,
+    "prior_Linux_container_capability_failures_not_reclassified": true,
+    "separate_remaining10case_pass_unchanged": true
+  },
+  "native_command_build": {
+    "CGO_ENABLED": "0",
+    "Go": "go1.27.3",
+    "VCS_attestation_claimed": false,
+    "artifact_bytes": 74180754,
+    "artifact_executed": false,
+    "artifact_sha256": "01a19b3c4fc4abbd5e0b3d466bbc8edf075fa82ccc6ebe5cb333cecadf909394",
+    "buildvcs": false,
+    "target": "darwin/arm64"
+  },
+  "normal_qualification": {
+    "Go_commands": 5,
+    "active_elapsed_seconds": 54.17123508453369,
+    "actual_dependency_test_graph_packages": 801,
+    "actual_referenced_module_versions": {
+      "charm.land/bubbles/v2": "v2.2.1",
+      "charm.land/bubbletea/v2": "v2.1.0",
+      "charm.land/lipgloss/v2": "v2.0.6",
+      "github.com/BurntSushi/toml": "v1.6.0",
+      "github.com/atotto/clipboard": "v0.1.4",
+      "github.com/charmbracelet/colorprofile": "v0.4.3",
+      "github.com/charmbracelet/ultraviolet": "v0.0.0-20261008173134-6b8d4baf91b4",
+      "github.com/charmbracelet/x/ansi": "v0.11.9",
+      "github.com/charmbracelet/x/term": "v0.2.2",
+      "github.com/charmbracelet/x/termios": "v0.1.1",
+      "github.com/charmbracelet/x/windows": "v0.2.2",
+      "github.com/clipperhouse/displaywidth": "v0.11.0",
+      "github.com/clipperhouse/uax29/v2": "v2.7.0",
+      "github.com/coder/websocket": "v1.8.15",
+      "github.com/creack/pty": "v1.1.24",
+      "github.com/davecgh/go-spew": "v1.1.2-0.20180830191138-d8f796af33cc",
+      "github.com/dustin/go-humanize": "v1.0.1",
+      "github.com/ebitengine/purego": "v0.11.2",
+      "github.com/emicklei/go-restful/v3": "v3.13.0",
+      "github.com/fxamacker/cbor/v2": "v2.9.1",
+      "github.com/go-logr/logr": "v1.4.3",
+      "github.com/go-openapi/jsonpointer": "v1.0.0",
+      "github.com/go-openapi/jsonreference": "v1.0.0",
+      "github.com/go-openapi/swag": "v0.27.1",
+      "github.com/go-openapi/swag/cmdutils": "v0.27.1",
+      "github.com/go-openapi/swag/conv": "v0.27.1",
+      "github.com/go-openapi/swag/fileutils": "v0.27.1",
+      "github.com/go-openapi/swag/jsonutils": "v0.27.1",
+      "github.com/go-openapi/swag/loading": "v0.27.1",
+      "github.com/go-openapi/swag/mangling": "v0.27.1",
+      "github.com/go-openapi/swag/netutils": "v0.27.1",
+      "github.com/go-openapi/swag/pools": "v0.27.1",
+      "github.com/go-openapi/swag/stringutils": "v0.27.1",
+      "github.com/go-openapi/swag/typeutils": "v0.27.1",
+      "github.com/go-openapi/swag/yamlutils": "v0.27.1",
+      "github.com/google/gnostic-models": "v0.7.0",
+      "github.com/google/uuid": "v1.6.0",
+      "github.com/gorilla/websocket": "v1.5.4-0.20250319132907-e064f32e3674",
+      "github.com/json-iterator/go": "v1.1.12",
+      "github.com/lucasb-eyer/go-colorful": "v1.4.1",
+      "github.com/mattn/go-isatty": "v0.0.24",
+      "github.com/mattn/go-runewidth": "v0.0.30",
+      "github.com/moby/spdystream": "v0.5.1",
+      "github.com/modern-go/concurrent": "v0.0.0-20180306012644-bacd9c7ef1dd",
+      "github.com/modern-go/reflect2": "v1.0.3-0.20250322232337-35a7c28c31ee",
+      "github.com/muesli/cancelreader": "v0.2.2",
+      "github.com/munnerz/goautoneg": "v0.0.0-20191010083416-a7dc8b61c822",
+      "github.com/ncruces/go-strftime": "v1.0.0",
+      "github.com/pelletier/go-toml/v2": "v2.4.3",
+      "github.com/remyoudompheng/bigfft": "v0.0.0-20230129092748-24d4a6f8daec",
+      "github.com/rivo/uniseg": "v0.4.7",
+      "github.com/sahilm/fuzzy": "v0.1.3",
+      "github.com/spf13/cobra": "v1.10.2",
+      "github.com/spf13/pflag": "v1.0.10",
+      "github.com/x448/float16": "v0.8.4",
+      "github.com/xo/terminfo": "v1.0.0",
+      "go.yaml.in/yaml/v2": "v2.4.4",
+      "go.yaml.in/yaml/v3": "v3.0.4",
+      "golang.org/x/crypto": "v0.58.0",
+      "golang.org/x/net": "v0.60.0",
+      "golang.org/x/oauth2": "v0.36.0",
+      "golang.org/x/sync": "v0.24.0",
+      "golang.org/x/sys": "v0.49.0",
+      "golang.org/x/term": "v0.47.0",
+      "golang.org/x/text": "v0.43.0",
+      "golang.org/x/time": "v0.15.0",
+      "google.golang.org/protobuf": "v1.36.12-0.20260120151049-f2248ac996af",
+      "gopkg.in/evanphx/json-patch.v4": "v4.13.0",
+      "gopkg.in/inf.v0": "v0.9.1",
+      "k8s.io/api": "v0.37.1",
+      "k8s.io/apimachinery": "v0.37.1",
+      "k8s.io/client-go": "v0.37.1",
+      "k8s.io/klog/v2": "v2.140.0",
+      "k8s.io/kube-openapi": "v0.0.0-20260721132016-d427ff9ee9ad",
+      "k8s.io/streaming": "v0.37.1",
+      "k8s.io/utils": "v0.0.0-20260626114624-be93311217bd",
+      "modernc.org/libc": "v1.77.1",
+      "modernc.org/mathutil": "v1.7.1",
+      "modernc.org/memory": "v1.12.1",
+      "modernc.org/sqlite": "v1.60.1",
+      "sigs.k8s.io/json": "v0.0.0-20250730193827-2d320260d730",
+      "sigs.k8s.io/randfill": "v1.0.0",
+      "sigs.k8s.io/structured-merge-diff/v6": "v6.4.2",
+      "sigs.k8s.io/yaml": "v1.6.0"
+    },
+    "alarm_requested": false,
+    "all_original_Go_and_FIFO_joined_exit_zero": true,
+    "all_source_support_and_proposal_pins_unchanged": true,
+    "command_output_sha256": {
+      "command-00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-00.stdout": "28c4d806291d8dbc2b6768c29ae0ea91303ba7ea24cae332a4972803ad7e83f5",
+      "command-01.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-01.stdout": "1d4fc74cadf97c7ba0ce5936edd49c42330e6ae1ee7cb2b13c028c1f07ee31da",
+      "command-02.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-02.stdout": "3a1ae470ebe484872df69610ba4d799c626e6e2718d8093f63a2042156be785e",
+      "command-03.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-03.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-04.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-04.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "default_vet_packages": [
+      "getarm.org/internal/cli",
+      "getarm.org/internal/manager"
+    ],
+    "exact_package_qualified_run_pass_pairs": [
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationCancelledBeforeMutationReportsNotApplied"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationNilResultLateCancellationKeepsActualContext"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=false/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=false/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=false/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=false/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=true/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=true/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=true/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/commit_unknown/cancelled=true/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=false/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=false/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=false/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=false/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=true/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=true/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=true/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/committed/cancelled=true/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=false/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=false/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=false/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=false/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=true/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=true/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=true/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/existing_record/cancelled=true/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=false/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=false/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=false/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=false/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=true/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=true/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=true/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/inspection_unavailable/cancelled=true/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=false/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=false/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=false/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=false/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=true/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=true/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=true/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationRecoverySurvivesSharedInterruption/not_applied/cancelled=true/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentAuthorizationSuccessfulInspectionLateCancellationKeepsContext"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorUnconfirmedOrMalformedApplyHasNoEffects"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorUnconfirmedOrMalformedApplyHasNoEffects/malformed-expect"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorUnconfirmedOrMalformedApplyHasNoEffects/unconfirmed"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentOperatorUnconfirmedOrMalformedApplyHasNoEffects/unexpected-positional"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutActivationUnknownSurvivesSharedInterruption"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestStartupUnknownSurvivesSharedInterruption"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestStartupUnknownSurvivesSharedInterruption/human=false/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestStartupUnknownSurvivesSharedInterruption/human=false/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestStartupUnknownSurvivesSharedInterruption/human=true/wrapped=false"
+      },
+      {
+        "package": "getarm.org/internal/cli",
+        "pass": true,
+        "run": true,
+        "test": "TestStartupUnknownSurvivesSharedInterruption/human=true/wrapped=true"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceCheckedTotalsDataKeepIntegerPrecisionAndOverflow"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceConsumerDataExactQuantityAndLegacyShape"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceJobSubtotalChecksBeforePositiveWrap"
+      },
+      {
+        "package": "getarm.org/internal/manager",
+        "pass": true,
+        "run": true,
+        "test": "TestResidentServiceUnboundOrZeroClaimCannotAdmit"
+      }
+    ],
+    "named_results": 67,
+    "new_temporary_roots_empty": true,
+    "official_module_mod_ZIP_expandedHash1_post": 84,
+    "official_module_mod_ZIP_expandedHash1_pre": 84,
+    "official_module_pre_post_equal": true,
+    "race_run": false,
+    "test_roots": 14
+  },
+  "remaining_gates": {
+    "Linux_runtime_or_full_Go_suite_or_race": true,
+    "actual_private_pin_fence_fixed13_birth_or_Start": true,
+    "actual_worker_schema_admission_and_API_UI_activation": true,
+    "core_role_ACK_current_authority_parent_retirement": true,
+    "genuinely_distinct_B_run_proxy_children_logs_heartbeat_renew_cancel_expiry_accounting_continuity": true,
+    "native_Closed_or_storage_release_acceptance": true,
+    "positive_actual_measured_grant_and_whole_root_native_lineage": true,
+    "public_first_repeat_concurrent_resident_start": true
+  },
+  "schema": 1,
+  "scope": "resident_prerequisite_parent_source_composition_CLI_reporting_onboarding_accounting_and_native_command_compile_only",
+  "source": {
+    "all_current_main_onboarding_and_terminal_changes_preserved": true,
+    "current_main_base_commit": "e093ff8b1f506f76f898710dca8ccb0c9761ec2c",
+    "focused_Go_count": 89,
+    "focused_Go_sha256": {
+      "internal/cli/cli.go": "c96cacbf85201413d05bbbb12065cd6c6e10dfe6c1266798e0954fef1970c3bb",
+      "internal/cli/help.go": "ab7ec30986a13335e9dbe997531c3366c9835027a608d88fe24a130213e4c7a9",
+      "internal/cli/output.go": "86e8046ce6fe8020924a045c258cd3020eec0cfd34b528e85dab562c9799e50f",
+      "internal/cli/resident_authorize.go": "efae3da13c09354e3471b97ffacdb1a68fad797f8f54952c7b5525f05ac966e2",
+      "internal/cli/resident_authorize_recovery.go": "31e3b54752c306a390e3b8bfedaaebe011462b0b27ce991566de1f52a0cb7461",
+      "internal/cli/resident_authorize_recovery_test.go": "dfb40cb9d24abef819ad6b10685ac67e8f6d8a0cdae07046792f247f9b732bb0",
+      "internal/cli/resident_authorize_test.go": "06c1bf6e36e85612598bc89524e9f308ab2d72777b7611d71afd91dc063ce49e",
+      "internal/database/resident_connector.go": "4f046ae76966ea04a374c91a36d1d5e6cef09bf9d504a6359d3dd87f8af32811",
+      "internal/database/resident_open.go": "c3fc3dec2c373896305cafb8889ad6743c6cd595787b15384f9dbb3eda1664e0",
+      "internal/database/resident_prepared_binding.go": "6a245bfb62f830293c20e53ba9c541e141164c2d7feaed165af3d56a573afc96",
+      "internal/manager/cpu.go": "d7beb451a47eb64f7b23cf9f79610e0d4067b1619a68b1a2d97fedf1c2fb81b6",
+      "internal/manager/disk.go": "0d8237c766321962d83329b9c9bddf4076f8fa27607d6cf28410f4e8e8f34e4e",
+      "internal/manager/manager.go": "cef49f8928fcb3bb6a72d73a1b6eda435f02787138072bcca83001cc4a5deae9",
+      "internal/manager/memory.go": "6cc2fca310a7e4aa7ed1bd71719d012755f49b2a44ba5b734c8cdabc832ed842",
+      "internal/manager/resident_manager.go": "a8e497a24a9ab1060c2c1f6b434cac586ac59678a324b123866b3133f1a87eac",
+      "internal/manager/resident_service.go": "21960561bb56f9c252a044eea0d0d3e703bbb594f65c2238f5f1c991392e623f",
+      "internal/manager/resident_service_test.go": "66331f6ef027c760ab9244669cdb88395660d894b0ca3638668d089429ab2814",
+      "internal/manager/runs.go": "3ce2d1028f463b6bc0bd574215e06d371e52040178a306261ea3744107c7f1b9",
+      "internal/manager/scheduling.go": "306407f448586c67dc13b9db3ce6b87a946a86ee4dd18626674adbe160aec052",
+      "internal/manager/storage_pools.go": "13df94e538bdfebf00d4284545d8259f7214bbe3c52cc951afdcb1af0463ca4c",
+      "internal/mesh/inherited_image.go": "89e6efcf1c7ed596a11319651c57ec2083f7a3356af063d2cb4c8e03f1ced268",
+      "internal/mesh/inherited_image_test.go": "33927f8165da11f1250b8fc9d4b54a4d78d9041537b9743c6519724d93b383c0",
+      "internal/mesh/inherited_queue_data_test.go": "bf68e8e80cad092a064e5e918c4032e8e3bb362e31591c7c824f13db18ff9b49",
+      "internal/mesh/resident_image_inventory.go": "862002c594c993987e2a1f1366ae0eda3213f31bda0b82aa10a83d3fef96c0e4",
+      "internal/mesh/resident_image_inventory_test.go": "5bd69f0a4296e5af42f7b2a2626a699c79dbf006be667d91c82768374ae9415c",
+      "internal/mesh/resident_image_p1.go": "d7341e7498255c31a918cc1f27ce099cf0bcbfe7e9212c51043b32ae0e603ee2",
+      "internal/mesh/resident_image_p1_seal.go": "f4b1a8dd751efb2626bbcc6ab4abdc2a1b2b7ce5f3c6497492ec6e2d0bb20046",
+      "internal/mesh/resident_image_p1_test.go": "2320c8459442e4d55063df4d553a7e5754ebb6d06deb2eeb4b701c50103d7e47",
+      "internal/mesh/resident_image_pin.go": "8eed1415f04a3bd3905820f8c8b5a3110f2eb99257c8fbaf71df484be18ec1a2",
+      "internal/mesh/resident_image_pin_home.go": "edd332c3be9851543ed31780c3935e42ce725f9215289c80639594b50530b7e4",
+      "internal/mesh/resident_image_pin_home_test.go": "c22425a2e052df6b1125fc219cf9c4f78f6ca4fbc7a560b479fff6e4fc1225d3",
+      "internal/mesh/resident_image_pin_test.go": "1e2cfec4aac722df96d44816bf167e57069f85f1c1cb5abf7e76e2643867f03e",
+      "internal/mesh/runtime_identity.go": "baaf24cf06dcee05eb33c1e7d26a4d8c1c3990fc19828a2ab3d95c2746127aa1",
+      "internal/mesh/runtime_identity_original.go": "e287e92811dcb2abb64753611ed7893da4ab521a60b710bacab3cbc1ff0b4e53",
+      "internal/mesh/runtime_open.go": "76bf64c75c3bab163396637cf3158a1a118e9377ac4521b090c16ab518228c5f",
+      "internal/mesh/runtime_open_test.go": "2fbf34c12247fd6d09a6d55c49cff2e5848528f53dcc621b685cba771ea0df65",
+      "internal/mesh/runtime_pin_retire.go": "d564444d5e02fba869e1fd249fdeff7d815d5393f9cbddfdae772b95af96d071",
+      "internal/mesh/runtime_pin_retire_test.go": "385769744d24c66ee0bae8489919c78c5f7a82281f199094485ef73f7791c5ce",
+      "internal/model/model.go": "95349269fd1afd1ac465adc0c505571e2b78df02131f6e91e4e7a4532a381aa1",
+      "internal/residentrefs/child.go": "32a2628054f4e097d1d43c2270cef72397eb222884000eeffce4e5724b7a1daa",
+      "internal/residentrefs/child_test.go": "52eb3a3588ac7b478063d878dd3b61fb358f3857b6c1bfe968a154e603073d4f",
+      "internal/residentrefs/composed.go": "97e3424f72e80b6dfa8fffb48d7136ee51b3984a23f35bd1480cca0b52ea465c",
+      "internal/residentrefs/control.go": "21268b07294bde4c391ebc76b0884b10e26f23087cef31d97f6718d251c16894",
+      "internal/residentrefs/inherited_queue_data_test.go": "198a3edf85b1ba94845efe43392b5b8c36750d100ff16f2d485c389b77b8761c",
+      "internal/residentrefs/views.go": "cb3f5829be4dfa5bac8b4403d70de4dd5cf7b39207fb560e9d74ebd59ca4055a",
+      "internal/server/internal/nativeowner/inherited_fence.go": "5d42bf163303d94600fc311c9bbe04410a6bc4b30af05fb33544db5fcfc98ee6",
+      "internal/server/internal/nativeowner/owner.go": "1ac8fcb66379e0e6db319a2d2f0b83bfadf4fe4f94da534902a7a659744056df",
+      "internal/server/internal/nativeowner/views.go": "e909af064c2fe57d23f77236083b9a38ebc8f6e6ce7bfe97c363a44301fa7b2f",
+      "internal/server/internal/residentbirth/fence.go": "e451510e7601a3be6c89de7a90d2862045e03052bd5c3d30e7a1373580781c72",
+      "internal/server/internal/residentbirth/fence_test.go": "6a15fae6efaca81e38720c274338a7d1fb73e21b96aa2aa4199813dee0a3634d",
+      "internal/server/internal/residentbirth/inherited.go": "79e890b7e3472416b7e9c19e5f084203234bd7f9c3c3bc45318bbe45032591cb",
+      "internal/server/internal/residentbirth/inherited_queue_data_test.go": "aac04e1c208d0454e9e2b0b9a46b5e51f8fa31fbd127c0d7d63013d3571f9dbb",
+      "internal/server/internal/residentbirth/journal.go": "33e832b2b12fadf53821a7e9ed66d5e9a0a69e519307b0e47c62a125dfc4e477",
+      "internal/server/internal/residentbirth/p1_parent_bindings.go": "5ea76c96b33b6714035dbcac14a55128fd60cf77769ed0e6d8afbc4b1b032631",
+      "internal/server/internal/residentservice/execution_environment.go": "fe5808b40880841d5d4a87e1788dc109f5c1ced84ead9f0fca90d62412ea1ae2",
+      "internal/server/internal/residentservice/execution_environment_test.go": "387798f279eeaeb7bea854d42d06ae4004eb74e9499edd3e8527f1d98fb65b7f",
+      "internal/server/internal/residentservice/frame.go": "3aa8b56a69291da3a8cc92a9244d719c79675e58f42a710973da3f44760f762e",
+      "internal/server/internal/residentservice/frame_test.go": "2739bb84c3971e3abc9c2a07e79aee3268dfa823eee0735bef476732df2513f9",
+      "internal/server/internal/residentservice/handoff.go": "f43772789cce0ac51386dfccb57ec8ae41c614cbce8e8f76301d7e95d6d70320",
+      "internal/server/internal/residentservice/model.go": "dc78288821a14716e00b151f64844cd5ff92eb493c84a27a77a91101f26758c8",
+      "internal/server/internal/residentservice/native.go": "bf6f757bb87ac422f3c0dd1727f3a15b1fd7e27453169ffd2c4862291185cdde",
+      "internal/server/internal/residentservice/native_test.go": "a38ffb96271f1d93700730b0fd3d9b635250c65dd17975118bc57fad9283b1e2",
+      "internal/server/internal/residentservice/operator.go": "2da137cce64122e5c93ce99df0a4a79708c1416365ca52fc56ca2806b3370633",
+      "internal/server/internal/residentservice/operator_evidence.go": "28c3d42ccb0186996e42a32d16217a0a7349a7dce0183f2e82371b93bab3b58c",
+      "internal/server/internal/residentservice/operator_evidence_test.go": "283b75c932f8dd58d488eada4c2d0b2947b7136f2d9a7cfb464d611591e9c590",
+      "internal/server/internal/residentservice/operator_inspect.go": "a704bd0c463b3c3ee18409cdc623f83714f26f5cd7d703c8926dc09be90c8abd",
+      "internal/server/internal/residentservice/operator_inspect_test.go": "3e40544859b8569600d35dc57e3cf2ea3f89550311c95d3b1215f8faf1691dde",
+      "internal/server/internal/residentservice/owner.go": "af3e70aac7e131d4db61f033b72d5cbf6e206798df6d22f9c12dfcbebdeefe7c",
+      "internal/server/internal/residentservice/p1_child.go": "d8bda45b6e8305c4651a6cc7b9659c67783de2912710542d04627f463a1e3deb",
+      "internal/server/internal/residentservice/p1_child_test.go": "22e78c347f5efcbf1348154ee0281b9c2347bec4cfa55026f012ec4dfcc552d8",
+      "internal/server/internal/residentservice/p1_compose.go": "ae7a17d983780135d036bc8f048f36d5998db9dd6bf8caaf6adc35f1b55616e1",
+      "internal/server/internal/residentservice/p1_compose_test.go": "2c7981da8efba98c5380131e653c22738906591fe698924ed1083f7ab22bd696",
+      "internal/server/internal/residentservice/p1_group.go": "84862b43cba3dfd174fcf65310adb7c93d95d69b5ce47b7de3f1c327cb0234cb",
+      "internal/server/internal/residentservice/p1_group_test.go": "78051f8f2e4763e7e6fb287a059f939e6ce6417998b1a2eb5673e4635c953bbc",
+      "internal/server/internal/residentservice/p1_parent.go": "c499d5683d4b9b5de46b43a307cbfe6639a81c425593db0fa294d422bc0f9690",
+      "internal/server/internal/residentservice/p1_parent_channel.go": "2810e6e952cee82038aa615b42c72ec5f13e1570e078c9e3dea406d41bb7fcb2",
+      "internal/server/internal/residentservice/p1_parent_channel_test.go": "4f54cdd725505d01634e1882fd3aa8c4c293063f7b1463b2efeeaa1d41f78815",
+      "internal/server/internal/residentservice/p1_pin.go": "70934ac5e8fc0d6aecc214996e9d277353cfff45e77ec76149946b886b1931df",
+      "internal/server/internal/residentservice/p1_read_budget.go": "ddec690964026131a5340e19e5fd018255a20ae6dc51e87cbbb8f6c5b861ae94",
+      "internal/server/internal/residentservice/p1_read_budget_test.go": "931c185bd1b11db1a54e62a2cec6a8beaf70b0da109bffeb6ecfb4fb23fd1495",
+      "internal/server/internal/residentservice/p1_transfer_data.go": "5e3be6a1c2952cb6667c06b512c49c2febe27be370d10717acca59bc2077d3c7",
+      "internal/server/internal/residentservice/p1_transfer_data_test.go": "0d4d8c1cdb9a4d845ede8b150bb071669e39e5bf0b5e2565c38e11db269bf793",
+      "internal/server/resident_authorize.go": "ae36e3c995879868c6abb3144dcca0e2998788409382463b9e81d98ae01aa15f",
+      "internal/server/resident_bootstrap_capacity.go": "2b6cbfb8deb89eb2287fb9dd9684a6848e6f9c2a296fed3dab606bdf3996422b",
+      "internal/server/resident_child_original.go": "a4d28e47a5177a3bc962e16cae409af48129a268382e911d150edaadef5f43ca",
+      "internal/server/resident_child_original_test.go": "ee1278c3d883ec07c84f23278e0a3973f58a38a876db2bac84d304c17303abd2",
+      "internal/server/resident_parent_original.go": "3b51e96eb99a67c5b31c1a8146ae81b7767fbeb10a723dbb461e119fc8b413c9",
+      "internal/server/resident_parent_original_test.go": "d45327a6dc05938bc3fde857cec660ee2ebc05119b1db0e88652378cd285afa1",
+      "internal/server/serviceview/view.go": "16850a7d850d03d4090f89662e6b644f19c6a7a598e83d371fc3c487ea9bddce"
+    },
+    "last_product_source_commit": "32ddeed9cae195645a4751bf40936e376c0feb19",
+    "no_module_or_driver_fork": true,
+    "reviewer_source_and_scoped_docs_commit": "e68e02891fcfd026c4c8a4ceea78251d2ad35463",
+    "tested_Go_files": 1864,
+    "tested_files": 3242,
+    "tested_manifest_sha256": "7c5cb23ea28125eff0bd10f43a1991d9583b5c27dfe7c82a32c307048de3631c"
+  },
+  "status": "SCOPED_CURRENT_MAIN_COMPOSITION_PASS"
+}
