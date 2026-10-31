@@ -12008,6 +12008,12 @@ continuity was exercised. Earlier wrapper/permission failures remain separate.
 
 ## Resident service/P1 group — normal data and refusal qualification
 
+The [normalized record](validation/resident-service-p1-negative-2026-10-30.json)
+retains the twelve affected input hashes, exact named roster and module map.
+Coordinator review verified its delivery manifest, canonical source-map hash,
+eight raw command-output hashes and exact unique run/pass pairs against the
+retained original receipts. Raw operational records remain outside version control.
+
 The frozen 3,165-file candidate manifest is
 `7d0699080f9ae880fc05a6e979587e53e0a41550ed4695e4cc891380bd87ae06`.
 Eleven service roots/49 named cases and eight image refusal roots passed,

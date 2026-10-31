@@ -1,0 +1,393 @@
+{
+  "scope": "Unintegrated actual service P1 group plus image boundary; selected normal data/refusal tests and affected vet only",
+  "status": "nineteen-selected-roots-fiftyseven-named-pass-positive-funded-and-product-gates-open",
+  "source_base_commit": "c1173f85097adb98eb81e0e8933eef98e43fa0fa",
+  "project_source_closure": {
+    "files": 3165,
+    "Go_files": 1814,
+    "canonical_relative_file_hash_map_sha256": "79515cc35517233bf7ed8227bef60ebbad579e50dad7a6b3e268d98e3940d8d8",
+    "later_main_or_production_binary_equivalence": false
+  },
+  "source_sha256": {
+    "internal/mesh/runtime_open.go": "76bf64c75c3bab163396637cf3158a1a118e9377ac4521b090c16ab518228c5f",
+    "internal/mesh/runtime_open_test.go": "2fbf34c12247fd6d09a6d55c49cff2e5848528f53dcc621b685cba771ea0df65",
+    "internal/mesh/resident_image_pin.go": "92f909d40b2863d09b3c274d64dc20235cc5fb68b2d177e1eaaf6913f39f33bc",
+    "internal/mesh/resident_image_pin_test.go": "1e2cfec4aac722df96d44816bf167e57069f85f1c1cb5abf7e76e2643867f03e",
+    "internal/mesh/runtime_pin_retire.go": "d564444d5e02fba869e1fd249fdeff7d815d5393f9cbddfdae772b95af96d071",
+    "internal/mesh/runtime_pin_retire_test.go": "385769744d24c66ee0bae8489919c78c5f7a82281f199094485ef73f7791c5ce",
+    "internal/mesh/resident_image_p1.go": "03be7b43d062ff8e79742afa28e00c8882568f473534948ebb75a624e632c21f",
+    "internal/mesh/resident_image_p1_test.go": "2320c8459442e4d55063df4d553a7e5754ebb6d06deb2eeb4b701c50103d7e47",
+    "internal/server/internal/residentservice/owner.go": "a4349523504ddc2abdb65e2c5cd96fa162c625abb2d9ba8c7ec2492201ea3c84",
+    "internal/server/internal/residentservice/handoff.go": "f42232c542e26372233cf4aae1794dbe97ae46203c05a42d24223f0b2b97c03c",
+    "internal/server/internal/residentservice/p1_group.go": "471808ba119755b9a35804da1f3aadaf2e453268368fa8ce6619d7aa6e5f132d",
+    "internal/server/internal/residentservice/p1_group_test.go": "78051f8f2e4763e7e6fb287a059f939e6ce6417998b1a2eb5673e4635c953bbc"
+  },
+  "toolchain": {
+    "Go": "1.27.3",
+    "CGO_ENABLED": "0",
+    "GOMAXPROCS": "1",
+    "build_parallelism": 1,
+    "network_module_resolution": "off",
+    "module_cache_read_only": true
+  },
+  "actual_graph": {
+    "packages": 660,
+    "referenced_module_versions": {
+      "github.com/google/uuid": "v1.6.0",
+      "golang.org/x/sys": "v0.49.0",
+      "github.com/coder/websocket": "v1.8.15",
+      "golang.org/x/text": "v0.43.0",
+      "golang.org/x/net": "v0.60.0",
+      "gopkg.in/inf.v0": "v0.9.1",
+      "github.com/x448/float16": "v0.8.4",
+      "github.com/fxamacker/cbor/v2": "v2.9.1",
+      "sigs.k8s.io/json": "v0.0.0-20250730193827-2d320260d730",
+      "k8s.io/apimachinery": "v0.37.1",
+      "github.com/go-logr/logr": "v1.4.3",
+      "k8s.io/klog/v2": "v2.140.0",
+      "k8s.io/utils": "v0.0.0-20260626114624-be93311217bd",
+      "k8s.io/kube-openapi": "v0.0.0-20260721132016-d427ff9ee9ad",
+      "github.com/modern-go/concurrent": "v0.0.0-20180306012644-bacd9c7ef1dd",
+      "github.com/modern-go/reflect2": "v1.0.3-0.20250322232337-35a7c28c31ee",
+      "github.com/json-iterator/go": "v1.1.12",
+      "go.yaml.in/yaml/v2": "v2.4.4",
+      "sigs.k8s.io/structured-merge-diff/v6": "v6.4.2",
+      "sigs.k8s.io/randfill": "v1.0.0",
+      "k8s.io/api": "v0.37.1",
+      "google.golang.org/protobuf": "v1.36.12-0.20260120151049-f2248ac996af",
+      "github.com/google/gnostic-models": "v0.7.0",
+      "go.yaml.in/yaml/v3": "v3.0.4",
+      "sigs.k8s.io/yaml": "v1.6.0",
+      "k8s.io/client-go": "v0.37.1",
+      "github.com/go-openapi/jsonpointer": "v1.0.0",
+      "github.com/go-openapi/jsonreference": "v1.0.0",
+      "github.com/go-openapi/swag/cmdutils": "v0.27.1",
+      "github.com/go-openapi/swag/conv": "v0.27.1",
+      "github.com/go-openapi/swag/fileutils": "v0.27.1",
+      "github.com/go-openapi/swag/jsonutils": "v0.27.1",
+      "github.com/go-openapi/swag/pools": "v0.27.1",
+      "github.com/go-openapi/swag/typeutils": "v0.27.1",
+      "github.com/go-openapi/swag/yamlutils": "v0.27.1",
+      "github.com/go-openapi/swag/loading": "v0.27.1",
+      "github.com/go-openapi/swag/mangling": "v0.27.1",
+      "github.com/go-openapi/swag/netutils": "v0.27.1",
+      "github.com/go-openapi/swag/stringutils": "v0.27.1",
+      "github.com/go-openapi/swag": "v0.27.1",
+      "github.com/munnerz/goautoneg": "v0.0.0-20191010083416-a7dc8b61c822",
+      "golang.org/x/term": "v0.47.0",
+      "golang.org/x/oauth2": "v0.36.0",
+      "golang.org/x/time": "v0.15.0",
+      "github.com/davecgh/go-spew": "v1.1.2-0.20180830191138-d8f796af33cc",
+      "github.com/emicklei/go-restful/v3": "v3.13.0",
+      "gopkg.in/evanphx/json-patch.v4": "v4.13.0",
+      "github.com/spf13/pflag": "v1.0.10",
+      "github.com/gorilla/websocket": "v1.5.4-0.20250319132907-e064f32e3674",
+      "k8s.io/streaming": "v0.37.1",
+      "github.com/moby/spdystream": "v0.5.1"
+    },
+    "authenticated_modules": 51,
+    "actual_module_versions_match_pinned_go_mod_and_go_sum": true,
+    "module_source_archive_and_mod_pre_post_equal": true,
+    "replacement_modules": false,
+    "sqlite_referenced": false,
+    "sqlite_rule": "Conditional exact official version if referenced; absence is not an error for these consumers."
+  },
+  "observed_commands": [
+    {
+      "kind": "package-graph",
+      "exit": 0,
+      "original_joined": true,
+      "passed": true
+    },
+    {
+      "kind": "test",
+      "exit": 0,
+      "original_joined": true,
+      "passed": true,
+      "root_roster": [
+        "TestResidentServiceFrameDataRoundTripAndRefusesCorruption",
+        "TestResidentServiceDataRefusesUnknownPartialAndNonfinite",
+        "TestResidentServicePendingMissingAuthorizationRetainsOriginalFailure",
+        "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit",
+        "TestResidentServiceCopiedAndCancelledHoldersIssueNoCharge",
+        "TestResidentOperatorEvidenceCanonicalData",
+        "TestResidentOperatorEvidenceRefusesIncompleteData",
+        "TestResidentOperatorCopiedZeroAndCancelledPendingRefuse",
+        "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt",
+        "TestP1ServiceGroupMissingOriginalDebitRefusesBeforeEffects",
+        "TestP1ServiceGroupZeroHolderRefusesBeforeEffects"
+      ],
+      "named_results": [
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/truncated-header",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/truncated-payload",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/checksum",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/chain",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/trailing",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption/oversize",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceFrameDataRoundTripAndRefusesCorruption",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/missing-grant",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/extra-state",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/wrong-debit",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/wrong-root",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/zero",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/nonfinite",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite/unknown-platform",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceDataRefusesUnknownPartialAndNonfinite",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServicePendingMissingAuthorizationRetainsOriginalFailure",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/fifo-lock",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/fifo-journal",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit/damaged-journal",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceNativeRefusesFIFOAndDamagedJournalBeforeDebit",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentServiceCopiedAndCancelledHoldersIssueNoCharge",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/unknown-field",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/duplicate-field",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/trailing-object",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/noncanonical",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData/oversize",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceCanonicalData",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-cost-scope",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-workload",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/artifact-hash",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/missing-raw",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/unreferenced-artifact",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/claim-too-small",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/no-unknowns",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/source",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/fixture",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/runtime",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/duplicate-artifact",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/zero-bound",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/nonfinite",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData/empty-interval",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorEvidenceRefusesIncompleteData",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorCopiedZeroAndCancelledPendingRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/absent-files",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/partial-lock",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt/missing-home",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentOperatorReadOnlyInspectionDoesNotCreateOrAdopt",
+          "result": "pass"
+        },
+        {
+          "test": "TestP1ServiceGroupMissingOriginalDebitRefusesBeforeEffects",
+          "result": "pass"
+        },
+        {
+          "test": "TestP1ServiceGroupZeroHolderRefusesBeforeEffects",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "kind": "test",
+      "exit": 0,
+      "original_joined": true,
+      "passed": true,
+      "root_roster": [
+        "TestResidentRuntimeOriginalZeroAndCopiedHolderRefuse",
+        "TestResidentRuntimeOriginalCancelledBeforeEffectsRetainsFailure",
+        "TestResidentImagePinOriginalInvalidInputsRefuse",
+        "TestResidentImagePinOriginalZeroAndCopiedHolderRefuse",
+        "TestResidentImagePinOriginalCancelledBeforeEffectsRetainsFailure",
+        "TestResidentRuntimeSourceRetirementForeignOrCopiedRefusesBeforeEffects",
+        "TestResidentImageP1OriginalZeroCopiedAndForeignCommandRefuse",
+        "TestResidentImageP1OriginalUnpreparedPinRefusesBeforeEffects"
+      ],
+      "named_results": [
+        {
+          "test": "TestResidentImageP1OriginalZeroCopiedAndForeignCommandRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentImageP1OriginalUnpreparedPinRefusesBeforeEffects",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentImagePinOriginalInvalidInputsRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentImagePinOriginalZeroAndCopiedHolderRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentImagePinOriginalCancelledBeforeEffectsRetainsFailure",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentRuntimeOriginalZeroAndCopiedHolderRefuse",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentRuntimeOriginalCancelledBeforeEffectsRetainsFailure",
+          "result": "pass"
+        },
+        {
+          "test": "TestResidentRuntimeSourceRetirementForeignOrCopiedRefusesBeforeEffects",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "kind": "vet",
+      "exit": 0,
+      "original_joined": true,
+      "passed": true
+    }
+  ],
+  "execution_observation": {
+    "original_Go_commands_joined": true,
+    "original_FIFO_joined": true,
+    "source_tools_support_postchecks_pass": true,
+    "owned_temporary_inventories_empty": true,
+    "alarm_requested": false,
+    "retry": false
+  },
+  "limitations": [
+    "Exact older unintegrated source, not a later-main or production-binary qualification.",
+    "Eleven selected service data/refusal roots (49 named) and eight mesh pre-effect roots (8 named), plus affected service/mesh default vet only.",
+    "Existing owned negative filesystem fixtures may execute; no real service grant/debit, socket/channel success, funded withdrawal or send/ACK was exercised.",
+    "No positive image pin/source-close/P1-binding/native Start/child/Manager/DB/Server activation was exercised.",
+    "No public arm start, genuine B API/UI/assets or supervised-run/proxy continuity was exercised.",
+    "Environment/CI metadata and capability work is separate and cannot issue admission, MeasurementBirth or product native closure.",
+    "Earlier failed attempts are preserved distinctly and do not count as passes."
+  ]
+}
