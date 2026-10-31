@@ -31,6 +31,12 @@ type p1ServiceState struct {
 	extra                                                            []*os.File
 	fundingTried, fundingChecked, bindTried, bound, beforeStartTried bool
 	controlPhases                                                    [4]*p1ParentControlCall
+	parentAckAuthTried, parentCurrentTried                            bool
+	parentChallengeSignTried, parentProofAuthTried                     bool
+	parentAckAuth                                                    *p1ParentAckAuthCall
+	parentCurrent                                                    *p1ParentCurrentCall
+	parentChallengeSign                                              *p1ParentChallengeSignCall
+	parentProofAuth                                                  *p1ParentProofAuthCall
 }
 type P1ServiceSelectors struct {
 	Home, DebitID, LaunchKey, ProfileSHA256 string

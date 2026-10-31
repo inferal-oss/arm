@@ -207,6 +207,10 @@ func (p *ParentPending) begin(kind string) (*operation, error) {
 		if o.p1 == nil || !o.writerWithdrawn || !o.writerSent || !o.p1.transferTried {
 			return nil, ErrInvalid
 		}
+	case "p1-parent-ack-auth", "p1-parent-current", "p1-parent-challenge-sign", "p1-parent-proof-auth":
+		if o.p1 == nil || !o.p1.admitParentProtocolLocked(kind) {
+			return nil, ErrInvalid
+		}
 	default:
 		return nil, ErrInvalid
 	}
