@@ -30,10 +30,11 @@ type RuntimeProof struct {
 // every later proof rechecks the open native inode AND its public pathname.
 // A replaced/changed executable never inherits the old daemon's proof.
 type RuntimeExecutable struct {
-	file   *os.File
-	path   string
-	before os.FileInfo
-	proof  RuntimeProof
+	inherited *InheritedImagePending
+	file      *os.File
+	path      string
+	before    os.FileInfo
+	proof     RuntimeProof
 }
 
 func CaptureRuntimeExecutable() (*RuntimeExecutable, error) {
@@ -68,6 +69,9 @@ func CaptureRuntimeExecutable() (*RuntimeExecutable, error) {
 	return r, nil
 }
 func (r *RuntimeExecutable) Proof() (RuntimeProof, error) {
+	if r != nil && r.inherited != nil {
+		return r.inherited.proofOriginal(r)
+	}
 	if r == nil || r.file == nil {
 		return RuntimeProof{}, fmt.Errorf("startup executable image was not verified")
 	}
@@ -82,6 +86,9 @@ func (r *RuntimeExecutable) Proof() (RuntimeProof, error) {
 	return r.proof, nil
 }
 func (r *RuntimeExecutable) Close() error {
+	if r != nil && r.inherited != nil {
+		return errResidentInheritedBorrowedClose
+	}
 	if r == nil || r.file == nil {
 		return nil
 	}
