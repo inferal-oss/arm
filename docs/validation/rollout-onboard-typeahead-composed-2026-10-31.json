@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "feature": "Direct onboarding typeahead: composed qualification",
+  "status": "reviewed and qualified for integration",
+  "source": {
+    "integration_base": "fcbde19",
+    "qualified_composed_head": "a1400c4d5806c5addc2f1eed0abf994a2ee29013",
+    "owner_source": "b7ff933dd9e68f3f34c71dd4144a3d0acd255b67",
+    "integrated_source": "5ea4db1",
+    "owner_evidence": "cc7e40f40e0cf0448c2b06ba1618295fc52312a4",
+    "integrated_evidence": "a1400c4",
+    "go_module_inputs": 1950,
+    "go_module_input_manifest_sha256": "5efd95f0beca5208d98cabc25c270e685007e67bf04bf9832f11c57ab6a0ef79",
+    "owned_go_files_sha256": {
+      "internal/cli/rollout_onboard.go": "4200ae11b7423a72e7003b71f861e415f3f7c3f8743fc88787e0916edcbeb165",
+      "internal/cli/rollout_onboard_typeahead_test.go": "48882aa66b202025ed3d40fb3cec33c755a4c86f841de4a3c533ee57efe51697"
+    },
+    "qualification": "Both feature images match the owner source exactly. The newer resident-startup schema correction and its tests/documentation are preserved."
+  },
+  "normal": {
+    "status": "passed",
+    "package": "internal/cli",
+    "root_tests": 15,
+    "unique_named_run_pass_pairs": 35,
+    "failures": 0,
+    "skips": 0,
+    "roster": [
+      {
+        "name": "TestRolloutOnboardStoredNamesWithoutNativeBinary",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardReadinessAndStaleReviewCannotApply",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardCanSaveDisabledProjectWithoutInstructions",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardTypeaheadEditingNavigationAndNoMatch",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardTypeaheadLatestQueryWinsBeforeEnter",
+        "package": "cli"
+      },
+      {
+        "name": "TestRolloutOnboardTypeaheadPasteManualAndCancellation",
+        "package": "cli"
+      }
+    ]
+  },
+  "native_build": {
+    "status": "passed",
+    "package": "cmd/arm",
+    "bytes": 74755954,
+    "sha256": "3f495384a21ffefaf134ffd63097ba7c1de59a276af8311798f6fa058f933547",
+    "executed": false
+  },
+  "owner_only_scopes": {
+    "race": "15 roots / 35 named run-pass pairs on owner source b7ff933; not rerun on the later composition.",
+    "vet": "CLI vet on owner source b7ff933; not rerun on the later composition."
+  },
+  "review": {
+    "exact_package_qualified_root_roster_and_raw_run_pass_pairs": true,
+    "original_go_helper_fifo_natural_zero_exits": true,
+    "original_handles_joined_and_output_eof": true,
+    "force_truncation_or_supervision_failure": false,
+    "source_tool_and_cache_identity_pins_unchanged": true,
+    "temporary_inventories_empty": true,
+    "positive_final_owned_scratch_observations": true,
+    "unrelated_published_tree_preserved": true
+  },
+  "limits": [
+    "Existing 64-Unicode-rune filter limit retained; synchronous matching uses the existing bounded catalog.",
+    "No new client metadata read, native API, PTY capture, backend, real enrollment or installed-binary change.",
+    "The composed artifact is compile-only and was never executed.",
+    "No full-suite or Linux qualification. Earlier source-specific evidence retains its original scope.",
+    "Sampled owned scratch and cooperative claims establish no kernel bound, measured shared-cache growth or physical-reclamation credit. Retained obligations persist."
+  ]
+}

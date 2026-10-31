@@ -12832,3 +12832,24 @@ records the owner-source cohort and source/artifact hashes. Earlier saved-name
 and metadata compatibility records keep their exact source scopes. No new client
 metadata, PTY capture, full-suite, Linux or installed-binary acceptance is added.
 Composition over newer main requires its separately scoped qualification.
+
+
+## Onboarding typeahead: independent composed verification
+
+The coordinator reviewed the final two-file Go diff and focused evidence, then
+composed it over `fcbde19`. Exact feature images match owner source `b7ff933`;
+unrelated published code and delivery records are preserved. On `a1400c4`,
+fresh normal checks pass all 15 package-qualified roots/35 unique named
+run/pass pairs without skips or failures, and native `cmd/arm` compilation
+passes. All 1,950 Go/module inputs are pinned in the [composed record](validation/rollout-onboard-typeahead-composed-2026-10-31.json).
+Owner race and CLI vet evidence is retained only for its recorded source; no
+race/vet execution is claimed for the newer composition.
+
+Independent raw-record review verifies original Go/helper/FIFO natural zero
+exits, positive joins and output EOF, unchanged source/tool/cache identity pins,
+empty temporary inventories and positive final owned-scratch observations.
+The composed artifact was never executed. Subsequent changes are documentation
+only. No new metadata read, PTY capture, backend, real enrollment or installed
+binary change occurred. Full-suite/Linux and measured UI latency remain
+unverified; cooperative claims and sampled scratch imply no kernel bounds,
+measured shared-cache growth or physical-reclamation credit.

@@ -4958,3 +4958,20 @@ under both normal and race checks, CLI vet and native compilation. The
 keeps the owner source and compile-only scope explicit. Composition over newer
 main and scoped composed qualification remain integration gates. No additional
 client metadata, policy, identity or backend operation is added.
+
+
+## Onboarding typeahead composition accepted
+
+The coordinator integrated source `b7ff933` as `5ea4db1` and owner evidence
+`cc7e40f` as `a1400c4`, preserving the newer published resident-startup fix.
+The exact two feature Go files match the qualified owner source. Fresh composed
+normal checks pass 15 roots/35 unique named cases without skips or failures;
+native command compilation passes. The [composed record](validation/rollout-onboard-typeahead-composed-2026-10-31.json)
+binds all 1,950 Go/module inputs and the unexecuted composed artifact.
+
+The owner-source race and CLI vet results retain their separate scopes and
+were not rerun on this composition. Direct typing, latest-query selection,
+manual entry and confirmation/cancellation behavior are accepted within these
+model tests. No new metadata read, PTY capture, backend, real enrollment or
+installed-binary change occurred. Full-suite/Linux and measured UI latency
+remain outside acceptance; retained scratch obligations are unchanged.

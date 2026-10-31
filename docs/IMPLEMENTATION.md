@@ -6284,3 +6284,14 @@ records fresh normal/race onboarding tests, affected vet and native compilation.
 The composed binary was not executed; the earlier successful public catalog
 compatibility check belongs to its recorded owner-built artifact. Installation
 and running ARM processes were not changed by this integration.
+
+
+## Direct typeahead: current integration
+
+Source `5ea4db1` integrates direct typing over the existing onboarding catalog,
+with the reviewed synchronous matching and keyboard behavior. Both owned Go
+images match the owner source; the newer resident-startup change is preserved.
+The [composed qualification](validation/rollout-onboard-typeahead-composed-2026-10-31.json)
+records fresh normal tests and native compilation. Earlier owner race/vet
+evidence remains source-specific. This integration changes no installed ARM
+binary or running jobs and adds no client metadata read.
