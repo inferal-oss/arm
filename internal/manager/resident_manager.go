@@ -24,22 +24,23 @@ import (
 // separately obtain actual standing service authorization BEFORE invoking it.
 // This constructor provides no such grant, no live migration and no fresh abort.
 type ResidentManagerPending struct {
-	mu                                    sync.Mutex // bounded publication only; never SQL, native work or Manager.mu
-	self                                  *ResidentManagerPending
-	view                                  *lifetimeview.ManagerView
-	claim                                 *lifetimeview.ManagerClaim
-	manager                               *Manager
-	settings                              daemonconfig.Settings
-	database                              *database.ResidentOpen
-	binding                               *database.ResidentDatabaseBinding
-	schemaTx                              *sql.Tx
-	schemaCommitTried                     bool
-	schemaCommitError                     error
-	original                              lifetimeview.Snapshot
-	active                                *residentManagerOperation
-	openTried, ready, startTried, started bool
-	firstError                            error
-	server                                *ResidentManagerServerBinding
+	standingChargeRetained, standingBindingCompleted bool       // published initial-binding observations only
+	mu                                               sync.Mutex // bounded publication only; never SQL, native work or Manager.mu
+	self                                             *ResidentManagerPending
+	view                                             *lifetimeview.ManagerView
+	claim                                            *lifetimeview.ManagerClaim
+	manager                                          *Manager
+	settings                                         daemonconfig.Settings
+	database                                         *database.ResidentOpen
+	binding                                          *database.ResidentDatabaseBinding
+	schemaTx                                         *sql.Tx
+	schemaCommitTried                                bool
+	schemaCommitError                                error
+	original                                         lifetimeview.Snapshot
+	active                                           *residentManagerOperation
+	openTried, ready, startTried, started            bool
+	firstError                                       error
+	server                                           *ResidentManagerServerBinding
 }
 
 type residentManagerOperation struct {
@@ -60,6 +61,7 @@ type ResidentManagerServerBinding struct {
 }
 
 type ResidentManagerInspection struct {
+	StandingChargeRetained, StandingBindingCompleted                  bool
 	ManagerRetained, ClaimRetained, DatabaseRetained, BindingRetained bool
 	SchemaTransactionRetained, SchemaCommitAttempted                  bool
 	OpenAttempted, Initialized, StartAttempted, LoopsLaunched         bool
@@ -122,6 +124,10 @@ func (o *ResidentManagerPending) beginOriginal(kind string) (*residentManagerOpe
 			return nil, fmt.Errorf("original Manager open already attempted")
 		}
 		o.openTried = true
+	case "service_binding":
+		if o.openTried || o.startTried {
+			return nil, errResidentManagerOriginal
+		}
 	case "start":
 		if !o.ready || o.startTried {
 			return nil, fmt.Errorf("original initialized Manager may start only once")
@@ -208,6 +214,9 @@ func (o *ResidentManagerPending) openOriginalBody(ctx context.Context) error {
 	}
 	original, err := claim.ValidateOriginal()
 	if err != nil {
+		return err
+	}
+	if err := o.manager.validateOriginalStandingHome(original); err != nil {
 		return err
 	}
 	o.mu.Lock()
@@ -381,7 +390,7 @@ func (o *ResidentManagerPending) InspectOriginal() ResidentManagerInspection {
 	}
 	o.mu.Lock()
 	defer o.mu.Unlock()
-	v := ResidentManagerInspection{ManagerRetained: o.manager != nil, ClaimRetained: o.claim != nil, DatabaseRetained: o.database != nil, BindingRetained: o.binding != nil, SchemaTransactionRetained: o.schemaTx != nil, SchemaCommitAttempted: o.schemaCommitTried, SchemaCommitError: o.schemaCommitError, OpenAttempted: o.openTried, Initialized: o.ready, StartAttempted: o.startTried, LoopsLaunched: o.started, ServerBorrowerRetained: o.server != nil, ServerBorrowerValidated: o.server != nil && o.server.validated, FirstError: o.firstError, NativeOutcome: "unknown"}
+	v := ResidentManagerInspection{StandingChargeRetained: o.standingChargeRetained, StandingBindingCompleted: o.standingBindingCompleted, ManagerRetained: o.manager != nil, ClaimRetained: o.claim != nil, DatabaseRetained: o.database != nil, BindingRetained: o.binding != nil, SchemaTransactionRetained: o.schemaTx != nil, SchemaCommitAttempted: o.schemaCommitTried, SchemaCommitError: o.schemaCommitError, OpenAttempted: o.openTried, Initialized: o.ready, StartAttempted: o.startTried, LoopsLaunched: o.started, ServerBorrowerRetained: o.server != nil, ServerBorrowerValidated: o.server != nil && o.server.validated, FirstError: o.firstError, NativeOutcome: "unknown"}
 	if o.active != nil {
 		v.OperationPending = true
 		v.OperationAbnormal = o.active.abnormal

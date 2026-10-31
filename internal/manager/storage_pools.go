@@ -278,12 +278,17 @@ func (m *Manager) storageBudget(name string, ls []model.Lease) model.DiskBudget 
 	if p == nil {
 		return model.DiskBudget{}
 	}
+	jobReserved := reserved
+	serviceQuantityKnown := true
+	if m.standingSharedDisk(name) {
+		reserved, serviceQuantityKnown = m.standingDiskReserved(jobReserved)
+	}
 	m.observationMu.RLock()
 	sample := m.storagePoolReadings[name]
 	m.observationMu.RUnlock()
 	r := budgetFromDisk(sample.observation, sample.at, 0, reserved)
 	r.Accounting = "Live location headroom minus full promises across all locations sharing its backing; overlapping pool views must not be summed"
-	if err != nil || !p.enabled || p.providerErr != nil || p.record.Backing == "" || m.defaultStorageLocation.Backing == "" {
+	if err != nil || !serviceQuantityKnown || !p.enabled || p.providerErr != nil || p.record.Backing == "" || m.defaultStorageLocation.Backing == "" {
 		r.Known = false
 		r.Capacity = 0
 		r.Available = 0
@@ -319,7 +324,8 @@ func (m *Manager) storageBudget(name string, ls []model.Lease) model.DiskBudget 
 			r.Available = min(r.Available, b.Available)
 		}
 		if p.record.Backing == m.defaultStorageLocation.Backing {
-			b := m.diskBudget(reserved)
+			// diskBudget adds the standing promise itself; pass ONLY job promises.
+			b := m.diskBudget(jobReserved)
 			if !b.Known {
 				r.Known = false
 				r.Available = 0
@@ -388,6 +394,9 @@ func (m *Manager) appendStorageResources(s *model.Status, ls []model.Lease) {
 		view := v
 		known := v.Budget.Known
 		r := model.ResourceView{ID: m.host + "/storage/" + v.Name, Host: m.host, Pool: v.Location.Backing, Kind: "storage", Unit: "bytes", BudgetTotal: model.CountQuantity(v.Budget.Capacity), Reserved: model.CountQuantity(v.Budget.Reserved), Available: model.CountQuantity(v.Budget.Available), Deficit: model.CountQuantity(v.Budget.Deficit), Accounting: v.Budget.Accounting, AvailabilityKnown: &known, Stale: v.Budget.Stale, Storage: &view, Users: []model.ResourceUse{}}
+		if m.standingSharedDisk(v.Name) {
+			r.ResidentService = m.standingProjection("storage")
+		}
 		for _, l := range ls {
 			if promiseState(l) && l.Request.Resources.Disk > 0 && m.storageBacking(l.Request.StoragePool) == v.Location.Backing && v.Location.Backing != "" {
 				r.Users = append(r.Users, model.ResourceUse{Lease: l.ID, Owner: l.Owner, OwnerUsername: l.OwnerUsername, Agent: l.Request.Agent, Project: l.Request.Project, Reason: l.Request.Reason, Quantity: model.CountQuantity(l.Request.Resources.Disk), State: l.State, Expires: l.Expires})

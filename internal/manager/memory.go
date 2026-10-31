@@ -25,6 +25,7 @@ func (m *Manager) sampleMemory() {
 
 // Caller holds m.mu; source collection never holds the admission lock.
 func (m *Manager) memoryBudget(reserved int64) model.MemoryBudget {
+	reserved, serviceQuantityKnown := m.standingMemoryReserved(reserved)
 	m.observationMu.RLock()
 	reading, at := m.memoryAvailability, m.memoryObserved
 	m.observationMu.RUnlock()
@@ -46,6 +47,10 @@ func (m *Manager) memoryBudget(reserved int64) model.MemoryBudget {
 		if r.Ceiling != nil {
 			r.Capacity = min(r.Capacity, *r.Ceiling)
 		}
+	}
+	if !serviceQuantityKnown {
+		r.Capacity = 0
+		r.Accounting += "; standing service amount unknown; aggregate availability unavailable"
 	}
 	r.Available = max(0, r.Capacity-reserved)
 	r.Deficit = max(0, reserved-r.Capacity)
@@ -72,17 +77,33 @@ func (m *Manager) requestFitsCeiling(r model.Resources) bool {
 	if !budget.Stale && budget.Observation.Total != nil && *budget.Observation.Total > 0 {
 		capacity.Memory = min(capacity.Memory, *budget.Observation.Total)
 	}
+	// Static feasibility includes the immutable standing promise when known.
+	// Unknown service state blocks actual admission later, not queued settlement.
+	if held, known, _ := m.standingService(); m.resident != nil && known {
+		capacity.CPU = max(0, capacity.CPU-held.CPU)
+		capacity.Memory = max(int64(0), capacity.Memory-held.Memory)
+		capacity.Disk = max(int64(0), capacity.Disk-held.Disk)
+	}
 	return r.Fits(capacity)
 }
 
 func (m *Manager) fitsLiveResources(r, used model.Resources) bool {
+	if m.standingAdmissionError() != nil {
+		return false
+	}
 	capacity := m.capacity
 	if r.CPU == 0 {
 		capacity.CPU = math.MaxFloat64
 	}
 	capacity.Memory = math.MaxInt64
 	capacity.Disk = math.MaxInt64
-	if !r.FitsRemaining(used, capacity) {
+	ceilingUsed := used
+	var known bool
+	ceilingUsed.CPU, known = m.standingCPUReserved(used.CPU)
+	if !known {
+		return false
+	}
+	if !r.FitsRemaining(ceilingUsed, capacity) {
 		return false
 	}
 	if r.CPU > 0 {

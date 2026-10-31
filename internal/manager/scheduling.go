@@ -191,6 +191,9 @@ type queueSnapshot struct {
 }
 
 func schedulingSnapshot(leases []model.Lease) (queueSnapshot, error) {
+	return schedulingSnapshotWithResidentTotals(leases, false)
+}
+func schedulingSnapshotWithResidentTotals(leases []model.Lease, resident bool) (queueSnapshot, error) {
 	s := queueSnapshot{leases: leases, holders: map[string][]string{}, counts: map[string]int{}}
 	var err error
 	s.poolUsed, err = poolReservations(leases)
@@ -205,7 +208,15 @@ func schedulingSnapshot(leases []model.Lease) (queueSnapshot, error) {
 	}
 	for _, l := range leases {
 		if consuming(l.State) {
-			s.used = s.used.Add(l.Request.Resources)
+			if resident {
+				var err error
+				s.used, err = checkedResidentJobAdd(s.used, l.Request.Resources)
+				if err != nil {
+					return s, err
+				}
+			} else {
+				s.used = s.used.Add(l.Request.Resources)
+			}
 			if l.Request.Resources.CPU > 0 {
 				add("cpu", l.ID)
 			}
@@ -243,14 +254,22 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 		}
 		info.Blockers = append(info.Blockers, model.QueueBlocker{Code: code, Resource: resource, Requested: want, Available: available, Unit: unit, Leases: append([]string(nil), s.holders[key]...), BlockingCount: s.counts[key], Detail: detail})
 	}
+	if err := m.standingAdmissionError(); err != nil {
+		add("resident_service_unavailable", "", "", err.Error(), nil, nil)
+	}
 	if m.draining {
 		add("backend_draining", "", "", "The backend is draining and does not admit new grants.", nil, nil)
 	}
 	if position > 1 {
 		info.Blockers = append(info.Blockers, model.QueueBlocker{Code: "queue_order", Leases: append([]string(nil), before...), BlockingCount: position - 1, Detail: "Earlier waiting requests have priority; later requests do not bypass the FIFO head."})
 	}
-	if l.Request.Resources.CPU > 0 && (l.Request.Resources.CPU > max(0, m.capacity.CPU-s.used.CPU) || s.used.CPU > m.capacity.CPU) {
-		add("budget_reserved", m.host+"/cpu", "logical-core-equivalents", "CPU budget is committed to existing leases.", number(model.FloatQuantity(l.Request.Resources.CPU)), number(model.FloatQuantity(max(0, m.capacity.CPU-s.used.CPU))))
+	totalCPU, cpuQuantityKnown := m.standingCPUReserved(s.used.CPU)
+	if l.Request.Resources.CPU > 0 && (!cpuQuantityKnown || l.Request.Resources.CPU > max(0, m.capacity.CPU-totalCPU) || totalCPU > m.capacity.CPU) {
+		detail := "CPU budget is committed to existing leases."
+		if m.resident != nil {
+			detail = "CPU budget is committed to existing lease promises and the resident standing charge."
+		}
+		add("budget_reserved", m.host+"/cpu", "logical-core-equivalents", detail, number(model.FloatQuantity(l.Request.Resources.CPU)), number(model.FloatQuantity(max(0, m.capacity.CPU-totalCPU))))
 	}
 	if l.Request.Resources.CPU > 0 {
 		budget := m.cpuBudget(s.used.CPU)
@@ -341,6 +360,9 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 	return info, nil
 }
 func (m *Manager) estimateQueued(l model.Lease, s queueSnapshot, now time.Time) model.QueueEstimate {
+	if m.standingAdmissionError() != nil {
+		return model.QueueEstimate{Kind: "unknown", Detail: "Original resident standing charge is unresolved; no new admission is predicted."}
+	}
 	unknown := model.QueueEstimate{Kind: "unknown", Detail: "Live CPU/memory/disk headroom, provider reclamation, port availability or earlier queue work cannot be predicted reliably."}
 	if l.Request.Resources.CPU > 0 {
 		budget := m.cpuBudget(s.used.CPU)
@@ -355,6 +377,11 @@ func (m *Manager) estimateQueued(l model.Lease, s queueSnapshot, now time.Time) 
 	capacity.Memory = 0
 	used := s.used
 	used.Memory = 0
+	var known bool
+	used.CPU, known = m.standingCPUReserved(s.used.CPU)
+	if !known {
+		return unknown
+	}
 	candidates := []model.Lease{}
 	for _, other := range s.leases {
 		if consuming(other.State) && (other.Request.Resources.CPU > 0 || other.Request.Resources.Disk > 0) {
@@ -414,7 +441,7 @@ func (m *Manager) refreshQueueInfo() error {
 	if err != nil {
 		return err
 	}
-	s, err := schedulingSnapshot(leases)
+	s, err := schedulingSnapshotWithResidentTotals(leases, m.resident != nil)
 	if err != nil {
 		return err
 	}
@@ -444,7 +471,7 @@ func (m *Manager) refreshQueueInfo() error {
 	return nil
 }
 func (m *Manager) queueViews(leases []model.Lease) error {
-	s, err := schedulingSnapshot(leases)
+	s, err := schedulingSnapshotWithResidentTotals(leases, m.resident != nil)
 	if err != nil {
 		return err
 	}

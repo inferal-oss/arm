@@ -89,7 +89,8 @@ type originalJobSettlement struct {
 }
 
 type Manager struct {
-	resident *ResidentManagerPending // original resident owner; never a worker lifetime
+	resident        *ResidentManagerPending // original resident owner; never a worker lifetime
+	residentService *residentServiceBinding // actual original nonretiring standing charge
 
 	proxyReported map[string]time.Time
 
@@ -847,9 +848,17 @@ func (m *Manager) Status() (model.Status, error) {
 		m.attachBudgetEvidence(&ls[i])
 		m.attachPoolEvidence(&ls[i])
 	}
-	for _, l := range ls {
-		if consuming(l.State) {
-			s.Reserved = s.Reserved.Add(l.Request.Resources)
+	if m.resident != nil {
+		var err error
+		s.Reserved, err = checkedResidentJobTotals(ls)
+		if err != nil {
+			return s, err
+		}
+	} else {
+		for _, l := range ls {
+			if consuming(l.State) {
+				s.Reserved = s.Reserved.Add(l.Request.Resources)
+			}
 		}
 	}
 	diskReserved, err := diskPromises(ls)
@@ -866,6 +875,11 @@ func (m *Manager) Status() (model.Status, error) {
 	disk := m.diskBudget(s.Reserved.Disk)
 	s.Disk = &disk
 	s.Capacity.Disk = disk.Capacity
+	// Helper inputs above stay job-only. Publish inclusive totals only AFTER
+	// every helper added the service once; never feed these totals back as jobs.
+	s.Reserved.CPU = cpu.Reserved
+	s.Reserved.Memory = memory.Reserved
+	s.Reserved.Disk = disk.Reserved
 	s.Capabilities = append(s.Capabilities, "live-cpu-admission", "live-memory-admission", "live-disk-admission", "named-storage-pools", "storage-performance-benchmarks")
 	for _, kind := range []string{"cpu", "memory", "disk"} {
 		total, reserved, unit := s.Capacity.CPU, s.Reserved.CPU, "logical-core-equivalents"
@@ -896,6 +910,7 @@ func (m *Manager) Status() (model.Status, error) {
 			v.Deficit = model.CountQuantity(disk.Deficit)
 			v.Accounting = disk.Accounting
 		}
+		v.ResidentService = m.standingProjection(kind)
 		m.observationMu.RLock()
 		measurement, exists := m.observations[kind]
 		m.observationMu.RUnlock()
@@ -1176,6 +1191,9 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 			return empty, model.Err("request_cancelled", "this request was cancelled before admission")
 		}
 	}
+	if err := m.standingAdmissionError(); err != nil {
+		return empty, err
+	}
 	if err := m.poolPolicyError(); err != nil {
 		return empty, err
 	}
@@ -1221,9 +1239,16 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		}
 	}
 	var used model.Resources
+	if m.resident != nil {
+		var err error
+		used, err = checkedResidentJobTotals(ls)
+		if err != nil {
+			return empty, err
+		}
+	}
 	queued := false
 	for _, l := range ls {
-		if consuming(l.State) {
+		if m.resident == nil && consuming(l.State) {
 			used = used.Add(l.Request.Resources)
 		}
 		if l.State == "queued" {
@@ -1744,6 +1769,14 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	if e != nil {
 		return l, e
 	}
+	var residentTotals model.Resources
+	if m.resident != nil {
+		var err error
+		residentTotals, err = checkedResidentJobTotals(ls)
+		if err != nil {
+			return l, err
+		}
+	}
 	if err := m.diskRenewal(ls, l); err != nil {
 		return l, err
 	}
@@ -1753,9 +1786,13 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	}
 	if l.Request.Resources.Memory > 0 {
 		var reserved int64
-		for _, lease := range ls {
-			if consuming(lease.State) {
-				reserved += lease.Request.Resources.Memory
+		if m.resident != nil {
+			reserved = residentTotals.Memory
+		} else {
+			for _, lease := range ls {
+				if consuming(lease.State) {
+					reserved += lease.Request.Resources.Memory
+				}
 			}
 		}
 		if budget := m.memoryBudget(reserved); budget.Stale || budget.Deficit > 0 || budget.Observation.Available == nil {
@@ -1764,9 +1801,13 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	}
 	if l.Request.Resources.CPU > 0 {
 		var reserved float64
-		for _, lease := range ls {
-			if consuming(lease.State) {
-				reserved += lease.Request.Resources.CPU
+		if m.resident != nil {
+			reserved = residentTotals.CPU
+		} else {
+			for _, lease := range ls {
+				if consuming(lease.State) {
+					reserved += lease.Request.Resources.CPU
+				}
 			}
 		}
 		budget := m.cpuBudget(reserved)
@@ -1843,6 +1884,19 @@ func (m *Manager) Events(after int64) ([]model.Event, error) {
 	return out, rows.Err()
 }
 
+// Call with Manager.mu held and a fresh lease list. This settles only existing
+// resource endings; it never computes capacity or admits queued work.
+func (m *Manager) settleEndingResources(leases []model.Lease) {
+	for _, l := range leases {
+		if l.Request.Kind == "storage" && l.State == "ending" {
+			m.scheduleStorage(l.ID)
+		}
+		if l.Request.Kind == "ports" && l.State == "ending" {
+			_, _ = m.finishPortParent(l)
+		}
+	}
+}
+
 func (m *Manager) tick() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -1880,6 +1934,17 @@ func (m *Manager) tick() {
 	if err := m.reconcileIncidents(); err != nil {
 		return
 	}
+	if m.resident != nil {
+		// Queue projection checks resident promise subtotals and may refuse
+		// corrupt accounting. Settle existing endings before that projection
+		// or any later budget calculation can stop this tick. A port ending
+		// can update rows, so the ordinary fresh list below is still required.
+		ls, e = m.list()
+		if e != nil {
+			return
+		}
+		m.settleEndingResources(ls)
+	}
 	if err := m.reconcileQueued(); err != nil {
 		return
 	}
@@ -1889,9 +1954,14 @@ func (m *Manager) tick() {
 		return
 	}
 	var used model.Resources
+	var residentTotalsErr error
 	for _, l := range ls {
 		if consuming(l.State) {
-			used = used.Add(l.Request.Resources)
+			if m.resident == nil {
+				used = used.Add(l.Request.Resources)
+			} else if residentTotalsErr == nil {
+				used, residentTotalsErr = checkedResidentJobAdd(used, l.Request.Resources)
+			}
 		}
 	}
 	diskReserved, e := diskPromises(ls)
@@ -1899,15 +1969,11 @@ func (m *Manager) tick() {
 		return
 	}
 	used.Disk = diskReserved
-	for _, l := range ls {
-		if l.Request.Kind == "storage" && l.State == "ending" {
-			m.scheduleStorage(l.ID)
-		}
-		if l.Request.Kind == "ports" && l.State == "ending" {
-			_, _ = m.finishPortParent(l)
-		}
+	if m.resident == nil {
+		// Preserve the legacy ordering of reconciliation, totals and endings.
+		m.settleEndingResources(ls)
 	}
-	if clockErr != nil || m.draining || m.budgetStartupError != nil || m.poolStartupError != nil {
+	if residentTotalsErr != nil || clockErr != nil || m.draining || m.budgetStartupError != nil || m.poolStartupError != nil || m.standingAdmissionError() != nil {
 		return
 	}
 	poolUsed, e := poolReservations(ls)
@@ -2008,7 +2074,15 @@ func (m *Manager) tick() {
 			break
 		}
 		if consuming(l.State) {
-			used = used.Add(l.Request.Resources)
+			if m.resident == nil {
+				used = used.Add(l.Request.Resources)
+			} else {
+				var err error
+				used, err = checkedResidentJobAdd(used, l.Request.Resources)
+				if err != nil {
+					return
+				}
+			}
 			for _, c := range l.Request.Pools {
 				poolUsed[c.Pool] += c.Quantity
 			}

@@ -144,25 +144,37 @@ type ResourceUse struct {
 	Expires       *time.Time  `json:"expires_at,omitempty"`
 	Relationship  string      `json:"relationship,omitempty"`
 }
+
+// ResidentServiceConsumer is an original standing charge, never a lease action.
+// Quantity is absent when no prior full promise is known. State is retained,
+// unresolved or unbound; none asserts native liveness or complete closure.
+type ResidentServiceConsumer struct {
+	Debit              string       `json:"debit,omitempty"`
+	Profile            string       `json:"profile,omitempty"`
+	Quantity           *json.Number `json:"quantity,omitempty"`
+	State              string       `json:"state"`
+	AdmissionAvailable bool         `json:"admission_available"`
+}
 type ResourceView struct {
-	Storage           *StoragePoolView     `json:"storage,omitempty"`
-	AvailabilityKnown *bool                `json:"availability_known,omitempty"`
-	Stale             bool                 `json:"stale,omitempty"`
-	ID                string               `json:"id"`
-	Host              string               `json:"host"`
-	Pool              string               `json:"pool"`
-	Kind              string               `json:"kind"`
-	Unit              string               `json:"unit"`
-	BudgetTotal       json.Number          `json:"budget_total"`
-	Reserved          json.Number          `json:"reserved"`
-	Available         json.Number          `json:"available"`
-	Deficit           json.Number          `json:"deficit,omitempty"`
-	Accounting        string               `json:"accounting"`
-	Observed          *float64             `json:"observed"`
-	Users             []ResourceUse        `json:"users"`
-	Measurement       *ResourceMeasurement `json:"measurement,omitempty"`
-	Port              *PortBinding         `json:"port,omitempty"`
-	Custom            *PoolView            `json:"custom,omitempty"`
+	ResidentService   *ResidentServiceConsumer `json:"resident_service,omitempty"`
+	Storage           *StoragePoolView         `json:"storage,omitempty"`
+	AvailabilityKnown *bool                    `json:"availability_known,omitempty"`
+	Stale             bool                     `json:"stale,omitempty"`
+	ID                string                   `json:"id"`
+	Host              string                   `json:"host"`
+	Pool              string                   `json:"pool"`
+	Kind              string                   `json:"kind"`
+	Unit              string                   `json:"unit"`
+	BudgetTotal       json.Number              `json:"budget_total"`
+	Reserved          json.Number              `json:"reserved"`
+	Available         json.Number              `json:"available"`
+	Deficit           json.Number              `json:"deficit,omitempty"`
+	Accounting        string                   `json:"accounting"`
+	Observed          *float64                 `json:"observed"`
+	Users             []ResourceUse            `json:"users"`
+	Measurement       *ResourceMeasurement     `json:"measurement,omitempty"`
+	Port              *PortBinding             `json:"port,omitempty"`
+	Custom            *PoolView                `json:"custom,omitempty"`
 }
 
 func FloatQuantity(v float64) json.Number { return json.Number(strconv.FormatFloat(v, 'g', -1, 64)) }

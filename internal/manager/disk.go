@@ -82,10 +82,18 @@ func (m *Manager) sampleDisk() {
 	m.observationMu.Unlock()
 }
 func (m *Manager) diskBudget(reserved int64) model.DiskBudget {
+	reserved, serviceQuantityKnown := m.standingDiskReserved(reserved)
 	m.observationMu.RLock()
 	reading, at := m.diskAvailability, m.diskObserved
 	m.observationMu.RUnlock()
-	return budgetFromDisk(reading, at, m.capacity.Disk, reserved)
+	r := budgetFromDisk(reading, at, m.capacity.Disk, reserved)
+	if !serviceQuantityKnown {
+		r.Known = false
+		r.Available = 0
+		r.Capacity = 0
+		r.Deficit = reserved
+	}
+	return r
 }
 func budgetFromDisk(reading model.DiskAvailability, at time.Time, ceilingBytes, reserved int64) model.DiskBudget {
 	age, wallAge := time.Since(at), time.Since(reading.At)

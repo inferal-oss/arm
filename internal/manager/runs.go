@@ -383,6 +383,10 @@ func (m *Manager) CreateRun(q model.RunCreateRequest) (model.Run, error) {
 	if err != sql.ErrNoRows {
 		return model.Run{}, err
 	}
+	// Existing same-key outcomes above remain inspectable during charge loss.
+	if err := m.standingAdmissionError(); err != nil {
+		return model.Run{}, err
+	}
 	var count int
 	if err = m.db.QueryRow(`SELECT COUNT(*) FROM proxy_runs`).Scan(&count); err != nil {
 		return model.Run{}, err

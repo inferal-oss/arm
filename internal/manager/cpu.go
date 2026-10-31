@@ -64,6 +64,8 @@ func finiteCPU(v float64) bool { return !math.IsNaN(v) && !math.IsInf(v, 0) }
 // Caller holds m.mu. Full promises remain charged. Only bounded, contained
 // native usage from the exact currently owned jobs can offset double charging.
 func (m *Manager) cpuBudget(reserved float64) model.CPUBudget {
+	jobsReserved := reserved
+	reserved, serviceQuantityKnown := m.standingCPUReserved(jobsReserved)
 	m.observationMu.RLock()
 	reading, at := m.cpuAvailability, m.cpuObserved
 	credits := m.cpuCredits
@@ -73,13 +75,13 @@ func (m *Manager) cpuBudget(reserved float64) model.CPUBudget {
 	r := model.CPUBudget{Observation: reading, Ceiling: &ceiling, Reserved: reserved, Age: max(age, wallAge), StaleAfter: cpuStaleAfter,
 		Accounting: "Current native idle headroom plus conservative aligned usage from currently owned jobs, capped by effective capacity and the configured ceiling. Full outstanding promises remain charged. Unsupported accounting scopes earn no credit; unverified or unobserved work may still be counted twice."}
 	r.Stale = at.IsZero() || reading.At.IsZero() || age < 0 || wallAge < 0 || r.Age > cpuStaleAfter
-	valid := reading.Known && !r.Stale && reading.Interval >= 100*time.Millisecond && reading.Interval <= observe.CPUObservationMaxGap &&
+	valid := serviceQuantityKnown && reading.Known && !r.Stale && reading.Interval >= 100*time.Millisecond && reading.Interval <= observe.CPUObservationMaxGap &&
 		reading.EligibleCPUs != nil && *reading.EligibleCPUs > 0 && reading.Capacity != nil && finiteCPU(*reading.Capacity) && *reading.Capacity > 0 && *reading.Capacity <= float64(*reading.EligibleCPUs) &&
 		reading.Available != nil && finiteCPU(*reading.Available) && *reading.Available >= 0 && *reading.Available <= *reading.Capacity &&
 		reading.Busy != nil && finiteCPU(*reading.Busy) && *reading.Busy >= 0 && *reading.Busy <= float64(*reading.EligibleCPUs) && finiteCPU(ceiling) && ceiling >= 0 && finiteCPU(reserved) && reserved >= 0
 	if valid {
 		r.Known = true
-		r.ManagedCredit = m.currentCPUCredit(credits, reserved, *reading.Busy)
+		r.ManagedCredit = m.currentCPUCredit(credits, jobsReserved, *reading.Busy)
 		r.Capacity = min(ceiling, *reading.Capacity, *reading.Available+r.ManagedCredit)
 	}
 	r.Available = max(0, r.Capacity-reserved)
