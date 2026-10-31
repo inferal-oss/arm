@@ -5837,3 +5837,8 @@ exchange. Existing birth validation, parent five-stage budget and native identit
 checks stay; no grown-file allowance is added. Real journal success and measured
 whole-root funding remain unverified. ACK, parent post-Start reads/owned closers,
 worker/schema/public-start activation and live upgrade acceptance remain open.
+
+Coordinator composition retains this source as `581958f` and its scoped evidence
+as `a5e18c6`. All runtime, module and embedded inputs match the qualified snapshot.
+The later documentation changes establish that source equivalence, without
+claiming actual journal execution, an authenticated handoff or a live upgrade.

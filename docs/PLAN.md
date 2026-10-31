@@ -4583,3 +4583,16 @@ real API/UI worker replacement and public first/repeat/concurrent `arm start`
 remain open. Original managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/
 accounting upgrade survival and core shutdown/recovery remain unaccepted. Earlier
 records, failed scopes and preserved source branches retain their classifications.
+
+## Resident RootBound journals — current composition accepted
+
+Coordinator review composes the focused owner source as `581958f` and its scoped
+evidence as `a5e18c6`. All 3,268 tracked files of the source composition, including
+all 1,887 Go files, match the qualified snapshot. Later changes are documentation
+and normalized evidence only; the completed normal checks were not repeated.
+
+The existing upgrade task next audits the original-channel ACK/current-owner
+exchange and its required post-Start observations before source expansion.
+Actual grant, prepared SQL/native and journal-write positives, parent-reference
+disposition, workers, public startup and live continuity remain separate gates.
+No running backend or managed work was changed by this integration.

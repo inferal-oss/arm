@@ -12275,3 +12275,9 @@ are unimplemented; worker/schema/controller/admission/assets, API/UI replacement
 public `arm start` and original run/proxy/log/heartbeat/finish/renew/cancel/expiry/
 accounting survival remain open. Measured whole-root funding and shutdown/recovery
 remain separate gates. Raw operational records and binaries stay private.
+
+Coordinator composition (`581958f`) matches all 3,268 tracked files of the
+qualified source snapshot, including all 1,887 Go files and every module and
+embedded input. Only the later scoped documentation and normalized evidence
+differ. This accepts source composition for the selected normal result without
+a second execution or any broader native/runtime claim.
