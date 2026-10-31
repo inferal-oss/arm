@@ -12092,3 +12092,34 @@ No current-main rerun, native Linux execution, positive P1 resource grant or
 profile measurement, inherited native materialization, parent Start, root
 acknowledgment, native closure, public start, worker replacement or original
 run/proxy continuity is accepted. Raw operational records remain private.
+
+
+## Parent composition: scoped normal qualification
+
+The [normalized parent evidence](validation/resident-parent-bindings-normal-2026-10-30.json)
+binds the reviewed nineteen Go inputs to a composed 3,207-file/1,856-Go source
+closure (`cb2199a3f88c34da52c71f9ced604357dad783f8408e3582123c7317b25731f5`).
+All 53 selected test roots and 130 exact package-qualified named run/pass pairs
+passed. Eight affected packages passed default vet. The actual dependency/test
+graph contained 802 packages and 69 external modules; every referenced official
+module's mod/ZIP/expanded Hash1 input was authenticated before and after, including
+exact `modernc.org/sqlite@v1.60.1`. Source/support pins stayed unchanged; all eight
+original Go envelopes and FIFO joined with exit zero, new temporary roots were
+empty, and no alarm fired. This was normal compilation, not a race run.
+
+Coverage includes the six new pre-effect/DATA roots (eighteen named results),
+relevant image/service/fence/custody/claim controls, and unchanged official SQLite
+API/raw Conn/interface/one-Connect/opaque-Close and prepared-FIFO refusal controls.
+The home guard tests cannot publish a native-identity flag from DATA; constructor
+cancellation stops before grant Open. Frame, stage-budget and late-cancel/full-
+write observations are DATA controls, not actual native birth/transfer evidence.
+
+No actual positive grant/profile, fixed13 materialization, private pin/fresh-home
+creation, Cmd.Start, root ACK/current authority, parent retirement, active worker,
+public startup or managed-run/proxy upgrade continuity is qualified. Current-main
+CLI/reporting integration is a separate gate because this graph excludes CLI.
+The previous 112-case attempt remains failed with 102 partial observations and no
+post authentication; its separate remaining ten-case/vet/auth pass retains its
+own scope. This later parent 130-case pass is a different exact composition and
+does not rewrite either earlier result. No native Closed or storage credit is
+inferred from these test and command joins.

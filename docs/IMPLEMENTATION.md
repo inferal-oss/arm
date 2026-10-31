@@ -5674,3 +5674,40 @@ attempt still failed. No positive inherited native materialization, funded
 profile, root acknowledgment or worker activation follows. The parent launch
 successor was excluded from both runs and remains under review. No candidate
 implementation is integrated by this evidence publication.
+
+
+## Resident ownership source and private parent launch
+
+Fixed13 inherited child descriptors have one process-wide original census, with
+legacy-receiver exclusion, one-way component custody, CLOEXEC before wrapping,
+nonclosing bounded views and inline bounded validation queues. Runtime captures
+and private readonly image pins retain original pending/partial effects; child
+image/fence checks feed the same native Manager/Server and official SQL owners.
+The SQLite connector preserves the official unwrapped Conn and one physical
+Connect policy. Its immutable original-claim association refuses downgrades;
+isolated claimless public-API tests do not create production native authority.
+
+Schema2 binds an explicit bounded environment into profile/evidence/intent/debit
+commitments, with owned copies and actual process/command checks. Standing service
+resources are charged once through original Manager accounting; error/unknown
+ownership retains promises rather than granting cleanup or native-Closed credit.
+Offline authorization is explicit and bounded; positive measured/funded issuance
+and whole-root activation have not been established by the recorded DATA tests.
+
+The private parent owns one Cmd/backing map, actual service/debit/group, pin, fence,
+intent and full-frame buffers. Actual unused-grant capacity preflight precedes
+debit/image/fence effects; the debit precedes funded image work. Its one-shot group
+creates/retains the exact pin, and the pin checks its own held home identity before
+any mkdir or writable open. Both writers withdraw before transfer. Long original
+validations precede short native seals and the final exact all13/Env/args/stdio
+check, then the parent's own single Cmd.Start and bounded transfer. Attempt,
+partial bytes, complete successful Write and ACK are distinct; late cancellation
+preserves actual full-write observations without asserting ACK or readiness.
+
+P1 pre-Start journal reads have exact Open/Debit/Funding/Bind/BeforeStart stages
+(cap five); legacy/operator and child-only reads retain cap four. Post-Start ACK/
+current-authority/retirement stages are not implemented and require explicit
+review of any further read/resource bound. No public `arm start` callsite or core
+role dispatch invokes this composition. Manager loops/first-worker readiness,
+worker-capable schema/admission/routing and A-to-B continuity are not enabled.
+Native/library/task closure remains opaque where not positively observed.

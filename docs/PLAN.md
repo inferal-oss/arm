@@ -4424,3 +4424,31 @@ No candidate product source is landed. Parent launch review has outstanding
 pre-effect home-identity and transfer-reporting corrections; actual root
 acknowledgment, admitted worker activation, public start and original job/log
 continuity remain implementation and acceptance gates.
+
+
+## Resident supervision: passive prerequisites and parent composition
+
+The focused resident ownership prerequisites and private parent composition are
+implemented as source, with scoped normal DATA/refusal/official-driver validation.
+The source cuts cover fixed13 custody, original runtime/private pins, explicit
+standing grants/environment, fresh/inherited fences, native/SQL binding, standing
+accounting, passive child bindings and offline authorization/reporting. Parent
+commit `e0f283631f7d1389346e7d3a7abe0a53a877248a` adds the separate one-command
+launch/transfer composition. These commits contain no public core invocation.
+
+The implementation owner retains source delivery; integration review owns current
+main CLI/reporting/accounting/build compatibility. The selected eight-package
+consumer graph excludes CLI, so its vet result does not close that integration
+gate. The [parent normal qualification](validation/resident-parent-bindings-normal-2026-10-30.json)
+records exact source/input hashes, tests and boundaries. Earlier failed attempts
+retain their own classifications.
+
+Remaining acceptance gates are actual measured/funded whole-root lineage, native
+fixed13 birth and handoff, root ACK/current-authority validation and parent-owned
+reference retirement, core role/ingress activation, separately admitted worker
+inspection/runtime/asset/receipt ownership, actual API/UI epoch activation, and
+first/repeat/concurrent public `arm start` through that same root/controller.
+Genuinely distinct B API/HTML/assets must preserve original managed runs and CLI
+proxy children, logs/quiet heartbeat, finish without workers, renew/cancel/expiry
+and terminal accounting. Worker schema/controller proposals and core shutdown/
+unresolved-core reconciliation remain separate unsupported gates.
