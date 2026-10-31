@@ -4754,3 +4754,18 @@ workers/schema/controller/admission/assets, API/UI replacement and public first/
 repeat/concurrent `arm start` remain open. Actual eligibility, managed-run/proxy
 upgrade survival and shutdown/recovery remain unaccepted. Preserved branches,
 failed records and separately passing scopes retain their classifications.
+
+## Parent service protocol composition accepted
+
+The coordinator integrated source `e9c0672` as `2937fe8` and scoped evidence
+`9a3ebf6` as `80152bb`. All 3,300 qualified tracked inputs, including 1,914 Go
+files, match exactly at source composition. Later scoped documentation/evidence
+do not change runtime inputs. The selected normal result is accepted without
+repeating execution or widening its successful-original/auth/native scope.
+
+Next is the separate bounded parent launch-fence postStart observation cut using
+the actual completed service observation and existing group relationship. The
+old preStart/ShortSeal methods remain protected. Child proof signing and actual
+Root protocol/entropy/no-pending sequencing remain later cuts, followed by
+reference retirement, workers and public startup. Actual managed-job/proxy
+continuity across an upgrade remains unverified.

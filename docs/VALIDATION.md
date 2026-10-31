@@ -12499,3 +12499,11 @@ protocol/entropy/fresh commitment/no-pending gate and reference retirement
 remain open. Worker/controller/schema/admission/assets, API/UI replacement,
 public `arm start`, genuine eligibility, managed-run/proxy upgrade survival
 and shutdown/recovery remain unaccepted.
+
+Coordinator composition accepts source `2937fe8` and scoped evidence `80152bb`.
+Independent comparison verifies all 3,300 qualified inputs, including 1,914 Go
+files and every module and embedded input. The normalized evidence hash, four
+source SHA256/Git-blob pairs and twenty-four raw package-qualified run/pass pairs
+agree with the audited result. Later changes are documentation only; no test or
+binary was rerun for composition. This preserves selected normal DATA/refusal
+qualification and every stated original-auth/native and live-upgrade limitation.

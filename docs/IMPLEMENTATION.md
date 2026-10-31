@@ -6056,3 +6056,9 @@ cross-component/no-pending proof sequencing belong to the future private Root.
 No child signer, Root caller/context constructor, worker/schema or public-start
 activation is added here. Actual native/authentication and upgrade continuity
 remain separate gates.
+
+Coordinator composition retains parent-service protocol source as `2937fe8` and
+scoped evidence as `80152bb`. Every qualified runtime, module and embedded input
+is identical to the reviewed snapshot. SQLite remains the unmodified official
+driver. No new Root caller is activated and no running backend or managed child
+is changed by this integration.
