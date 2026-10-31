@@ -13097,3 +13097,70 @@ not failed runtime attempts. Actual client/Git metadata, policy/backend,
 enrollment, delivery, PTY, full-suite and Linux acceptance remain unclaimed.
 The component is still unwired; installed ARM and running jobs are unchanged.
 Retained scratch and unmeasured shared-cache growth imply no reclamation credit.
+
+## Private Root handoff — selected normal and race source qualification
+
+[Normalized evidence](validation/resident-root-handoff-normal-race-2026-10-31.json)
+records independent source review and separate normal/race phases against the
+same 3,311-file snapshot, including 1,922 Go files. Each executed all 13 selected
+server-package roots and 36 exact package-qualified named run/pass pairs with
+no skips or failures. Seven new roots cover deadline arithmetic, nested-value
+context comparability and copied/unissued/weak-flag refusals; six existing
+controls remain selected. They issue no successful genuine Root, Start, secret,
+current/native/SQL/IO/entropy or child-continuity fixture. Race success applies
+only to this selection, not to the successful live exchange.
+
+The normal actual dependency graph contains 853 packages and the race graph
+855. Each references 88 official modules. Actual mod/ZIP/expanded-source Hash1
+authentication against unchanged go.sum agrees before and after both phases,
+including unmodified SQLite 1.60.1. The normalized evidence includes exact
+module identities/checksums and go.mod/go.sum hashes. Dependency-cache writes
+and network access are refused; there is no replacement, download, cache
+seeding, repair or fallback. Ten affected package targets pass default vet.
+Native command compilation passes; its 74,920,114-byte artifact has SHA-256
+`47fb48be6f2fe275ef81ea54fed6c5022b1e0dce9847f90968f612ec6303551e`
+and was never executed. This native target is not Linux eligibility evidence.
+
+The normal phase completed in 53.811657 seconds and the race phase in
+32.613632 seconds. All six original Go envelopes and their owning queue
+processes returned and joined with exit zero. Twelve regular output stream
+hashes and exact rosters agree after joins; this is no pipe-EOF or native-Closed
+claim. All three actual temporary directories per phase are empty. Source,
+tool and support pins remain unchanged through qualification; no sampled-stop
+alarm occurred. Both windows are released while earlier evidence and uncertain
+resource obligations remain preserved, without reclamation credit.
+
+Runner review found inherited environment and Python startup gaps before those
+executions. The first two proposals remain unexecuted. The third attempted
+outer startup and refused its exact environment guard before queue submission
+or any Go/test/graph/vet/build command. A single separately bounded diagnostic
+observed key names and equality booleans only, without environment values; it
+is metadata evidence, not a causal source-test failure or qualification pass.
+The fourth runner pins the actual interpreter payload, isolates startup, uses
+explicit clean outer/queue/Go maps and loads its checked helper by exact file.
+Only the one observed platform key is deleted before exact map equality without
+reading or forwarding its value; all other unexpected keys refuse. The shared
+queue defaults stay unchanged and its timestamp interpreter has a closed,
+checked shim directory. Only the final runner produced the normal/race results.
+Raw startup/diagnostic/operational records remain private and retain their
+distinct classifications.
+
+Source `40626cddcbb267b2adb0fdaa7508450590a83baa` includes the eight reviewed Go
+images plus two approved ordinary comment clarifications. Qualified project
+source manifest
+`d2d3a7d8c9878860fead413110a4f0e0bdfc345ea034cbdbf5b09e305f19fdee`
+and final feature-source manifest
+`ead5f0287238a8284c8f1ac25da4e60bbca3d6a6394945dbcdf79dff4b8691b1`
+are recorded with all eight before/final source SHA256 and Git-blob pairs.
+Only two non-directive whole-line comment blocks differ; line counts and every
+other byte match. The original qualified snapshot and artifact are preserved;
+the artifact binds that snapshot and was not rebuilt after the comments.
+This is reviewed source-body equivalence, not machine-code identity or a test
+of changed runtime logic. Subsequent evidence edits are documentation only.
+
+Successful actual private protocol/current-authority/native/SQL/image/journal/
+environment behavior, reference retirement/Process.Release, worker/controller/
+schema/admission/assets/API/UI activation, public first/repeated/concurrent
+`arm start`, eligible Linux execution, real managed-run/proxy upgrade survival,
+performance, shutdown and recovery remain unaccepted. No Ready, native Closed,
+resource credit or overall upgrade completion is established here.

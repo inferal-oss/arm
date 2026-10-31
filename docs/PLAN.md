@@ -5169,3 +5169,44 @@ build is requested before allocating execution. Public startup, replaceable
 workers, reference retirement and active-job survival remain outstanding.
 The full Linux VM proposal remains a plan pending separate setup approval;
 no download, boot or weakened cgroup verification is authorized.
+
+## Private original Root handoff — reviewed normal and race scope
+
+Focused source `40626cddcbb267b2adb0fdaa7508450590a83baa` extends the private
+original parent/child launch path through authenticated BoundAck, current
+challenge and current proof. The same original launch operation, actual Start
+result, component owners and four phase records per role remain bound through
+the exchange. The genuine entry calls the exchange before its original outer
+normal publication; public startup and workers are not activated.
+
+Independent source review and two separately bounded qualification phases pass.
+Each selected server-package phase ran all 13 roots and 36 named arithmetic or
+early-refusal cases without skips or failures, including race instrumentation
+in the second phase. Ten-package default vet and native compile-only command
+build pass. The [normalized result](validation/resident-root-handoff-normal-race-2026-10-31.json)
+binds the qualified source, final ordinary-comment equivalence, exact module
+inputs, complete test rosters and unexecuted artifact. Final composition and
+integration remain coordinator review gates.
+
+The runner's first two proposals remain unexecuted. A subsequent actual startup
+guard refusal occurred before queue submission or any Go command; its one
+metadata-only diagnostic and final corrected runner are distinct from source
+test results. The qualified source is preserved. Only two reviewed ordinary
+comment blocks changed afterward, with identical line counts and every other
+source byte unchanged; the original build artifact was not rebuilt or executed.
+
+Next gates remain:
+
+- Successful genuine handoff/current-authority and native/SQL/image/journal/
+  environment validation in an eligible execution environment.
+- Parent-owned reference retirement, original Process.Release and closure/
+  accounting semantics.
+- Resident controller, fresh worker schema, activation/admission/assets and
+  replaceable API/UI workers through the same binary.
+- Public first, repeated and concurrent `arm start` integration and readiness.
+- Actual managed-run/proxy identity, output, heartbeat, finish, renew, cancel,
+  expiry and accounting continuity through upgrades, followed by performance,
+  shutdown and recovery evidence.
+
+This private component does not complete the upgrade feature or establish
+native Closed, release credit, Linux eligibility or active-job survival.

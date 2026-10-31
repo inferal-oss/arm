@@ -1,0 +1,1062 @@
+{
+  "acceptance_limit": "Selected normal/race source qualification and static review only. No successful genuine handshake, native Closed, resource credit, Linux eligibility, worker/public-start integration or live-job survival acceptance.",
+  "implementation": {
+    "activation": "No parent reference retirement, Process.Release, resident controller, worker/schema/admission/assets, API/UI or public arm start activation. No Ready/Closed/resource credit.",
+    "bounds": {
+      "extra_costs": "Header/growth temporaries, typed JSON/canonical/hash buffers, journals, Env, native/SQL/runtime/allocator/timer internals remain additional and opaque. These bounds are not RSS, kernel limits or quiescence evidence.",
+      "fresh_canonical_bytes": 32768,
+      "logical_wire_buffers_per_phase": 4,
+      "wire_frame_bytes": 16384,
+      "wire_header_bytes": 36,
+      "wire_payload_bytes": 16348
+    },
+    "child": "Genuine entry calls the private exchange after actual prepare/prepared/RootBound completion, before outer normal publication. Same original view/charge/owners flow through service2, launch3, Manager/DB/Server current calls, fourth native issuer, all13 references, second current image observation and fresh canonical commitment.",
+    "completion": "Two once-only completed/no-pending Root/component checks precede proof signing and W2. W2 irreversibly consumes the view even on partial/error; no consumed-view selector runs afterward. Direct original recover/Goexit retention remains intact.",
+    "parent": "Same original launch-and-transfer operation remains active through sole actual Cmd.Start and Wboot/Rack/Wchallenge/Rproof. Exact actual Start call, normal result, returned Process, command/group/debit/image/fence/endpoints and inherited references gate every phase. FullWrite DATA never substitutes for execution.",
+    "parent_authentication": "Actual own Ack authentication precedes service-current and postStart fence observation and complete own-settings/typed-intent/context comparisons. One retained original 32-byte entropy call precedes own challenge signing and exact proof authentication. Rack-only selectors are retained before phase advancement, never relaxed afterward.",
+    "phase_scopes": {
+      "IO_cancellation": "Actual normal typed IO result is retained before own IO cancellation. Canceled IO context.Err never revokes completed normal facts; current/native/SQL use independent Root lifetime.",
+      "bootstrap_clock": "Added explicit observation is after original constructor return, not its constructor timestamp or quiescence proof. Actual returned Deadline attempt/return/value is retained.",
+      "child_deadline": "Original bootstrap WithTimeout(5 seconds); later three use independent Root lifetime and observed now + 5 seconds.",
+      "child_phases": [
+        "Rboot",
+        "Wack",
+        "Rchallenge",
+        "Wproof"
+      ],
+      "new_constructor_source_sites": 2,
+      "new_dynamic_scopes": 7,
+      "original_child_bootstrap_reused": true,
+      "parent_deadline": "min(actual finite startup deadline, observed now + 5 seconds)",
+      "parent_phases": [
+        "Wboot",
+        "Rack",
+        "Wchallenge",
+        "Rproof"
+      ],
+      "total_dynamic_scopes": 8
+    }
+  },
+  "qualification": {
+    "Go_version": "1.27.3",
+    "build_VCS_metadata_disabled": true,
+    "dependency_policy": "Official pinned module cache, network and dependency-cache writes refused; actual referenced mod/ZIP/expanded Hash1 against go.sum before and after. No replacement, download, install, seeding or repair.",
+    "instrumentation": {
+      "normal": "ordinary selected tests",
+      "race": "Go race detector with existing installed compiler/runtime"
+    },
+    "native_command_compile_only": {
+      "artifact_executed": false,
+      "bytes": 74920114,
+      "executed": false,
+      "native_target": {
+        "GOARCH": "arm64",
+        "GOOS": "darwin"
+      },
+      "result": "pass",
+      "sha256": "47fb48be6f2fe275ef81ea54fed6c5022b1e0dce9847f90968f612ec6303551e"
+    },
+    "native_target": {
+      "GOARCH": "arm64",
+      "GOOS": "darwin"
+    },
+    "official_modules": [
+      {
+        "go_mod_h1": "h1:wdMgn+sje1KNXdwFizIWjbf328fIUBxqEmJ/vYPo8yc=",
+        "module": "charm.land/bubbles/v2",
+        "module_h1": "h1:Fq1+qm5hV6GkvzLQDhCBpXXE5tLgvh1PRriCLwSvIQU=",
+        "version": "v2.2.1"
+      },
+      {
+        "go_mod_h1": "h1:xWHeyxIX9/wiFU2kgPW04ojOZyTzrWf+8lGjUCaftiU=",
+        "module": "charm.land/bubbletea/v2",
+        "module_h1": "h1:A9fj9h5LFrvQhQHFNggp8K8rvY6CUfgn9dMbb6p2HIw=",
+        "version": "v2.1.0"
+      },
+      {
+        "go_mod_h1": "h1:ipDDJNSGa1hlwDtSfW1s2/xR8Vdhbut4PXh2zEKZd0Q=",
+        "module": "charm.land/lipgloss/v2",
+        "module_h1": "h1:EaGKeuA8FvF+v2BT5VmZd2LoYLaMZJXA5n34th8nCIQ=",
+        "version": "v2.0.6"
+      },
+      {
+        "go_mod_h1": "h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=",
+        "module": "github.com/BurntSushi/toml",
+        "module_h1": "h1:dRaEfpa2VI55EwlIW72hMRHdWouJeRF7TPYhI+AUQjk=",
+        "version": "v1.6.0"
+      },
+      {
+        "go_mod_h1": "h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=",
+        "module": "github.com/atotto/clipboard",
+        "module_h1": "h1:EH0zSVneZPSuFR11BlR9YppQTVDbh5+16AmcJi4g1z4=",
+        "version": "v0.1.4"
+      },
+      {
+        "go_mod_h1": "h1:/zT4BhpD5aGFpqQQqw7a+VtHCzu+zrQtt1zhMt9mR4Q=",
+        "module": "github.com/charmbracelet/colorprofile",
+        "module_h1": "h1:QPa1IWkYI+AOB+fE+mg/5/4HRMZcaXex9t5KX76i20Q=",
+        "version": "v0.4.3"
+      },
+      {
+        "go_mod_h1": "h1:aJDVk+WOVM1K04rdc/71PMPoUGfjxjhvXfP3Pjz1Zio=",
+        "module": "github.com/charmbracelet/ultraviolet",
+        "module_h1": "h1:hISLzUbwcvJbGoNR6A3L/TpguRRnACBmZOee8LcHLJw=",
+        "version": "v0.0.0-20261008173134-6b8d4baf91b4"
+      },
+      {
+        "go_mod_h1": "h1:DG/hpOnaI2QJ/KMMqLL2h0KVhluuJLazf8973P+Vy5w=",
+        "module": "github.com/charmbracelet/x/ansi",
+        "module_h1": "h1:kIrqLBxtTVbLyyHO2Evoi93EjQo1mylWmpNEsfPxXAM=",
+        "version": "v0.11.9"
+      },
+      {
+        "go_mod_h1": "h1:kF8CY5RddLWrsgVwpw4kAa6TESp6EB5y3uxGLeCqzAI=",
+        "module": "github.com/charmbracelet/x/term",
+        "module_h1": "h1:xVRT/S2ZcKdhhOuSP4t5cLi5o+JxklsoEObBSgfgZRk=",
+        "version": "v0.2.2"
+      },
+      {
+        "go_mod_h1": "h1:rB7fnv1TgOPOyyKRJ9o+AsTU/vK5WHJ2ivHeut/Pcwo=",
+        "module": "github.com/charmbracelet/x/termios",
+        "module_h1": "h1:o3Q2bT8eqzGnGPOYheoYS8eEleT5ZVNYNy8JawjaNZY=",
+        "version": "v0.1.1"
+      },
+      {
+        "go_mod_h1": "h1:/8XtdKZzedat74NQFn0NGlGL4soHB0YQZrETF96h75k=",
+        "module": "github.com/charmbracelet/x/windows",
+        "module_h1": "h1:IofanmuvaxnKHuV04sC0eBy/smG6kIKrWG2/jYn2GuM=",
+        "version": "v0.2.2"
+      },
+      {
+        "go_mod_h1": "h1:bkrFNkf81G8HyVqmKGxsPufD3JhNl3dSqnGhOoSD/o0=",
+        "module": "github.com/clipperhouse/displaywidth",
+        "module_h1": "h1:lBc6kY44VFw+TDx4I8opi/EtL9m20WSEFgwIwO+UVM8=",
+        "version": "v0.11.0"
+      },
+      {
+        "go_mod_h1": "h1:EFJ2TJMRUaplDxHKj1qAEhCtQPW2tJSwu5BF98AuoVM=",
+        "module": "github.com/clipperhouse/uax29/v2",
+        "module_h1": "h1:+gs4oBZ2gPfVrKPthwbMzWZDaAFPGYK72F0NJv2v7Vk=",
+        "version": "v2.7.0"
+      },
+      {
+        "go_mod_h1": "h1:NX3SzP+inril6yawo5CQXx8+fk145lPDC6pumgx0mVg=",
+        "module": "github.com/coder/websocket",
+        "module_h1": "h1:6B2JPeOGlpff2Uz6vOEH1Vzpi0iUz20A+lPVhPHtNUA=",
+        "version": "v1.8.15"
+      },
+      {
+        "go_mod_h1": "h1:08sCNb52WyoAwi2QDyzUCTgcvVFhUzewun7wtTfvcwE=",
+        "module": "github.com/creack/pty",
+        "module_h1": "h1:bJrF4RRfyJnbTJqzRLHzcGaZK1NeM5kTC9jGgovnR1s=",
+        "version": "v1.1.24"
+      },
+      {
+        "go_mod_h1": "h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=",
+        "module": "github.com/davecgh/go-spew",
+        "module_h1": "h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=",
+        "version": "v1.1.2-0.20180830191138-d8f796af33cc"
+      },
+      {
+        "go_mod_h1": "h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=",
+        "module": "github.com/dustin/go-humanize",
+        "module_h1": "h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=",
+        "version": "v1.0.1"
+      },
+      {
+        "go_mod_h1": "h1:DCHPP08djqhNSoTfImcnHYQRZmd0qhakvrozqaEYhGQ=",
+        "module": "github.com/ebitengine/purego",
+        "module_h1": "h1:WWiTx8rD8zYdOwSj8O/NiNbsOvSAgJMTlyV1XlbUSeU=",
+        "version": "v0.11.2"
+      },
+      {
+        "go_mod_h1": "h1:6n3XBCmQQb25CM2LCACGz8ukIrRry+4bhvbpWn3mrbc=",
+        "module": "github.com/emicklei/go-restful/v3",
+        "module_h1": "h1:C4Bl2xDndpU6nJ4bc1jXd+uTmYPVUwkD6bFY/oTyCes=",
+        "version": "v3.13.0"
+      },
+      {
+        "go_mod_h1": "h1:vM4b+DJCtHn+zz7h3FFp/hDAI9WNWCsZj23V5ytsSxQ=",
+        "module": "github.com/fxamacker/cbor/v2",
+        "module_h1": "h1:2rWm8B193Ll4VdjsJY28jxs70IdDsHRWgQYAI80+rMQ=",
+        "version": "v2.9.1"
+      },
+      {
+        "go_mod_h1": "h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=",
+        "module": "github.com/go-logr/logr",
+        "module_h1": "h1:CjnDlHq8ikf6E492q6eKboGOC0T8CDaOvkHCIg8idEI=",
+        "version": "v1.4.3"
+      },
+      {
+        "go_mod_h1": "h1:Z3rw7dWu1p9IgitXCFamSlA5lmDiklEB6vkaxcNZW5Y=",
+        "module": "github.com/go-openapi/jsonpointer",
+        "module_h1": "h1:kR9tHqY0CtZaOPVFm622dPVNhrvYpwr4uCxgL3h1H8s=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:jtwdyGbJk0Xhe5Y+rwtglQP6Sb1WZST4rT32LWB+sv0=",
+        "module": "github.com/go-openapi/jsonreference",
+        "module_h1": "h1:jlmTr6torcd1YgDQvSfNmRtKzYDO4FGBkrAdlAVWnpY=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:GTkJPwHfhJp6MWr4/rCh64HVI3Ofu+tcsbfjfHmTxpE=",
+        "module": "github.com/go-openapi/swag",
+        "module_h1": "h1:VotvOLWW8q/EAxB0YdsBBGC8XYyeL1YwBj2ungAGPNg=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:Sm1MVFMkF6guJJ+pQqHnQA3N0j9qALV3NxzDSv6bETM=",
+        "module": "github.com/go-openapi/swag/cmdutils",
+        "module_h1": "h1:I7sYqaWVl5mq0NEmNQkAmFDyNin9ufvMX/p2zwtQaOE=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:QbqMivkpKhC3g1B1GGGOJ6ANewI3S62dbzYu3Duowqs=",
+        "module": "github.com/go-openapi/swag/conv",
+        "module_h1": "h1:8wi9ZG+olmY1wXphl93EWniPtbSPkXM/feH7FgjsvrU=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:VvJFZLTZS0AI854gEQz5tk7dBESdLjiNUMSZ/th2ry8=",
+        "module": "github.com/go-openapi/swag/fileutils",
+        "module_h1": "h1:QQqBSoi5mW4XpU85nS0mLcA+zAE6vLzrb0QkmLKf9oM=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:tdlEpZqdcQ17uj6J4YdK9vd8It5qWMwjWXOs0tjpRlk=",
+        "module": "github.com/go-openapi/swag/jsonutils",
+        "module_h1": "h1:SVgK3i4USzCU5mibOOS/l4ea2h9UQXy7J7RNLTjuXjU=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:jvGh3iA2+zyUUycB5fgJWzeHnhrpvGnJJM0RVE9ZShE=",
+        "module": "github.com/go-openapi/swag/loading",
+        "module_h1": "h1:/DxUgDXKbBX4bcn7r9uEXfJyzN5XpiJmZplzQTjrRCY=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:jtBE2+V+3pILxOR7Vgce+Cwp6A2PgZbvVqfNntbVs0w=",
+        "module": "github.com/go-openapi/swag/mangling",
+        "module_h1": "h1:yC9D0HyUE8gbP+BfmGx9+AA89ikwZTMjESK3OnnoaqA=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:J+WYyFMLtvtCGqa6jLv+YNUmIKI3ZRQRrvfNDMoQoEQ=",
+        "module": "github.com/go-openapi/swag/netutils",
+        "module_h1": "h1:mICMFoS82F5TZ4Zy3cqmcQk+BFeCp3Uyq3Np7GI0/qU=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:kVQefhSK5RWuRe7BXsL8htgBPAMpN7HDGpGEknqugeE=",
+        "module": "github.com/go-openapi/swag/pools",
+        "module_h1": "h1:9LeadcMyb2GJCbXX5hVQDbZ2Lq9TL4dCs/nx1j5DO0E=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:lzRN95CxXmA03XcDWHLOb6nOMcxCqR5rGY0lOgsfRoM=",
+        "module": "github.com/go-openapi/swag/stringutils",
+        "module_h1": "h1:ZXePZ0r2p1qSjo8tD3Un4vFj8+FqlCkczxDrJIhYUp8=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:Srm0xFNRZ1Y+vCxJclo5qzx8aj+1pAKda/YfFPrG0dQ=",
+        "module": "github.com/go-openapi/swag/typeutils",
+        "module_h1": "h1:KSTdFlfnse4r6dP9IrEnwMldjE+zs71UeEB3//PtVXc=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:bnxFIB1qewGRiZHypXGZ3fNgf13/0HfRgnS/iZBDrOo=",
+        "module": "github.com/go-openapi/swag/yamlutils",
+        "module_h1": "h1:ftxv6xvXb1E3zohUc+okZ9nSqNb9StQX/FXnKZ98sQA=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:whL5G0m6dmc5cPxKc5bdKdEN3UjI7OUGxBlw57miDrQ=",
+        "module": "github.com/google/gnostic-models",
+        "module_h1": "h1:qwTtogB15McXDaNqTZdzPJRHvaVJlAl+HVQnLmJEJxo=",
+        "version": "v0.7.0"
+      },
+      {
+        "go_mod_h1": "h1:OX+G6WHHpHq3NVj7cAOleLOwJfcQ1s3uUJQCrr78SWo=",
+        "module": "github.com/google/renameio/v2",
+        "module_h1": "h1:qKZs+tfn+arruZZhQ7TKC/ergJunuJicWS6gLDt/dGw=",
+        "version": "v2.0.2"
+      },
+      {
+        "go_mod_h1": "h1:pupxD2MaaD3pAXIBCelhxNneeOaAeabZDe5s4K6zSpQ=",
+        "module": "github.com/google/shlex",
+        "module_h1": "h1:El6M4kTTCOh6aBiKaUGG7oYTSPP8MxqL4YI3kZKwcP4=",
+        "version": "v0.0.0-20191202100458-e7afc7fbc510"
+      },
+      {
+        "go_mod_h1": "h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=",
+        "module": "github.com/google/uuid",
+        "module_h1": "h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=",
+        "version": "v1.6.0"
+      },
+      {
+        "go_mod_h1": "h1:r4w70xmWCQKmi1ONH4KIaBptdivuRPyosB9RmPlGEwA=",
+        "module": "github.com/gorilla/websocket",
+        "module_h1": "h1:JeSE6pjso5THxAzdVpqr6/geYxZytqFMBCOtn/ujyeo=",
+        "version": "v1.5.4-0.20250319132907-e064f32e3674"
+      },
+      {
+        "go_mod_h1": "h1:e30LSqwooZae/UwlEbR2852Gd8hjQvJoHmT4TnhNGBo=",
+        "module": "github.com/json-iterator/go",
+        "module_h1": "h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnrnM=",
+        "version": "v1.1.12"
+      },
+      {
+        "go_mod_h1": "h1:RSub3ourNF8Hf+swvw49Catm3s7HVf4hzdFxDUnEzdA=",
+        "module": "github.com/landlock-lsm/go-landlock",
+        "module_h1": "h1:zcMi8R8vP0WrrXlFMNUBpDy/ydo3sTnCcUPowq1XmSc=",
+        "version": "v0.0.0-20250303204525-1544bccde3a3"
+      },
+      {
+        "go_mod_h1": "h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=",
+        "module": "github.com/lucasb-eyer/go-colorful",
+        "module_h1": "h1:1EO+WB73+EH8EVbzlrG3KLAfEypQWVHIBqlTf+2hNss=",
+        "version": "v1.4.1"
+      },
+      {
+        "go_mod_h1": "h1:nMCL3Zebbrt45jsMDgnfIwz6ydEQApk5oEI3HqDio6A=",
+        "module": "github.com/mattn/go-isatty",
+        "module_h1": "h1:tGZZoVgT/KiqK1c8ocVLeDS8BSWMRd47J3Lbz7vsReI=",
+        "version": "v0.0.24"
+      },
+      {
+        "go_mod_h1": "h1:3qAiGCV4Koz/yuveO58qUefmUTRm8r0IGEXZ9jeHp/8=",
+        "module": "github.com/mattn/go-runewidth",
+        "module_h1": "h1:+KUuiDA4fF0R1p5FeueHefjDm+GIM+kWfFnDjybOPgk=",
+        "version": "v0.0.30"
+      },
+      {
+        "go_mod_h1": "h1:AAxFX59fddW0IguqNzWlf1lazh1+rXeIt/Bj49cqDTQ=",
+        "module": "github.com/mmcloughlin/md4",
+        "module_h1": "h1:kGYl+iNbxhyz4u76ka9a+0TXP9KWt/LmnM0QhZwhcBo=",
+        "version": "v0.1.2"
+      },
+      {
+        "go_mod_h1": "h1:xBAYlnt/ay+11ShkdFKNAG7LsyK/tmNBVvVOwrfMgdI=",
+        "module": "github.com/moby/spdystream",
+        "module_h1": "h1:9sNYeYZUcci9R6/w7KDaFWEWeV4LStVG78Mpyq/Zm/Y=",
+        "version": "v0.5.1"
+      },
+      {
+        "go_mod_h1": "h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=",
+        "module": "github.com/modern-go/concurrent",
+        "module_h1": "h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=",
+        "version": "v0.0.0-20180306012644-bacd9c7ef1dd"
+      },
+      {
+        "go_mod_h1": "h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=",
+        "module": "github.com/modern-go/reflect2",
+        "module_h1": "h1:W5t00kpgFdJifH4BDsTlE89Zl93FEloxaWZfGcifgq8=",
+        "version": "v1.0.3-0.20250322232337-35a7c28c31ee"
+      },
+      {
+        "go_mod_h1": "h1:3XuTXfFS2VjM+HTLZY9Ak0l6eUKfijIfMUZ4EgX0QYo=",
+        "module": "github.com/muesli/cancelreader",
+        "module_h1": "h1:3I4Kt4BQjOR54NavqnDogx/MIoWBFa0StPA8ELUXHmA=",
+        "version": "v0.2.2"
+      },
+      {
+        "go_mod_h1": "h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=",
+        "module": "github.com/munnerz/goautoneg",
+        "module_h1": "h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=",
+        "version": "v0.0.0-20191010083416-a7dc8b61c822"
+      },
+      {
+        "go_mod_h1": "h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=",
+        "module": "github.com/ncruces/go-strftime",
+        "module_h1": "h1:HMFp8mLCTPp341M/ZnA4qaf7ZlsbTc+miZjCLOFAw7w=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=",
+        "module": "github.com/pelletier/go-toml/v2",
+        "module_h1": "h1:GTRvJQutkOSftxIFD5xw9aepkYNuPWmVJpffdDPYVpY=",
+        "version": "v2.4.3"
+      },
+      {
+        "go_mod_h1": "h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=",
+        "module": "github.com/remyoudompheng/bigfft",
+        "module_h1": "h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=",
+        "version": "v0.0.0-20230129092748-24d4a6f8daec"
+      },
+      {
+        "go_mod_h1": "h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=",
+        "module": "github.com/rivo/uniseg",
+        "module_h1": "h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=",
+        "version": "v0.4.7"
+      },
+      {
+        "go_mod_h1": "h1:au6//VbVSqu6DFrkL2CfjlJ5iURpNCPeE+1GwY3XsT8=",
+        "module": "github.com/sahilm/fuzzy",
+        "module_h1": "h1:juByESSS32nVD81vr6tHmKmA/8zde7gE+x5CLxrzXPU=",
+        "version": "v0.1.3"
+      },
+      {
+        "go_mod_h1": "h1:7C1pvHqHw5A4vrJfjNwvOdzYu0Gml16OCs2GRiTUUS4=",
+        "module": "github.com/spf13/cobra",
+        "module_h1": "h1:DMTTonx5m65Ic0GOoRY2c16WCbHxOOw6xxezuLaBpcU=",
+        "version": "v1.10.2"
+      },
+      {
+        "go_mod_h1": "h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=",
+        "module": "github.com/spf13/pflag",
+        "module_h1": "h1:4EBh2KAYBwaONj6b2Ye1GiHfwjqyROoF4RwYO+vPwFk=",
+        "version": "v1.0.10"
+      },
+      {
+        "go_mod_h1": "h1:14CWIYCyZA/cWjXOioeEpHeN/83MdbZDRQHoFcYsOfg=",
+        "module": "github.com/x448/float16",
+        "module_h1": "h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=",
+        "version": "v0.8.4"
+      },
+      {
+        "go_mod_h1": "h1:RbqR21r5mrJuqunuUZ/Dhy/avygyECGrLceyNeo4LiM=",
+        "module": "github.com/xo/terminfo",
+        "module_h1": "h1:2ZpYzqWzyyytjk3TP6aJVDhkMAkc99/1xKQdA3TDTBY=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:gMZqIpDtDqOfM0uNfy0SkpRhvUryYH0Z6wdMYcacYXQ=",
+        "module": "go.yaml.in/yaml/v2",
+        "module_h1": "h1:tuyd0P+2Ont/d6e2rl3be67goVK4R6deVxCUX5vyPaQ=",
+        "version": "v2.4.4"
+      },
+      {
+        "go_mod_h1": "h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=",
+        "module": "go.yaml.in/yaml/v3",
+        "module_h1": "h1:tfq32ie2Jv2UxXFdLJdh3jXuOzWiL1fo0bu/FbuKpbc=",
+        "version": "v3.0.4"
+      },
+      {
+        "go_mod_h1": "h1:Xh+kl5A+M0gMiWDytH2Hhr5Z7WbNCpv/eB/EFgfSk+w=",
+        "module": "golang.org/x/crypto",
+        "module_h1": "h1:COkYLr4k7nDI4r6QtMML2AfzeIswWHAJthLS6K/M/54=",
+        "version": "v0.58.0"
+      },
+      {
+        "go_mod_h1": "h1:2DA/G1UfVbCpQPeWTmMPGY7Cs2PkBkwu743bVX5PIVg=",
+        "module": "golang.org/x/net",
+        "module_h1": "h1:79p50tfZlm0J9YfoDsSi639qSXNGVwEzOPLCxM2FsYU=",
+        "version": "v0.60.0"
+      },
+      {
+        "go_mod_h1": "h1:YDBUJMTkDnJS+A4BP4eZBjCqtokkg1hODuPjwiGPO7Q=",
+        "module": "golang.org/x/oauth2",
+        "module_h1": "h1:peZ/1z27fi9hUOFCAZaHyrpWG5lwe0RJEEEeH0ThlIs=",
+        "version": "v0.36.0"
+      },
+      {
+        "go_mod_h1": "h1:sUUOizhqBxiL6pEWpqNLUiaJn1ShEbZ6BBqskPbjZm0=",
+        "module": "golang.org/x/sync",
+        "module_h1": "h1:iqiDrGoDgyuvAKrhLQthUEzU/R378N78gXbBjxed7oA=",
+        "version": "v0.24.0"
+      },
+      {
+        "go_mod_h1": "h1:hNLxWAXmnKAxqDtdwIYC4bM9oQPEecfsnNMuSxOs3og=",
+        "module": "golang.org/x/sys",
+        "module_h1": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=",
+        "version": "v0.49.0"
+      },
+      {
+        "go_mod_h1": "h1:efAfAuG6RKABvg1ArGebRkvX6LXul14SM67o2e4mUCY=",
+        "module": "golang.org/x/term",
+        "module_h1": "h1:cpyOwQkr2Nzxe2p6KnrTG7Ei2wtzjsuSjhpXXepZ/BM=",
+        "version": "v0.47.0"
+      },
+      {
+        "go_mod_h1": "h1:hbSIYA/amXcRXTFSZqh8tWHEoqRvvbKPJ2uz/KU+a+s=",
+        "module": "golang.org/x/text",
+        "module_h1": "h1:1QivrlhwAsnMOcqgOdl9my7s9OyZl8O5/UGUTJVXoWc=",
+        "version": "v0.43.0"
+      },
+      {
+        "go_mod_h1": "h1:Y4YMaQmXwGQZoFaVFk4YpCt4FLQMYKZe9oeV/f4MSno=",
+        "module": "golang.org/x/time",
+        "module_h1": "h1:bbrp8t3bGUeFOx08pvsMYRTCVSMk89u4tKbNOZbp88U=",
+        "version": "v0.15.0"
+      },
+      {
+        "go_mod_h1": "h1:HTf+CrKn2C3g5S8VImy6tdcUvCska2kB7j23XfzDpco=",
+        "module": "google.golang.org/protobuf",
+        "module_h1": "h1:+5/Sw3GsDNlEmu7TfklWKPdQ0Ykja5VEmq2i817+jbI=",
+        "version": "v1.36.12-0.20260120151049-f2248ac996af"
+      },
+      {
+        "go_mod_h1": "h1:p8EYWUEYMpynmqDbY58zCKCFZw8pRWMG4EsWvDvM72M=",
+        "module": "gopkg.in/evanphx/json-patch.v4",
+        "module_h1": "h1:czT3CmqEaQ1aanPc5SdlgQrrEIb8w/wwCvWWnfEbYzo=",
+        "version": "v4.13.0"
+      },
+      {
+        "go_mod_h1": "h1:cWUDdTG/fYaXco+Dcufb5Vnc6Gp2YChqWtbxRZE0mXw=",
+        "module": "gopkg.in/inf.v0",
+        "module_h1": "h1:73M5CoZyi3ZLMOyDlQh031Cx6N9NDJ2Vvfl76EDAgDc=",
+        "version": "v0.9.1"
+      },
+      {
+        "go_mod_h1": "h1:zSlbB1YpJ1YQlFVQy20UYll81UJSJJUMLhkhvg6Z78M=",
+        "module": "k8s.io/api",
+        "module_h1": "h1:l6N77U7tjwB5L056bgrBTJIEdevac/naBZ3iSvDNfpM=",
+        "version": "v0.37.1"
+      },
+      {
+        "go_mod_h1": "h1:jF84AyUi/IRIXRot5f+lm6MpxoWI+F1XgjaMmwCdTFw=",
+        "module": "k8s.io/apimachinery",
+        "module_h1": "h1:hGCYyvKHCwtwMitj2vU4vYx0Z16N9GyZk9BBnz0wDAE=",
+        "version": "v0.37.1"
+      },
+      {
+        "go_mod_h1": "h1:dnAPtTnCNY38Ho04D2KdY1F4IKausa9UbqaAZKl60SY=",
+        "module": "k8s.io/client-go",
+        "module_h1": "h1:QTv/5ha4jAHtW9qxxVBkQVFBRDb4jHfFopQqqMdc+wM=",
+        "version": "v0.37.1"
+      },
+      {
+        "go_mod_h1": "h1:o+/RWfJ6PwpnFn7OyAG3QnO47BFsymfEfrz6XyYSSp0=",
+        "module": "k8s.io/klog/v2",
+        "module_h1": "h1:Tf+J3AH7xnUzZyVVXhTgGhEKnFqye14aadWv7bzXdzc=",
+        "version": "v2.140.0"
+      },
+      {
+        "go_mod_h1": "h1:0/mqHCVhlumdJ3BhCfnjSZQE037nAhNodh1/hK0T8/I=",
+        "module": "k8s.io/kube-openapi",
+        "module_h1": "h1:oXImqH8mQNk7PmvzKhmN3ddJoY6OnyM225MXwGHPm0A=",
+        "version": "v0.0.0-20260721132016-d427ff9ee9ad"
+      },
+      {
+        "go_mod_h1": "h1:APlJR26ZWRcVy5bIEj0QRrKUXROtBHPcxl2NT7EAzPU=",
+        "module": "k8s.io/streaming",
+        "module_h1": "h1:TpzVfQeFuVndn2g9mFqxy1UcUYPwDzqjUmwR/IzJCWc=",
+        "version": "v0.37.1"
+      },
+      {
+        "go_mod_h1": "h1:xDxuJ0whA3d0I4mf/C4ppKHxXynQ+fxnkmQH0vTHnuk=",
+        "module": "k8s.io/utils",
+        "module_h1": "h1:Ea7fgQ5we8Y9T0OX5o0dAHzQOBRI07D/dEYRaB9ZZEs=",
+        "version": "v0.0.0-20260626114624-be93311217bd"
+      },
+      {
+        "go_mod_h1": "h1:87/pZ4L6nD1zqW4nItuS12YO7hN1igAah34xjnQo/W0=",
+        "module": "modernc.org/libc",
+        "module_h1": "h1:Ct8j47QtiZ1Enj2DtFXQtUqrPCAjdCmPjtCuvrYQ0Hs=",
+        "version": "v1.77.1"
+      },
+      {
+        "go_mod_h1": "h1:4p5IwJITfppl0G4sUEDtCr4DthTaT47/N3aT6MhfgJg=",
+        "module": "modernc.org/mathutil",
+        "module_h1": "h1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU=",
+        "version": "v1.7.1"
+      },
+      {
+        "go_mod_h1": "h1:/JP4VbVC+K5sU2wZi9bHoq2MAkCnrt2r98UGeSK7Mjw=",
+        "module": "modernc.org/memory",
+        "module_h1": "h1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g=",
+        "version": "v1.12.1"
+      },
+      {
+        "go_mod_h1": "h1:1dIoEagfDE72QytD5scH1lxARtaUgKgHC/NuApA27r0=",
+        "module": "modernc.org/sqlite",
+        "module_h1": "h1:/blz53O951KWFOso4QQvEs/Fq6cDBKLtMVrYNSeJVKw=",
+        "version": "v1.60.1"
+      },
+      {
+        "go_mod_h1": "h1:mdzfpAEoE6DHQEN0uh9ZbOCuHbLK5wOm7dK4ctXE9Tg=",
+        "module": "sigs.k8s.io/json",
+        "module_h1": "h1:IpInykpT6ceI+QxKBbEflcR5EXP7sU1kvOlxwZh5txg=",
+        "version": "v0.0.0-20250730193827-2d320260d730"
+      },
+      {
+        "go_mod_h1": "h1:XeLlZ/jmk4i1HRopwe7/aU3H5n1zNUcX6TM94b3QxOY=",
+        "module": "sigs.k8s.io/randfill",
+        "module_h1": "h1:JfjMILfT8A6RbawdsK2JXGBR5AQVfd+9TbzrlneTyrU=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:M3W8sfWvn2HhQDIbGWj3S099YozAsymCo/wrT5ohRUE=",
+        "module": "sigs.k8s.io/structured-merge-diff/v6",
+        "module_h1": "h1:qdOxHwrl2Kaag1aQEarlYcOA9vSyGCp3CIki3aW8c4Q=",
+        "version": "v6.4.2"
+      },
+      {
+        "go_mod_h1": "h1:796bPqUfzR/0jLAl6XjHl3Ck7MiyVv8dbTdyT3/pMf4=",
+        "module": "sigs.k8s.io/yaml",
+        "module_h1": "h1:G8fkbMSAFqgEFgh4b1wmtzDnioxFCUgTZhlbj5P9QYs=",
+        "version": "v1.6.0"
+      }
+    ],
+    "phases": {
+      "normal": {
+        "Go_commands": 4,
+        "active_elapsed_seconds": 53.811657,
+        "actual_graph_packages": 853,
+        "actual_temporary_directories_empty": 3,
+        "all_original_command_and_FIFO_joins_exit_zero": true,
+        "authenticated_official_modules_PRE_and_POST": 88,
+        "failures": 0,
+        "named_run_pass_count": 36,
+        "official_authentication_PRE_POST_equal": true,
+        "raw_stream_hashes_verified": 8,
+        "real_role_native_SQL_secret_entropy_or_child_continuity_fixtures": 0,
+        "regular_output_files_closed_and_hashed_after_joins": true,
+        "result": "pass",
+        "root_run_pass_count": 13,
+        "sampled_stop_alarm": false,
+        "skips": 0,
+        "source_files_verified_PRE_and_POST": 3311,
+        "support_pins_verified": 735
+      },
+      "race": {
+        "Go_commands": 2,
+        "active_elapsed_seconds": 32.613632,
+        "actual_graph_packages": 855,
+        "actual_temporary_directories_empty": 3,
+        "all_original_command_and_FIFO_joins_exit_zero": true,
+        "authenticated_official_modules_PRE_and_POST": 88,
+        "failures": 0,
+        "named_run_pass_count": 36,
+        "official_authentication_PRE_POST_equal": true,
+        "raw_stream_hashes_verified": 4,
+        "real_role_native_SQL_secret_entropy_or_child_continuity_fixtures": 0,
+        "regular_output_files_closed_and_hashed_after_joins": true,
+        "result": "pass",
+        "root_run_pass_count": 13,
+        "sampled_stop_alarm": false,
+        "skips": 0,
+        "source_files_verified_PRE_and_POST": 3311,
+        "support_pins_verified": 747
+      }
+    },
+    "supervision_limits": {
+      "CPU_ceiling": 2,
+      "Go_runtime_concurrency": 1,
+      "Go_soft_memory_limit_bytes": 1610612736,
+      "active_seconds_including_teardown_per_phase": 115,
+      "build_parallelism": 1,
+      "cooperative_memory_bytes": 2147483648,
+      "limit": "Cooperative promises, sampled fences and bounded observations are not kernel-hard or native-Closed guarantees.",
+      "output_cap_bytes_per_phase": 16777216,
+      "test_timeout_seconds": 25,
+      "work_seconds_per_phase": 100
+    },
+    "test_selection": {
+      "effects": "Synthetic deadline arithmetic and context-value comparability plus unissued/copied/weak-flag early refusals. Existing canceled-context constructor control stops before native open. No successful original role/Start/auth/current/native/SQL/RNG/IO fixture is exercised.",
+      "existing_roots": 6,
+      "named_results": [
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestComposedParentPendingPrivateCommandSettingsCopyAndCancelledBeforeOpen"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestPreparedRootRequiresActualEntryAndOriginalBindings"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentCoreTimeoutRequiresActualPreparingRoot"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/detached-call"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/full-write"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/start-returned"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/copied"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/nil"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/unissued"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/zero"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/comparable-fields"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/map-both"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/nil-left"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/nil-right"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/same-background"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/slice-left"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/slice-right"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/child-independent-five-seconds"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-earlier"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-equal"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-expired"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-later"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentProtocolUnissuedPhaseCannotFinishOrCancel"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentRootProtocolContextDataRefusesMissingPreparedAndFooter"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/copied"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/nil"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/unissued"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/zero"
+        },
+        {
+          "normal_result": "pass",
+          "normal_run": true,
+          "race_result": "pass",
+          "race_run": true,
+          "test": "TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects"
+        }
+      ],
+      "new_roots": 7,
+      "package": "getarm.org/internal/server",
+      "root_tests": [
+        "TestComposedParentPendingPrivateCommandSettingsCopyAndCancelledBeforeOpen",
+        "TestPreparedRootRequiresActualEntryAndOriginalBindings",
+        "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal",
+        "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal",
+        "TestResidentCoreTimeoutRequiresActualPreparingRoot",
+        "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase",
+        "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects",
+        "TestResidentProtocolContextDataRejectsDynamicNonComparableValues",
+        "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor",
+        "TestResidentProtocolUnissuedPhaseCannotFinishOrCancel",
+        "TestResidentRootProtocolContextDataRefusesMissingPreparedAndFooter",
+        "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects",
+        "TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects"
+      ]
+    },
+    "vet": {
+      "packages": [
+        "getarm.org/internal/server",
+        "getarm.org/internal/manager",
+        "getarm.org/internal/database",
+        "getarm.org/internal/server/internal/residentbirth",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/internal/server/internal/nativeowner",
+        "getarm.org/internal/residentrefs",
+        "getarm.org/internal/residentprotocol",
+        "getarm.org/internal/mesh",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    }
+  },
+  "remaining_gates": [
+    "Successful genuine authenticated handoff/current-authority/native/SQL/image/journal/environment observation and eligible Linux execution remain untested.",
+    "Parent-owned reference retirement and original Process.Release/closure accounting remain open.",
+    "Resident controller, fresh worker schema, activation/admission/assets and replaceable same-binary API/UI workers remain open.",
+    "Public first/repeated/concurrent arm start integration and readiness remain open.",
+    "Actual managed-run/proxy identity, log/heartbeat/finish/renew/cancel/expiry/accounting continuity through upgrades, performance, shutdown and recovery remain unverified."
+  ],
+  "schema": 1,
+  "scope": "Private original resident Root handoff: selected normal and race arithmetic/refusal qualification",
+  "source": {
+    "base_commit": "bdc571b829c82f2b59e58628e5311fce2a5e29e6",
+    "feature_commit": "40626cddcbb267b2adb0fdaa7508450590a83baa",
+    "final_feature_project_source_manifest_sha256": "ead5f0287238a8284c8f1ac25da4e60bbca3d6a6394945dbcdf79dff4b8691b1",
+    "modified_existing_Go_files": 4,
+    "module_inputs": {
+      "go.mod": {
+        "git_blob": "b9679877850aab8e689d8abcab92e009381278f9",
+        "sha256": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+        "unchanged_at_final_feature": true
+      },
+      "go.sum": {
+        "git_blob": "4ad452644a1fda56b7a04aad3542747fde897087",
+        "sha256": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+        "unchanged_at_final_feature": true
+      }
+    },
+    "new_Go_files": 4,
+    "qualified_Go_files": 1922,
+    "qualified_project_source_manifest_sha256": "d2d3a7d8c9878860fead413110a4f0e0bdfc345ea034cbdbf5b09e305f19fdee",
+    "qualified_source_files": 3311,
+    "reviewed_Go_images": {
+      "internal/server/resident_child_original.go": {
+        "final_git_blob": "b7f81072642d2e8ee02e8b6790fdf7ecbc0a9778",
+        "final_sha256": "bc22e350765b5984f7a60e155e6491ec55c54b8b95d2cbce8e140e37a7779be5",
+        "ordinary_comments_only_after_qualification": true,
+        "qualified_git_blob": "d5991ee51472a2e61029fb622f8701fcf03f567d",
+        "qualified_sha256": "a08a336890a5fa679ad296f1673773e3f5282710b10cf866f85fa3d2875d6c37"
+      },
+      "internal/server/resident_core_entry.go": {
+        "final_git_blob": "cd6ed13476d56bfb7a1c5074b4bcf9efe614d43d",
+        "final_sha256": "ae90d681274285841fe77a89c3e6f8fa127f34d421cd308b3179cf3d0577268c",
+        "ordinary_comments_only_after_qualification": true,
+        "qualified_git_blob": "0a659f041c6dc3042796c9a8c3b4b8adfa60bf32",
+        "qualified_sha256": "9469e2340184df10fb7c7a9e28961d53f5d2557bbe597680d927385a1c427580"
+      },
+      "internal/server/resident_parent_original.go": {
+        "final_git_blob": "9eb4b15d3be7f5a8eaadb6eb086ed3782ab66358",
+        "final_sha256": "992d7fc7eb59bb1eac6299671b23a9d9d6f6d8ab5699aa41229678e55e6d5d3d",
+        "ordinary_comments_only_after_qualification": false,
+        "qualified_git_blob": "9eb4b15d3be7f5a8eaadb6eb086ed3782ab66358",
+        "qualified_sha256": "992d7fc7eb59bb1eac6299671b23a9d9d6f6d8ab5699aa41229678e55e6d5d3d"
+      },
+      "internal/server/resident_parent_protocol.go": {
+        "final_git_blob": "a1281155e0eb67d9d0c2d490fd0e8883c0c2523a",
+        "final_sha256": "b12d5b78aa2ad167875c55fc488f5da896ede1b4ce0749ad1d144c5f7a45a097",
+        "ordinary_comments_only_after_qualification": false,
+        "qualified_git_blob": "a1281155e0eb67d9d0c2d490fd0e8883c0c2523a",
+        "qualified_sha256": "b12d5b78aa2ad167875c55fc488f5da896ede1b4ce0749ad1d144c5f7a45a097"
+      },
+      "internal/server/resident_parent_protocol_test.go": {
+        "final_git_blob": "c4def2821d17cdcd7ed2bb6e6a5198717680ae70",
+        "final_sha256": "3b1b05b12c688549aa005f175df81af8d8d2cca31209ebbaf51241c5d50b9b02",
+        "ordinary_comments_only_after_qualification": false,
+        "qualified_git_blob": "c4def2821d17cdcd7ed2bb6e6a5198717680ae70",
+        "qualified_sha256": "3b1b05b12c688549aa005f175df81af8d8d2cca31209ebbaf51241c5d50b9b02"
+      },
+      "internal/server/resident_root_protocol.go": {
+        "final_git_blob": "625e4bd1da4b1a3869e5852619d773e3b248493a",
+        "final_sha256": "ad05a997ce8bb3dff7801fe0efa4eafac05c19c93d3ccd6d8c9598aea84429b4",
+        "ordinary_comments_only_after_qualification": false,
+        "qualified_git_blob": "625e4bd1da4b1a3869e5852619d773e3b248493a",
+        "qualified_sha256": "ad05a997ce8bb3dff7801fe0efa4eafac05c19c93d3ccd6d8c9598aea84429b4"
+      },
+      "internal/server/resident_root_protocol_test.go": {
+        "final_git_blob": "da301663cabd0e660a109ae67ed53e2329d53083",
+        "final_sha256": "e3d119cb7189d66be94c1f0c5864266c0ff7ff3f6d453978071a4cf2066913c4",
+        "ordinary_comments_only_after_qualification": false,
+        "qualified_git_blob": "da301663cabd0e660a109ae67ed53e2329d53083",
+        "qualified_sha256": "e3d119cb7189d66be94c1f0c5864266c0ff7ff3f6d453978071a4cf2066913c4"
+      },
+      "internal/server/resident_rootbound.go": {
+        "final_git_blob": "6ef88c7b26f366e08827281f53f721635f87668a",
+        "final_sha256": "0d57143910f08ef992defb8c38edc8caf1a2e25e0014ee0dc3c9fee2419b927a",
+        "ordinary_comments_only_after_qualification": false,
+        "qualified_git_blob": "6ef88c7b26f366e08827281f53f721635f87668a",
+        "qualified_sha256": "0d57143910f08ef992defb8c38edc8caf1a2e25e0014ee0dc3c9fee2419b927a"
+      }
+    },
+    "source_equivalence": {
+      "comment_files": [
+        "internal/server/resident_child_original.go",
+        "internal/server/resident_core_entry.go"
+      ],
+      "every_other_byte_in_qualified_source_equal": true,
+      "final_ordinary_comment_blocks_changed": 2,
+      "limit": "Tests/build bind the original qualified snapshot. The final feature commit adds only two reviewed ordinary comment clarifications; this is source-body equivalence, not a rebuilt artifact or machine-code identity claim. Later evidence changes only documentation.",
+      "line_counts_preserved": true,
+      "non_directive_whole_line_comments_only": true,
+      "qualified_snapshot_preserved": true,
+      "rerun_for_comments": false,
+      "runtime_bodies_unchanged_after_qualification": true
+    },
+    "whole_protected_Go_files": 1914,
+    "whole_protected_files": 3303
+  },
+  "startup_runner_review": {
+    "executed_proposal_revision_4": "Actual payload pinned; isolated startup; explicit clean outer/queue/Go maps; exact checked helper load; closed timestamp-shim directory. Only the observed platform key is deleted before exact map equality without reading or forwarding its value. Every other unexpected key refuses. Both actual selected qualification phases pass.",
+    "failure_classification": "No causal source-test failure is claimed or substituted; startup refusal and metadata diagnostic retain their own classifications.",
+    "metadata_diagnostic": {
+      "invocations": 1,
+      "no_environment_values_exposed": true,
+      "not_a_test_or_native_qualification": true,
+      "status": "pass_key_names_and_equality_booleans_only"
+    },
+    "proposal_revision_3": {
+      "Go_test_graph_vet_build_commands": 0,
+      "cause": "Actual interpreter startup added one platform encoding key beyond the frozen map; all four planned values and isolation flags matched in one separately authorized metadata-only diagnostic.",
+      "exit_code": 1,
+      "queue_submitted": false,
+      "status": "actual_startup_guard_refusal_before_queue"
+    },
+    "proposal_revisions_1_and_2": "Preserved unexecuted proposals, not test failures or passes."
+  },
+  "status": "scoped_normal_and_race_qualification_pass"
+}

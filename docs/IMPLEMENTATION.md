@@ -6431,3 +6431,55 @@ and contradictory Git relationships. The first source remains an unexecuted
 static-review predecessor. No actual client or Git compatibility is inferred.
 The wizard and activation flow do not yet consume this component; explicit
 checkout binding evidence and separately reviewed delivery remain later gates.
+
+## Private original Root handoff orchestration
+
+Source `40626cddcbb267b2adb0fdaa7508450590a83baa` now wires the private original
+parent and child protocol. The parent retains the same launch-and-transfer
+operation across its sole actual Cmd.Start and Wboot/Rack/Wchallenge/Rproof.
+Every phase requires the original normal Start call, its exact returned
+Process, command, group, debit, image, fence and inherited references. Transfer
+FullWrite remains DATA. Own Ack authentication precedes fresh service and
+postStart fence observations and complete Root context/settings/typed-intent
+comparisons. One retained 32-byte entropy call feeds own challenge signing;
+proof authentication checks the actual signed challenge and same context/nonce.
+Rack-only selectors are retained before advancement and remain refusing later.
+
+The genuine child entry invokes the private exchange after original prepare,
+prepared validation and RootBound completion, before its original outer normal
+publication. Its Rboot record is the exact existing bootstrap allocation and
+WithTimeout constructor; the added explicit clock is a post-constructor
+observation, not a constructor timestamp. Wack/Rchallenge/Wproof use three
+separate bounded IO scopes from the independent original Root lifetime. Parent
+scopes use the smaller actual startup deadline or observed time plus five
+seconds. Each actual typed IO result is recorded before its own cancellation;
+an already canceled IO scope is never used to invalidate completed normal work.
+Unreturned constructor/clock/Deadline/IO/cancel work remains pending and owned.
+
+The same issued challenge view, charge and original owners flow through service
+current read2, launch current read3, Manager including its actual original DB,
+Server, a fourth validation by the same native issuer, all thirteen references
+and a second current image observation. Root rebuilds a fresh canonical
+commitment within 32 KiB from those actual results and compares bytes and SHA
+with the original prepared call, current journals and full authenticated
+context. Two once-only completion checks enforce completed/no-pending Root and
+component results before signing and again before W2. After W2 consumes the
+view, even on partial/error, no view-dependent selector runs again.
+
+Foreign owner, native, SQL, IO, clock, context, entropy and cancellation calls
+remain outside Root mutexes. Existing direct recover/Goexit retention stays in
+place; final normal/error metadata follows original finish decisions, including
+the parent's late startup cancellation check. Constructor/cancel return and
+phase completion do not imply timer/poller/native quiescence or release credit.
+Wire/canonical logical bounds leave codec, journal, Env, hash, allocator and
+runtime costs separately charged and opaque.
+
+The final source differs from the qualified snapshot only in two ordinary
+non-directive comment blocks distinguishing preparation from the outer private
+authenticated exchange and public readiness. Line counts and all other bytes
+are unchanged; no tests were repeated for those comments and no final-source
+artifact identity is asserted. The official SQLite driver and module inputs
+remain unchanged. This component adds no parent retirement, Process.Release,
+resident controller, worker/schema/admission/assets, API/UI replacement or
+public `arm start` activation. Successful genuine exchange and upgrade survival
+remain untested.
