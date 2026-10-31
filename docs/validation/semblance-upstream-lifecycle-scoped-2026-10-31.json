@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "scope": "Selected upstream lifecycle correction; ARM dependency migration remains unaccepted",
+  "upstream_base": "cbb976cfb0667aa21d1876ab8c8e40fcc5c3e0d2",
+  "focused_source_patch_sha256": "6ca114c19ea103759feb17c5377c1754466994c25808ed1b43dfabfdda0ef462",
+  "build_and_targeted_window": {
+    "fresh_normal_backends": ["rust", "wat"],
+    "abi_checks_each": 10,
+    "strict_typecheck": "passed",
+    "targeted_entries": 8,
+    "unique_cases_passed": 177,
+    "generic_cases": {"original": 14, "indexed": 45, "cleanup": 10},
+    "failed_pending_skipped_todo": 0,
+    "actual_image_reads_and_source_build_bindings_checked": true
+  },
+  "separate_consumer_windows": {
+    "same_accepted_source_and_images": true,
+    "cost": {"entries": 1, "passed": 4, "failed_pending_skipped_todo": 0},
+    "soak": {"entries": 1, "passed": 1, "failed_pending_skipped_todo": 0},
+    "distinct_actual_wat_read_bindings_and_reports_checked": true,
+    "new_build_abi_or_generic_case_credit": false
+  },
+  "original_waits_quiet_logs_nonforced_stop_closure_and_final_pins_checked": true,
+  "earlier_failed_attempts_retained": true,
+  "remaining": [
+    "Upstream issue, plan linkage and focused draft PR",
+    "Final ARM dependency provenance and composed tests",
+    "Reproducible ARM assets and native embedding",
+    "Actual browser review and screenshots",
+    "Subsequent unified onboarding composition"
+  ],
+  "unsupported_claims": ["Full-suite acceptance", "Overall performance acceptance", "Completed ARM migration", "Production activation"]
+}

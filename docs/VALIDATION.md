@@ -12750,6 +12750,22 @@ from the prepared C3 End/expiry cancellation paths. No fixture-only cause,
 relaxed native authority, released obligations or accepted full composition is
 inferred. Earlier failed windows remain failed.
 
+Separate matched baseline and prepared-source diagnostics both fail the attached
+managed-storage Cargo case. Each complete bounded trace observes validated
+Finished, a cleanup signal returning a non-nil permission-refusal category,
+the sole Wait reaping a cached normal leader exit, an existing group-absent
+witness, and an uncertain settlement retaining the cleanup error. No explicit
+End, automatic expiry, generic cancellation, dedicated End cancellation or
+watcher-signal point is observed in either run. Original test, proxy and backend
+Wait/pipe joins, exact quiet logs, ordinary nonforced stop and fixture-backend
+closure are checked separately. The retained diagnostic fixtures remain intact.
+
+These observations identify a shared normal-completion cleanup path for further
+correction; they do not prove historical kernel ordering, the first native error
+or independent descendant quiescence. End/expiry cancellation overlap remains
+a separate source concern. No permission error is reclassified as absence, no
+sticky uncertainty is erased and no unknown obligation is released.
+
 The corrected owner-indexed Semblance source passes a separate scoped build
 and test window on upstream base `cbb976cf`: normal fresh Rust/WAT builds,
 ten ABI checks per backend, strict typecheck and all 177 unique qualified
@@ -12765,8 +12781,17 @@ before their intended assertions. A test-only correction changes ten layer
 selection calls from arrays to the declared Set contract, preserving all case
 titles, loops and assertions. Production API behavior is unchanged.
 
-Cost/soak qualification, full provenance, reproducible assets, ARM embedding,
-browser checks and subsequent onboarding composition remain open. The earlier
+Separate cost and soak processes pass all four and one actual cases respectively
+on the same accepted source and owned Rust/WAT images. Each has distinct fresh
+reports, consumer bindings and an actual WAT byte-read receipt. Actual entries,
+no-failure/no-skip totals, the accepted producer chain, both original test Waits,
+eight outer Waits, exact quiet logs, ordinary nonforced stop, closure and final
+source/input/image pins are checked. The
+[scoped record](validation/semblance-upstream-lifecycle-scoped-2026-10-31.json)
+grants no new build, ABI or generic-case credit to those two consumer windows.
+
+Full provenance, reproducible assets, ARM embedding, browser checks and
+subsequent onboarding composition remain open. The earlier
 103 RDF / 161 Node result belongs only to its recorded earlier ARM source;
 the new upstream result is not a completed ARM dependency migration.
 

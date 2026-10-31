@@ -6256,9 +6256,11 @@ race modes, with all 14 mandatory controls and targeted vet. The remaining
 window fails a managed Cargo storage test: successful build output does not
 establish a completed managed outcome or original group quiescence. The core
 Cargo finalizer is unchanged, but the prepared C3 End/expiry paths can add
-generic cancellation alongside dedicated Cargo cancellation. The actual
-failure route remains unresolved; no production correction or full composition
-acceptance is claimed.
+generic cancellation alongside dedicated Cargo cancellation. The matched
+diagnostic failures take the normal validated-Finished cleanup path
+and retain a permission refusal as uncertain settlement. End/expiry paths are
+unobserved in those runs. The native cause and production correction remain
+open; no full composition acceptance is claimed.
 
 The prepared Semblance dependency and ARM palette compatibility fix also remain
 unintegrated. Exact collection membership enables stock lazy entry validation;
@@ -6266,8 +6268,9 @@ an earlier run exposes a stale derived validation result after palette
 disposal. A limited source correction passes 103 RDF and 161 Node cases;
 the owner-indexed upstream successor has completed source review and scoped
 qualification: fresh Rust/WAT builds, both ABI cohorts, strict typecheck and
-177 targeted cases, including 69 generic regressions, pass. Cost/soak remains
-pending. Dependency acceptance requires final provenance, composed tests,
+177 targeted cases, including 69 generic regressions, pass. Separate cost and
+soak windows pass four and one cases respectively on the same accepted images.
+Dependency acceptance requires final provenance, composed tests,
 reproducible assets, native embedding and browser review. Stock
 Semblance remains the requested default, with Terminal selectable.
 

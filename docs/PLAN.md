@@ -4903,12 +4903,20 @@ unknown despite completed build output. Later subsets, race and vet are unrun.
 The full 224-root composition is unaccepted and its factory stays disabled.
 Source diagnosis and a bounded diagnostic must distinguish completion cleanup
 from End/expiry cancellation without weakening native ownership or accounting.
+Matched baseline and prepared-source diagnostics both reach a validated Finished
+message, then report a cleanup permission refusal and retain an uncertain
+settlement. Neither run exercises End, expiry or generic cancellation. A focused
+normal-completion cleanup correction and renewed composition checks remain open;
+the diagnostic does not establish native kernel ordering or clear obligations.
 
 Semblance's limited lifecycle source checks pass 103 RDF and 161 Node cases.
 The owner-indexed upstream successor has completed source review and passes
 fresh Rust/WAT builds, ten ABI checks per backend, strict typecheck and all
 177 cases in eight targeted entries, including 69 generic regression cases.
-Cost/soak qualification remains open. Complete dependency provenance,
+Separate cost and soak windows pass four and one cases respectively on the
+same accepted images, with distinct actual loader-read evidence and final pins.
+The [scoped record](validation/semblance-upstream-lifecycle-scoped-2026-10-31.json)
+does not establish full-suite or ARM dependency acceptance. Complete dependency provenance,
 assets, native embedding and browser checks precede onboarding UI composition.
 Public pressure, forwarding and sync activation remain separate unfinished gates.
 
