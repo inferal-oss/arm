@@ -4391,3 +4391,12 @@ control joined successfully. This older-base source is not integrated or
 activated. Positive funded withdrawal, the complete thirteen-reference root,
 actual sender/child acknowledgment and original run/proxy continuity remain
 implementation and validation gates.
+
+## Resident Linux CI candidate — offline harness checks only
+
+Coordinator review accepts 25 selected offline DATA/fake-transport checks for
+the private CI harness candidate. Review fixes include counting both owned
+checkouts and rejecting known observations without an artifact digest. The
+earlier failed fixture run remains separate. Harness/workflow publication,
+artifact acquisition, native Linux observation and actual resident launch or
+child continuity remain unaccepted gates; no candidate product source is landed.

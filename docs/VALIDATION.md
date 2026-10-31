@@ -12028,3 +12028,19 @@ This is normal, CGO-disabled qualification of unintegrated older-base source.
 It does not establish a successful funding debit, native service channel,
 withdrawal/send, composed root, child acknowledgment, public start, upgrade or
 child-process continuity. No current-main rerun or Linux runtime is claimed.
+
+## Resident CI harness — 25 offline DATA cases
+
+The [normalized result](validation/resident-linux-ci-data-2026-10-30.json)
+binds the frozen candidate harness manifest to 25 unique selected test outcomes.
+Coordinator review checked the raw roster, both output hashes, original unit
+and FIFO exit-0 joins, all 28 input/tool/support pins and empty test temporaries.
+The run used pinned Python 3.9 with network denied, CPU1/cooperative 256MiB and
+a 20-second work/10-second teardown envelope. No alarm was requested.
+
+The preceding run remains failed with 23 passes/two fixture errors. Only the
+fake redirect response bodies and their close assertions changed for the pass;
+the production downloader was unchanged. Linux Python 3.12 execution, downloads,
+Go build, actual collector/Docker observation, workflow dispatch and all resident
+funding/launch/child-continuity gates remain unrun. No harness source is landed
+by publishing this evidence.

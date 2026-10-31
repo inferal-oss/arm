@@ -5642,3 +5642,12 @@ withdrawal nor a completed write establishes child acknowledgment. Only data
 and refusal paths are qualified. The actual combined launch, child startup and
 worker replacement remain unimplemented gates; no candidate source is landed
 by this record.
+
+## Read-only Linux CI harness candidate
+
+The private harness draft uses immutable public collector source and artifact
+pins, retains original process/container controls, and publishes only a strict
+normalized capability result. Its storage monitor includes both owned checkouts
+and deduplicates native identities without following symlinks. Offline tests
+qualify data/refusal behavior only; the workflow and harness are not integrated,
+and no acquisition, native observer, resident activation or continuity follows.

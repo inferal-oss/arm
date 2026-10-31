@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "scope": "offline DATA and fake-transport CI candidate checks only",
+  "status": "25-exact-named-cases-pass-native-runtime-and-product-gates-unrun",
+  "candidate_harness_manifest_sha256": "47ea01868d264ec951f289d765edd3c4661a715b16372f35076bc6fb948a2691",
+  "candidate_public_observer_source_commit": "8de025c4bb995f9d00ad58b7abcf3b72a98cecfb",
+  "Python": "3.9",
+  "case_count": 25,
+  "named_cases": [
+    {
+      "name": "test_acquire.AcquisitionData.test_partial_response_bytes_and_hash_retained",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_acquire.AcquisitionData.test_anonymous_token_body_and_hash_not_persisted",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_acquire.AcquisitionData.test_empty_incomplete_response_never_completes",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_acquire.AcquisitionData.test_redirect_drops_authorization_and_hides_signed_url",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_acquire.AcquisitionData.test_unknown_redirect_refuses_before_second_contact",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_acquire.AcquisitionData.test_cap_checksum_and_deadline_refuse",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_budget.StorageData.test_checkout_alone_overflow_refuses",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_budget.StorageData.test_duplicate_and_nested_roots_charge_once",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_budget.StorageData.test_symlink_root_never_traverses_unrelated_storage",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_docker_owner.DockerFaultData.test_evidence_failure_preserves_stop_and_original_wait",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_docker_owner.DockerFaultData.test_failed_stop_still_waits_on_same_identity",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_docker_owner.DockerFaultData.test_partial_create_does_not_invent_identity_or_retry",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_docker_owner.DockerFaultData.test_precreate_evidence_failure_prevents_contact",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_docker_owner.DockerFaultData.test_isolation_and_readonly_artifact_mutations_refuse",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_docker_owner.DockerFaultData.test_teardown_ignores_new_work_storage_checkpoint",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_normalize.Normalization.test_actual_fields_drive_known_and_unknown",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_normalize.Normalization.test_join_exit_context_and_platform_refuse",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_normalize.Normalization.test_private_and_forged_authority_fields_never_publish",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_normalize.Normalization.test_invalid_bounds_and_nonfinite_refuse",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_normalize.Normalization.test_raw_duplicate_nonfinite_truncated_and_large_refuse",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_publish.Publication.test_minimal_unknown_preserved",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_publish.Publication.test_private_extra_field_refuses",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_publish.Publication.test_authority_and_success_contradictions_refuse",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_publish.Publication.test_nested_unknown_fields_refuse",
+      "outcome": "pass"
+    },
+    {
+      "name": "test_publish.Publication.test_complete_known_node_requires_artifact_digest",
+      "outcome": "pass"
+    }
+  ],
+  "bounds": {
+    "cpu": 1,
+    "cooperative_memory_bytes": 268435456,
+    "work_seconds": 20,
+    "original_teardown_seconds": 10,
+    "captured_output_stop_bytes": 2097152,
+    "new_owned_scratch_bytes": 33554432,
+    "retained_owned_storage_cap_bytes": 6442450944,
+    "retained_owned_storage_sampled_stop_bytes": 5905580032,
+    "fresh_submission_margin_bytes": 536870912,
+    "network": "denied",
+    "Docker_actions": false,
+    "subprocess_workload_fixtures": false,
+    "Go_builds": false,
+    "artifact_acquisition": false
+  },
+  "original_control_results": {
+    "FIFO_exit": 0,
+    "FIFO_joined": true,
+    "unit_exit": 0,
+    "unit_joined": true,
+    "exact_roster_matches": true,
+    "input_tool_support_pins_pre_post_match": true,
+    "input_pin_entries": 28,
+    "unit_output_hashes_verified": true,
+    "test_temporaries_empty": true,
+    "alarm_requested": false,
+    "unplanned_repeat": false
+  },
+  "preserved_failed_predecessor": {
+    "status": "failed",
+    "executed_cases": 25,
+    "passed_cases": 23,
+    "errors": 2,
+    "cause": "Two synthetic HTTP redirect responses lacked an owned closeable body; the corrected fixtures retain and assert closing their actual in-memory response bodies.",
+    "failed_result_reclassified_as_pass": false,
+    "runtime_downloader_weakened": false
+  },
+  "limitations": [
+    "Only the exact frozen candidate DATA functions and fake transports were tested on Python 3.9; native Linux Python 3.12 workflow execution is unrun.",
+    "No workflow source was published or dispatched; no artifact/module/image acquisition or Go build ran.",
+    "No actual host/container observer, native scope funding, MeasurementBirth or product RootClosed was exercised.",
+    "No funded resident launch, child ACK, API/UI worker replacement, public arm start or active run/proxy continuity was exercised.",
+    "The earlier failed attempt remains distinct and does not qualify as a pass."
+  ]
+}
