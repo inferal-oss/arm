@@ -1,0 +1,277 @@
+{
+  "boundaries": [
+    "Selected normal host synthetic DATA/refusal qualification, not a race run, broad suite or Linux execution.",
+    "Tests cover fixed-prefix DATA used by registration, nil/zero/copied/inert/unprepared early refusal, JSON value/pointer/wrapper/decode refusal and exact independent key-domain vectors in separate packages. Existing frame/custody/refusal controls remain.",
+    "No actual successful endpoint phase, signing/authentication/view issuance, real secret, entropy, socket/FD, deadline/timer, genuine role or positive native fixture ran. The command artifact was never executed.",
+    "Pure phase linkage and authenticated DATA do not establish native currentness, lifecycle completion, Closed or resource release credit.",
+    "Original fixed13/global legacy4 exclusion, birth2/read1/debit, old parent five-stage/pre-Start/short-seal restrictions, C4a codecs/capacity and official driver remain. Original finish changes are final normal metadata only.",
+    "Actual unused-grant/environment selection, prepared native/SQL/read-transaction and journal append/sync/current positives and measured whole-root funding remain unexercised.",
+    "Separate current service/launch/native/SQL validation, actual Root ACK/challenge/proof orchestration and parent-owned reference retirement/Process.Release remain unimplemented.",
+    "Worker-capable schema/controller/admission/assets, API/UI replacement, public first/repeat/concurrent arm start, managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/accounting upgrade survival and core shutdown/recovery remain open."
+  ],
+  "implemented_source_contract": {
+    "activation": "New phase/signing/authentication endpoints have no Root callers. Existing private bootstrap callsites are unchanged.",
+    "authority_limit": "View validation observes authenticated original phase linkage only; it grants no native currentness, Ready, admission or closure.",
+    "bridge": "New challengeview concrete aliases and bounded unsigned Body DATA only. Existing serviceview and mesh remain unchanged; no service-to-birth dependency or from-DATA authority constructor.",
+    "deadline": "New endpoint phases accept provided finite scopes no longer than five seconds at their recorded clock observation; deadline attempt/return/error are distinct. No actual scope constructor or timer execution is qualified.",
+    "fixed_child_roles": [
+      "bootstrap-read",
+      "bound-ack-write",
+      "current-challenge-read",
+      "current-proof-write"
+    ],
+    "fixed_parent_roles": [
+      "bootstrap-write",
+      "bound-ack-read",
+      "current-challenge-write",
+      "current-proof-read"
+    ],
+    "full_wire_max_bytes": 16384,
+    "max_actual_IO_calls_per_phase": 32,
+    "normal_completion": "Result metadata publication follows directly deferred original finish; original recovery and failure handling remain. Completed pure phase checks do not consult an old IO context after its own later cancellation.",
+    "opaque_view": "Sole own-service issuer publishes actual call and self-exact view before parsing, requires actual same-census read2 and prior actual W1 equal to original signed Ack, then authenticates context/nonce. W2 registration consumes the phase even if its IO fails; future Root must preclude pending current validators.",
+    "outer_header_bytes": 36,
+    "payload_max_bytes": 16348,
+    "phase_ownership": "Four fixed original operation slots and completed original normal outcomes per endpoint; no generic counter allowance. Partial, failed, abnormal or repeated slots cannot advance. Child generic send refuses.",
+    "service_signer": "Once-only signer checks completed same prepared/service3 append+sync and original custody/image/charge/initial two-record journal/read1/debit. It compares every service-owned context field, including exact image bytes, profile and canonical Env SHA, and exact raw-key domain commitment.",
+    "unverified_signer_fields": "Footer/settings/intent/launch links remain bounded DATA declarations; future Root must derive and structurally compare them before sending."
+  },
+  "normal_qualification": {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "-buildvcs=false",
+    "Go_version": "1.27.3",
+    "actual_dependency_graph": {
+      "POST_authenticated_modules": 88,
+      "PRE_POST_equal": true,
+      "PRE_authenticated_modules": 88,
+      "authentication": "Actual referenced official mod/ZIP/expanded-source Hash1 and go.sum; no replacements, downloads, cache seeding or dependency-cache write relaxation.",
+      "packages": 832,
+      "referenced_official_modules": 88,
+      "sqlite": "modernc.org/sqlite@v1.60.1"
+    },
+    "genuine_role_or_native_positive_fixtures": 0,
+    "helper_subprocesses": 0,
+    "native_command_compile_only": {
+      "artifact_bytes": 74608066,
+      "artifact_executed": false,
+      "artifact_sha256": "686ee25e3c479c8140b6543c9b18f9d79704bcf9292acaedba8af875efa1ba9a",
+      "result": "pass",
+      "target": {
+        "GOARCH": "arm64",
+        "GOOS": "darwin"
+      }
+    },
+    "new_DATA_refusal_named_results": 9,
+    "new_DATA_refusal_roots": 9,
+    "real_secret_or_entropy_access": false,
+    "relevant_existing_roots": 5,
+    "root_count": 14,
+    "supervision": {
+      "active_elapsed_seconds": 42.805931,
+      "all_original_Go_commands_joined_exit_zero": true,
+      "candidate_and_working_source_files_verified": 3283,
+      "command_stream_hashes_verified": 12,
+      "failed_predecessors_and_scratch_retained": true,
+      "new_temporary_inventories_empty": true,
+      "original_Go_commands": 6,
+      "owning_wrapper_joined_exit_zero": true,
+      "proposal_members_verified": 18,
+      "protected_function_and_file_contracts_verified": 55,
+      "protected_working_files_verified": 3271,
+      "reviewed_working_Go_files_verified": 12,
+      "sampled_stop_alarm": false,
+      "source_support_and_proposal_pins_unchanged": true,
+      "support_pins_verified": 329
+    },
+    "test_packages": [
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestFixedChildNonclosingViewsRefuseBeforeMaterialization"
+          },
+          {
+            "result": "pass",
+            "test": "TestOriginalFrameDataBoundsIncludeCompleteHeader"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ChallengeReadRejectsJSONValuePointerAndDecode"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ChildControlPrefixDataRequiresAllFourRolesInOrder"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ChildControlRefusesWithoutActualOriginalAndFiniteScope"
+          }
+        ],
+        "package": "getarm.org/internal/residentrefs",
+        "root_tests": [
+          "TestFixedChildNonclosingViewsRefuseBeforeMaterialization",
+          "TestOriginalFrameDataBoundsIncludeCompleteHeader",
+          "TestP1ChallengeReadRejectsJSONValuePointerAndDecode",
+          "TestP1ChildControlPrefixDataRequiresAllFourRolesInOrder",
+          "TestP1ChildControlRefusesWithoutActualOriginalAndFiniteScope"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestP1FooterKeyCommitmentDataAndFullFramingBounds"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterKeyDomainConformsToServiceData"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "root_tests": [
+          "TestP1FooterKeyCommitmentDataAndFullFramingBounds",
+          "TestP1FooterKeyDomainConformsToServiceData"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestP1ChallengeAndParentReadRejectJSONAuthority"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ChallengeRequiresActualCompletedRootBoundBeforeSecretUse"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1OriginalKeySHADataConformsToFooterDomain"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentControlPrefixDataRequiresAllFourRolesInOrder"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentControlRefusesWithoutActualGroupAndFiniteScope"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentFrameDataBindsFullHeaderChecksumAndCapacity"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentFrameDataBindsFullHeaderChecksumAndCapacity/checksum"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentFrameDataBindsFullHeaderChecksumAndCapacity/empty"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentFrameDataBindsFullHeaderChecksumAndCapacity/length"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentFrameDataBindsFullHeaderChecksumAndCapacity/oversize"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentFrameDataBindsFullHeaderChecksumAndCapacity/payload"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentFrameDataBindsFullHeaderChecksumAndCapacity/truncated"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1RootBoundRequiresActualPreparedCallBeforeEffects"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "root_tests": [
+          "TestP1ChallengeAndParentReadRejectJSONAuthority",
+          "TestP1ChallengeRequiresActualCompletedRootBoundBeforeSecretUse",
+          "TestP1OriginalKeySHADataConformsToFooterDomain",
+          "TestP1ParentControlPrefixDataRequiresAllFourRolesInOrder",
+          "TestP1ParentControlRefusesWithoutActualGroupAndFiniteScope",
+          "TestP1ParentFrameDataBindsFullHeaderChecksumAndCapacity",
+          "TestP1RootBoundRequiresActualPreparedCallBeforeEffects"
+        ]
+      }
+    ],
+    "unique_package_qualified_named_run_pass_pairs": 20,
+    "vet": {
+      "packages": [
+        "getarm.org/internal/residentrefs",
+        "getarm.org/internal/server/internal/residentbirth",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/internal/server/challengeview",
+        "getarm.org/internal/server",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    }
+  },
+  "schema": 1,
+  "scope": "Fixed original resident control phases and service-owned authenticated challenge view: selected normal synthetic DATA/refusal qualification",
+  "source": {
+    "base_commit": "02e7d749db5038a8e6ecadce82e4a2a9ccb7fa50",
+    "feature_commit": "786e323e6d2349a7c80cb939eb9d10b51dae1e9d",
+    "protected_function_and_file_contracts_verified": 55,
+    "qualified_Go_files": 1900,
+    "qualified_source_files": 3283,
+    "qualified_source_manifest_sha256": "4b733f69cea0bd37ef6038053b80c398238c026ea32fbc704d848c7eb8cbf9a6",
+    "reviewed_Go_files": {
+      "internal/residentrefs/child.go": {
+        "git_blob": "e462df3f0b7a5e487216b28e389883b9ae4383df",
+        "sha256": "49fd18ec7e6778d6d59162eae4f92dc8974328b8edb9436b50af17753741404a"
+      },
+      "internal/residentrefs/control.go": {
+        "git_blob": "ab5e4979e165818e81eb76c013f8574948ce3a06",
+        "sha256": "cab2b98e3e1c6e7bd13e7df7fe40bd024ef9608923e5f24dc42b1c97eaf7ea48"
+      },
+      "internal/residentrefs/control_phases.go": {
+        "git_blob": "15770fe1a64eef3c0498cd9295ca7d86473aa31f",
+        "sha256": "76d2317e553a9d914f18b10f3a4e9549097c5a31e89f3819bd97b7431dc1dfc2"
+      },
+      "internal/residentrefs/control_phases_test.go": {
+        "git_blob": "60521a460323a481519e7c4b999df62952fc55f7",
+        "sha256": "9aa2461680b10a0c70f9293b6381286d9cb4ce7fc17f737dce4d529c5b252755"
+      },
+      "internal/server/challengeview/view.go": {
+        "git_blob": "e4069b23d36798f6f1cacfc7430f3c01d377ab2e",
+        "sha256": "9eda5c78538211cfc62e7b00ff6ace1fc40bf665685d0f042a75e91b7857f076"
+      },
+      "internal/server/internal/residentbirth/control_key_domain_data_test.go": {
+        "git_blob": "4e9efe59945ad8faab512f017216e2648d3ca0ad",
+        "sha256": "e60342c8ea5dd11502811d9a6d84bd33da309f8b40a0261e5242d9f7476ea781"
+      },
+      "internal/server/internal/residentservice/current_challenge.go": {
+        "git_blob": "a95fc06c09f93b9cff550c3b5c7ad3fa6bac217a",
+        "sha256": "1ca8881ea5a7f21a10d5ef092112f4ae405866f1d9db356c29d7e137a807df95"
+      },
+      "internal/server/internal/residentservice/current_challenge_test.go": {
+        "git_blob": "f3aacd108db1bb09f87f69c90068f60ba19fc9f1",
+        "sha256": "19ce677dbae1cc31a54c9d7c8bb6d523a0aea75964011b3f1f7b2ccb881d80e0"
+      },
+      "internal/server/internal/residentservice/owner.go": {
+        "git_blob": "056e78d28a1d911e6ffbba25ae0eb9591a197a5d",
+        "sha256": "997dd67a456ced2e114097204a03297ff874fc0c91fdae6f43290187fdf63bc6"
+      },
+      "internal/server/internal/residentservice/p1_group.go": {
+        "git_blob": "bfb58e62588392b4964339cc598b8c7e964f6403",
+        "sha256": "8ce1f91ff5557925e6d155e3ee182169015b4a8e46352b49b4174d552b6964bc"
+      },
+      "internal/server/internal/residentservice/p1_parent_channel.go": {
+        "git_blob": "8ea9d30983b7c9772843121dc80d4d3182e9ffb0",
+        "sha256": "d54d44d0f143bf990de2a15f7704646fbef875addd304d17af2b4cc74160aaeb"
+      },
+      "internal/server/internal/residentservice/p1_parent_phases.go": {
+        "git_blob": "db9e73b92820bec36335dd4096de48221215a011",
+        "sha256": "9626715383fe8102667bd22bf06879491b65edd61bcdfb17f966b4b8c9bff0ed"
+      }
+    }
+  },
+  "status": "scoped_normal_qualification_pass"
+}

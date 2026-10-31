@@ -5879,3 +5879,42 @@ Coordinator composition retains the closed payload/capacity implementation as
 embedded input is identical to the reviewed snapshot. The official SQLite driver
 remains unchanged. No control phase is activated and no running backend or managed
 child is changed by this integration.
+
+## Fixed original control phases and service-owned challenge linkage
+
+The original child control endpoint has fixed bootstrap-read, BoundAck-write,
+CurrentChallenge-read and CurrentProof-write roles; the original parent has the
+complementary write/read/write/read roles. Each role retains its exact original
+operation, actual endpoint and final normal result in one fixed slot. Later roles
+require every earlier actual successful slot. Generic child send refuses. Each
+full frame includes its 36-byte header within 16 KiB and shares one 32-call IO
+budget over header and payload. New endpoint phases require supplied finite
+contexts within five seconds and distinguish clock/deadline attempts, returns
+and errors. No context constructor, new socket, wrapper or FD is added.
+
+Result publication runs after directly deferred original finish. The existing
+recover/failure behavior is preserved; its only addition is final normal metadata.
+Completed pure phase observation ignores a later cancellation of its own completed
+IO scope. Parent bootstrap retains its original channel-operation link separately
+from mutable transfer DATA. FullWrite or a Process value cannot replace the
+future Root's own Start/native/journal checks.
+
+A once-only service-owned BoundAck signer requires the same completed prepared
+and service3 operations, custody/image/charge and immutable two-record birth
+journal, original read1 and debit. It checks all service-owned context fields,
+including exact image bytes, canonical
+profile/Env and raw-key domain commitments. Footer/settings/intent/launch links
+remain bounded DATA here; Root must derive and compare them before sending.
+The sole challenge issuer publishes its actual operation and self-exact view in
+the owner and empty caller outslot before parsing. It binds the actual same-census
+read2 and actual prior W1 bytes to the original signed Ack, then authenticates the
+context and nonce. Registering W2 irreversibly consumes that phase even on later
+IO failure; future Root orchestration must preclude pending current validators.
+
+The new challengeview bridge exposes concrete aliases and bounded unsigned DATA
+only. Existing serviceview and mesh are unchanged, with no service-to-birth import
+cycle. JSON values, pointers, wrappers and decoding cannot recreate the opaque
+view/read. Pure validation grants no native currentness, Ready or closure.
+These new methods have no Root callers. Current journal/native/SQL checks, whole
+handoff/retirement, workers/schema/public-start wiring and live upgrade survival
+remain separate unimplemented gates.

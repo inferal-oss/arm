@@ -12330,3 +12330,39 @@ with the audited raw result. Later changes are documentation only. No test or
 binary was rerun for this composition, and the compile-only artifact remains
 unexecuted. This preserves the selected normal qualification and all stated
 native, live-upgrade and managed-child continuity limitations.
+
+## Fixed resident control phases — selected normal DATA/refusal qualification
+
+[Normalized evidence](validation/resident-original-control-phases-normal-2026-10-31.json)
+maps all twelve reviewed Go SHA256/Git-blob pairs to source commit
+`786e323e6d2349a7c80cb939eb9d10b51dae1e9d` and its exact 3,283-file/1,900-Go snapshot.
+All 14 selected roots/20 unique package-qualified raw run/pass pairs pass without
+skips or failures. Nine new roots cover fixed-prefix DATA used by registration,
+nil/zero/copied/inert/unprepared early refusal, opaque JSON value/pointer/wrapper/
+decode refusal and matching independent key-domain DATA vectors in separate
+packages. Five existing controls include six parent-frame subtests. No successful
+original endpoint, signing/authentication/view issue, real secret, entropy,
+socket/FD, timer/deadline, genuine role or positive native fixture is exercised.
+
+Default vet passes for six affected packages. A native command build passes with
+Go 1.27.3, CGO disabled and `GOFLAGS=-buildvcs=false` on all six graph/test/vet/build
+commands. Its 74,608,066-byte artifact has SHA256
+`686ee25e3c479c8140b6543c9b18f9d79704bcf9292acaedba8af875efa1ba9a`
+and was never executed. The actual graph contains 832 packages/88 official
+modules; actual mod/ZIP/expanded-source Hash1/go.sum authentication agrees PRE/
+POST, including unmodified SQLite v1.60.1, with the same cache/network fence.
+
+Independent review verifies six original Go and owning-wrapper exit-zero joins,
+twelve output hashes, candidate/working source and support/proposal pins, and
+55 preserved full-file/function contracts. The wave took 42.805931 seconds without
+an alarm; new temporary inventories are empty and prior failed evidence/scratch
+stays retained. This is selected normal host qualification, not a race/full-suite/
+Linux run, native-Closed or release-credit observation. Raw records stay private.
+
+Actual unused-grant/Env selection, prepared SQL/read transaction/native binding,
+journal append/sync/current positives and measured whole-root funding remain
+unexercised. Current service/launch/native/SQL observations, actual Root ACK/
+challenge/proof orchestration and parent-owned reference retirement remain
+unimplemented. Worker/schema/controller/admission/assets, API/UI replacement,
+public `arm start`, managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/
+accounting upgrade survival and core shutdown/recovery remain open.

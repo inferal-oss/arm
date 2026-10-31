@@ -4629,3 +4629,23 @@ service-owned challenge-view source cut for review, keeping it unactivated.
 Separate current native/journal/SQL validation, Root orchestration, parent-owned
 reference retirement, workers and public startup remain later gates. Actual
 managed child continuity across an upgrade has not been demonstrated.
+
+## Fixed resident control phases and challenge view — reviewed normal scope
+
+The existing upgrade task continues on `codex/resident-original-control-phases`
+from `02e7d74`, with focused source commit `786e323e6d2349a7c80cb939eb9d10b51dae1e9d`.
+Four fixed original control roles per endpoint, the once-only service signer and
+service-owned opaque authenticated challenge view are implemented without new
+Root callers. Independent source and selected normal result reviews pass;
+composed landing remains an integration gate. The [normalized result](validation/resident-original-control-phases-normal-2026-10-31.json)
+records 14 roots/20 named synthetic DATA/refusal and existing controls, six-package
+vet and a native compile-only command build.
+
+This does not exercise successful original endpoint/signing/view/secret/native
+behavior. Separate current service/launch/native/SQL observations, actual Root
+ACK/challenge/proof orchestration and parent-owned reference retirement are the
+next implementation gates. Worker-capable schema/controller/admission/assets,
+API/UI worker replacement and public first/repeat/concurrent `arm start` remain
+open. Actual positive funding/prepared/journal/environment gates, managed-run/
+proxy upgrade survival and shutdown/recovery remain unaccepted. Prior failed and
+separately passing scopes retain their classifications and preserved branches.
