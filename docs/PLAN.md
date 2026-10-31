@@ -5137,3 +5137,16 @@ and unknown save outcomes retain existing recovery and cancellation behavior.
 The next gate is a frozen source/test handoff and independent review. No new
 compiler, test, Git-probe, policy, native-client or terminal execution window is
 granted by this source disposition.
+
+## Resident upgrade: private handshake source review
+
+The `codex/resident-root-handoff` continuation has passed a bounded static
+review of its frozen private handshake delta against `bdc571b`. Eight source
+images match the handoff; all 3,303 protected files and exact reconstruction of
+the four edited baseline files were independently checked. This is not runtime
+qualification or an integrated feature. A concrete offline qualification packet
+for the 13 selected roots/36 named cases, affected vet and compile-only native
+build is requested before allocating execution. Public startup, replaceable
+workers, reference retirement and active-job survival remain outstanding.
+The full Linux VM proposal remains a plan pending separate setup approval;
+no download, boot or weakened cgroup verification is authorized.
