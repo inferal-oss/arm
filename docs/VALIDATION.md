@@ -13207,3 +13207,40 @@ for those documentation changes, and no new machine-code identity is asserted.
 Successful genuine handoff/current-authority/schema/native/SQL behavior,
 parent retirement, Linux eligibility, worker/public-start integration and real
 job/proxy continuity remain unaccepted. No installed backend or job changed.
+
+## Original parent reference retirement: selected normal/race checks
+
+The [normalized qualification](validation/resident-parent-retirement-normal-race-2026-10-31.json)
+binds source `6229d722` to the exact reviewed 3,378-file, 1,974-Go-file snapshot,
+all sixteen changed production/test file hashes and Git blobs, module inputs,
+complete package-qualified rosters and unexecuted command artifact. No Go source
+or comment changed after qualification. These notes and the normalized record
+are later documentation-only changes; they do not assert a rebuilt artifact.
+
+Each mode ran 22 roots and 61 named cases without skips or failures across four
+packages: the previous 13 roots/36 handoff controls plus nine new roots/25 names
+covering copied/unissued original closers, incomplete handoff/Start flags and
+permanently sealed ordinary native entries. These are negative/seal checks;
+none performs a successful original parent close or process-handle release.
+
+Normal qualification additionally passes default vet on ten affected packages
+and native command compilation. Its seven original command envelopes and the
+race phase's five return/join with exit zero. The normal/race graphs contain
+854/856 packages with the same 88 official modules. Referenced module files,
+archives, expanded-source hashes and go.sum agree before and after; the official
+SQLite driver remains pinned and unchanged. Actual Go, test and GOPATH temporary
+inventories are empty afterward, and source/tool/support pins remain unchanged.
+
+The 75,077,778-byte compile-only command has SHA-256
+`91041ad0e144785fb188e5d9a6c016860ac73c5f6d362674579e8ac06c96b7db`.
+It was never executed and remains unchanged after race qualification. Both
+resource windows are released; retained failed launchers and unknown obligations
+remain charged without cleanup or reclamation credit. Earlier runner setup
+refusals executed no Go commands and are distinct from the passing source tests.
+
+Successful genuine handoff/reference retirement, resident Manager/controller
+operation, worker launch/admission/activation/assets, public first/repeated/
+concurrent startup and actual A-to-B managed-run/proxy survival remain open.
+Quiet heartbeat/finish, renewal, cancellation, expiry, native closure/accounting,
+Linux eligibility and VM setup receive no acceptance from these checks. No
+installed backend or real job was replaced or terminated.

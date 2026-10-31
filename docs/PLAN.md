@@ -5234,3 +5234,34 @@ Successful genuine handoff, current-authority/schema/SQL behavior, parent
 retirement, worker/public-start activation and active-job continuity remain
 open. No running backend or job was replaced. The next runtime stage requires
 a separately reviewed genuine fixture; the Linux VM remains a setup proposal.
+
+## Original parent reference retirement: scoped source complete
+
+Owner branch `codex/resident-parent-retirement`, source `6229d722`, adds the
+private original launcher's reference-retirement operation after the completed
+authenticated handoff. Actual constructor-issued closers permanently seal their
+original owners, retire pin4, fence6, service3 and control2 in order, then permit
+only the actual original process handle's `Release`. Pending/error outcomes
+remain retained and charged; no resident or job is waited for or terminated.
+
+Independent source review and selected normal/race qualification pass against
+the same source images: 22 roots and 61 named cases in each mode, ten-package vet
+and a native compile-only command build. The
+[normalized record](validation/resident-parent-retirement-normal-race-2026-10-31.json)
+binds all sixteen changed source/test files, complete rosters, official modules
+and the unexecuted artifact. Later delivery notes change documentation only.
+Central composition/review/integration remain separate delivery gates.
+
+Remaining upgrade work includes successful genuine handoff and parent retirement,
+the original resident's running Manager/controller, distinct fresh worker format
+and typed native/resource admission, actual replaceable API/HTML/assets, and
+public startup/readiness. Initial supported activation is explicit
+`arm start --resident --key KEY` with reviewed standing authorization/package;
+subsequent ordinary `arm start` must reuse or replace that resident's workers.
+Existing legacy starts remain compatible, and requested live conversion must
+preserve the legacy authority/jobs and report its unsupported migration limit.
+
+Completion still requires real A-to-B public upgrade evidence for original
+managed jobs and CLI proxy children, including output, quiet heartbeat, finish,
+renew, cancel, expiry and failed-candidate continuity. The selected refusal/seal
+checks do not establish that behavior or native closure/resource credit.

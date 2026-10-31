@@ -6499,3 +6499,35 @@ refusal paths; successful genuine schema/current-authority behavior and its
 native/SQL budgets remain unqualified. The official SQLite driver is unchanged.
 Later upstream documentation and these delivery notes preserve the tested
 runtime/module/asset images. Public startup and worker replacement are inactive.
+
+## Private original-parent reference retirement
+
+Source `6229d722` adds a private retirement entry to the original composed parent.
+It requires the same original prepare and final-normal launch operations, actual
+successful Start and returned process, four completed original protocol phases,
+own authentication/current observations and exact proof context/nonce. Splitting
+the pure binding check preserves the original protocol's active/unfinished gate;
+it does not make completed protocol records reusable for another launch.
+
+New constructor variants return actual pin, fence and service parent-reference
+owners once. No borrowed-object getter issues one. The root retains them before
+effects, registers irreversible retirement and permanently seals original native
+entries. It closes only the exact original parent references: pin4, fence6,
+service3 and control2 last. Each attempted/returned/error close remains retained;
+unknown, error or cancellation stops later steps and cannot authorize retry or
+capacity release. Held identities/access flags and successful auxiliary history
+are checked; child SQL/footer growth does not require an empty ledger or an old
+journal size.
+
+Only after all four actual component calls return successfully may this original
+operation call its actual original process handle's `Release` once. This disposes
+the launcher handle while the resident remains alive and funded. It performs no
+Wait, PID lookup, group signal, Manager/database close, unlock, pathname reopen or
+unlink, and establishes no native Closed or released resource promise.
+
+The sixteen source/test images are unchanged from selected normal/race checks.
+This remains a private, unwired component: Manager loops, workers, fresh worker
+format/admission, assets, actual API/UI readiness and public `arm start` have not
+been activated. Successful native retirement and real upgrade/job continuity
+still require genuine fixtures. The later worker design must keep all existing
+unextracted UI/API/domain/reporting operations on their resident ownership paths.

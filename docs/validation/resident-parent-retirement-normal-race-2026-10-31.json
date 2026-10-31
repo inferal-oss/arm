@@ -1,0 +1,1557 @@
+{
+  "acceptance_limit": "Pure negative/seal tests and source review only. No successful original close/release or genuine core/worker/public startup/live upgrade/job-survival, native Closed or capacity-reclamation acceptance.",
+  "implementation": {
+    "accounting": "Parent reference or Process.Release observations do not prove resident/native Closed or release standing resource promises. Unknown ownership remains retained and charged.",
+    "authority": "Actual constructor-issued original parent closers and final-normal original prepare/launch/Start/authenticated four-phase handoff records; copied owners, DTOs, FullWrite and Process pointers cannot authorize retirement.",
+    "entry": "Private original parent retirement, not wired to public arm start.",
+    "native_checks": "Exact original held reference identities/flags and known auxiliary history. No pathname reopen/unlink/unlock, SQL pool close, Manager stop, process lookup, Wait or resident/job signal. Growing child ledger/footer sizes are not compared to pre-Start sizes.",
+    "order": [
+      {
+        "component": "pin",
+        "original_parent_references": 4
+      },
+      {
+        "component": "fresh fence",
+        "original_parent_references": 6
+      },
+      {
+        "component": "service",
+        "original_parent_references": 3
+      },
+      {
+        "component": "control endpoints last",
+        "original_parent_references": 2
+      },
+      {
+        "component": "actual original Process.Release",
+        "meaning": "Launcher-handle disposition only; resident remains live and funded."
+      }
+    ],
+    "sealing": "An irreversible original root operation and permanent original component seals precede native disposition. Each exact close retains attempted/returned/error state; stop on partial, error, cancellation or unknown, with no blind retry."
+  },
+  "qualification": {
+    "Go_version": "1.27.3",
+    "driver": "Official pinned modernc.org/sqlite v1.60.1; no replacement, download, cache write/repair, seeding or fallback.",
+    "earlier_runner_refusals": [
+      {
+        "cause": "Helper-pin key shape mismatch",
+        "scope": "before any Go command",
+        "source_test_failure": false
+      },
+      {
+        "cause": "Stale predecessor normal-command cardinality",
+        "scope": "before queue or any Go command",
+        "source_test_failure": false
+      }
+    ],
+    "modes": [
+      {
+        "Go_commands": 7,
+        "actual_Go_test_and_GOPATH_temporary_inventories_empty": true,
+        "actual_dependency_packages": 854,
+        "default_vet_packages": 10,
+        "exact_named_results": [
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestComposedParentPendingPrivateCommandSettingsCopyAndCancelledBeforeOpen"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestPreparedRootRequiresActualEntryAndOriginalBindings"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentCoreTimeoutRequiresActualPreparingRoot"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/detached-call"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/full-write"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/start-returned"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/unissued"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementGateRefusesUnissuedBeforeDisposition"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff/copied"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff/nil"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff/unissued"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff/zero"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementStartAndProtocolFlagsCannotAuthorize"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/comparable-fields"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/map-both"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/nil-left"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/nil-right"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/same-background"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/slice-left"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/slice-right"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/child-independent-five-seconds"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-earlier"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-equal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-expired"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-later"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolUnissuedPhaseCannotFinishOrCancel"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolContextDataRefusesMissingPreparedAndFooter"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/unissued"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/not-launched"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentRetirementPermanentlySealsOrdinaryEntries"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/not-launched"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentRetirementPermanentlySealsOrdinaryEntry"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/not-launched"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentRetirementPermanentlySealsOrdinaryEntry"
+          }
+        ],
+        "exact_roots": [
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentProtocolUnissuedPhaseCannotFinishOrCancel"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentRootProtocolContextDataRefusesMissingPreparedAndFooter"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestPreparedRootRequiresActualEntryAndOriginalBindings"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentCoreTimeoutRequiresActualPreparingRoot"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestComposedParentPendingPrivateCommandSettingsCopyAndCancelledBeforeOpen"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentRetirementStartAndProtocolFlagsCannotAuthorize"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentRetirementGateRefusesUnissuedBeforeDisposition"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "test": "TestPinParentRetirementPermanentlySealsOrdinaryEntries"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "test": "TestFenceParentRetirementPermanentlySealsOrdinaryEntry"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "test": "TestServiceParentRetirementPermanentlySealsOrdinaryEntry"
+          }
+        ],
+        "failures": 0,
+        "mode": "normal",
+        "named_case_count": 61,
+        "official_referenced_modules": 88,
+        "official_source_mod_zip_expanded_h1_go_sum_verified_pre_and_post": true,
+        "original_Go_command_envelopes_joined_with_exit_zero": true,
+        "regular_captured_command_streams": 14,
+        "result": "pass",
+        "root_count": 22,
+        "skips": 0,
+        "source_and_tool_pins_unchanged": true,
+        "test_packages": 4
+      },
+      {
+        "Go_commands": 5,
+        "actual_Go_test_and_GOPATH_temporary_inventories_empty": true,
+        "actual_dependency_packages": 856,
+        "default_vet_packages": 0,
+        "exact_named_results": [
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestComposedParentPendingPrivateCommandSettingsCopyAndCancelledBeforeOpen"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestPreparedRootRequiresActualEntryAndOriginalBindings"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentCoreTimeoutRequiresActualPreparingRoot"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/detached-call"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/full-write"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/start-returned"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/unissued"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementGateRefusesUnissuedBeforeDisposition"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff/copied"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff/nil"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff/unissued"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff/zero"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentParentRetirementStartAndProtocolFlagsCannotAuthorize"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/comparable-fields"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/map-both"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/nil-left"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/nil-right"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/same-background"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/slice-left"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/slice-right"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/child-independent-five-seconds"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-earlier"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-equal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-expired"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-later"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentProtocolUnissuedPhaseCannotFinishOrCancel"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolContextDataRefusesMissingPreparedAndFooter"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/unissued"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "result": "pass",
+            "test": "TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/not-launched"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "result": "pass",
+            "test": "TestPinParentRetirementPermanentlySealsOrdinaryEntries"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/not-launched"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "result": "pass",
+            "test": "TestFenceParentRetirementPermanentlySealsOrdinaryEntry"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/copied"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/nil"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/not-launched"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects/zero"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "result": "pass",
+            "test": "TestServiceParentRetirementPermanentlySealsOrdinaryEntry"
+          }
+        ],
+        "exact_roots": [
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentProtocolUnissuedPhaseCannotFinishOrCancel"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentRootProtocolContextDataRefusesMissingPreparedAndFooter"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestPreparedRootRequiresActualEntryAndOriginalBindings"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentCoreTimeoutRequiresActualPreparingRoot"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestComposedParentPendingPrivateCommandSettingsCopyAndCancelledBeforeOpen"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentRetirementRequiresCompletedOriginalHandoff"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentRetirementStartAndProtocolFlagsCannotAuthorize"
+          },
+          {
+            "package": "getarm.org/internal/server",
+            "test": "TestResidentParentRetirementGateRefusesUnissuedBeforeDisposition"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "test": "TestPinParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/mesh",
+            "test": "TestPinParentRetirementPermanentlySealsOrdinaryEntries"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "test": "TestFenceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentbirth",
+            "test": "TestFenceParentRetirementPermanentlySealsOrdinaryEntry"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "test": "TestServiceParentReferenceOwnerRefusesUnissuedCopiedBeforeEffects"
+          },
+          {
+            "package": "getarm.org/internal/server/internal/residentservice",
+            "test": "TestServiceParentRetirementPermanentlySealsOrdinaryEntry"
+          }
+        ],
+        "failures": 0,
+        "mode": "race",
+        "named_case_count": 61,
+        "official_referenced_modules": 88,
+        "official_source_mod_zip_expanded_h1_go_sum_verified_pre_and_post": true,
+        "original_Go_command_envelopes_joined_with_exit_zero": true,
+        "regular_captured_command_streams": 10,
+        "result": "pass",
+        "root_count": 22,
+        "skips": 0,
+        "source_and_tool_pins_unchanged": true,
+        "test_packages": 4
+      }
+    ],
+    "native_command_compile_only": {
+      "artifact_executed": false,
+      "bytes": 75077778,
+      "normal_artifact_rehashed_unchanged_after_race": true,
+      "result": "pass",
+      "sha256": "91041ad0e144785fb188e5d9a6c016860ac73c5f6d362674579e8ac06c96b7db"
+    },
+    "native_compile_target": {
+      "GOARCH": "arm64",
+      "GOOS": "darwin"
+    },
+    "not_exercised": [
+      "successful original parent close/release",
+      "genuine resident role or Manager loops",
+      "worker native launch/Wait/activation/admission",
+      "fresh worker schema or package/assets runtime",
+      "public first/repeated/concurrent arm start",
+      "actual managed-run/proxy output/heartbeat/finish/renew/cancel/expiry continuity across an upgrade",
+      "Linux eligibility or VM setup",
+      "native closure/resource credit"
+    ],
+    "official_modules": [
+      {
+        "go_mod_h1": "h1:wdMgn+sje1KNXdwFizIWjbf328fIUBxqEmJ/vYPo8yc=",
+        "module": "charm.land/bubbles/v2",
+        "module_h1": "h1:Fq1+qm5hV6GkvzLQDhCBpXXE5tLgvh1PRriCLwSvIQU=",
+        "version": "v2.2.1"
+      },
+      {
+        "go_mod_h1": "h1:xWHeyxIX9/wiFU2kgPW04ojOZyTzrWf+8lGjUCaftiU=",
+        "module": "charm.land/bubbletea/v2",
+        "module_h1": "h1:A9fj9h5LFrvQhQHFNggp8K8rvY6CUfgn9dMbb6p2HIw=",
+        "version": "v2.1.0"
+      },
+      {
+        "go_mod_h1": "h1:ipDDJNSGa1hlwDtSfW1s2/xR8Vdhbut4PXh2zEKZd0Q=",
+        "module": "charm.land/lipgloss/v2",
+        "module_h1": "h1:EaGKeuA8FvF+v2BT5VmZd2LoYLaMZJXA5n34th8nCIQ=",
+        "version": "v2.0.6"
+      },
+      {
+        "go_mod_h1": "h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=",
+        "module": "github.com/BurntSushi/toml",
+        "module_h1": "h1:dRaEfpa2VI55EwlIW72hMRHdWouJeRF7TPYhI+AUQjk=",
+        "version": "v1.6.0"
+      },
+      {
+        "go_mod_h1": "h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=",
+        "module": "github.com/atotto/clipboard",
+        "module_h1": "h1:EH0zSVneZPSuFR11BlR9YppQTVDbh5+16AmcJi4g1z4=",
+        "version": "v0.1.4"
+      },
+      {
+        "go_mod_h1": "h1:/zT4BhpD5aGFpqQQqw7a+VtHCzu+zrQtt1zhMt9mR4Q=",
+        "module": "github.com/charmbracelet/colorprofile",
+        "module_h1": "h1:QPa1IWkYI+AOB+fE+mg/5/4HRMZcaXex9t5KX76i20Q=",
+        "version": "v0.4.3"
+      },
+      {
+        "go_mod_h1": "h1:aJDVk+WOVM1K04rdc/71PMPoUGfjxjhvXfP3Pjz1Zio=",
+        "module": "github.com/charmbracelet/ultraviolet",
+        "module_h1": "h1:hISLzUbwcvJbGoNR6A3L/TpguRRnACBmZOee8LcHLJw=",
+        "version": "v0.0.0-20261008173134-6b8d4baf91b4"
+      },
+      {
+        "go_mod_h1": "h1:DG/hpOnaI2QJ/KMMqLL2h0KVhluuJLazf8973P+Vy5w=",
+        "module": "github.com/charmbracelet/x/ansi",
+        "module_h1": "h1:kIrqLBxtTVbLyyHO2Evoi93EjQo1mylWmpNEsfPxXAM=",
+        "version": "v0.11.9"
+      },
+      {
+        "go_mod_h1": "h1:kF8CY5RddLWrsgVwpw4kAa6TESp6EB5y3uxGLeCqzAI=",
+        "module": "github.com/charmbracelet/x/term",
+        "module_h1": "h1:xVRT/S2ZcKdhhOuSP4t5cLi5o+JxklsoEObBSgfgZRk=",
+        "version": "v0.2.2"
+      },
+      {
+        "go_mod_h1": "h1:rB7fnv1TgOPOyyKRJ9o+AsTU/vK5WHJ2ivHeut/Pcwo=",
+        "module": "github.com/charmbracelet/x/termios",
+        "module_h1": "h1:o3Q2bT8eqzGnGPOYheoYS8eEleT5ZVNYNy8JawjaNZY=",
+        "version": "v0.1.1"
+      },
+      {
+        "go_mod_h1": "h1:/8XtdKZzedat74NQFn0NGlGL4soHB0YQZrETF96h75k=",
+        "module": "github.com/charmbracelet/x/windows",
+        "module_h1": "h1:IofanmuvaxnKHuV04sC0eBy/smG6kIKrWG2/jYn2GuM=",
+        "version": "v0.2.2"
+      },
+      {
+        "go_mod_h1": "h1:bkrFNkf81G8HyVqmKGxsPufD3JhNl3dSqnGhOoSD/o0=",
+        "module": "github.com/clipperhouse/displaywidth",
+        "module_h1": "h1:lBc6kY44VFw+TDx4I8opi/EtL9m20WSEFgwIwO+UVM8=",
+        "version": "v0.11.0"
+      },
+      {
+        "go_mod_h1": "h1:EFJ2TJMRUaplDxHKj1qAEhCtQPW2tJSwu5BF98AuoVM=",
+        "module": "github.com/clipperhouse/uax29/v2",
+        "module_h1": "h1:+gs4oBZ2gPfVrKPthwbMzWZDaAFPGYK72F0NJv2v7Vk=",
+        "version": "v2.7.0"
+      },
+      {
+        "go_mod_h1": "h1:NX3SzP+inril6yawo5CQXx8+fk145lPDC6pumgx0mVg=",
+        "module": "github.com/coder/websocket",
+        "module_h1": "h1:6B2JPeOGlpff2Uz6vOEH1Vzpi0iUz20A+lPVhPHtNUA=",
+        "version": "v1.8.15"
+      },
+      {
+        "go_mod_h1": "h1:08sCNb52WyoAwi2QDyzUCTgcvVFhUzewun7wtTfvcwE=",
+        "module": "github.com/creack/pty",
+        "module_h1": "h1:bJrF4RRfyJnbTJqzRLHzcGaZK1NeM5kTC9jGgovnR1s=",
+        "version": "v1.1.24"
+      },
+      {
+        "go_mod_h1": "h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=",
+        "module": "github.com/davecgh/go-spew",
+        "module_h1": "h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=",
+        "version": "v1.1.2-0.20180830191138-d8f796af33cc"
+      },
+      {
+        "go_mod_h1": "h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=",
+        "module": "github.com/dustin/go-humanize",
+        "module_h1": "h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=",
+        "version": "v1.0.1"
+      },
+      {
+        "go_mod_h1": "h1:DCHPP08djqhNSoTfImcnHYQRZmd0qhakvrozqaEYhGQ=",
+        "module": "github.com/ebitengine/purego",
+        "module_h1": "h1:WWiTx8rD8zYdOwSj8O/NiNbsOvSAgJMTlyV1XlbUSeU=",
+        "version": "v0.11.2"
+      },
+      {
+        "go_mod_h1": "h1:6n3XBCmQQb25CM2LCACGz8ukIrRry+4bhvbpWn3mrbc=",
+        "module": "github.com/emicklei/go-restful/v3",
+        "module_h1": "h1:C4Bl2xDndpU6nJ4bc1jXd+uTmYPVUwkD6bFY/oTyCes=",
+        "version": "v3.13.0"
+      },
+      {
+        "go_mod_h1": "h1:vM4b+DJCtHn+zz7h3FFp/hDAI9WNWCsZj23V5ytsSxQ=",
+        "module": "github.com/fxamacker/cbor/v2",
+        "module_h1": "h1:2rWm8B193Ll4VdjsJY28jxs70IdDsHRWgQYAI80+rMQ=",
+        "version": "v2.9.1"
+      },
+      {
+        "go_mod_h1": "h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=",
+        "module": "github.com/go-logr/logr",
+        "module_h1": "h1:CjnDlHq8ikf6E492q6eKboGOC0T8CDaOvkHCIg8idEI=",
+        "version": "v1.4.3"
+      },
+      {
+        "go_mod_h1": "h1:Z3rw7dWu1p9IgitXCFamSlA5lmDiklEB6vkaxcNZW5Y=",
+        "module": "github.com/go-openapi/jsonpointer",
+        "module_h1": "h1:kR9tHqY0CtZaOPVFm622dPVNhrvYpwr4uCxgL3h1H8s=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:jtwdyGbJk0Xhe5Y+rwtglQP6Sb1WZST4rT32LWB+sv0=",
+        "module": "github.com/go-openapi/jsonreference",
+        "module_h1": "h1:jlmTr6torcd1YgDQvSfNmRtKzYDO4FGBkrAdlAVWnpY=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:GTkJPwHfhJp6MWr4/rCh64HVI3Ofu+tcsbfjfHmTxpE=",
+        "module": "github.com/go-openapi/swag",
+        "module_h1": "h1:VotvOLWW8q/EAxB0YdsBBGC8XYyeL1YwBj2ungAGPNg=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:Sm1MVFMkF6guJJ+pQqHnQA3N0j9qALV3NxzDSv6bETM=",
+        "module": "github.com/go-openapi/swag/cmdutils",
+        "module_h1": "h1:I7sYqaWVl5mq0NEmNQkAmFDyNin9ufvMX/p2zwtQaOE=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:QbqMivkpKhC3g1B1GGGOJ6ANewI3S62dbzYu3Duowqs=",
+        "module": "github.com/go-openapi/swag/conv",
+        "module_h1": "h1:8wi9ZG+olmY1wXphl93EWniPtbSPkXM/feH7FgjsvrU=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:VvJFZLTZS0AI854gEQz5tk7dBESdLjiNUMSZ/th2ry8=",
+        "module": "github.com/go-openapi/swag/fileutils",
+        "module_h1": "h1:QQqBSoi5mW4XpU85nS0mLcA+zAE6vLzrb0QkmLKf9oM=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:tdlEpZqdcQ17uj6J4YdK9vd8It5qWMwjWXOs0tjpRlk=",
+        "module": "github.com/go-openapi/swag/jsonutils",
+        "module_h1": "h1:SVgK3i4USzCU5mibOOS/l4ea2h9UQXy7J7RNLTjuXjU=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:jvGh3iA2+zyUUycB5fgJWzeHnhrpvGnJJM0RVE9ZShE=",
+        "module": "github.com/go-openapi/swag/loading",
+        "module_h1": "h1:/DxUgDXKbBX4bcn7r9uEXfJyzN5XpiJmZplzQTjrRCY=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:jtBE2+V+3pILxOR7Vgce+Cwp6A2PgZbvVqfNntbVs0w=",
+        "module": "github.com/go-openapi/swag/mangling",
+        "module_h1": "h1:yC9D0HyUE8gbP+BfmGx9+AA89ikwZTMjESK3OnnoaqA=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:J+WYyFMLtvtCGqa6jLv+YNUmIKI3ZRQRrvfNDMoQoEQ=",
+        "module": "github.com/go-openapi/swag/netutils",
+        "module_h1": "h1:mICMFoS82F5TZ4Zy3cqmcQk+BFeCp3Uyq3Np7GI0/qU=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:kVQefhSK5RWuRe7BXsL8htgBPAMpN7HDGpGEknqugeE=",
+        "module": "github.com/go-openapi/swag/pools",
+        "module_h1": "h1:9LeadcMyb2GJCbXX5hVQDbZ2Lq9TL4dCs/nx1j5DO0E=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:lzRN95CxXmA03XcDWHLOb6nOMcxCqR5rGY0lOgsfRoM=",
+        "module": "github.com/go-openapi/swag/stringutils",
+        "module_h1": "h1:ZXePZ0r2p1qSjo8tD3Un4vFj8+FqlCkczxDrJIhYUp8=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:Srm0xFNRZ1Y+vCxJclo5qzx8aj+1pAKda/YfFPrG0dQ=",
+        "module": "github.com/go-openapi/swag/typeutils",
+        "module_h1": "h1:KSTdFlfnse4r6dP9IrEnwMldjE+zs71UeEB3//PtVXc=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:bnxFIB1qewGRiZHypXGZ3fNgf13/0HfRgnS/iZBDrOo=",
+        "module": "github.com/go-openapi/swag/yamlutils",
+        "module_h1": "h1:ftxv6xvXb1E3zohUc+okZ9nSqNb9StQX/FXnKZ98sQA=",
+        "version": "v0.27.1"
+      },
+      {
+        "go_mod_h1": "h1:whL5G0m6dmc5cPxKc5bdKdEN3UjI7OUGxBlw57miDrQ=",
+        "module": "github.com/google/gnostic-models",
+        "module_h1": "h1:qwTtogB15McXDaNqTZdzPJRHvaVJlAl+HVQnLmJEJxo=",
+        "version": "v0.7.0"
+      },
+      {
+        "go_mod_h1": "h1:OX+G6WHHpHq3NVj7cAOleLOwJfcQ1s3uUJQCrr78SWo=",
+        "module": "github.com/google/renameio/v2",
+        "module_h1": "h1:qKZs+tfn+arruZZhQ7TKC/ergJunuJicWS6gLDt/dGw=",
+        "version": "v2.0.2"
+      },
+      {
+        "go_mod_h1": "h1:pupxD2MaaD3pAXIBCelhxNneeOaAeabZDe5s4K6zSpQ=",
+        "module": "github.com/google/shlex",
+        "module_h1": "h1:El6M4kTTCOh6aBiKaUGG7oYTSPP8MxqL4YI3kZKwcP4=",
+        "version": "v0.0.0-20191202100458-e7afc7fbc510"
+      },
+      {
+        "go_mod_h1": "h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=",
+        "module": "github.com/google/uuid",
+        "module_h1": "h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=",
+        "version": "v1.6.0"
+      },
+      {
+        "go_mod_h1": "h1:r4w70xmWCQKmi1ONH4KIaBptdivuRPyosB9RmPlGEwA=",
+        "module": "github.com/gorilla/websocket",
+        "module_h1": "h1:JeSE6pjso5THxAzdVpqr6/geYxZytqFMBCOtn/ujyeo=",
+        "version": "v1.5.4-0.20250319132907-e064f32e3674"
+      },
+      {
+        "go_mod_h1": "h1:e30LSqwooZae/UwlEbR2852Gd8hjQvJoHmT4TnhNGBo=",
+        "module": "github.com/json-iterator/go",
+        "module_h1": "h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnrnM=",
+        "version": "v1.1.12"
+      },
+      {
+        "go_mod_h1": "h1:RSub3ourNF8Hf+swvw49Catm3s7HVf4hzdFxDUnEzdA=",
+        "module": "github.com/landlock-lsm/go-landlock",
+        "module_h1": "h1:zcMi8R8vP0WrrXlFMNUBpDy/ydo3sTnCcUPowq1XmSc=",
+        "version": "v0.0.0-20250303204525-1544bccde3a3"
+      },
+      {
+        "go_mod_h1": "h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=",
+        "module": "github.com/lucasb-eyer/go-colorful",
+        "module_h1": "h1:1EO+WB73+EH8EVbzlrG3KLAfEypQWVHIBqlTf+2hNss=",
+        "version": "v1.4.1"
+      },
+      {
+        "go_mod_h1": "h1:nMCL3Zebbrt45jsMDgnfIwz6ydEQApk5oEI3HqDio6A=",
+        "module": "github.com/mattn/go-isatty",
+        "module_h1": "h1:tGZZoVgT/KiqK1c8ocVLeDS8BSWMRd47J3Lbz7vsReI=",
+        "version": "v0.0.24"
+      },
+      {
+        "go_mod_h1": "h1:3qAiGCV4Koz/yuveO58qUefmUTRm8r0IGEXZ9jeHp/8=",
+        "module": "github.com/mattn/go-runewidth",
+        "module_h1": "h1:+KUuiDA4fF0R1p5FeueHefjDm+GIM+kWfFnDjybOPgk=",
+        "version": "v0.0.30"
+      },
+      {
+        "go_mod_h1": "h1:AAxFX59fddW0IguqNzWlf1lazh1+rXeIt/Bj49cqDTQ=",
+        "module": "github.com/mmcloughlin/md4",
+        "module_h1": "h1:kGYl+iNbxhyz4u76ka9a+0TXP9KWt/LmnM0QhZwhcBo=",
+        "version": "v0.1.2"
+      },
+      {
+        "go_mod_h1": "h1:xBAYlnt/ay+11ShkdFKNAG7LsyK/tmNBVvVOwrfMgdI=",
+        "module": "github.com/moby/spdystream",
+        "module_h1": "h1:9sNYeYZUcci9R6/w7KDaFWEWeV4LStVG78Mpyq/Zm/Y=",
+        "version": "v0.5.1"
+      },
+      {
+        "go_mod_h1": "h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=",
+        "module": "github.com/modern-go/concurrent",
+        "module_h1": "h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=",
+        "version": "v0.0.0-20180306012644-bacd9c7ef1dd"
+      },
+      {
+        "go_mod_h1": "h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=",
+        "module": "github.com/modern-go/reflect2",
+        "module_h1": "h1:W5t00kpgFdJifH4BDsTlE89Zl93FEloxaWZfGcifgq8=",
+        "version": "v1.0.3-0.20250322232337-35a7c28c31ee"
+      },
+      {
+        "go_mod_h1": "h1:3XuTXfFS2VjM+HTLZY9Ak0l6eUKfijIfMUZ4EgX0QYo=",
+        "module": "github.com/muesli/cancelreader",
+        "module_h1": "h1:3I4Kt4BQjOR54NavqnDogx/MIoWBFa0StPA8ELUXHmA=",
+        "version": "v0.2.2"
+      },
+      {
+        "go_mod_h1": "h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=",
+        "module": "github.com/munnerz/goautoneg",
+        "module_h1": "h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=",
+        "version": "v0.0.0-20191010083416-a7dc8b61c822"
+      },
+      {
+        "go_mod_h1": "h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=",
+        "module": "github.com/ncruces/go-strftime",
+        "module_h1": "h1:HMFp8mLCTPp341M/ZnA4qaf7ZlsbTc+miZjCLOFAw7w=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=",
+        "module": "github.com/pelletier/go-toml/v2",
+        "module_h1": "h1:GTRvJQutkOSftxIFD5xw9aepkYNuPWmVJpffdDPYVpY=",
+        "version": "v2.4.3"
+      },
+      {
+        "go_mod_h1": "h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=",
+        "module": "github.com/remyoudompheng/bigfft",
+        "module_h1": "h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=",
+        "version": "v0.0.0-20230129092748-24d4a6f8daec"
+      },
+      {
+        "go_mod_h1": "h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=",
+        "module": "github.com/rivo/uniseg",
+        "module_h1": "h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=",
+        "version": "v0.4.7"
+      },
+      {
+        "go_mod_h1": "h1:au6//VbVSqu6DFrkL2CfjlJ5iURpNCPeE+1GwY3XsT8=",
+        "module": "github.com/sahilm/fuzzy",
+        "module_h1": "h1:juByESSS32nVD81vr6tHmKmA/8zde7gE+x5CLxrzXPU=",
+        "version": "v0.1.3"
+      },
+      {
+        "go_mod_h1": "h1:7C1pvHqHw5A4vrJfjNwvOdzYu0Gml16OCs2GRiTUUS4=",
+        "module": "github.com/spf13/cobra",
+        "module_h1": "h1:DMTTonx5m65Ic0GOoRY2c16WCbHxOOw6xxezuLaBpcU=",
+        "version": "v1.10.2"
+      },
+      {
+        "go_mod_h1": "h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=",
+        "module": "github.com/spf13/pflag",
+        "module_h1": "h1:4EBh2KAYBwaONj6b2Ye1GiHfwjqyROoF4RwYO+vPwFk=",
+        "version": "v1.0.10"
+      },
+      {
+        "go_mod_h1": "h1:14CWIYCyZA/cWjXOioeEpHeN/83MdbZDRQHoFcYsOfg=",
+        "module": "github.com/x448/float16",
+        "module_h1": "h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=",
+        "version": "v0.8.4"
+      },
+      {
+        "go_mod_h1": "h1:RbqR21r5mrJuqunuUZ/Dhy/avygyECGrLceyNeo4LiM=",
+        "module": "github.com/xo/terminfo",
+        "module_h1": "h1:2ZpYzqWzyyytjk3TP6aJVDhkMAkc99/1xKQdA3TDTBY=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:gMZqIpDtDqOfM0uNfy0SkpRhvUryYH0Z6wdMYcacYXQ=",
+        "module": "go.yaml.in/yaml/v2",
+        "module_h1": "h1:tuyd0P+2Ont/d6e2rl3be67goVK4R6deVxCUX5vyPaQ=",
+        "version": "v2.4.4"
+      },
+      {
+        "go_mod_h1": "h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=",
+        "module": "go.yaml.in/yaml/v3",
+        "module_h1": "h1:tfq32ie2Jv2UxXFdLJdh3jXuOzWiL1fo0bu/FbuKpbc=",
+        "version": "v3.0.4"
+      },
+      {
+        "go_mod_h1": "h1:Xh+kl5A+M0gMiWDytH2Hhr5Z7WbNCpv/eB/EFgfSk+w=",
+        "module": "golang.org/x/crypto",
+        "module_h1": "h1:COkYLr4k7nDI4r6QtMML2AfzeIswWHAJthLS6K/M/54=",
+        "version": "v0.58.0"
+      },
+      {
+        "go_mod_h1": "h1:2DA/G1UfVbCpQPeWTmMPGY7Cs2PkBkwu743bVX5PIVg=",
+        "module": "golang.org/x/net",
+        "module_h1": "h1:79p50tfZlm0J9YfoDsSi639qSXNGVwEzOPLCxM2FsYU=",
+        "version": "v0.60.0"
+      },
+      {
+        "go_mod_h1": "h1:YDBUJMTkDnJS+A4BP4eZBjCqtokkg1hODuPjwiGPO7Q=",
+        "module": "golang.org/x/oauth2",
+        "module_h1": "h1:peZ/1z27fi9hUOFCAZaHyrpWG5lwe0RJEEEeH0ThlIs=",
+        "version": "v0.36.0"
+      },
+      {
+        "go_mod_h1": "h1:sUUOizhqBxiL6pEWpqNLUiaJn1ShEbZ6BBqskPbjZm0=",
+        "module": "golang.org/x/sync",
+        "module_h1": "h1:iqiDrGoDgyuvAKrhLQthUEzU/R378N78gXbBjxed7oA=",
+        "version": "v0.24.0"
+      },
+      {
+        "go_mod_h1": "h1:hNLxWAXmnKAxqDtdwIYC4bM9oQPEecfsnNMuSxOs3og=",
+        "module": "golang.org/x/sys",
+        "module_h1": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=",
+        "version": "v0.49.0"
+      },
+      {
+        "go_mod_h1": "h1:efAfAuG6RKABvg1ArGebRkvX6LXul14SM67o2e4mUCY=",
+        "module": "golang.org/x/term",
+        "module_h1": "h1:cpyOwQkr2Nzxe2p6KnrTG7Ei2wtzjsuSjhpXXepZ/BM=",
+        "version": "v0.47.0"
+      },
+      {
+        "go_mod_h1": "h1:hbSIYA/amXcRXTFSZqh8tWHEoqRvvbKPJ2uz/KU+a+s=",
+        "module": "golang.org/x/text",
+        "module_h1": "h1:1QivrlhwAsnMOcqgOdl9my7s9OyZl8O5/UGUTJVXoWc=",
+        "version": "v0.43.0"
+      },
+      {
+        "go_mod_h1": "h1:Y4YMaQmXwGQZoFaVFk4YpCt4FLQMYKZe9oeV/f4MSno=",
+        "module": "golang.org/x/time",
+        "module_h1": "h1:bbrp8t3bGUeFOx08pvsMYRTCVSMk89u4tKbNOZbp88U=",
+        "version": "v0.15.0"
+      },
+      {
+        "go_mod_h1": "h1:HTf+CrKn2C3g5S8VImy6tdcUvCska2kB7j23XfzDpco=",
+        "module": "google.golang.org/protobuf",
+        "module_h1": "h1:+5/Sw3GsDNlEmu7TfklWKPdQ0Ykja5VEmq2i817+jbI=",
+        "version": "v1.36.12-0.20260120151049-f2248ac996af"
+      },
+      {
+        "go_mod_h1": "h1:p8EYWUEYMpynmqDbY58zCKCFZw8pRWMG4EsWvDvM72M=",
+        "module": "gopkg.in/evanphx/json-patch.v4",
+        "module_h1": "h1:czT3CmqEaQ1aanPc5SdlgQrrEIb8w/wwCvWWnfEbYzo=",
+        "version": "v4.13.0"
+      },
+      {
+        "go_mod_h1": "h1:cWUDdTG/fYaXco+Dcufb5Vnc6Gp2YChqWtbxRZE0mXw=",
+        "module": "gopkg.in/inf.v0",
+        "module_h1": "h1:73M5CoZyi3ZLMOyDlQh031Cx6N9NDJ2Vvfl76EDAgDc=",
+        "version": "v0.9.1"
+      },
+      {
+        "go_mod_h1": "h1:zSlbB1YpJ1YQlFVQy20UYll81UJSJJUMLhkhvg6Z78M=",
+        "module": "k8s.io/api",
+        "module_h1": "h1:l6N77U7tjwB5L056bgrBTJIEdevac/naBZ3iSvDNfpM=",
+        "version": "v0.37.1"
+      },
+      {
+        "go_mod_h1": "h1:jF84AyUi/IRIXRot5f+lm6MpxoWI+F1XgjaMmwCdTFw=",
+        "module": "k8s.io/apimachinery",
+        "module_h1": "h1:hGCYyvKHCwtwMitj2vU4vYx0Z16N9GyZk9BBnz0wDAE=",
+        "version": "v0.37.1"
+      },
+      {
+        "go_mod_h1": "h1:dnAPtTnCNY38Ho04D2KdY1F4IKausa9UbqaAZKl60SY=",
+        "module": "k8s.io/client-go",
+        "module_h1": "h1:QTv/5ha4jAHtW9qxxVBkQVFBRDb4jHfFopQqqMdc+wM=",
+        "version": "v0.37.1"
+      },
+      {
+        "go_mod_h1": "h1:o+/RWfJ6PwpnFn7OyAG3QnO47BFsymfEfrz6XyYSSp0=",
+        "module": "k8s.io/klog/v2",
+        "module_h1": "h1:Tf+J3AH7xnUzZyVVXhTgGhEKnFqye14aadWv7bzXdzc=",
+        "version": "v2.140.0"
+      },
+      {
+        "go_mod_h1": "h1:0/mqHCVhlumdJ3BhCfnjSZQE037nAhNodh1/hK0T8/I=",
+        "module": "k8s.io/kube-openapi",
+        "module_h1": "h1:oXImqH8mQNk7PmvzKhmN3ddJoY6OnyM225MXwGHPm0A=",
+        "version": "v0.0.0-20260721132016-d427ff9ee9ad"
+      },
+      {
+        "go_mod_h1": "h1:APlJR26ZWRcVy5bIEj0QRrKUXROtBHPcxl2NT7EAzPU=",
+        "module": "k8s.io/streaming",
+        "module_h1": "h1:TpzVfQeFuVndn2g9mFqxy1UcUYPwDzqjUmwR/IzJCWc=",
+        "version": "v0.37.1"
+      },
+      {
+        "go_mod_h1": "h1:xDxuJ0whA3d0I4mf/C4ppKHxXynQ+fxnkmQH0vTHnuk=",
+        "module": "k8s.io/utils",
+        "module_h1": "h1:Ea7fgQ5we8Y9T0OX5o0dAHzQOBRI07D/dEYRaB9ZZEs=",
+        "version": "v0.0.0-20260626114624-be93311217bd"
+      },
+      {
+        "go_mod_h1": "h1:87/pZ4L6nD1zqW4nItuS12YO7hN1igAah34xjnQo/W0=",
+        "module": "modernc.org/libc",
+        "module_h1": "h1:Ct8j47QtiZ1Enj2DtFXQtUqrPCAjdCmPjtCuvrYQ0Hs=",
+        "version": "v1.77.1"
+      },
+      {
+        "go_mod_h1": "h1:4p5IwJITfppl0G4sUEDtCr4DthTaT47/N3aT6MhfgJg=",
+        "module": "modernc.org/mathutil",
+        "module_h1": "h1:GCZVGXdaN8gTqB1Mf/usp1Y/hSqgI2vAGGP4jZMCxOU=",
+        "version": "v1.7.1"
+      },
+      {
+        "go_mod_h1": "h1:/JP4VbVC+K5sU2wZi9bHoq2MAkCnrt2r98UGeSK7Mjw=",
+        "module": "modernc.org/memory",
+        "module_h1": "h1:nFMiWrpStgZczNl6XI9GnIk/rWhYIyHGUaR04pGbp9g=",
+        "version": "v1.12.1"
+      },
+      {
+        "go_mod_h1": "h1:1dIoEagfDE72QytD5scH1lxARtaUgKgHC/NuApA27r0=",
+        "module": "modernc.org/sqlite",
+        "module_h1": "h1:/blz53O951KWFOso4QQvEs/Fq6cDBKLtMVrYNSeJVKw=",
+        "version": "v1.60.1"
+      },
+      {
+        "go_mod_h1": "h1:mdzfpAEoE6DHQEN0uh9ZbOCuHbLK5wOm7dK4ctXE9Tg=",
+        "module": "sigs.k8s.io/json",
+        "module_h1": "h1:IpInykpT6ceI+QxKBbEflcR5EXP7sU1kvOlxwZh5txg=",
+        "version": "v0.0.0-20250730193827-2d320260d730"
+      },
+      {
+        "go_mod_h1": "h1:XeLlZ/jmk4i1HRopwe7/aU3H5n1zNUcX6TM94b3QxOY=",
+        "module": "sigs.k8s.io/randfill",
+        "module_h1": "h1:JfjMILfT8A6RbawdsK2JXGBR5AQVfd+9TbzrlneTyrU=",
+        "version": "v1.0.0"
+      },
+      {
+        "go_mod_h1": "h1:M3W8sfWvn2HhQDIbGWj3S099YozAsymCo/wrT5ohRUE=",
+        "module": "sigs.k8s.io/structured-merge-diff/v6",
+        "module_h1": "h1:qdOxHwrl2Kaag1aQEarlYcOA9vSyGCp3CIki3aW8c4Q=",
+        "version": "v6.4.2"
+      },
+      {
+        "go_mod_h1": "h1:796bPqUfzR/0jLAl6XjHl3Ck7MiyVv8dbTdyT3/pMf4=",
+        "module": "sigs.k8s.io/yaml",
+        "module_h1": "h1:G8fkbMSAFqgEFgh4b1wmtzDnioxFCUgTZhlbj5P9QYs=",
+        "version": "v1.6.0"
+      }
+    ]
+  },
+  "schema": 1,
+  "source": {
+    "base_commit": "bc875959d08f519e2a2e70719e9d9735693d4776",
+    "go_mod_sha256": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+    "go_sum_sha256": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+    "owned_files": [
+      {
+        "bytes": 3731,
+        "git_blob": "0a4fb97d2533cecaeff3e74efed1bcf36e9e2a66",
+        "mode": "100644",
+        "path": "internal/mesh/resident_image_inventory.go",
+        "sha256": "cab9ade208b77fdbdab5dd59f56c1c39dc5776fa99947d80d3dbf06014c78163"
+      },
+      {
+        "bytes": 8569,
+        "git_blob": "e0b87eba9a714629a5c78e032d40f28fbae488f9",
+        "mode": "100644",
+        "path": "internal/mesh/resident_image_p1.go",
+        "sha256": "cd8fec683cb81190caee09a6b3eb5094a9d4d5589e1192972b2932170502dfcd"
+      },
+      {
+        "bytes": 17354,
+        "git_blob": "c10545280cb919439ad115ca7324951b37af7995",
+        "mode": "100644",
+        "path": "internal/mesh/resident_image_pin.go",
+        "sha256": "eb7d199b661cf24a031ea94c8976444ebbf3bf4086c346bdd68e0c6ca94a9c3d"
+      },
+      {
+        "bytes": 5207,
+        "git_blob": "824226878da985c8cdcdaaafdb2c2a85058a5219",
+        "mode": "100644",
+        "path": "internal/mesh/resident_pin_parent_references.go",
+        "sha256": "aab833189e17e0302f390cf3b065668c0415c74fab871dfc1f1c12346eb16acd"
+      },
+      {
+        "bytes": 1736,
+        "git_blob": "916be3825ac041bc33b2da18a40d77c026db71d3",
+        "mode": "100644",
+        "path": "internal/mesh/resident_pin_parent_references_test.go",
+        "sha256": "354eba2486fdb76988906f412a375ae46efbd9214a35298dabf83b9b279a7b59"
+      },
+      {
+        "bytes": 23569,
+        "git_blob": "6b0f9cfeb1f4e7b4bffbe26bb6742fd848e42bbf",
+        "mode": "100644",
+        "path": "internal/server/internal/residentbirth/fence.go",
+        "sha256": "50a46a430dbd09de952697a1dbf8e358e708858f9a2517a7b60c4a433e1cec5f"
+      },
+      {
+        "bytes": 4690,
+        "git_blob": "e1e5260f486ba9d1b8caf85a3ef2b608ce8c45a6",
+        "mode": "100644",
+        "path": "internal/server/internal/residentbirth/parent_references.go",
+        "sha256": "0cc8d63e3e0678dada3066f83035baee640e10ed9fcd24f12a3bf46fc72d6c8c"
+      },
+      {
+        "bytes": 1126,
+        "git_blob": "e7316b1f118de6df581062733711017b2cfbeb0f",
+        "mode": "100644",
+        "path": "internal/server/internal/residentbirth/parent_references_test.go",
+        "sha256": "44c23df89236f2ee09ba3149851dcfb07b31a6f2463b565603bf89d559d617db"
+      },
+      {
+        "bytes": 21462,
+        "git_blob": "747d8de0c7fa56ed8ce1223f48a2f8156d5d19dc",
+        "mode": "100644",
+        "path": "internal/server/internal/residentservice/owner.go",
+        "sha256": "a6084c6dcf97d0a897a824524eb8cd921ae6d823e5ce378356a310c53fd256ac"
+      },
+      {
+        "bytes": 2284,
+        "git_blob": "20f283dec77d2d5147c21e24d5d9e878c7a2d6e1",
+        "mode": "100644",
+        "path": "internal/server/internal/residentservice/p1_pin.go",
+        "sha256": "5bb1b08c2038513beed06a5ca8eff3e2a2eae679c2c1db419ab0c301bcda4393"
+      },
+      {
+        "bytes": 6211,
+        "git_blob": "5006b439da34a4520f693ae57d2688c0d05a9afb",
+        "mode": "100644",
+        "path": "internal/server/internal/residentservice/parent_references.go",
+        "sha256": "15132121462fea0b3a0b179145ccbe45e80fb9409f4e0350f8a8e78bb5305fc6"
+      },
+      {
+        "bytes": 1360,
+        "git_blob": "71139945073d3a003b289446a793378f21918351",
+        "mode": "100644",
+        "path": "internal/server/internal/residentservice/parent_references_test.go",
+        "sha256": "02b1003fdff3d23ec0e46568fa631e5bb920a7241de5b49ad2bd7550dda55c0d"
+      },
+      {
+        "bytes": 15633,
+        "git_blob": "23dc09ee31230cc662ee77affaba0410c376f49b",
+        "mode": "100644",
+        "path": "internal/server/resident_parent_original.go",
+        "sha256": "9dadd4d98d94a9b7e49bd7aafce79dfb0fd9d077b1cb2e8b482f51f027d5881a"
+      },
+      {
+        "bytes": 16766,
+        "git_blob": "537966caa446b661c40f2f9fb9ca50bf160e2cba",
+        "mode": "100644",
+        "path": "internal/server/resident_parent_protocol.go",
+        "sha256": "b8b0a8aafb6bd4d86a3abdfe014b893e4a37cf204f3cf018ef50026a371eccd4"
+      },
+      {
+        "bytes": 6441,
+        "git_blob": "b5623fea363ff117a53dbeacb46d0890c527dd8a",
+        "mode": "100644",
+        "path": "internal/server/resident_parent_retirement.go",
+        "sha256": "ba7992ff8871fb5abb744e6704e1dea32e93f37ee73455564eaa6ce04558913b"
+      },
+      {
+        "bytes": 2058,
+        "git_blob": "512a737c8fd8f454e3a3c73d2ce83c045674106e",
+        "mode": "100644",
+        "path": "internal/server/resident_parent_retirement_test.go",
+        "sha256": "f741956ce767838590704c47ed63759b1ab6e0d3ab7472af7f3c1ad32f1af4c0"
+      }
+    ],
+    "post_qualification_change": "No Go source/comment changes after qualification. This normalized record and appended delivery notes are subsequent documentation-only changes; no rebuild or artifact-equivalence claim follows.",
+    "qualified_Go_files": 1974,
+    "qualified_project_files": 3378,
+    "qualified_source_commit": "6229d72223bacf1692e828ad82fa1eeb3206a8c2",
+    "qualified_whole_project_manifest_sha256": "9e826c1621a378e4e93d7dc3338efb50d19da96d69d74522636b76d361280bbf"
+  },
+  "status": "SCOPED_PRIVATE_PARENT_REFERENCE_RETIREMENT_SOURCE_QUALIFICATION"
+}
