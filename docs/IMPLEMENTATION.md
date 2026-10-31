@@ -6238,18 +6238,25 @@ validation and are not integrated behavior.
 
 The prepared Semblance dependency and ARM palette compatibility fix also remain
 unintegrated. Exact collection membership enables stock lazy entry validation;
-the current run still exposes a stale derived validation result after palette
-disposal. Dependency acceptance requires that lifecycle correction, composed
-tests, reproducible assets, native embedding and browser review. Stock
+an earlier run exposes a stale derived validation result after palette
+disposal. A limited source correction passes 103 RDF and 161 Node cases;
+the owner-indexed upstream successor still needs cost/lifecycle review and
+execution. Dependency acceptance requires final provenance, composed tests,
+reproducible assets, native embedding and browser review. Stock
 Semblance remains the requested default, with Terminal selectable.
 
-The subsequent actual-original resident check exposes a pressure composition
+The subsequent actual-original resident check exposed a pressure composition
 defect: resident startup calls the new journal validation, but its closed base
 schema lacks `host_pressure_permits` and the companion control objects.
 The scoped pressure journal tests did not cover this startup boundary.
-Correction and validation are pending; no schema repair, migration or weakened
-original-owner check is authorized by this finding. Provider activation remains
-disabled.
+Reviewed correction `40e686f8` adds the three canonical pressure DDL objects
+only during fresh original initialization and verifies a read through the same
+actual Manager. Test-only `a83939d8` bounds positive readiness setup while
+preserving production refusals and one-shot replacement/native operations.
+The [scoped record](validation/resident-pressure-startup-scoped-2026-10-31.json)
+binds passing pressure normal/race and resident normal-only checks. Existing
+schema repair and migration remain unsupported; original-owner checks and
+warning-only pressure behavior are unchanged. Provider activation stays disabled.
 
 
 ## Saved onboarding names: current composition

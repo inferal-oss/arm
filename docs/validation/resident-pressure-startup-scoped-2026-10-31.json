@@ -1,0 +1,84 @@
+{
+  "schema": "arm.scoped-validation/v1",
+  "date": "2026-10-31",
+  "component": "resident-pressure-startup-composition",
+  "tested_source_base": "e14c43a4e0239ee9d1325870da3b8bbf5c5ad608",
+  "tested_candidate_tree": "de42215cb94b007d45f4a061c01b01cea0404de8",
+  "source_file_sha256": {
+    "internal/manager/pressure_control_journal_test.go": "3d21d3b9157144349a996897eb9c5dfb326e38aa14abab6c7cf010911a683c6f",
+    "internal/manager/pressure_native_candidate_test.go": "c0b11ef8130a816173016d27a92e0e24e0fabec78ef376b329f413e4ca6cc335",
+    "internal/manager/resident_base_schema.go": "358e06503a0eeb5e5332a3a6635db0dedb6edfadef315bbb5a165bfb589f85bf",
+    "internal/server/resident_server_assembly_test.go": "957ada0a1e64fd4c5b18b0a123c706498c641b87aa07b59839784ec9fea56a14"
+  },
+  "behavior": "Fresh original resident initialization creates the canonical pressure permit/control tables and control-state index before pressure loading; the actual original resident Manager remains readable. Existing incompatible schemas are not repaired or migrated.",
+  "pressure": {
+    "normal": {
+      "roots": 29,
+      "named": 75,
+      "pass": 75,
+      "fail": 0,
+      "skip": 0
+    },
+    "race": {
+      "roots": 29,
+      "named": 75,
+      "pass": 75,
+      "fail": 0,
+      "skip": 0
+    },
+    "package_qualified_rosters_equal": true,
+    "vet_packages": [
+      "./internal/manager",
+      "./internal/database"
+    ]
+  },
+  "resident": {
+    "normal": {
+      "roots": 14,
+      "named": 65,
+      "pass": 65,
+      "fail": 0,
+      "skip": 0
+    },
+    "actual_original_startup_roots": 3,
+    "refusal_roots": 11,
+    "mandatory_case": "getarm.org/internal/server.TestOriginalResidentServerBindsActualManagerAndNativeIngress",
+    "vet_packages": [
+      "./internal/manager",
+      "./internal/database",
+      "./internal/server",
+      "./internal/server/internal/nativeowner"
+    ],
+    "race": "Not run in this focused resident cohort."
+  },
+  "fixture_correction": "Positive readiness setup is bounded to the same captured original. Only initial pre-write typed refusals may retry after proving unchanged state; replacement writes and native effects remain one-shot. Production refusal and owner-wait behavior are unchanged.",
+  "earlier_attempts": [
+    {
+      "result": "failed",
+      "boundary": "Actual original resident startup omitted tables required by pressure loading."
+    },
+    {
+      "result": "failed",
+      "boundary": "The first resident schema correction run passed normal pressure tests but failed one race test during initial permit setup; subsequent pressure vet did not run."
+    }
+  ],
+  "cancellation_protocol": "Previously qualified inert before/during controls are retained as historical protocol evidence; they were not executed again for this source-only rebinding.",
+  "execution_integrity": {
+    "all_original_validation_and_outer_commands_joined_successfully": true,
+    "quiet_output_exact_and_untruncated": true,
+    "validation_stderr_empty": true,
+    "ordinary_nonforced_shutdown_and_closure_verified": true,
+    "final_source_and_tool_pins_unchanged": true
+  },
+  "production_pause_enabled": false,
+  "remaining_gates": [
+    "Broader provider composition validation.",
+    "Public permit workflow, policy activation and public workers.",
+    "Full-suite, resident race, additional platforms and physical sleep/wake acceptance."
+  ],
+  "source_commits": {
+    "resident_startup": "40e686f8fe68a4c9f8b46754c0f59202bdff5507",
+    "test_fixture_readiness": "a83939d86441d490189dc04927e47a39a593f266"
+  },
+  "integration_source_equivalence": "The integrated source differs from the tested candidate only in the three delivery documents. All runtime, test, module and asset inputs match."
+}

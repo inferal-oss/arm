@@ -12618,8 +12618,9 @@ unchanged final source hashes, modes and Git state.
 This is selected component and test-owned native-fixture evidence. It does not
 establish production pause activation, authenticated public permits, complete
 suite, Linux runtime, physical sleep/wake or broad crash-recovery acceptance.
-It did not cover actual-original resident startup, which subsequently fails at
+It did not cover actual-original resident startup, which subsequently failed at
 the new journal validation because the closed resident schema lacks its tables.
+The later scoped correction is recorded below.
 
 ## Private forwarding worker: component and pressure composition
 
@@ -12697,6 +12698,36 @@ Completed same-source provider and storage components retain their scoped
 evidence; neither the failed windows nor the full 224-root composition are
 accepted. The correction must preserve the closed schema, original ownership
 and warning-only pressure boundary without automatic repair or native pausing.
+
+## Resident pressure startup: final-source scoped correction
+
+The [normalized record](validation/resident-pressure-startup-scoped-2026-10-31.json)
+binds source `40e686f8` and test-only readiness correction `a83939d8`.
+Fresh original resident initialization includes the three canonical pressure
+permit/control objects before pressure loading. The actual original server
+regression reads through its same Manager after startup. Existing format,
+constructor, copied-holder and mixed-ingress refusal cohorts remain selected.
+
+Pressure normal and race each pass 29 roots / 75 package-qualified names,
+with equal rosters, no failures or skips, and two-package vet. Resident normal
+passes 14 roots / 65 names without failures or skips, followed by four-package
+vet. All tested runtime, test, module and asset inputs match the integrated
+source; only the three delivery documents differ. Original validation commands
+are joined, quiet logs match exactly, ordinary shutdown is nonforced, closure
+is checked and final source/tool pins are unchanged.
+
+An earlier schema-correction attempt passed normal pressure checks but failed
+one race fixture at initial permit setup; its pressure vet did not run. The
+reviewed fixture fix retries only a bounded initial pre-write typed refusal
+after proving unchanged original and ledger state. Replacement writes and
+native effects remain one-shot. Both earlier failures remain failures.
+Previously qualified inert controls are historical protocol evidence, without
+a new cancellation-execution claim for this source rebinding.
+
+This establishes the selected fresh-startup boundary and pressure component
+checks. It does not establish full-suite, resident race, other-platform,
+physical sleep/wake or full provider acceptance. Existing schemas are not
+repaired or migrated; native pausing and public workers remain disabled.
 
 
 ## Onboarding saved-name continuation — scoped qualification

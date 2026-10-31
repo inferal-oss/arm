@@ -4845,8 +4845,8 @@ Actual managed-job/proxy continuity across an upgrade remains unverified.
 
 Reviewed feature `236db270` composes the durable journal, exact permit revision
 and original acknowledged deadline under selected constructor/accounting
-checks. Actual-original resident startup was not covered and later exposes
-missing pressure journal tables; that composition correction is pending.
+checks. Actual-original resident startup was not covered and later exposed
+missing pressure journal tables; the correction is integrated below.
 The [scoped evidence](validation/pressure-control-journal-scoped-2026-10-31.json)
 records 29 roots / 75 names in both normal and race modes, targeted vet and
 expected cancellation controls. The ownership branch is
@@ -4878,6 +4878,30 @@ Positive native XFS/full-quota headroom, persistent production enrollment,
 complete writer exclusion and reviewed bidirectional effects remain open.
 Original-key read-only recovery is already integrated through `f60c8c3e` and
 the later charged-scope work; it is not reimported from its older branch.
+
+## Resident pressure startup correction accepted
+
+Reviewed source `40e686f8` adds the canonical permit/control objects to fresh
+original resident initialization and exercises a read through that same Manager.
+Test-only source `a83939d8` bounds positive fixture readiness without changing
+production refusal or original-owner waiting. Ownership is
+`codex/pressure-resident-schema-fixture-v4`.
+
+The [scoped record](validation/resident-pressure-startup-scoped-2026-10-31.json)
+records final-source pressure normal/race results of 29 roots / 75 names each,
+resident normal-only results of 14 roots / 65 names, and targeted vet.
+Integration preserves every tested runtime, test, module and asset input;
+only the three delivery documents differ. Earlier failed attempts remain
+failed. Existing incompatible databases are not repaired or migrated.
+
+The C3 provider owner must compose its reviewed hooks on this dependency and
+complete the reviewed three-window 224-root normal/race roster before source
+integration. Its factory stays disabled. Semblance's limited lifecycle source
+checks pass 103 RDF and 161 Node cases; the owner-indexed upstream successor
+still needs final cost/lifecycle review and execution. Complete dependency
+provenance, assets, native embedding and browser checks precede onboarding UI
+composition. Public pressure, forwarding and sync activation remain separate
+unfinished gates.
 
 
 ## Onboarding saved names continuation — qualified source
