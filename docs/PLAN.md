@@ -5103,3 +5103,37 @@ project policy separate from selected activation recipients. Display membership
 is not a binding list. User-facing picker/batch review, actual native
 compatibility and the separately reviewed activation handoff remain unfinished.
 No installed binary, running jobs or real policy/delivery state was changed.
+
+## Next onboarding slice: interactive project and chat selection
+
+Continue the existing onboarding assignment from `db3d7e6` in a fresh isolated
+branch. Retain bounded member-to-checkout evidence in copied tree snapshots;
+count Git/common proof paths in the global path/text limits. Metadata paths
+are never policy roots. Nested checkout roots remain explicit bindings.
+
+Wire the hierarchical picker and one-save batch review while preserving the
+flat read-only machine interface and manual project-only route. Unchecked
+chats remain covered by selected project policy but are excluded from the
+activation offer; deselection does not revoke earlier participation. Seal the
+exact selection, edited project settings, checkout evidence and actual binding
+map in the review context. Revalidate every selected member relationship both
+before preview and immediately before apply; changed evidence blocks the write
+without silently regenerating an approved request.
+
+Each review-preparation or confirmed-apply phase has one caller-respecting
+15-second deadline through membership checks and the existing batch store.
+Membership checks allow at most 64 probes; the unchanged store separately
+allows up to 32 preview or 64 apply probes. Report these stage bounds honestly,
+not as a shared 64-probe total. Preserve the store, resolver and module APIs.
+Retain global managed-instruction readiness checks before confirmation and
+immediately before apply, with existing disabled/no-op semantics; the wizard
+does not install instructions.
+
+After a confirmed save, any activation offer is separate, default-no and limited
+to the exact checked native references. Saved references are not ARM identities
+or verified delivery targets. Unsupported verification stays blocked/copy-only;
+no automatic native discovery, delivery or retry follows a policy save. Pending
+and unknown save outcomes retain existing recovery and cancellation behavior.
+The next gate is a frozen source/test handoff and independent review. No new
+compiler, test, Git-probe, policy, native-client or terminal execution window is
+granted by this source disposition.
