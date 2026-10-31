@@ -1,0 +1,422 @@
+{
+  "schema": 1,
+  "scope": "Current-main composition of the private resident handoff; selected arithmetic and refusal checks only",
+  "status": "scoped_composed_normal_race_vet_compile_pass",
+  "source": {
+    "tested_commit": "7efaeb2d888f1cf546fc62f6ab5edd7ea99292aa",
+    "tested_tree": "ac01c882f4633ca4bf88c71131b2f13e1999cfed",
+    "tested_upstream": "33297c26e863b0add4862c489c1b5e74fc8854a4",
+    "tested_project_manifest_sha256": "d5cdadadc485e52522ead1165cd687d05e25ca3bd87d8f27e59c0caf47d92aaa",
+    "tested_files": 3369,
+    "tested_Go_files": 1966,
+    "owner_source_commit": "40626cddcbb267b2adb0fdaa7508450590a83baa",
+    "rebased_source_commit": "43ac133f425e5a6b30dc132ed11d6e75d2fa572d",
+    "rebased_evidence_commit": "0475174f9040616bd8f59d843e8d0e5d31f6b103",
+    "rebased_upstream": "b284520",
+    "all_runtime_module_and_asset_images_equal_tested_tree": true,
+    "later_differences": "Documentation only; no repeated runtime execution or machine-code identity claim",
+    "owned_Go_sha256": {
+      "internal/server/resident_child_original.go": "bc22e350765b5984f7a60e155e6491ec55c54b8b95d2cbce8e140e37a7779be5",
+      "internal/server/resident_core_entry.go": "ae90d681274285841fe77a89c3e6f8fa127f34d421cd308b3179cf3d0577268c",
+      "internal/server/resident_parent_original.go": "992d7fc7eb59bb1eac6299671b23a9d9d6f6d8ab5699aa41229678e55e6d5d3d",
+      "internal/server/resident_parent_protocol.go": "b12d5b78aa2ad167875c55fc488f5da896ede1b4ce0749ad1d144c5f7a45a097",
+      "internal/server/resident_parent_protocol_test.go": "3b1b05b12c688549aa005f175df81af8d8d2cca31209ebbaf51241c5d50b9b02",
+      "internal/server/resident_root_protocol.go": "ad05a997ce8bb3dff7801fe0efa4eafac05c19c93d3ccd6d8c9598aea84429b4",
+      "internal/server/resident_root_protocol_test.go": "e3d119cb7189d66be94c1f0c5864266c0ff7ff3f6d453978071a4cf2066913c4",
+      "internal/server/resident_rootbound.go": "0d57143910f08ef992defb8c38edc8caf1a2e25e0014ee0dc3c9fee2419b927a"
+    },
+    "module_inputs": {
+      "go.mod": {
+        "git_blob": "b9679877850aab8e689d8abcab92e009381278f9",
+        "sha256": "0a46bfc3c5c4b6268ae94a5b85ebc5ecb17086551cd5b6ed8f0ed6c3b5b032e7",
+        "unchanged_at_final_feature": true
+      },
+      "go.sum": {
+        "git_blob": "4ad452644a1fda56b7a04aad3542747fde897087",
+        "sha256": "e7be1dd9d2619b0aa105eeafd6719a6b08ddc29475c089303d5d584455b1f2a6",
+        "unchanged_at_final_feature": true
+      }
+    }
+  },
+  "qualification": {
+    "Go_version": "1.27.3",
+    "native_target": {
+      "GOOS": "darwin",
+      "GOARCH": "arm64"
+    },
+    "phases": {
+      "normal": {
+        "result": "pass",
+        "roots": 13,
+        "named_run_pass_keys": 36,
+        "failures": 0,
+        "skips": 0,
+        "Go_commands": 4,
+        "graph_packages": 854,
+        "official_modules": 88,
+        "active_elapsed_seconds": 57.646833,
+        "original_commands_and_FIFO_natural_zero_and_joined": true,
+        "regular_output_streams_verified": 8,
+        "actual_temporary_directories_empty": 3,
+        "source_files_checked": 3369,
+        "support_pins_checked": 784
+      },
+      "race": {
+        "result": "pass",
+        "roots": 13,
+        "named_run_pass_keys": 36,
+        "failures": 0,
+        "skips": 0,
+        "Go_commands": 2,
+        "graph_packages": 856,
+        "official_modules": 88,
+        "active_elapsed_seconds": 35.688132,
+        "original_commands_and_FIFO_natural_zero_and_joined": true,
+        "regular_output_streams_verified": 4,
+        "actual_temporary_directories_empty": 3,
+        "source_files_checked": 3369,
+        "support_pins_checked": 796
+      }
+    },
+    "named_results": [
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestComposedParentPendingPrivateCommandSettingsCopyAndCancelledBeforeOpen",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestPreparedRootRequiresActualEntryAndOriginalBindings",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentCoreTimeoutRequiresActualPreparingRoot",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/detached-call",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/full-write",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentParentProtocolFullWriteAndStartFlagsCannotAuthorizePhase/start-returned",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/copied",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/nil",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/unissued",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentParentProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/zero",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/comparable-fields",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/map-both",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/nil-left",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/nil-right",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/same-background",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/slice-left",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolContextDataRejectsDynamicNonComparableValues/slice-right",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/child-independent-five-seconds",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-earlier",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-equal",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-expired",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolDeadlineDataCapsWithoutClockOrConstructor/parent-later",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentProtocolUnissuedPhaseCannotFinishOrCancel",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentRootProtocolContextDataRefusesMissingPreparedAndFooter",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/copied",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/nil",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/unissued",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestResidentRootProtocolUnissuedAndCopiedRefuseBeforePhaseEffects/zero",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      },
+      {
+        "package": "getarm.org/internal/server",
+        "name": "TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects",
+        "normal_run": true,
+        "normal_result": "pass",
+        "race_run": true,
+        "race_result": "pass"
+      }
+    ],
+    "vet": {
+      "packages": [
+        "getarm.org/internal/server",
+        "getarm.org/internal/manager",
+        "getarm.org/internal/database",
+        "getarm.org/internal/server/internal/residentbirth",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/internal/server/internal/nativeowner",
+        "getarm.org/internal/residentrefs",
+        "getarm.org/internal/residentprotocol",
+        "getarm.org/internal/mesh",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    },
+    "artifact": {
+      "bytes": 75076114,
+      "sha256": "5c516123b824af053054dc92dbf4c687fbd31ad9edd856f631151e6a9d378cb9",
+      "compiled_only": true,
+      "executed": false
+    },
+    "official_modules": {
+      "count": 88,
+      "mod_zip_expanded_go_sum_PRE_POST_equal": true,
+      "identical_to_module_records_in": "resident-root-handoff-normal-race-2026-10-31.json"
+    },
+    "limits": {
+      "cpu_ceiling": 2,
+      "cooperative_memory_bytes": 2147483648,
+      "Go_runtime_concurrency": 1,
+      "Go_soft_memory_limit_bytes": 1610612736,
+      "build_parallelism": 1,
+      "work_seconds": 100,
+      "active_seconds_including_teardown": 115,
+      "limit": "Cooperative and sampled bounds; not kernel limits, native quiescence or physical reclamation proof"
+    }
+  },
+  "composition_boundaries": [
+    "Current database proof/schema, Manager pressure/forwarding and resident base-schema changes are included in the compiled composition.",
+    "Three additional pressure-control schema entries are present; successful genuine schema/current-authority behavior and revised native/SQL budgets remain untested.",
+    "The official SQLite driver and module files remain unchanged.",
+    "All original command/FIFO handles joined with exit zero; closed regular outputs were hashed. No pipe-EOF or native-Closed claim.",
+    "Temporary inventories were empty and source/support pins remained unchanged. All prior failures and uncertain obligations remain retained without reclamation credit."
+  ],
+  "remaining_gates": [
+    "Successful genuine authenticated handoff/current-authority/native/SQL/image/journal/environment observation and eligible Linux execution remain untested.",
+    "Parent-owned reference retirement and original Process.Release/closure accounting remain open.",
+    "Resident controller, fresh worker schema, activation/admission/assets and replaceable same-binary API/UI workers remain open.",
+    "Public first/repeated/concurrent arm start integration and readiness remain open.",
+    "Actual managed-run/proxy identity, log/heartbeat/finish/renew/cancel/expiry/accounting continuity through upgrades, performance, shutdown and recovery remain unverified."
+  ]
+}

@@ -6483,3 +6483,13 @@ remain unchanged. This component adds no parent retirement, Process.Release,
 resident controller, worker/schema/admission/assets, API/UI replacement or
 public `arm start` activation. Successful genuine exchange and upgrade survival
 remain untested.
+
+The coordinator composed the private handoff with current database proof/schema,
+Manager pressure/forwarding and resident base-schema changes. Three additional
+pressure-control schema entries are preserved. Selected arithmetic/refusal tests
+pass in ordinary and race modes on that composition, together with ten-package
+vet and native compilation. This checks source compatibility and the selected
+refusal paths; successful genuine schema/current-authority behavior and its
+native/SQL budgets remain unqualified. The official SQLite driver is unchanged.
+Later upstream documentation and these delivery notes preserve the tested
+runtime/module/asset images. Public startup and worker replacement are inactive.

@@ -13164,3 +13164,30 @@ schema/admission/assets/API/UI activation, public first/repeated/concurrent
 `arm start`, eligible Linux execution, real managed-run/proxy upgrade survival,
 performance, shutdown and recovery remain unaccepted. No Ready, native Closed,
 resource credit or overall upgrade completion is established here.
+
+## Private resident handoff: current-main composition checks
+
+The [normalized composition record](validation/resident-handoff-composition-scoped-2026-10-31.json)
+binds tested commit `7efaeb2d888f1cf546fc62f6ab5edd7ea99292aa` and its
+3,369-file/1,966-Go-file snapshot. Independent raw audits confirm all 13 roots
+and 36 package-qualified named run/pass keys in each mode, without skips,
+failures or a race report. Current dependency graphs contain 854/856 packages
+and the same 88 officially authenticated module records before and after.
+Ten-package default vet and native command compilation pass.
+
+The two phases complete in 57.646833 and 35.688132 seconds. All six original
+command envelopes and queue handles return and join with exit zero; twelve
+closed regular output streams have verified hashes. All three actual temporary
+directories per phase are empty. Source and selected support pins remain
+unchanged. The 75,076,114-byte native artifact has SHA-256
+`5c516123b824af053054dc92dbf4c687fbd31ad9edd856f631151e6a9d378cb9`
+and was never executed. Both windows are released; retained failures, scratch
+and uncertain obligations receive no reclamation credit.
+
+Source/evidence compose as `43ac133`/`0475174` after rebasing onto `b284520`.
+Comparison to the tested tree verifies that all differences are documentation;
+every runtime, module and asset image is identical. No runtime check was repeated
+for those documentation changes, and no new machine-code identity is asserted.
+Successful genuine handoff/current-authority/schema/native/SQL behavior,
+parent retirement, Linux eligibility, worker/public-start integration and real
+job/proxy continuity remain unaccepted. No installed backend or job changed.

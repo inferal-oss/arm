@@ -5210,3 +5210,19 @@ Next gates remain:
 
 This private component does not complete the upgrade feature or establish
 native Closed, release credit, Linux eligibility or active-job survival.
+
+## Private resident handoff: composed validation accepted
+
+The reviewed source `40626cdd` composes as `43ac133`, with evidence `1b2bcd37`
+as `0475174`. Both selected modes now pass against the actual current-main
+composition tested at `7efaeb2`: 13 roots and 36 named cases each, ten-package
+vet and native compile-only build. The later rebase onto `b284520` preserves
+every runtime, module and asset image; its differences are documentation only.
+The [composition record](validation/resident-handoff-composition-scoped-2026-10-31.json)
+contains the exact rosters, input binding and limitations.
+
+Current database/Manager/schema changes are included in this compilation.
+Successful genuine handoff, current-authority/schema/SQL behavior, parent
+retirement, worker/public-start activation and active-job continuity remain
+open. No running backend or job was replaced. The next runtime stage requires
+a separately reviewed genuine fixture; the Linux VM remains a setup proposal.
