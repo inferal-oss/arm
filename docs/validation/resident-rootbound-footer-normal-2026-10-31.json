@@ -1,0 +1,356 @@
+{
+  "boundaries": [
+    "Normal selected host qualification, not a race run, full suite or Linux execution.",
+    "Ten new roots/twenty-four named results cover DATA chain/codec/key/overflow/prefix-EOF and pre-effect original-owner refusals; six relevant existing roots retain prepared-root/service/codec/bootstrap/read-budget coverage.",
+    "Genuine unused original grant selector, successful prepared SQL/read transaction/native binding and actual service3/footer WriteAt/Sync/current results remain unexercised.",
+    "The compiled command was never executed. No helper, genuine role, positive native/service/custody fixture or live job upgrade ran.",
+    "Original birth2/read1/debit validator, parent five-stage budget, native/fixed-reference contracts and official driver remain intact. Partial/unknown effects retain original facts and full promises; DATA cannot supply authority.",
+    "Authenticated ACK/control challenge, parent post-Start read and owned reference retirement/Process.Release remain unimplemented.",
+    "Worker-capable schema/controller/admission/assets, API/UI replacement, public first/repeat/concurrent arm start, and original managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/accounting upgrade survival remain open.",
+    "Actual measured/funded whole-root costs and native admission, core shutdown and unresolved-core recovery remain unaccepted."
+  ],
+  "implemented_source_bounds": {
+    "Sync_max_per_append": 1,
+    "capacity": "Exact known key canonical escaping and actual unused original open-read bytecount; bounded maximal fixed fields and subtraction before addition. Actual service3/footer encodings checked again before first append.",
+    "direct_IO_max_per_read_or_append": 32,
+    "launch_footer_framing_overhead_bytes": 52,
+    "launch_footer_max_full_frame_bytes": 4096,
+    "launch_intent_max_unchanged_bytes": 16384,
+    "launch_key_commitment": "Lowercase SHA256 of UTF-8 arm-resident-launch-key-v1 followed by one NUL byte then exact original UTF-8 key bytes. No normalization or truncation; raw key links remain in intent/prepared/service3.",
+    "launch_pre_footer_read": "Distinct once-only original prefix+EOF read2; initial read1 immutable, future current read3 unsupported.",
+    "launch_total_max_bytes": 20480,
+    "resource_boundary": "Finite payload/call bounds are not measured RSS, syscall, elapsed-time, kernel-return, native-Closed or release-credit evidence.",
+    "service3_content_reads_added": 0,
+    "service3_max_full_frame_bytes": 4096
+  },
+  "normal_qualification": {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "-buildvcs=false",
+    "Go_version": "1.27.3",
+    "actual_dependency_graph": {
+      "POST_authenticated_modules": 88,
+      "PRE_POST_equal": true,
+      "PRE_authenticated_modules": 88,
+      "authentication": "Actual referenced official mod/ZIP/expanded-source Hash1 and go.sum; no replacements, downloads, cache seeding or dependency-cache write relaxation.",
+      "packages": 828,
+      "referenced_official_modules": 88,
+      "sqlite": "modernc.org/sqlite@v1.60.1"
+    },
+    "genuine_role_or_native_positive_fixtures": 0,
+    "helper_subprocesses": 0,
+    "native_command_compile_only": {
+      "artifact_bytes": 74587618,
+      "artifact_executed": false,
+      "artifact_sha256": "c73f7f054fcf67b182da9dde424e9de7b53a53c1c0d209cd4763f056c72b2c36",
+      "result": "pass",
+      "target": {
+        "GOARCH": "arm64",
+        "GOOS": "darwin"
+      }
+    },
+    "new_DATA_refusal_named_results": 24,
+    "new_DATA_refusal_roots": 10,
+    "relevant_existing_regression_roots": 6,
+    "root_count": 16,
+    "supervision": {
+      "active_elapsed_seconds": 46.104317,
+      "all_original_Go_commands_joined_exit_zero": true,
+      "candidate_and_working_source_files_verified": 3268,
+      "command_stream_hashes_verified": 12,
+      "failed_predecessors_and_scratch_retained": true,
+      "new_temporary_inventories_empty": true,
+      "original_Go_commands": 6,
+      "owning_wrapper_joined_exit_zero": true,
+      "proposal_members_verified": 16,
+      "protected_function_and_file_contracts_verified": 18,
+      "protected_working_files_verified": 3250,
+      "reviewed_working_Go_files_verified": 18,
+      "sampled_stop_alarm": false,
+      "source_support_and_proposal_pins_unchanged": true,
+      "support_pins_verified": 215
+    },
+    "test_packages": [
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestP1BootstrapWorstCaseCapacityRefusesOversizeBeforeNamespaceEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/bad-generation"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/domain"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/format-five"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/oversize-key"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/relative-home"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/schema"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/uppercase-digest"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedRootRequiresActualEntryAndOriginalBindings"
+          },
+          {
+            "result": "pass",
+            "test": "TestRootBoundPreflightDataRejectsBeforeDebitCapacityOverflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects"
+          }
+        ],
+        "package": "getarm.org/internal/server",
+        "root_tests": [
+          "TestP1BootstrapWorstCaseCapacityRefusesOversizeBeforeNamespaceEffects",
+          "TestPreparedCommitmentDataDomainAndOverflowRefusals",
+          "TestPreparedRootRequiresActualEntryAndOriginalBindings",
+          "TestRootBoundPreflightDataRejectsBeforeDebitCapacityOverflow",
+          "TestRootBoundRequiresActualCompletedPreparedRootBeforeEffects"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/alias"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/checksum"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/duplicate"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/end"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/length"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/magic"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/oversize"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/trailing"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/truncated"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/unknown"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterKeyCommitmentDataAndFullFramingBounds"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterRequiresActualVerifiedFenceAndCompletedService"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1PreFooterPrefixEOFDataRequiresExactOriginalBytes"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "root_tests": [
+          "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage",
+          "TestP1FooterKeyCommitmentDataAndFullFramingBounds",
+          "TestP1FooterRequiresActualVerifiedFenceAndCompletedService",
+          "TestP1PreFooterPrefixEOFDataRequiresExactOriginalBytes"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestLegacyJournalBudgetDataRetainsFourReadLimit"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1LaunchCapacityRequiresActualOpenedUnusedReadBeforeSelectors"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1PreStartJournalBudgetDataExactStagesAndRefusals"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1PreparedServiceRequiresActualReceivedBirthAndOwners"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1RootBoundCapacityDataRejectsJournalAndKeyOverflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1RootBoundFrameDataPreservesCanonicalChainAndExactEscapedKey"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1RootBoundFrameDataPreservesCanonicalChainAndExactEscapedKey/digest"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1RootBoundFrameDataPreservesCanonicalChainAndExactEscapedKey/generation"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1RootBoundFrameDataPreservesCanonicalChainAndExactEscapedKey/key-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1RootBoundFrameDataPreservesCanonicalChainAndExactEscapedKey/previous"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1RootBoundRequiresActualPreparedCallBeforeEffects"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "root_tests": [
+          "TestLegacyJournalBudgetDataRetainsFourReadLimit",
+          "TestP1LaunchCapacityRequiresActualOpenedUnusedReadBeforeSelectors",
+          "TestP1PreStartJournalBudgetDataExactStagesAndRefusals",
+          "TestP1PreparedServiceRequiresActualReceivedBirthAndOwners",
+          "TestP1RootBoundCapacityDataRejectsJournalAndKeyOverflow",
+          "TestP1RootBoundFrameDataPreservesCanonicalChainAndExactEscapedKey",
+          "TestP1RootBoundRequiresActualPreparedCallBeforeEffects"
+        ]
+      }
+    ],
+    "unchanged_retainer_helpers_and_old_database_cohorts_repeated": false,
+    "unique_package_qualified_named_run_pass_pairs": 37,
+    "vet": {
+      "packages": [
+        "getarm.org/internal/server/internal/residentbirth",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/internal/server",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    }
+  },
+  "schema": 1,
+  "scope": "Original RootBound service3 and inherited launch-journal footer: normal DATA/refusal and relevant prepared-state regression controls",
+  "source": {
+    "base_commit": "2555e44c7cef105e7bf617bf49f88995e8054f9d",
+    "feature_commit": "7ee56be8c3549dd89f0f74a0ae585ba18267e59b",
+    "protected_function_and_file_contracts_verified": 18,
+    "qualified_Go_files": 1887,
+    "qualified_source_files": 3268,
+    "qualified_source_manifest_sha256": "5d6ada1bddd5f982a8834289383abff981459613e46058d3089cb9087ecbb48a",
+    "reviewed_Go_files": {
+      "internal/server/internal/residentbirth/inherited.go": {
+        "git_blob": "2c9420213937ee82902f16d605e7817fdc16877c",
+        "sha256": "ab6b29360ac260af5caa1a38a1c2723521a2382b89cb5820c8ab5dde2ea92e59"
+      },
+      "internal/server/internal/residentbirth/rootbound_footer.go": {
+        "git_blob": "b7df99b01134ddbf7e96a5309c3895b04bc75f30",
+        "sha256": "0bcaa68ef11c79a415641a1941638919862d7a61f4d80d99b9a241bbfe79b011"
+      },
+      "internal/server/internal/residentbirth/rootbound_footer_data.go": {
+        "git_blob": "811883931c69c858b84388a7fb8508954bd15fa3",
+        "sha256": "1e6d8656bf00a2fc8361bd9a0fd7e3180e982c971780ad59702535a161258cb9"
+      },
+      "internal/server/internal/residentbirth/rootbound_footer_data_test.go": {
+        "git_blob": "47003e10ba67061e5d548517ea29bd86250fe507",
+        "sha256": "9067a2c80315d3045488953381b5617843c36d2c6182ccc8e2388dbea8cd3623"
+      },
+      "internal/server/internal/residentbirth/rootbound_footer_test.go": {
+        "git_blob": "7c6feedc0b6ac804980a4cac32cc1ebf260704fb",
+        "sha256": "eef5d7bb48979c225bac4efb2f7bf5aa216455d1063664f073844574f9288213"
+      },
+      "internal/server/internal/residentservice/execution_environment.go": {
+        "git_blob": "a249ecdfb71930784f98eb1f7f1257536bfc6417",
+        "sha256": "e6d675be5c2ab46a41489fdd79ba3a5f0fffcde231569dfebc3da1fc7bfbbba8"
+      },
+      "internal/server/internal/residentservice/handoff.go": {
+        "git_blob": "1ae142d8e729e7dbbbd0a8d9e6a9266c1230b8ea",
+        "sha256": "282d4bc3db55c278cc05c2b970a1de7ba79c0ef934140644f96d9209ae761744"
+      },
+      "internal/server/internal/residentservice/owner.go": {
+        "git_blob": "2ad4310aba05da640d5b54164e10ff047d984713",
+        "sha256": "148df2c00c4b2f1d33f588020b3933919efe77b8bbea79227a6a27e5eaccf1e9"
+      },
+      "internal/server/internal/residentservice/p1_prepared.go": {
+        "git_blob": "4a1025e1d88da6a537666cf1783201ca65f35eee",
+        "sha256": "8a064a9e2e52a89a0193fc1a441a57ac35589fba4352088c70557192293d2b89"
+      },
+      "internal/server/internal/residentservice/p1_rootbound.go": {
+        "git_blob": "37b53bdf3db3b2007971371adcfb587a8062ab95",
+        "sha256": "6e77489c0d9ce440127a10887e265749be73505de2a47b6d72b1d790d3bf8085"
+      },
+      "internal/server/internal/residentservice/p1_rootbound_data.go": {
+        "git_blob": "116671705723d18731ad572e93aafa88d53d9998",
+        "sha256": "70ce4f659d0689ce1d9993876f3a7d2b3fee7320a7d17f74f71df455bd51fae7"
+      },
+      "internal/server/internal/residentservice/p1_rootbound_test.go": {
+        "git_blob": "2fcf37d21a8c4042c006bed12e2e65c85e9af39d",
+        "sha256": "fda29261723dd413f38ac30444cc4a9aedd4e901ff5bf66f08f644bd66e9b8ec"
+      },
+      "internal/server/resident_bootstrap_capacity.go": {
+        "git_blob": "e2ecb39e56aec94585cfe83be45005f688cd626a",
+        "sha256": "6d2a9e5fed8b043a3830095cf86d86a55c26e7bf61de7bdde6daec70a93e1320"
+      },
+      "internal/server/resident_child_original.go": {
+        "git_blob": "5890cf5d7a76c8d7736b953a1c54c6cf69729b85",
+        "sha256": "6120a642a4b117e86bf65d56109d857231e1ece081614682d4f47162c8dd589f"
+      },
+      "internal/server/resident_child_original_test.go": {
+        "git_blob": "1dac6dcd17ec9a7b151eef7120580fba22cbea85",
+        "sha256": "33e71e7363d93c32db9b082ae0b4f2a3eef28693725b6a52e194a593f64294e6"
+      },
+      "internal/server/resident_core_entry.go": {
+        "git_blob": "a51c61cdbaf7ff8639d29bbf8e8615c6ec7277ed",
+        "sha256": "f6556dc73f58902f9fbe393b696a66efcda2211788a93d7ffbfab865ee06d782"
+      },
+      "internal/server/resident_rootbound.go": {
+        "git_blob": "1ffe7840f8feda3ee736d50b6523f0f542fac4aa",
+        "sha256": "c147a675d697fb3fdd922f0f6ba814f987bb925399781504660d28e5fae2f096"
+      },
+      "internal/server/resident_rootbound_test.go": {
+        "git_blob": "1b07660b326c3154c06cb94743cd85ce929bcb6a",
+        "sha256": "df91f627afad0f8168474d7284a115cc2f9245a913f6ab04dfc15be735ded0be"
+      }
+    }
+  },
+  "status": "scoped_normal_qualification_pass"
+}

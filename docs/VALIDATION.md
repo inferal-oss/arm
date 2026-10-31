@@ -12237,3 +12237,41 @@ of the qualified source snapshot, including all 1,878 Go files and every module
 and embedded input. The later scoped documentation/evidence additions do not
 affect those inputs. This accepts composition for the selected normal result
 without repeating its checks or broadening the unexercised native/runtime scope.
+
+## Resident RootBound journals — normal DATA and refusal controls
+
+The [normalized evidence](validation/resident-rootbound-footer-normal-2026-10-31.json)
+maps eighteen reviewed Go inputs to source commit
+`7ee56be8c3549dd89f0f74a0ae585ba18267e59b` and the exact 3,268-file/1,887-Go
+qualified snapshot. All 16 selected roots/37 unique package-qualified raw run/pass
+pairs pass, with no skips or failures. Ten new roots/24 named results cover DATA
+service-frame chaining and exact escaped keys, closed footer/checksum/framing/
+alias refusal, size arithmetic and prefix/EOF projections, plus zero/copied/
+unopened-owner refusal before effects. Six existing roots preserve prepared
+Root/service, commitment codec, bootstrap capacity and parent/legacy read budgets.
+No unchanged retainer helpers or old database cohorts were repeated.
+
+Default vet passes for four affected packages. The native darwin/arm64 command
+build passes with Go 1.27.3, CGO disabled and `GOFLAGS=-buildvcs=false` on all six
+graph/test/vet/build invocations. Its 74,587,618-byte artifact has SHA256
+`c73f7f054fcf67b182da9dde424e9de7b53a53c1c0d209cd4763f056c72b2c36`
+and was never executed. The actual graph contains 828 packages and 88 official
+modules. Mod/ZIP/expanded-source Hash1 and go.sum authentication match PRE/POST,
+including unmodified SQLite v1.60.1; the cache/network fence remains unchanged.
+
+Independent review verifies six original Go and owning-wrapper exit-zero joins,
+twelve output hashes, all candidate and working source/support/proposal pins,
+and eighteen unchanged full-file/function contracts. The scoped wave took
+46.104317 seconds without an alarm; new temporary inventories are empty and
+earlier failed evidence/scratch stays preserved. These command/API outcomes and
+finite payload/direct-call limits provide no native-Closed or release credit.
+
+This is selected normal host qualification, not a race/full-suite/Linux run.
+Successful actual unused-grant selection, prepared SQL/read transaction/native
+binding and service3/footer WriteAt/Sync/current observations remain unexercised.
+No genuine role or positive native/service/custody fixture ran. Authenticated
+ACK/control challenge, parent post-Start observation and owned reference retirement
+are unimplemented; worker/schema/controller/admission/assets, API/UI replacement,
+public `arm start` and original run/proxy/log/heartbeat/finish/renew/cancel/expiry/
+accounting survival remain open. Measured whole-root funding and shutdown/recovery
+remain separate gates. Raw operational records and binaries stay private.

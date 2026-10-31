@@ -4563,3 +4563,23 @@ source from these same original owners. Actual prepared native/SQL success,
 authenticated current handoff, parent-reference disposition and worker/public
 startup remain independent implementation and acceptance gates. Running ARM and
 its managed work were not changed by this source integration.
+
+## Resident RootBound journals — reviewed normal scope
+
+The existing upgrade task continues on `codex/resident-rootbound-footer` from
+`2555e44`, with focused source commit `7ee56be8c3549dd89f0f74a0ae585ba18267e59b`.
+The same actual prepared Root now gates the original service record3 append and
+inherited launch-journal footer in noncircular order. Original birth2/read1/debit
+evidence stays immutable. Scoped source and normal qualification review pass;
+composed landing remains an integration gate. The [normalized result](validation/resident-rootbound-footer-normal-2026-10-31.json)
+records 16 roots/37 named DATA/refusal and relevant existing cases, affected vet
+and a native compile-only command build.
+
+Actual successful unused-grant selection, prepared native/SQL/read-transaction
+binding and service3/footer native writes/syncs remain unexercised. Authenticated
+ACK/current-authority exchange and parent-owned reference retirement are the next
+separate implementation gates. Worker-capable schema/controller/admission/assets,
+real API/UI worker replacement and public first/repeat/concurrent `arm start`
+remain open. Original managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/
+accounting upgrade survival and core shutdown/recovery remain unaccepted. Earlier
+records, failed scopes and preserved source branches retain their classifications.

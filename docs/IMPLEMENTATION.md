@@ -5801,3 +5801,39 @@ scoped evidence as `6a37976`. The complete runtime, module and embedded inputs
 match the qualified snapshot. Documentation records that source equivalence;
 it does not establish actual prepared native/SQL success or activate handoff,
 workers, public startup or a live upgrade.
+
+## Original RootBound service record and inherited launch footer
+
+The genuine private core entry invokes one RootBound operation after its actual
+successful prepared-binding call. The Root retains that same call, exact owners
+and canonical commitment, checks both actual encodings before the first append,
+and rechecks its original entry/operation/sticky state before each journal effect.
+The original service validates its completed prepared call and exact inherited
+custodian/image/charge. It retains a separate record3 append/sync/current result;
+original birth2 journal, debit and initial read stay immutable. The legacy
+birth-overwriting RootBound method refuses P1 before effects.
+
+After service3 completes, the same inherited fence consults that actual service
+operation, validates current held identities and original intent length, then
+retains one distinct prefix-plus-EOF read with before/after metadata. It appends
+the footer through that same held journal view and syncs once. The original
+intent prefix remains untouched. Exact call attempts, partial bytes, returned
+errors, sync observations and late cancellation remain separate; unresolved
+operations retain sticky failure and the full promise without retry or cleanup.
+
+The commitment chain is original intent/birth2, prepared commitment, completed
+service3 frame digest, footer, then a future ACK. The closed canonical footer has
+52 bytes of framing overhead within its 4 KiB full-frame limit; intent stays at
+most 16 KiB and the combined launch journal at most 20 KiB. Its launch-key link is
+SHA256 of the UTF-8 domain `arm-resident-launch-key-v1`, one NUL byte and the exact
+original UTF-8 key. Raw key links remain in original intent/prepared/service3;
+there is no normalization or truncation. The unused-grant preflight uses its
+actual completed open-read bytecount and exact key encoding/escaping before
+debit/image/fence/Start, with bounded subtraction before additions. Actual encodings
+are checked again before RootBound writes.
+
+Service content read2 and launch current read3 remain reserved for a later current
+exchange. Existing birth validation, parent five-stage budget and native identity
+checks stay; no grown-file allowance is added. Real journal success and measured
+whole-root funding remain unverified. ACK, parent post-Start reads/owned closers,
+worker/schema/public-start activation and live upgrade acceptance remain open.
