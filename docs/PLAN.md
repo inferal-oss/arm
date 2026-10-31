@@ -4876,3 +4876,29 @@ Positive native XFS/full-quota headroom, persistent production enrollment,
 complete writer exclusion and reviewed bidirectional effects remain open.
 Original-key read-only recovery is already integrated through `f60c8c3e` and
 the later charged-scope work; it is not reimported from its older branch.
+
+
+## Onboarding saved names continuation — qualified source
+
+Branch `codex/onboard-native-labels`, source `076b518`, preserves the accepted
+prior owner tree and implements a portable saved-name TitleSource with the
+existing unmodified Go SQLite driver. It removes onboarding's control-socket/client
+dependency and considers up to 512 directories once. The standalone native session/title APIs, ordinary 16
+identity limit, scope/policy/activation and recovery semantics remain unchanged.
+
+A bounded counts-only diagnostic established explicit saved index-name/exact-cwd
+associations for the reported case. Its OS-fenced zero-write evidence is not a
+promise about the portable reader: normal SQLite WAL/SHM bookkeeping is allowed;
+main data/schema remains read-only. Final normal tests pass 25 roots/46 named
+cases; race tests pass 22 roots/43 named cases without skips or failures.
+Three-package vet and native compilation pass. The same built CLI subsequently
+passes one separately approved read-only onboarding catalog operation with
+usable saved names and exact directory context. One unattributed catalog warning
+remains. The [normalized evidence](validation/rollout-onboard-saved-names-2026-10-31.json)
+records these separate scopes and the earlier failed offline-WAL regression.
+
+Coordinator composition remains the next gate. Earlier failed diagnostics and
+validation, retained scratch and cleanup uncertainty keep their classifications;
+no physical reclamation is claimed. No production helper, module change, default
+backend, real enrollment or installed binary change is included. Native API,
+identity/liveness, full-suite and Linux acceptance remain outside this scope.

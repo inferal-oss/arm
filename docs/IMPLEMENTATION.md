@@ -5541,35 +5541,60 @@ paint, live transport, race or full-UX coverage.
 
 ## Optional names for onboarding directory choices
 
-`rollout project onboard` can show native session names alongside a full directory
-in its discovery roster. Names decorate existing exact canonical directory
-suggestions only; they never add or widen scope, choose a project ID, enroll a
-session, change a fingerprint or enter the policy review/apply request. Multiple
-names are deduplicated and sorted; the picker shows up to three and searches all
-retained names. A `Directory:` label and manual entry remain available without
-supported names. Names do not establish ownership or activity.
+`rollout project onboard` decorates existing canonical directory suggestions with
+explicit saved session names. Names never choose scope/project IDs, alter native
+session identity/fingerprints, enter policy review/apply or enroll sessions.
+Shared names are deduplicated/sorted, up to three are shown and every retained
+name is searchable; full directory context and a directory-only/manual fallback
+remain available. Names do not establish ownership or activity.
 
-The optional `agentsessions.TitleSource` is separate from the session identity
-contract. Codex reads only `thread/list`'s `name` through the existing installed
-proxy to an already-running control socket, requiring the supported root filter
-and `useStateDbOnly` interface. Title-only lookup includes `cli`, `vscode` and
-`appServer` sources; ordinary session discovery retains its original defaults. There is one enrichment request sequence for up
-to 16 exact roots: an eight-second deadline, at most six pages, 128 messages,
-512 sessions, eight MiB total response bytes and two MiB per frame. Unsupported
-clients or unavailable metadata keep directory discovery usable. No prompt,
-preview, transcript or guessed basename supplies a title. Claude currently has
-no supported title source.
+The continuation reads the supported Codex saved-name index and
+`state_5.sqlite` using the existing Go SQLite driver, without a client binary,
+control socket, server or helper process. Only explicit index `thread_name`
+records join to native `id`/`cwd`, filtered by both the validated named-ID set and
+requested exact directories. No database title, prompt, preview or transcript
+supplies a name. Onboarding considers the bounded 512-directory catalog in one
+lookup, preserving ordinary native session discovery's 16-root contract.
 
-Undated and future (beyond one minute) name records are omitted. Old activity
-timestamps do not invalidate a directory/name association, so dormant tasks retain
-their names. Display
-metadata removes terminal/direction controls, folds whitespace and retains at most
-256 runes plus an ellipsis. Native title changes do not change session generations.
-The [official app-server protocol](https://learn.chatgpt.com/docs/app-server)
-documents `name` as the persisted user-facing title. Generated desktop titles
-are supported only when exposed in that field; installed native compatibility
-has not been verified. The scoped synthetic cohort passes 25 roots/44 named
-nodes; no native client read or terminal capture was performed.
+The main database must already exist and verify read-only, with query_only and
+trusted_schema guards and ordinary, physically stored TEXT id/cwd columns. One
+connection/read transaction uses normal SQLite locking, bound parameters and a
+513-row detection limit (more than 512 refuses). Limits are eight seconds total,
+two seconds of SQL context, 250 ms busy wait, 1 MiB index/512 selected records/64KiB
+selected lines and 32 MiB source-file extents. Extents are not an I/O/heap cap;
+contexts are cooperative, not kernel preemption. No immutable/nolock VFS, driver
+patch, extension enabling or schema/journal-mode/checkpoint/recovery operation
+is used. Read-only MAIN data/schema does not promise zero filesystem effects:
+normal SQLite WAL/SHM synchronization and close bookkeeping may occur. No manual
+sidecar cleanup or global setting change is performed.
+
+Main/index and pre-existing WAL identity, size and modification checks remain
+strict. A previously absent WAL may remain absent or appear as a regular,
+non-symlink zero-byte file after normal reader close; a new nonempty WAL is
+refused. Source extent limits are rechecked after SQLite closes. These guards do
+not establish a filesystem snapshot or quiescence.
+
+Names are bounded/sanitized display metadata. Dormant names are retained without
+an activity-age cutoff; malformed, unknown or unavailable metadata leaves the
+picker usable. Source changes/cancellation/query or close errors discard names
+with bounded generic warnings. Claude saved titles remain unsupported.
+
+The [Codex index contract](https://github.com/openai/codex/blob/67f0994b532b8740f14b5b738af7b7b2a915b1d6/codex-rs/rollout/src/session_index.rs)
+and [native schema](https://github.com/openai/codex/blob/67f0994b532b8740f14b5b738af7b7b2a915b1d6/codex-rs/state/migrations/0001_threads.sql)
+define the explicit-name/ID/cwd association. An independently fenced,
+counts-only diagnostic established saved associations for the reported case;
+its zero-write fence does not transfer to the portable reader. Source `076b518`
+passes final normal tests (25 roots/46 named cases), race tests (22 roots/43 named
+cases), three-package vet and native compilation. The built CLI later executes
+once through public read-only JSON onboarding, resolving usable saved names with
+exact directory context and leaving the fresh ARM state absent. One catalog
+warning remains unattributed. The [normalized evidence](validation/rollout-onboard-saved-names-2026-10-31.json)
+retains the failed offline-WAL regression and bounds the later green scope.
+Native API, identity/liveness, installed-binary, full-suite and Linux acceptance
+remain unclaimed. Earlier 25-root/44-node synthetic acceptance applies only to
+its recorded source.
+
+Earlier native-title acceptance record (prior source only):
 
 Coordinator composition preserves the exact tested product tree. Review covered
 metadata-only title parsing, exact directory association, display sanitization,

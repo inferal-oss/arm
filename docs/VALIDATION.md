@@ -12685,3 +12685,57 @@ production refusals, original joins and charges; their complete composed
 execution remains pending. Controlled topology/headroom is modeled evidence,
 not native backing, quota or throughput acceptance. No factory activation or
 full-feature acceptance follows from these component results.
+
+
+## Onboarding saved-name continuation — scoped qualification
+
+The earlier accepted native-title cohort applies only to its recorded source.
+A separately reviewed bounded counts-only file/SQL diagnostic established saved
+explicit-name/exact-directory associations for the reported case, after retained
+startup/profile failures and an unmet extension-API preflight. It is not native
+API/identity/activity evidence or a compatibility pass for the Go reader by itself.
+
+The portable reader uses the existing driver in verified main read-only
+mode, normal locking and a read transaction, fixed schema/selected id+cwd SQL and
+an explicit name-index join. It has no public authorizer or zero-sidecar-effect
+claim. Synthetic fixtures cover later-directory/one-call lookup, shared/latest
+names, quoted paths, >512 irrelevant unnamed history rows, committed WAL data,
+unchanged main bytes/logical rows, unsupported view/virtual/generated schemas,
+malformed/missing/unsafe/oversized inputs, bounds, cancellation/reader cleanup and
+no prompt fallback. Onboarding wiring tests with an unusable client binary
+render saved fixture names and leave ARM policy/backend absent. Existing policy
+scope/review/apply contracts remain selected.
+
+An earlier candidate's normal run failed the offline-WAL regression after the
+fixture's last writer closed. Active-WAL and CLI cases passed; the remaining
+conditional race/vet/build phases did not run. That red result remains failed.
+The reviewed correction accepts only a previously absent, newly regular empty
+WAL, preserving main/index and every pre-existing WAL check. New nonempty WALs
+and symlinks remain refused, and extent limits run before and after SQL close.
+The original offline regression is unchanged; focused guard assertions cover
+the allowance and refusal boundaries.
+
+Source `076b518` then passes 25 normal roots/46 unique named run/pass pairs and
+22 race roots/43 unique named run/pass pairs, with no skips or failures.
+Three-package vet and native command compilation pass. Each serial phase has a
+natural zero exit, positively joined original processes, output EOF, unchanged
+source/tool pins, empty temporary inventories and a positive final owned-scratch
+enumeration. These are sampled, cooperative observations without kernel limits,
+shared-cache growth measurement or reclamation credit.
+
+The same built artifact subsequently executes exactly once through public
+`rollout project onboard --adapter codex --json`, with an explicit client metadata
+home and a fresh absent ARM home. This separately approved full bounded catalog
+read passes usable saved-name/exact-directory-context checks. Its natural zero
+exit, original handle reap, stdout/stderr EOF, unchanged source/binary pins,
+empty executable path and absent ARM state are retained privately. Raw catalog,
+names, IDs, paths and prompts are not saved in evidence. One catalog warning is
+known only by count and remains unattributed; no reread or fallback followed.
+
+The [normalized evidence](validation/rollout-onboard-saved-names-2026-10-31.json)
+binds source/test rosters and the compiled artifact. Compilation and later
+execution are distinct phases. Normal SQLite synchronization bookkeeping remains
+permitted; no zero-original-file-effect claim transfers from the diagnostic.
+Native API/identity/liveness, installed-binary replacement, full-suite, Linux and
+terminal-render acceptance remain outside this scope. Earlier failures and
+cleanup/storage uncertainty remain retained independently.
