@@ -6264,9 +6264,10 @@ The prepared Semblance dependency and ARM palette compatibility fix also remain
 unintegrated. Exact collection membership enables stock lazy entry validation;
 an earlier run exposes a stale derived validation result after palette
 disposal. A limited source correction passes 103 RDF and 161 Node cases;
-the owner-indexed upstream successor has completed source review. Its required
-fresh engine build is not qualified, so ABI, typecheck and its 69 regression
-cases remain unrun. Dependency acceptance requires final provenance, composed tests,
+the owner-indexed upstream successor has completed source review and scoped
+qualification: fresh Rust/WAT builds, both ABI cohorts, strict typecheck and
+177 targeted cases, including 69 generic regressions, pass. Cost/soak remains
+pending. Dependency acceptance requires final provenance, composed tests,
 reproducible assets, native embedding and browser review. Stock
 Semblance remains the requested default, with Terminal selectable.
 

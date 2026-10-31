@@ -12750,14 +12750,25 @@ from the prepared C3 End/expiry cancellation paths. No fixture-only cause,
 relaxed native authority, released obligations or accepted full composition is
 inferred. Earlier failed windows remain failed.
 
-The reviewed owner-indexed Semblance source is also unqualified at runtime.
-Its required fresh engine build fails, so neither ABI check, strict typecheck
-nor the eight targeted entries, including all 69 generic regression cases,
-run. Immutable source/input checks and ordinary backend cleanup pass, but this
-does not qualify fresh images, exact quiet-log readback, the dependency or its
-later cost/soak gate. The earlier 103 RDF / 161 Node source result belongs only
-to its recorded earlier source. Full provenance, reproducible assets, ARM
-embedding, browser checks and subsequent onboarding composition remain open.
+The corrected owner-indexed Semblance source passes a separate scoped build
+and test window on upstream base `cbb976cf`: normal fresh Rust/WAT builds,
+ten ABI checks per backend, strict typecheck and all 177 unique qualified
+cases in eight targeted entries. The 69 generic cases comprise 14 original
+lifetime cases, 45 index/lifecycle cases and ten removal-cleanup cases. No
+failures, pending cases or todos remain in that window. Actual image reads,
+source/build proof bindings, original tool/backend waits, exact quiet logs,
+ordinary nonforced stop, closure and final source/input/image hashes are checked.
+
+Earlier attempts remain failed: one stops at the required engine build; a
+later one passes build/ABI/typecheck but has 151 passes and 26 fixture failures
+before their intended assertions. A test-only correction changes ten layer
+selection calls from arrays to the declared Set contract, preserving all case
+titles, loops and assertions. Production API behavior is unchanged.
+
+Cost/soak qualification, full provenance, reproducible assets, ARM embedding,
+browser checks and subsequent onboarding composition remain open. The earlier
+103 RDF / 161 Node result belongs only to its recorded earlier ARM source;
+the new upstream result is not a completed ARM dependency migration.
 
 
 ## Onboarding saved-name continuation — scoped qualification

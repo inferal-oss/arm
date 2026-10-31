@@ -4905,9 +4905,10 @@ Source diagnosis and a bounded diagnostic must distinguish completion cleanup
 from End/expiry cancellation without weakening native ownership or accounting.
 
 Semblance's limited lifecycle source checks pass 103 RDF and 161 Node cases.
-The owner-indexed upstream successor has completed source review, but its
-required fresh engine build is not qualified; ABI, typecheck and all 69
-generic regression cases remain unrun on that source. Complete dependency provenance,
+The owner-indexed upstream successor has completed source review and passes
+fresh Rust/WAT builds, ten ABI checks per backend, strict typecheck and all
+177 cases in eight targeted entries, including 69 generic regression cases.
+Cost/soak qualification remains open. Complete dependency provenance,
 assets, native embedding and browser checks precede onboarding UI composition.
 Public pressure, forwarding and sync activation remain separate unfinished gates.
 
