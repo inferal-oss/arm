@@ -70,6 +70,8 @@ type residentChildPending struct {
 	firstError                     error
 	preparedValidationTried        bool
 	preparedValidation             *residentRootPreparedCall
+	rootBoundTried                 bool
+	rootBound                      *residentRootBoundCall
 }
 
 // Owns the one finite bootstrap I/O context attempt. Runtime constructor/cancel

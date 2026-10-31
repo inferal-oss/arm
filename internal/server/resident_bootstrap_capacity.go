@@ -39,6 +39,23 @@ func p1BootstrapCapacityData(inputs residentservice.P1LaunchInputsData, settings
 	if err != nil || len(intent) > 16<<10 {
 		return 0, errResidentChildOriginal
 	}
+	// Exact known key (including canonical JSON escaping) and actual unused-grant
+	// journal size, before debit/image/fence/Start. Other fields are DATA maxima.
+	serviceBytes, err := residentservice.P1RootBoundJournalCapacityData(inputs.GrantJournalBytes, launchKey)
+	if err != nil {
+		return 0, err
+	}
+	footerData, err := residentbirth.P1FooterForServiceData(residentservice.P1RootBoundData{Record: residentservice.RootBoundRecord{DebitID: selector, LaunchKey: launchKey, Generation: strings.Repeat("f", 32), CommitmentSHA256: selector}, ProfileSHA256: inputs.ProfileSHA256, ImageSHA256: inputs.Build.SHA256, JournalBytes: serviceBytes, JournalSHA256: selector}, selector, settingsHash)
+	if err != nil {
+		return 0, err
+	}
+	footer, err := residentbirth.EncodeP1RootBoundFooterData(footerData)
+	if err != nil {
+		return 0, err
+	}
+	if _, err = residentbirth.P1LaunchJournalCapacityData(len(intent), len(footer)); err != nil {
+		return 0, err
+	}
 	raw, err := json.Marshal(bootstrap)
 	if err != nil {
 		return 0, err

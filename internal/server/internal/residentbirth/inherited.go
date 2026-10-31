@@ -52,6 +52,8 @@ type inheritedFenceState struct {
 	original              residentrefs.FenceIdentities
 	intent                []byte
 	bytesRead             int
+	footerTried           bool
+	footer                *p1RootBoundFooterCall
 	firstError            error
 }
 type inheritedFenceOperation struct {
@@ -148,6 +150,12 @@ func (p *InheritedFencePending) begin(waitContext context.Context, kind string) 
 		} else if !s.verified {
 			s.mu.Unlock()
 			return nil, errOriginalFence
+		} else if kind == "rootbound-footer" {
+			if s.footerTried || s.footer != nil || s.bytesRead != len(s.intent) || len(s.intent) == 0 {
+				s.mu.Unlock()
+				return nil, errOriginalFence
+			}
+			s.footerTried = true
 		}
 		op := &inheritedFenceOperation{kind: kind, done: make(chan struct{})}
 		s.active = op

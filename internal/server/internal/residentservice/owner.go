@@ -56,6 +56,8 @@ type owner struct {
 	firstError                                          error
 	p1PreparedTried                                     bool
 	p1PreparedValidation                                *p1PreparedServiceCall
+	p1RootBoundTried                                    bool
+	p1RootBound                                         *p1RootBoundCall
 	openedFDs, closedFDs                                uint64
 	liveFDs                                             int
 }

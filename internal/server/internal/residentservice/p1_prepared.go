@@ -36,6 +36,7 @@ type p1PreparedServiceCall struct {
 	environment          []string
 	environmentCanonical []byte
 	runtime              mesh.RuntimeProof
+	data                 P1PreparedServiceData
 	returned             bool
 	resultError          error
 }
@@ -69,7 +70,7 @@ func (c *ChildPending) ValidateP1PreparedOriginal(ctx context.Context, custody *
 	defer o.finish(op, &normal, &resultErr)
 	resultErr = o.validateP1PreparedBody(ctx, call, &data)
 	o.mu.Lock()
-	call.returned, call.resultError = true, resultErr
+	call.returned, call.resultError, call.data = true, resultErr, data
 	o.mu.Unlock()
 	normal = true
 	return data, resultErr

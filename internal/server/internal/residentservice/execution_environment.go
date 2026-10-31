@@ -222,10 +222,11 @@ func (e *ExecutionEnvironment) MatchesCommandData(command *exec.Cmd) error {
 // Pure preflight DATA from the actual UNUSED original grant; never constructs
 // a debit/charge/root. Caller receives no aliases into its immutable profile.
 type P1LaunchInputsData struct {
-	Home          string
-	Build         Build
-	ProfileSHA256 string
-	Environment   []string
+	Home              string
+	Build             Build
+	ProfileSHA256     string
+	Environment       []string
+	GrantJournalBytes int64
 }
 
 func (p *ParentPending) P1LaunchInputsOriginalData() (P1LaunchInputsData, error) {
@@ -235,12 +236,16 @@ func (p *ParentPending) P1LaunchInputsOriginalData() (P1LaunchInputsData, error)
 	o := p.owner
 	o.mu.Lock()
 	defer o.mu.Unlock()
-	if o.active != nil || o.firstError != nil || !o.opened || o.debitTried || o.grant == nil || len(o.journal.records) != 1 || o.grant.Intent.Profile.RequireP1Environment() != nil {
+	if o.active != nil || o.firstError != nil || !o.buildFromOriginalGrant || !o.opened || o.debitTried || o.grant == nil || len(o.journal.records) != 1 || o.journal.records[0].Grant != o.grant || o.grant.Intent.Profile.RequireP1Environment() != nil || len(o.reads) != 1 {
+		return P1LaunchInputsData{}, ErrInvalid
+	}
+	read := o.reads[0]
+	if read == nil || read.owner != o || read.stage != "open" || !read.finished || read.firstError != nil || read.before == nil || read.after == nil || read.bytes <= 0 || read.bytes > MaxJournalBytes || len(read.data) != read.bytes || int64(read.bytes) != o.journal.bytes || read.after.Size() != o.journal.bytes {
 		return P1LaunchInputsData{}, ErrInvalid
 	}
 	hash, err := o.grant.Intent.Profile.SHA256()
 	if err != nil {
 		return P1LaunchInputsData{}, err
 	}
-	return P1LaunchInputsData{Home: o.path, Build: o.grant.Intent.Profile.Build, ProfileSHA256: hash, Environment: append([]string(nil), o.grant.Intent.Profile.RuntimeEnvironment.Entries...)}, nil
+	return P1LaunchInputsData{Home: o.path, Build: o.grant.Intent.Profile.Build, ProfileSHA256: hash, Environment: append([]string(nil), o.grant.Intent.Profile.RuntimeEnvironment.Entries...), GrantJournalBytes: int64(read.bytes)}, nil
 }

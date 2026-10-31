@@ -579,6 +579,12 @@ func (c *ChildPending) CommitRootBoundObservation(ctx context.Context, generatio
 	}
 	o := c.owner
 	o.mu.Lock()
+	// P1 keeps its original birth2 immutable and uses its distinct prepared-call
+	// operation. The legacy append below replaces o.journal and cannot serve P1.
+	if o.p1Child != nil {
+		o.mu.Unlock()
+		return ErrInvalid
+	}
 	if o.active != nil {
 		o.mu.Unlock()
 		return ErrPending
