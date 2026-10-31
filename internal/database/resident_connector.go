@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql/driver"
 	"fmt"
+	"getarm.org/internal/server/lifetimeview"
 )
 
 // residentConnector wraps only the public Connector. The returned original
@@ -11,8 +12,9 @@ import (
 // Backup/Error type and registered Driver remains the actual official driver's.
 // No private driver/TLS/statement/row/watcher or native pointer is inspected.
 type residentConnector struct {
-	owner    *ResidentOpen
-	original driver.Connector
+	owner         *ResidentOpen
+	original      driver.Connector
+	originalClaim *lifetimeview.ManagerClaim // immutable association captured at wrapper construction
 }
 
 type residentConnectCall struct {
@@ -52,7 +54,7 @@ func (c *residentConnector) Connect(ctx context.Context) (returned driver.Conn, 
 	}
 	o := c.owner
 	o.mu.Lock()
-	if o.self != o || o.connector != c || o.pool == nil || c.original == nil {
+	if o.self != o || o.connector != c || o.pool == nil || c.original == nil || o.claim != c.originalClaim {
 		o.mu.Unlock()
 		return nil, errResidentDatabaseOriginal
 	}
@@ -77,7 +79,19 @@ func (c *residentConnector) Connect(ctx context.Context) (returned driver.Conn, 
 	o.mu.Unlock()
 	normal := false
 	defer o.finishOriginalConnect(call, &normal, &returned, &resultErr)
-	returned, resultErr = c.original.Connect(ctx)
+	// Actual original inherited-fence lineage reaches physical driver entry
+	// through the SAME native ManagerClaim, not a copied empty-file DTO. Legacy
+	// original fixtures keep their existing path; P1 uses its real bound fence.
+	var snapshot lifetimeview.Snapshot
+	if c.originalClaim != nil {
+		snapshot, resultErr = c.originalClaim.ValidateOriginalDatabaseFence()
+		if resultErr == nil {
+			resultErr = o.matchOriginalPreparedFiles(ctx, snapshot)
+		}
+	}
+	if resultErr == nil {
+		returned, resultErr = c.original.Connect(ctx)
+	}
 	normal = true
 	return returned, resultErr
 }

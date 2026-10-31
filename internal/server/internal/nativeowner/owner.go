@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"getarm.org/internal/residentrefs"
+	"getarm.org/internal/server/internal/residentbirth"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,6 +22,8 @@ var (
 
 type ServeIssuer struct{ owner *nativeOwner }
 type nativeOwner struct {
+	inheritedFence                                       *residentbirth.InheritedFencePending
+	inheritedIDs                                         residentrefs.FenceIdentities
 	mu                                                   sync.Mutex // only bounded Go registry/value operations; NEVER native I/O
 	original                                             *ServeIssuer
 	state                                                *nativeState // exclusively accessed by the active original effect
@@ -132,7 +136,7 @@ func (o *nativeOwner) finishEffect(op *nativeEffect, normal *bool, resultErr *er
 		}
 		o.state.fail(o.failure)
 	} else {
-		if *resultErr != nil {
+		if *resultErr != nil && !errors.Is(*resultErr, residentrefs.ErrBusy) {
 			o.state.fail(*resultErr)
 			if o.failure == nil {
 				o.failure = o.state.failure
@@ -190,7 +194,13 @@ func (h *ServeIssuer) OpenOriginal() (resultErr error) {
 		resultErr = n.checkPrivate(n.directory, true)
 	}
 	if resultErr == nil {
+		resultErr = o.matchInheritedDirectoryOriginal()
+	}
+	if resultErr == nil {
 		n.lock, resultErr = n.openLock(n.directory)
+	}
+	if resultErr == nil {
+		resultErr = o.matchInheritedOriginal()
 	}
 	if resultErr == nil {
 		n.progress("native_lock_pending")
@@ -208,6 +218,9 @@ func (o *nativeOwner) validateEffect(op *nativeEffect) (result Snapshot, resultE
 	n := o.state
 	n.progress("native_validation_pending")
 	resultErr = n.validateLocked()
+	if resultErr == nil {
+		resultErr = o.matchInheritedOriginal()
+	}
 	if resultErr == nil {
 		o.mu.Lock()
 		o.publishNativeLocked()
@@ -232,6 +245,10 @@ func (h *ServeIssuer) RetireOriginal() (result NativeClosure, resultErr error) {
 		return NativeClosure{}, errNotOriginal
 	}
 	if o.active != nil {
+		o.mu.Unlock()
+		return NativeClosure{}, ErrNativePending
+	}
+	if o.inheritedFence != nil {
 		o.mu.Unlock()
 		return NativeClosure{}, ErrNativePending
 	}

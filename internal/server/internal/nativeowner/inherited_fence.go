@@ -1,0 +1,93 @@
+package nativeowner
+
+import (
+	"getarm.org/internal/residentrefs"
+	"getarm.org/internal/server/internal/residentbirth"
+)
+
+// Actual P1 constructor: derives the path from the concrete verified inherited
+// fence and retains that owner before ANY native issuer open. No caller-provided
+// birth, approved bool, FD or metadata-only fence can use this path.
+func NewInheritedServePending(fence *residentbirth.InheritedFencePending) (*ServeIssuer, error) {
+	if fence == nil {
+		return nil, errNotOriginal
+	}
+	data, err := fence.NativeSelectorsOriginal()
+	if err != nil {
+		return nil, err
+	}
+	issuer, err := NewServePending(data.Home)
+	if err != nil {
+		return nil, err
+	}
+	issuer.owner.inheritedFence = fence
+	issuer.owner.inheritedIDs = data.Identities
+	return issuer, nil
+}
+func sameInheritedIdentity(actual nativeIdentity, expected residentrefs.Identity) bool {
+	return actual.device == expected.Device && actual.inode == expected.Inode && actual.uid == expected.UID && actual.gid == expected.GID && actual.mode == expected.Mode
+}
+func (o *nativeOwner) matchInheritedDirectoryOriginal() error {
+	if o.inheritedFence == nil {
+		return nil
+	}
+	home, ids, err := o.inheritedFence.ValidateForOriginalNative()
+	if err != nil {
+		return err
+	}
+	if home != o.state.path || o.state.directory == nil || !sameInheritedIdentity(o.state.directory.identity, ids.Home) {
+		return errNotOriginal
+	}
+	return nil
+}
+func (o *nativeOwner) matchInheritedOriginal() error {
+	if o.inheritedFence == nil {
+		return nil
+	}
+	home, ids, err := o.inheritedFence.ValidateForOriginalNative()
+	if err != nil {
+		return err
+	}
+	if home != o.state.path || o.state.directory == nil || o.state.lock == nil || !sameInheritedIdentity(o.state.directory.identity, ids.Home) || !sameInheritedIdentity(o.state.lock.identity, ids.Daemon) {
+		return errNotOriginal
+	}
+	return nil
+}
+
+// Called by the SAME original database Connector after its actual attempt is
+// registered and before official physical Connect. This is not a new grant and
+// does not reopen a ledger, acquire another lock or infer native closure.
+func (c *ManagerClaim) ValidateOriginalDatabaseFence() (snapshot Snapshot, resultErr error) {
+	if c == nil || c.owner == nil {
+		return snapshot, errNotOriginal
+	}
+	o := c.owner
+	o.mu.Lock()
+	if c.view == nil || o.manager != c.view || c.view.claim != c {
+		o.mu.Unlock()
+		return snapshot, errNotOriginal
+	}
+	op, err := o.beginLocked("validate_actual_inherited_database_fence")
+	o.mu.Unlock()
+	if err != nil {
+		return snapshot, err
+	}
+	normal := false
+	defer o.finishEffect(op, &normal, &resultErr)
+	o.state.progress("actual_inherited_ledger_before_official_Connect")
+	resultErr = o.state.validateLocked()
+	if resultErr == nil {
+		resultErr = o.matchInheritedOriginal()
+	}
+	if resultErr == nil && o.inheritedFence != nil {
+		resultErr = o.inheritedFence.ValidateForOriginalDatabase()
+	}
+	if resultErr == nil {
+		o.mu.Lock()
+		o.publishNativeLocked()
+		snapshot = o.snapshotLocked()
+		o.mu.Unlock()
+	}
+	normal = true
+	return snapshot, resultErr
+}

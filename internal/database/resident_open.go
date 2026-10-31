@@ -223,6 +223,10 @@ func (o *ResidentOpen) OpenOriginal(ctx context.Context) (binding *ResidentDatab
 		normal = true
 		return nil, resultErr
 	}
+	if resultErr = o.matchOriginalPreparedFiles(ctx, original); resultErr != nil {
+		normal = true
+		return nil, resultErr
+	}
 	// No fallback to legacy state.db-as-file, default DSN or independent opener.
 	// mode=rw refuses implicit create; actual parent prepared the retained file.
 	uri := url.URL{Scheme: "file", Path: filename}
@@ -237,7 +241,7 @@ func (o *ResidentOpen) OpenOriginal(ctx context.Context) (binding *ResidentDatab
 	o.standardConnector = standard
 	o.filename = filename
 	if standard != nil {
-		o.connector = &residentConnector{owner: o, original: standard}
+		o.connector = &residentConnector{owner: o, original: standard, originalClaim: o.claim}
 	}
 	connector := o.connector
 	o.mu.Unlock()

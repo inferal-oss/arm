@@ -3,9 +3,13 @@ package nativeowner
 import (
 	"context"
 	"fmt"
+	"getarm.org/internal/residentrefs"
 )
 
 type Snapshot struct {
+	InheritedFence   bool                  `json:"-"`
+	PreparedState    residentrefs.Identity `json:"-"`
+	PreparedLedger   residentrefs.Identity `json:"-"`
 	Path, Generation string
 	UID              uint32
 	Device, Inode    uint64
@@ -38,7 +42,7 @@ type ServerStop struct {
 }
 
 func (o *nativeOwner) snapshotLocked() Snapshot {
-	return Snapshot{Path: o.state.path, Generation: o.generation, UID: o.state.uid, Device: o.publishedDirectory.device, Inode: o.publishedDirectory.inode}
+	return Snapshot{InheritedFence: o.inheritedFence != nil, PreparedState: o.inheritedIDs.Directory, PreparedLedger: o.inheritedIDs.Ledger, Path: o.state.path, Generation: o.generation, UID: o.state.uid, Device: o.publishedDirectory.device, Inode: o.publishedDirectory.inode}
 }
 
 func (h *ServeIssuer) ManagerView() (*ManagerView, error) {
