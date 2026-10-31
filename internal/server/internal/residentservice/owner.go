@@ -54,6 +54,8 @@ type owner struct {
 	append                                              *appendOperation
 	reads                                               []*readOperation
 	firstError                                          error
+	p1PreparedTried                                     bool
+	p1PreparedValidation                                *p1PreparedServiceCall
 	openedFDs, closedFDs                                uint64
 	liveFDs                                             int
 }

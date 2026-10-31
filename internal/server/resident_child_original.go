@@ -68,6 +68,8 @@ type residentChildPending struct {
 	active                         *residentChildOperation
 	prepareTried, bindingsPrepared bool
 	firstError                     error
+	preparedValidationTried        bool
+	preparedValidation             *residentRootPreparedCall
 }
 
 // Owns the one finite bootstrap I/O context attempt. Runtime constructor/cancel
@@ -82,6 +84,7 @@ type residentChildBootstrapCall struct {
 }
 
 type residentChildOperation struct {
+	kind     string
 	phase    string
 	abnormal bool
 	cause    any
@@ -150,7 +153,9 @@ func (r *residentChildPending) finish(op *residentChildOperation, normal *bool, 
 		if *resultErr != nil && r.firstError == nil {
 			r.firstError = *resultErr
 		}
-		r.bindingsPrepared = *resultErr == nil
+		if op.kind == "prepare" {
+			r.bindingsPrepared = *resultErr == nil
+		}
 		r.active = nil
 	}
 	r.mu.Unlock()
@@ -174,7 +179,7 @@ func (r *residentChildPending) prepareOriginalBindings(bootstrapContext context.
 		return errResidentChildOriginal
 	}
 	r.prepareTried = true
-	op := &residentChildOperation{phase: "registered_before_inherited_native_effect"}
+	op := &residentChildOperation{kind: "prepare", phase: "registered_before_inherited_native_effect"}
 	r.active = op
 	r.mu.Unlock()
 	normal := false

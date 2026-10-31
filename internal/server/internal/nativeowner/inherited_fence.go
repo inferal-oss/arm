@@ -91,3 +91,19 @@ func (c *ManagerClaim) ValidateOriginalDatabaseFence() (snapshot Snapshot, resul
 	normal = true
 	return snapshot, resultErr
 }
+
+// Actual Root linkage before the inherited-view native validation. A matching
+// serialized fence/ID cannot stand in for the SAME original inherited owner.
+func (h *ServeIssuer) ValidateInheritedOriginalViews(manager *ManagerView, server *ServerView, fence *residentbirth.InheritedFencePending) (Snapshot, error) {
+	if h == nil || h.owner == nil || fence == nil {
+		return Snapshot{}, errNotOriginal
+	}
+	o := h.owner
+	o.mu.Lock()
+	valid := o.original == h && o.inheritedFence == fence
+	o.mu.Unlock()
+	if !valid {
+		return Snapshot{}, errNotOriginal
+	}
+	return h.ValidateOriginalViews(manager, server)
+}

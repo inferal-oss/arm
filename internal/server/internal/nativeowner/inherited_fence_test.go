@@ -25,3 +25,11 @@ func TestInheritedServePendingRequiresRetainedEmptyDestinationAndOriginalFence(t
 		t.Fatal("zero fence constructed issuer", err)
 	}
 }
+
+func TestInheritedPreparedViewsRequireSameActualIssuerAndFence(t *testing.T) {
+	for _, issuer := range []*ServeIssuer{nil, {}, {owner: &nativeOwner{}}} {
+		if _, err := issuer.ValidateInheritedOriginalViews(&ManagerView{}, &ServerView{}, &residentbirth.InheritedFencePending{}); err != errNotOriginal {
+			t.Fatal(err)
+		}
+	}
+}

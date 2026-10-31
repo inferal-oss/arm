@@ -39,6 +39,8 @@ type ResidentOpen struct {
 	fileObservation       residentSQLFileObservation
 	closeObservation      ResidentSQLCloseObservation
 	closeError            error
+	preparedTried         bool
+	preparedValidation    *residentPreparedDatabaseCall
 }
 type residentSQLOperation struct {
 	owner       *ResidentOpen
@@ -106,7 +108,8 @@ func (o *ResidentOpen) beginOriginal(kind string) (*residentSQLOperation, error)
 	if o.active != nil {
 		return nil, ErrResidentDatabasePending
 	}
-	if kind == "open" {
+	switch kind {
+	case "open":
 		if o.openTried {
 			if o.firstError != nil {
 				return nil, o.firstError
@@ -114,11 +117,18 @@ func (o *ResidentOpen) beginOriginal(kind string) (*residentSQLOperation, error)
 			return nil, fmt.Errorf("original database open already attempted")
 		}
 		o.openTried = true
-	} else {
+	case "close":
 		if o.closeTried {
 			return nil, fmt.Errorf("original database close already attempted")
 		}
 		o.closeTried = true
+	case "validate_prepared":
+		if o.firstError != nil || o.closeTried || o.connectSealed || o.preparedTried || !o.openTried || o.binding == nil || o.pool == nil || o.claim == nil {
+			return nil, errResidentDatabaseOriginal
+		}
+		o.preparedTried = true
+	default:
+		return nil, errResidentDatabaseOriginal
 	}
 	op := &residentSQLOperation{owner: o, kind: kind, phase: "registered_before_effect"}
 	o.active = op

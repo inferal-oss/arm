@@ -25,6 +25,7 @@ type residentCoreEntryCall struct {
 	claimAttempted, claimReturned, claimAccepted    bool
 	initializationAttempted, initializationReturned bool
 	prepareAttempted, bodyReturned, abnormal        bool
+	validationAttempted, validationReturned         bool
 	returnedError                                   error
 	cause                                           any // private, never formatted or logged
 	keeperRegistered, keeperEntered, waitPending    bool
@@ -151,6 +152,15 @@ func RunOriginalResidentCore(args []string) (resultCode int) {
 		call.prepareAttempted = true
 		e.mu.Unlock()
 		resultErr = root.prepareOriginalBindings(context.Background())
+	}
+	if resultErr == nil {
+		e.mu.Lock()
+		call.validationAttempted = true
+		e.mu.Unlock()
+		resultErr = root.validateOriginalPreparedBindings()
+		e.mu.Lock()
+		call.validationReturned = true
+		e.mu.Unlock()
 	}
 	normal = true // set ONLY after the actual body returned, including errors
 	return 1      // owned outer retainer never returns this as public readiness

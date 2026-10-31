@@ -14,21 +14,23 @@ import (
 // Manager, claim, descriptor or lifetime cancellation function. Construction is
 // pure; no listener, HTTP route, native work or Manager loop is started here.
 type residentServerPending struct {
-	mu           sync.Mutex // publication only; no native effects or joins
-	self         *residentServerPending
-	view         *lifetimeview.ServerView
-	claim        *lifetimeview.ServerClaim
-	manager      *manager.ResidentManagerPending
-	managerBound *manager.ResidentManagerServerBinding
-	server       *Server
-	binding      *residentServerBinding
-	original     lifetimeview.Snapshot
-	active       *residentServerOperation
-	openTried    bool
-	opened       bool
-	startTried   bool
-	started      bool
-	firstError   error
+	mu                 sync.Mutex // publication only; no native effects or joins
+	self               *residentServerPending
+	view               *lifetimeview.ServerView
+	claim              *lifetimeview.ServerClaim
+	manager            *manager.ResidentManagerPending
+	managerBound       *manager.ResidentManagerServerBinding
+	server             *Server
+	binding            *residentServerBinding
+	original           lifetimeview.Snapshot
+	active             *residentServerOperation
+	openTried          bool
+	opened             bool
+	startTried         bool
+	started            bool
+	firstError         error
+	preparedTried      bool
+	preparedValidation *residentServerPreparedCall
 }
 
 type residentServerBinding struct {
@@ -96,6 +98,11 @@ func (o *residentServerPending) begin(kind string) (*residentServerOperation, er
 			return nil, errResidentServerOriginal
 		}
 		o.startTried = true
+	case "validate_prepared":
+		if !o.opened || o.startTried || o.started || o.preparedTried {
+			return nil, errResidentServerOriginal
+		}
+		o.preparedTried = true
 	default:
 		return nil, errResidentServerOriginal
 	}

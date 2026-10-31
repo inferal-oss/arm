@@ -41,6 +41,8 @@ type ResidentManagerPending struct {
 	openTried, ready, startTried, started            bool
 	firstError                                       error
 	server                                           *ResidentManagerServerBinding
+	preparedTried                                    bool
+	preparedValidation                               *residentManagerPreparedCall
 }
 
 type residentManagerOperation struct {
@@ -137,6 +139,11 @@ func (o *ResidentManagerPending) beginOriginal(kind string) (*residentManagerOpe
 		if !o.ready || o.server != nil {
 			return nil, fmt.Errorf("one initialized original Server borrower required")
 		}
+	case "validate_prepared":
+		if !o.ready || o.startTried || o.started || o.preparedTried || !o.standingBindingCompleted || o.server == nil || !o.server.validated {
+			return nil, errResidentManagerOriginal
+		}
+		o.preparedTried = true
 	default:
 		return nil, errResidentManagerOriginal
 	}
