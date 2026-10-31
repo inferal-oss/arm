@@ -12412,3 +12412,11 @@ Server-current, Root handoff/proof/no-pending gate and parent-reference retireme
 remain open. Workers/schema/controller/admission/assets, API/UI replacement,
 public `arm start`, managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/
 accounting upgrade survival and shutdown/recovery remain unaccepted.
+
+Coordinator composition accepts source `99c3ddd` and scoped evidence `bc28e38`.
+Independent comparison verifies all 3,290 qualified inputs, including 1,906 Go
+files and every module and embedded input. The normalized evidence hash, eight
+source SHA256/Git-blob pairs and thirteen raw package-qualified run/pass pairs
+agree with the audited result. Later changes are documentation only; no test or
+binary was rerun for composition. This preserves selected normal DATA/refusal
+qualification and every stated current-native and live-upgrade limitation.

@@ -4684,3 +4684,18 @@ replacement and public first/repeat/concurrent `arm start` remain open. Actual
 positive funding/prepared/journal/environment eligibility, managed-run/proxy
 upgrade survival and shutdown/recovery remain unaccepted. Prior branches,
 failed records and separately passing scopes retain their classifications.
+
+## Current service/launch observation composition accepted
+
+The coordinator integrated source `fbc56ea` as `99c3ddd` and scoped evidence
+`99c994f` as `bc28e38`. All 3,290 qualified tracked inputs, including 1,906 Go
+files, match exactly at source composition. Later scoped documentation/evidence
+do not change runtime inputs. The selected normal result is accepted without
+repeating execution or widening its successful-original/native scope.
+
+The next bounded source cut is distinct DB/Manager/Server-current operations
+and exact original completion selectors, following the reviewed construction
+boundaries. It must retain independent once-only calls and prepared evidence.
+Root orchestration/proof/no-pending checks, parent observations and retirement,
+workers and public startup remain later gates. Live managed-job/proxy continuity
+across an upgrade remains unverified.
