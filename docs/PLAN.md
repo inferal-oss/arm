@@ -4529,3 +4529,23 @@ validation from these original owners. RootBound journals, authenticated ACK and
 current-authority exchange, parent-reference disposition and worker/public-start
 activation remain separate review and validation gates. No live core, installed
 backend or managed workload was changed by this integration.
+
+## Resident prepared bindings — reviewed normal scope
+
+The existing upgrade task continues on `codex/resident-prepared-binding-validation`
+with focused source commit `44cb300815fac90d2006bb43ef94d5ba82673795`, based on
+`503b485`. Actual original Root/native/service/Manager/Server owners now perform
+one prepared-binding validation before any future RootBound handoff. Source and
+scoped normal qualification review pass; composed landing remains an integration
+gate. The [normalized result](validation/resident-prepared-bindings-normal-2026-10-31.json)
+records 25 roots/42 named cases, affected vet and a native compile-only build.
+
+The nine new roots/26 names exercise DATA and pre-effect refusals. Existing isolated
+official-driver API regressions do not exercise real original prepared SQL/read
+transaction/native success. Actual positive service/native materialization,
+RootBound writes, authenticated ACK/current authority and parent-owned reference
+retirement remain open. Worker-capable schema/controller/admission/assets, API/UI
+replacement, public first/repeat/concurrent `arm start`, and original managed-run/
+proxy continuity still require implementation and acceptance. Core shutdown and
+unresolved-core recovery remain separate unsupported gates; prior scopes and
+failed attempts retain their classifications.

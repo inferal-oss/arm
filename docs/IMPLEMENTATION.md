@@ -5766,3 +5766,32 @@ scoped evidence as `20d106e`, preserving the existing current-main plan notes.
 All runtime, module and embedded input bytes match the qualified snapshot;
 subsequent documentation changes do not activate this private role or supply
 any of the outstanding handoff, worker or public-start behavior.
+
+## Original resident prepared-binding validation
+
+The private original core entry invokes a distinct one-shot prepared validation
+after original preparation. Its retained call records the same native issuer,
+inherited fence, service birth/runtime/charge, Manager, Server borrower and all
+thirteen references before validation effects. Each component checks its actual
+issued owner and operation state; copied holders or serialized DATA cannot create
+authority. Validation derives a bounded, domain-separated commitment linking the
+original intent, settings, generation, environment, runtime image, birth journal
+and current reference identities. Future service/footer hashes are absent from
+this commitment, preserving a noncircular handoff chain.
+
+The database checks the same original connector and pool, immutable claim, single
+successful physical connection and current selected-file identities. Manager uses
+that same pool for bounded core schema/format/generation projections in a requested
+read-only transaction, retaining actual calls and partial results. A normal commit
+follows only normal successful reads; failure does not manufacture cleanup or
+native closure. Server validates its original unstarted borrower and the completed
+Manager result. Service rechecks the exact original birth journal and environment
+without another journal read or overwriting birth observations. No second pool,
+Manager, driver replacement, empty-ledger check after SQL or background loop is
+introduced.
+
+This source cut validates private format-4 prepared state only. It writes no
+RootBound journal/footer, sends no ACK, retires no parent references, and activates
+no worker or public startup. Real successful prepared SQL/read transaction/native
+execution remains unverified by its DATA/refusal qualification. The separate
+worker-capable original schema and public `arm start` composition remain open.

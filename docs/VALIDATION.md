@@ -12195,3 +12195,39 @@ module files, embedded assets and other non-documentation inputs are identical.
 Only retained plan notes and scoped evidence documentation differ. This closes
 the source-composition gate for that selected normal qualification without
 claiming a second execution or broadening its runtime/native limits.
+
+## Resident prepared bindings — normal DATA and official API controls
+
+The [normalized evidence](validation/resident-prepared-bindings-normal-2026-10-31.json)
+maps all eighteen reviewed Go inputs to source commit
+`44cb300815fac90d2006bb43ef94d5ba82673795` and its qualified 3,258-file/1,878-Go
+snapshot. All 25 selected roots/42 unique package-qualified run/pass pairs pass,
+without skips or extra roots. Nine new roots/26 named results cover original-owner
+pre-effect refusals, bounded DATA schema/file projections and commitment encoding.
+Sixteen existing roots cover relevant database, Manager, Server and entry gates;
+isolated claimless official SQLite connector/Conn/open/close/one-Connect controls
+and an owned FIFO refusal primitive retain their original scope. The unchanged
+six retainer subprocess cases were not repeated; this wave starts no such helpers.
+
+Default vet passes for six affected packages. The native darwin/arm64 command
+build passes with Go 1.27.3, CGO disabled and `GOFLAGS=-buildvcs=false` uniformly
+applied to all eight graph/test/vet/build invocations. Its 74,500,274-byte artifact
+has SHA256 `3e1f504c2952c0a64170d8970004f376da19f505abc18c96a9149b5989b8aaa6`
+and was never executed. The actual graph contains 843 packages and 88 official
+modules. Actual mod/ZIP/expanded-source Hash1 authentication matches PRE/POST,
+including unmodified SQLite v1.60.1; dependency-cache and network fences remain.
+
+Independent review verifies all eight original Go and owning-wrapper exit-zero
+joins, sixteen output hashes, complete source/support/proposal pins and the exact
+working source. The scoped wave took 66.395730 seconds, new temporary inventories
+were empty and no alarm fired. Prior failed attempts and retained scratch remain
+separate; command joins supply no native-Closed or resource-release credit.
+
+This is selected normal host qualification, not race/full-suite/Linux execution.
+The new actual prepared SQL queries, read transaction and current native binding
+success are unexercised. Genuine service funding/profile, fixed-reference/native
+materialization, RootBound writes, authenticated ACK/current-authority and parent
+retirement remain unaccepted. Worker schema/admission/controller/assets, API/UI
+replacement and public first/repeat/concurrent `arm start` remain open, as do
+original managed-run/proxy child/log/heartbeat/finish/renew/cancel/expiry/accounting
+upgrade survival and shutdown/recovery. Raw operational evidence stays private.

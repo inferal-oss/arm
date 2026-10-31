@@ -1,0 +1,384 @@
+{
+  "boundaries": [
+    "Normal selected host qualification, not a race run, full suite or Linux execution.",
+    "Nine new roots and twenty-six named results cover DATA projections, commitment encoding and pre-effect refusals; real prepared SQL queries, read transaction and current native binding success are unexercised.",
+    "Existing isolated official-driver API outcomes do not prove original resident native authority, native Closed or release credit.",
+    "The compiled command was never executed. Genuine fixed13 materialization, positive service funding/profile/native SQL preparation and RootBound journal writes remain unaccepted.",
+    "Authenticated ACK/current-authority exchange and parent-owned reference retirement remain unimplemented.",
+    "Worker-capable schema, independently admitted worker/controller/asset ownership, API/UI replacement and public first/repeat/concurrent arm start remain open.",
+    "Original managed-run/proxy child/log/heartbeat/finish/renew/cancel/expiry/accounting upgrade survival, core shutdown and unresolved-core recovery remain unaccepted."
+  ],
+  "normal_qualification": {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "-buildvcs=false",
+    "Go_version": "1.27.3",
+    "actual_dependency_graph": {
+      "POST_authenticated_modules": 88,
+      "PRE_POST_equal": true,
+      "PRE_authenticated_modules": 88,
+      "authentication": "Actual referenced official mod/ZIP/expanded-source Hash1 and go.sum; no replacements, downloads, cache seeding or dependency-cache write relaxation.",
+      "packages": 843,
+      "referenced_official_modules": 88,
+      "sqlite": "modernc.org/sqlite@v1.60.1"
+    },
+    "existing_official_API_scope": "Claimless isolated official SQLite connector/Conn/interface/open/close/one-Connect controls and owned FIFO refusal primitive. These do not create an original resident claim or positive prepared binding.",
+    "native_command_compile_only": {
+      "artifact_bytes": 74500274,
+      "artifact_executed": false,
+      "artifact_sha256": "3e1f504c2952c0a64170d8970004f376da19f505abc18c96a9149b5989b8aaa6",
+      "result": "pass",
+      "target": {
+        "GOARCH": "arm64",
+        "GOOS": "darwin"
+      }
+    },
+    "new_DATA_refusal_named_results": 26,
+    "new_DATA_refusal_roots": 9,
+    "relevant_existing_regression_roots": 16,
+    "retainer_helper_subprocesses": 0,
+    "root_count": 25,
+    "supervision": {
+      "active_elapsed_seconds": 66.39573,
+      "all_original_Go_commands_joined_exit_zero": true,
+      "candidate_source_files_verified": 3258,
+      "command_stream_hashes_verified": 16,
+      "failed_predecessors_and_scratch_retained": true,
+      "new_temporary_inventories_empty": true,
+      "original_Go_commands": 8,
+      "owning_wrapper_joined_exit_zero": true,
+      "proposal_members_verified": 15,
+      "protected_working_files_verified": 3240,
+      "reviewed_working_Go_files_verified": 18,
+      "sampled_stop_alarm": false,
+      "source_support_and_proposal_pins_unchanged": true,
+      "support_pins_verified": 161
+    },
+    "test_packages": [
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestPreparedDatabaseValidationRefusesBeforePoolOrCloseEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/alias"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/duplicate"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/no-main"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows/wrong-path"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentDatabaseForeignBindingsAndStopsRefuse"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentDatabaseOriginalClaimBeforePhysicalEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentPreparedFIFORefusesBeforeReadWriteOpen"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentStandardCancelledConnectRetainsOriginalCall"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentStandardConnectorKeepsActualConnInterfacesAndTypes"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentStandardOpenFailureKeepsPoolAndOpaqueNativeObligation"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentStandardPoolCloseDoesNotCertifyNativeClosure"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentStandardPoolDiscardCannotReconnect"
+          }
+        ],
+        "package": "getarm.org/internal/database",
+        "root_tests": [
+          "TestPreparedDatabaseValidationRefusesBeforePoolOrCloseEffects",
+          "TestPreparedSelectedFileProjectionRefusesOverflowAndForeignRows",
+          "TestResidentStandardConnectorKeepsActualConnInterfacesAndTypes",
+          "TestResidentStandardCancelledConnectRetainsOriginalCall",
+          "TestResidentStandardOpenFailureKeepsPoolAndOpaqueNativeObligation",
+          "TestResidentStandardPoolDiscardCannotReconnect",
+          "TestResidentStandardPoolCloseDoesNotCertifyNativeClosure",
+          "TestResidentDatabaseOriginalClaimBeforePhysicalEffects",
+          "TestResidentDatabaseForeignBindingsAndStopsRefuse",
+          "TestResidentPreparedFIFORefusesBeforeReadWriteOpen"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestPreparedManagerRefusesUnopenedForeignAndMissingBindings"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/blob-marker"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/ddl-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/format-five"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/generation-overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedSchemaProjectionsRequireExactBoundedCoreState/not-table"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentManagerCopiedHolderHasNoAuthority"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentManagerPendingRetainsActualManagerBeforeRejectedClaim"
+          }
+        ],
+        "package": "getarm.org/internal/manager",
+        "root_tests": [
+          "TestPreparedManagerRefusesUnopenedForeignAndMissingBindings",
+          "TestPreparedSchemaProjectionsRequireExactBoundedCoreState",
+          "TestResidentManagerPendingRetainsActualManagerBeforeRejectedClaim",
+          "TestResidentManagerCopiedHolderHasNoAuthority"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestOriginalChildPendingOwnsAllThirteenBeforeEffectsAndRejectsCopy"
+          },
+          {
+            "result": "pass",
+            "test": "TestOriginalResidentServerCopiedHolderAndMixedIngressRefuse"
+          },
+          {
+            "result": "pass",
+            "test": "TestOriginalResidentServerRetainedBeforeRejectedClaim"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/bad-generation"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/domain"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/format-five"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/oversize-key"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/relative-home"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/schema"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedCommitmentDataDomainAndOverflowRefusals/uppercase-digest"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedRootRequiresActualEntryAndOriginalBindings"
+          },
+          {
+            "result": "pass",
+            "test": "TestPreparedServerRefusesUnopenedAndForeignBeforeNative"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal"
+          },
+          {
+            "result": "pass",
+            "test": "TestResidentCoreTimeoutRequiresActualPreparingRoot"
+          }
+        ],
+        "package": "getarm.org/internal/server",
+        "root_tests": [
+          "TestPreparedServerRefusesUnopenedAndForeignBeforeNative",
+          "TestPreparedRootRequiresActualEntryAndOriginalBindings",
+          "TestPreparedCommitmentDataDomainAndOverflowRefusals",
+          "TestOriginalResidentServerRetainedBeforeRejectedClaim",
+          "TestOriginalResidentServerCopiedHolderAndMixedIngressRefuse",
+          "TestResidentCoreRoleExactArgumentsAndPreclaimRefusal",
+          "TestResidentCoreEntryRejectsForeignOwnerWithoutClaimingOriginal",
+          "TestResidentCoreTimeoutRequiresActualPreparingRoot",
+          "TestOriginalChildPendingOwnsAllThirteenBeforeEffectsAndRejectsCopy"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestInheritedPreparedViewsRequireSameActualIssuerAndFence"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/nativeowner",
+        "root_tests": [
+          "TestInheritedPreparedViewsRequireSameActualIssuerAndFence"
+        ]
+      },
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestP1PreparedServiceRequiresActualReceivedBirthAndOwners"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "root_tests": [
+          "TestP1PreparedServiceRequiresActualReceivedBirthAndOwners"
+        ]
+      }
+    ],
+    "unchanged_retainer_process_cases_repeated": false,
+    "unique_package_qualified_named_run_pass_pairs": 42,
+    "vet": {
+      "packages": [
+        "getarm.org/internal/database",
+        "getarm.org/internal/manager",
+        "getarm.org/internal/server/internal/nativeowner",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/internal/server",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    }
+  },
+  "schema": 1,
+  "scope": "Original resident prepared-binding validation: normal DATA/refusal controls and existing isolated official-driver API regressions",
+  "source": {
+    "base_commit": "503b485c217ccc1e1fca9649d8886ece18736554",
+    "feature_commit": "44cb300815fac90d2006bb43ef94d5ba82673795",
+    "qualified_Go_files": 1878,
+    "qualified_source_files": 3258,
+    "qualified_source_manifest_sha256": "aaf91495b75c5553983f1909747d4c49f0117370e4281280da801a9b42554263",
+    "reviewed_Go_files": {
+      "internal/database/resident_open.go": {
+        "git_blob": "b304398275a540076cb751b674b5eed73b43af02",
+        "sha256": "5dae6e90a6fcced588cd6ed1f061279dd95a0a734842604ea2a99aa615b1441c"
+      },
+      "internal/database/resident_prepared_validation.go": {
+        "git_blob": "0def1c58e663695385cbc129b561bc168a240f35",
+        "sha256": "8ac65fe6fc19f8be4ea6038c8851eb0888f1847cfa116add9b2434654ac911ae"
+      },
+      "internal/database/resident_prepared_validation_test.go": {
+        "git_blob": "962b321030e7edfd363bcbe221ca87ef026d1e22",
+        "sha256": "a83179ef1a129e589091f5f4ebc06022658337f1abf00fb9e06293bcc62e2767"
+      },
+      "internal/manager/resident_manager.go": {
+        "git_blob": "1d584df1b6d005b53c98c4a0e54d3c2373ff4312",
+        "sha256": "4dda61d9b11636dc25ba979677c9d8478057902d778e2bc63c6f1ecc3b07bcf9"
+      },
+      "internal/manager/resident_prepared.go": {
+        "git_blob": "474b7730848c339f90b579c9fd7b1947ea5c273f",
+        "sha256": "17ea76420857bd6e7fa2aa1804c13b1ca7b6c744f0716b4bfde29546e314eb7f"
+      },
+      "internal/manager/resident_prepared_test.go": {
+        "git_blob": "7f0469baec29b94fdd2e401f76efb469c4fe2f07",
+        "sha256": "e07d992c9522c4b5f38233b45e66a5cb0278bb62331d270d98a34b042a4b9faa"
+      },
+      "internal/server/internal/nativeowner/inherited_fence.go": {
+        "git_blob": "29c7ae29bddc911b2b201cdf139b8b081a08a2b4",
+        "sha256": "a1c3cacb3361ebd3079e62d702086ea52a9eefdf742abb99710bf3afd90ab99c"
+      },
+      "internal/server/internal/nativeowner/inherited_fence_test.go": {
+        "git_blob": "48e4dc1944f1a12cdad6aad4dbf86f5fbd573288",
+        "sha256": "3cac802ea9e677504bd79cfff40d21dca091f72ae36df2f30a305b345e60a784"
+      },
+      "internal/server/internal/residentservice/owner.go": {
+        "git_blob": "cd3d3d39bacb3a85d853c96aca7920e77abfbf61",
+        "sha256": "a501359f1b93f9269a62bc9762020e25b0480d4fceef50e60d287a9a847ed822"
+      },
+      "internal/server/internal/residentservice/p1_prepared.go": {
+        "git_blob": "4a4661531cc9812a6b4384b87732b87e7a824e24",
+        "sha256": "fb8370419767be69ec68ac18fe4238326b2338b09430c3a8b9803d86cc1cbe70"
+      },
+      "internal/server/internal/residentservice/p1_prepared_test.go": {
+        "git_blob": "e94ad701afdf04ca003339b373f808b3020c7439",
+        "sha256": "c3cc68a5da8010720dff550867b80b8380f93246dda55631110bbf85bba7f306"
+      },
+      "internal/server/resident_child_original.go": {
+        "git_blob": "4b4751af5192ff4a2fb2a95ea0ed5861a6987f57",
+        "sha256": "35d260fe843f05ddd7134e556afc9a5922525cc8349c32890903fa8921ab9969"
+      },
+      "internal/server/resident_core_entry.go": {
+        "git_blob": "a5ed53b2f701712b1afc1ac37fff7ea8a9fc4e4e",
+        "sha256": "00e2016ac42c5f3978cc097bb6109929ff2119e1c1d3ce08690f05c3b37729e2"
+      },
+      "internal/server/resident_prepared_binding.go": {
+        "git_blob": "96840750bd7a75687efffc569038ade6910c208d",
+        "sha256": "20a410f70c1e07b4ab55a8559dbe2cc5d50b980af40fe0846cafc5aed4d1c4b8"
+      },
+      "internal/server/resident_prepared_binding_test.go": {
+        "git_blob": "ea987ba2c5a49a43769cf61463f32a9d77769365",
+        "sha256": "cfcb76101b827c5ebbc920e97aea710009a573b8bed5194396ce75b09b1d2ba7"
+      },
+      "internal/server/resident_server.go": {
+        "git_blob": "1557ad169b2d1e6937d944cd184091b7e0803349",
+        "sha256": "732dba3d6fe4f895cd7fc7f2c867976d638fe51af1d7ac84fe9e086259fd48fb"
+      },
+      "internal/server/resident_server_prepared.go": {
+        "git_blob": "b92d55b43ba055c034f895388992b1b911bd2b00",
+        "sha256": "f1e28fa7f8f48929e0c54797e8e54b2b97d21f632dd452ca02b3d98c5235ee59"
+      },
+      "internal/server/resident_server_prepared_test.go": {
+        "git_blob": "8683975cbc2701896a8ac867f51f619b4962e759",
+        "sha256": "7aa38e7dbc68d2efab2277da423ecca28445784247f97153594b02eb2a189aae"
+      }
+    }
+  },
+  "status": "scoped_normal_qualification_pass"
+}
