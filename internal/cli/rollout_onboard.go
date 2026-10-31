@@ -289,6 +289,7 @@ func newRolloutOnboard(ctx context.Context, home, reason string, adapters []agen
 	picker.Title = "Choose a project directory"
 	picker.DisableQuitKeybindings()
 	picker.SetStatusBarItemName("choice", "choices")
+	picker.SetShowHelp(false)
 	input := textinput.New()
 	input.CharLimit = 4096
 	input.SetWidth(68)
@@ -390,26 +391,7 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 		if m.stage == onboardProjects {
-			if m.projects.FilterState() != list.Filtering {
-				if key == "q" || key == "esc" && m.projects.FilterState() == list.Unfiltered {
-					m.cancelled = true
-					m.stage = onboardDone
-					return m, tea.Quit
-				}
-				if key == "enter" {
-					if item, ok := m.projects.SelectedItem().(onboardItem); ok {
-						if item.manual {
-							m.stage = onboardDirectory
-							cwd, _ := os.Getwd()
-							m.input.CharLimit = 4096
-							m.input.SetValue(cwd)
-							m.notice = ""
-							return m, m.input.Focus()
-						}
-						return m, m.resolve(item.project.Directory)
-					}
-				}
-			}
+			return m, m.updateProjectPicker(message)
 		} else if m.stage == onboardDirectory || m.stage == onboardName {
 			if key == "esc" {
 				if m.stage == onboardName {
@@ -565,7 +547,7 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch m.stage {
 	case onboardProjects:
-		m.projects, cmd = m.projects.Update(message)
+		cmd = m.updateProjectPicker(message)
 	case onboardDirectory, onboardName:
 		m.input, cmd = m.input.Update(message)
 	case onboardReview:
@@ -573,6 +555,87 @@ func (m *rolloutOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	return m, cmd
 }
+
+func (m *rolloutOnboardModel) updateProjectPicker(message tea.Msg) tea.Cmd {
+	// Matches are computed synchronously below, never by queued list commands.
+	if _, ok := message.(list.FilterMatchesMsg); ok {
+		return nil
+	}
+	filtering := m.projects.FilterState() == list.Filtering
+	if msg, ok := message.(tea.KeyPressMsg); ok {
+		key := msg.String()
+		if key == "esc" && m.projects.FilterState() != list.Unfiltered {
+			m.projects.ResetFilter()
+			return nil
+		}
+		if key == "esc" {
+			m.cancelled = true
+			m.stage = onboardDone
+			return tea.Quit
+		}
+		if key == "enter" {
+			if item, ok := m.projects.SelectedItem().(onboardItem); ok {
+				if item.manual {
+					m.stage = onboardDirectory
+					cwd, _ := os.Getwd()
+					m.input.CharLimit = 4096
+					m.input.SetValue(cwd)
+					m.notice = ""
+					return m.input.Focus()
+				}
+				return m.resolve(item.project.Directory)
+			}
+			return nil
+		}
+		if !filtering && (msg.Text != "" || key == "/") {
+			m.projects.SetFilterText(m.projects.FilterInput.Value())
+			m.projects.SetFilterState(list.Filtering)
+			filtering = true
+			if key == "/" {
+				return nil
+			}
+		}
+		if filtering {
+			switch key {
+			case "up", "ctrl+k":
+				m.projects.CursorUp()
+				return nil
+			case "down", "ctrl+j":
+				m.projects.CursorDown()
+				return nil
+			case "pgup":
+				m.projects.PrevPage()
+				return nil
+			case "pgdown":
+				m.projects.NextPage()
+				return nil
+			}
+		}
+	}
+	if _, ok := message.(tea.PasteMsg); ok && !filtering {
+		m.projects.SetFilterText(m.projects.FilterInput.Value())
+		m.projects.SetFilterState(list.Filtering)
+		filtering = true
+	}
+	if filtering {
+		before := m.projects.FilterInput.Value()
+		input, cmd := m.projects.FilterInput.Update(message)
+		m.projects.FilterInput = input
+		if input.Value() != before {
+			// The catalog is bounded. Match synchronously so a quick Enter
+			// cannot select results from an earlier filter command.
+			position := input.Position()
+			m.projects.SetFilterText(input.Value())
+			m.projects.SetFilterState(list.Filtering)
+			m.projects.FilterInput.SetCursor(position)
+		}
+		return cmd
+	}
+	var cmd tea.Cmd
+	m.projects, cmd = m.projects.Update(message)
+	return cmd
+}
+
 func (m *rolloutOnboardModel) resolve(path string) tea.Cmd {
 	if path == "~" || strings.HasPrefix(path, "~/") {
 		if home, e := os.UserHomeDir(); e == nil {
@@ -719,7 +782,8 @@ func (m *rolloutOnboardModel) View() tea.View {
 			fmt.Fprintf(&b, "%d metadata warning(s); --json includes adapter diagnostics.\n", warnings)
 		}
 		fmt.Fprintln(&b, m.projects.View())
-		fmt.Fprintln(&b, "Enter chooses · / filters · Esc clears a filter or cancels · q cancels")
+		fmt.Fprintln(&b, "Type to filter names or paths · ↑/↓ navigate · Enter chooses")
+		fmt.Fprintln(&b, "/ focuses filter · Esc clears or cancels · Ctrl+C cancels")
 	case onboardDirectory:
 		fmt.Fprintln(&b, "Enter the project directory")
 		fmt.Fprintln(&b, m.input.View())
