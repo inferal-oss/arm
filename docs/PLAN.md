@@ -4734,3 +4734,23 @@ parent post-Start observations and retained phase/entropy/deadline ownership.
 Product edits and execution require separate reviewed cuts. Parent-owned
 reference retirement, workers and public startup remain later gates. Actual
 managed-job/proxy continuity across an upgrade remains unverified.
+
+## Original parent service protocol — reviewed normal scope
+
+The existing upgrade task continues on `codex/resident-parent-service-protocol`
+from `38bfb0e`, with focused source commit `e9c06727f79a594af12b6c604e69781f45a68194`.
+Parent-owned acknowledgement authentication, separate current service read6,
+challenge signing and proof authentication are implemented without Root callers.
+Independent source and selected normal reviews pass; composed landing remains
+an integration gate. The [normalized result](validation/resident-parent-service-normal-2026-10-31.json)
+records nine roots/24 named DATA/refusal cases, six-package vet and a native
+compile-only command build.
+
+Successful original secret/authentication/phase/current/read6/native behavior
+remains unexercised. Distinct parent launch-fence postStart observations, child
+CurrentProof signer and actual private Root orchestration/entropy/fresh
+commitments/no-pending proof gate remain next cuts. Parent-owned retirement,
+workers/schema/controller/admission/assets, API/UI replacement and public first/
+repeat/concurrent `arm start` remain open. Actual eligibility, managed-run/proxy
+upgrade survival and shutdown/recovery remain unaccepted. Preserved branches,
+failed records and separately passing scopes retain their classifications.

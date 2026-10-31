@@ -12465,3 +12465,37 @@ source SHA256/Git-blob pairs and eighteen raw package-qualified run/pass pairs
 agree with the audited result. Later changes are documentation only; no test or
 binary was rerun for composition. This retains selected normal refusal/DATA
 qualification and every stated current-native/SQL and live-upgrade limitation.
+
+## Original parent service protocol — selected normal DATA/refusal qualification
+
+[Normalized evidence](validation/resident-parent-service-normal-2026-10-31.json)
+records nine selected roots and 24 unique raw named run/pass pairs in one
+service-package selection. Four new roots cover a serialized journal-DATA case
+with fifteen mutations, inert unprepared protocol refusals, copied/JSON opaque
+observations and preservation of the old five read stages; five existing
+PURE/refusal roots remain selected. No failure or skip occurred.
+
+The actual six-consumer dependency graph contains 834 packages and 88 official
+modules. Official mod/ZIP/expanded-source Hash1/go.sum authentication agrees
+before and after; SQLite remains unmodified at version 1.60.1. Uniform
+`GOFLAGS=-buildvcs=false`, the read-only dependency cache and network refusal
+remain. Six-target default vet and native command compilation pass. The
+74,632,306-byte artifact is retained by SHA-256 and was never executed.
+
+All four original Go commands and owning wrapper joined with exit zero; eight
+raw stream hashes and exact rosters match. All 3,300 candidate/working inputs,
+1,914 Go files, 484 support pins and 18 proposal files including the manifest
+remain unchanged. The two existing source edits are insertion-only, preserving
+3,296 whole tracked files and the old function bodies. Three temporary
+inventories are empty, with no sampled-stop alarm. The run completed in
+37.641093 seconds. Prior failed evidence, artifacts and scratch remain retained.
+Raw operational records stay private; selected normal host evidence is not a
+race/full-suite/Linux run, native-Closed or release-credit observation.
+
+No successful original secret/authentication/signing/phase/current/read6/held
+native/Start/fence/nonce/Env/Proof/SQL/role/socket/timer/helper fixture is
+exercised. Parent launch-fence postStart, child signer, actual private Root
+protocol/entropy/fresh commitment/no-pending gate and reference retirement
+remain open. Worker/controller/schema/admission/assets, API/UI replacement,
+public `arm start`, genuine eligibility, managed-run/proxy upgrade survival
+and shutdown/recovery remain unaccepted.

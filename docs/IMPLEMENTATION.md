@@ -6018,3 +6018,41 @@ and scoped evidence as `5719b26`. Every qualified runtime, module and embedded
 input matches the reviewed snapshot. SQLite remains the unmodified official
 driver. No new Root caller is activated and no running backend or managed child
 is changed by this integration.
+
+## Original parent service authentication and current observation
+
+The actual original parent service group now owns four independent once-only
+protocol calls. Acknowledgement authentication retains its call and sole opaque
+observation before payload parsing or own-secret use. It requires the same
+original group/command/debit, completed normal bootstrap and exact normal
+acknowledgement read token. Service-owned context fields match actual own
+records; settings/intent/footer/launch links remain authenticated DATA requiring
+the future private Root's structural comparison.
+
+The separate current service call retains its own read6 and opaque observation
+before native work. Five original preStart reads, birth2, OriginalDebit and the
+old journal remain unchanged. Fresh checks use three held references with
+identity/UID/private mode/link/access/CLOEXEC checks and two relative NOFOLLOW
+names under the held home. No path walk, open, listing, lock, write or close is
+introduced. Read6 is bounded to one MiB, 32 advancing ReadAt and two Stat, with
+retained attempt/n/error records, exact birth2 prefix/three-record canonical
+chain/own grant/debit/RootBound/context and stable before-after identity/size/
+mtime. The service hash is the third FRAME chain digest, not whole-file SHA.
+Held/relative observations do not establish absolute-path currency or atomic
+namespace stability; parser/library/runtime costs remain additional and opaque.
+
+The challenge signer requires the same completed Ack/current observations and
+retains its context, nonce DATA and exact signed frame. Proof authentication
+requires the exact normal original proof read token and own prior normal
+challenge write bytes equal to that signed frame, then own-secret HMAC and
+expected context/nonce checks. Original endpoint/framing methods stay unchanged.
+Final result publication follows the original direct finish/recover, and foreign/
+native/IO/crypto work occurs outside publication locks. Completed read-scope
+cancellation does not retroactively invalidate recorded normal IO facts.
+
+These operations issue no Start/fence/entropy authority or Ready/Closed/credit.
+Actual Start and launch-fence checks, the single original entropy call and
+cross-component/no-pending proof sequencing belong to the future private Root.
+No child signer, Root caller/context constructor, worker/schema or public-start
+activation is added here. Actual native/authentication and upgrade continuity
+remain separate gates.
