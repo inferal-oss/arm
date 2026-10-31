@@ -6278,8 +6278,11 @@ the owner-indexed upstream successor has completed source review and scoped
 qualification: fresh Rust/WAT builds, both ABI cohorts, strict typecheck and
 177 targeted cases, including 69 generic regressions, pass. Separate cost and
 soak windows pass four and one cases respectively on the same accepted images.
-Dependency acceptance requires final provenance, composed tests,
-reproducible assets, native embedding and browser review. Stock
+The frozen ARM backport separately passes fresh WAT builds, 158 RDF cases,
+161 application Node cases and five provenance checks. Its private packaging
+reveals an imported loader chunk omitted by Go embedding, so those assets
+are not promoted. Dependency acceptance still requires reproducible ordinary
+recipe assets, exact embedding completeness and current native/browser review. Stock
 Semblance remains the requested default, with Terminal selectable.
 The tested upstream correction is available as
 [draft PR #243](https://github.com/inferal-oss/semblance/pull/243); publication

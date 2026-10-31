@@ -4932,10 +4932,14 @@ does not establish full-suite or ARM dependency acceptance. Complete dependency 
 assets, native embedding and browser checks precede onboarding UI composition.
 The tested upstream commit `246289b4` is published as
 [draft PR #243](https://github.com/inferal-oss/semblance/pull/243), linked to its
-issue and upstream plan. The ARM backport remains unintegrated and unqualified.
+issue and upstream plan. The ARM backport remains unintegrated.
 The backport source and its composition preserving the newer onboarding
-foundation have passed review. Dependency builds/tests, reproducible assets,
-native embedding and current browser checks remain open.
+foundation have passed review. Its frozen dependency window passes two equal
+fresh WAT builds, 158 RDF cases, 161 application Node cases and five provenance
+checks. Private Vite outputs agree, but an imported loader filename would be
+omitted by Go embedding; those assets are not accepted. Two isolated ordinary
+recipe builds, exact embedding completeness and current native/browser checks
+remain open. These results do not qualify the latest full ARM composition.
 Public pressure, forwarding and sync activation remain separate unfinished gates.
 
 

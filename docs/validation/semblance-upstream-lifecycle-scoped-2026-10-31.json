@@ -30,8 +30,23 @@
   },
   "original_waits_quiet_logs_nonforced_stop_closure_and_final_pins_checked": true,
   "earlier_failed_attempts_retained": true,
+  "arm_backport_dependency_window": {
+    "subject_base": "bab1047676a732eabda7284e1a8ccfd79683e7a2",
+    "fresh_wat_builds": 2,
+    "fresh_wat_builds_byte_equal": true,
+    "rdf": {"entries": 17, "passed": 158, "failed_pending_skipped_todo": 0},
+    "generic_titles_equal_reviewed_upstream": 69,
+    "application_node": {"files": 12, "unique_named_passes": 161, "failed_cancelled_skipped_todo": 0},
+    "provenance_node": {"passed": 5, "failed_cancelled_skipped_todo": 0},
+    "rdf_binding_scope": "Loader locator transformation proof; no instrumented byte-read claim",
+    "private_vite_outputs_byte_equal": true,
+    "asset_promotion": "Refused: imported private loader chunk would be omitted by Go directory embedding",
+    "next_asset_gate": "Two isolated builds using the unchanged checked-in recipe, then exact filesystem-to-embedded inventory and import closure",
+    "original_waits_quiet_logs_nonforced_stop_closure_and_final_pins_checked": true,
+    "native_browser_or_current_main_composition_acceptance": false
+  },
   "remaining": [
-    "Final ARM dependency provenance and composed tests",
+    "Current-main composition preserving the qualified dependency source",
     "Reproducible ARM assets and native embedding",
     "Actual browser review and screenshots",
     "Subsequent unified onboarding composition"

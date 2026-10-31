@@ -12829,6 +12829,19 @@ is verified at tested commit `246289b46317a85dad8f0ad0e41f588889899957`.
 Its issue, upstream plan link and public validation text match the reviewed
 scope. No upstream merge, release or ARM runtime acceptance is inferred.
 
+A frozen ARM backport window separately passes two byte-equal fresh WAT
+builds, 158 cases in 17 RDF entries, 161 unique application Node cases in
+12 files and five provenance checks. All 69 generic titles match the accepted
+upstream roster. The RDF binding proves a loader-locator transformation;
+it is not an instrumented byte-read receipt. Private Vite outputs are equal
+with complete notices and filesystem import closure, but their entry imports
+a loader chunk whose leading underscore excludes it from Go directory
+embedding. Asset promotion is refused. Two isolated builds using the
+checked-in ordinary recipe and exact filesystem-to-embedded inventory/hash
+parity precede current native and browser acceptance. Original waits, quiet
+logs, ordinary nonforced stop, closure and final source/input hashes pass
+within the frozen dependency window; they do not qualify latest-main ARM.
+
 
 ## Onboarding saved-name continuation — scoped qualification
 
