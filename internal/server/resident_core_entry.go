@@ -27,6 +27,7 @@ type residentCoreEntryCall struct {
 	prepareAttempted, bodyReturned, abnormal        bool
 	validationAttempted, validationReturned         bool
 	rootBoundAttempted, rootBoundReturned           bool
+	protocolAttempted, protocolReturned             bool
 	returnedError                                   error
 	cause                                           any // private, never formatted or logged
 	keeperRegistered, keeperEntered, waitPending    bool
@@ -116,8 +117,8 @@ func (e *residentCoreEntry) retainOriginal(call *residentCoreEntryCall, normal *
 // RunOriginalResidentCore returns ONLY for pure arity/duplicate-entry rejection.
 // Once the actual original call begins, its outermost deferred frame retains
 // this SAME entry/Root and parks even on ordinary error, panic(nil) or Goexit.
-// This private role does not ACK, start loops/listeners/workers or report public
-// arm-start success. It must only be launched under its original funded parent.
+// Private authenticated handoff requires its original funded parent; Manager
+// loops, listeners, workers and public arm start readiness remain later stages.
 func RunOriginalResidentCore(args []string) (resultCode int) {
 	resultCode = 1
 	if !originalResidentCoreArgs(args) {
@@ -170,6 +171,15 @@ func RunOriginalResidentCore(args []string) (resultCode int) {
 		resultErr = root.commitOriginalRootBound()
 		e.mu.Lock()
 		call.rootBoundReturned = true
+		e.mu.Unlock()
+	}
+	if resultErr == nil {
+		e.mu.Lock()
+		call.protocolAttempted = true
+		e.mu.Unlock()
+		resultErr = root.exchangeRootProtocolOriginal()
+		e.mu.Lock()
+		call.protocolReturned = true
 		e.mu.Unlock()
 	}
 	normal = true // set ONLY after the actual body returned, including errors

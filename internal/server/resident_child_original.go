@@ -66,6 +66,10 @@ type residentChildPending struct {
 	manager                        *manager.ResidentManagerPending
 	server                         *residentServerPending
 	active                         *residentChildOperation
+	prepareOperation               *residentChildOperation
+	protocol                       *residentRootProtocolCall
+	protocolTried                  bool
+	protocolPhases                 [4]*residentProtocolPhase
 	prepareTried, bindingsPrepared bool
 	firstError                     error
 	preparedValidationTried        bool
@@ -76,20 +80,15 @@ type residentChildPending struct {
 
 // Owns the one finite bootstrap I/O context attempt. Runtime constructor/cancel
 // internals stay opaque; these return records do not assert native quiescence.
-type residentChildBootstrapCall struct {
-	contextAttempted, contextReturned bool
-	context                           context.Context
-	cancel                            context.CancelFunc
-	receiveAttempted, receiveReturned bool
-	receiveError                      error
-	cancelAttempted, cancelReturned   bool
-}
+type residentChildBootstrapCall = residentProtocolPhase
 
 type residentChildOperation struct {
-	kind     string
-	phase    string
-	abnormal bool
-	cause    any
+	kind           string
+	phase          string
+	abnormal       bool
+	normalFinished bool
+	finalError     error
+	cause          any
 }
 
 // In-place fixed-role initialization. The actual outer entry retains root BEFORE
@@ -160,6 +159,9 @@ func (r *residentChildPending) finish(op *residentChildOperation, normal *bool, 
 		}
 		r.active = nil
 	}
+	if *normal && !op.abnormal {
+		op.normalFinished, op.finalError = true, *resultErr
+	}
 	r.mu.Unlock()
 	if cause != nil {
 		panic(cause)
@@ -167,10 +169,10 @@ func (r *residentChildPending) finish(op *residentChildOperation, normal *bool, 
 }
 
 // Performs actual original references -> service grant/env -> image/fence ->
-// native issuer -> Manager/official DB -> Server binding. It DOES NOT start
-// Manager loops, publish ingress, ACK or report arm-start readiness: that must
-// be composed with the first genuinely admitted active worker. No error/panic
-// closes originals, cancels root lifetime or runs legacy abort/recovery.
+// native issuer -> Manager/official DB -> Server binding. This stage sends no
+// ACK, starts no Manager loops and publishes no ingress. The outer role performs
+// authenticated handoff; public readiness requires a genuinely admitted worker.
+// Errors/panics retain originals and Root lifetime without legacy abort/recovery.
 func (r *residentChildPending) prepareOriginalBindings(bootstrapContext context.Context) (resultErr error) {
 	if r == nil || r.self != r {
 		return errResidentChildOriginal
@@ -182,6 +184,7 @@ func (r *residentChildPending) prepareOriginalBindings(bootstrapContext context.
 	}
 	r.prepareTried = true
 	op := &residentChildOperation{kind: "prepare", phase: "registered_before_inherited_native_effect"}
+	r.prepareOperation = op
 	r.active = op
 	r.mu.Unlock()
 	normal := false
@@ -316,14 +319,30 @@ func (r *residentChildPending) receiveOriginalBootstrap(parent context.Context) 
 		return err
 	}
 	r.phase("original_bootstrap_timeout_constructor_pending_after_all13_seal")
-	call := &residentChildBootstrapCall{}
+	call := &residentChildBootstrapCall{child: r, childOperation: r.prepareOperation, index: 0, kind: "Rboot", lifetime: parent, bootstrapPostConstructorClock: true}
 	r.mu.Lock()
 	r.bootstrapCall = call
+	r.protocolPhases[0] = call // EXACT existing bootstrap allocation, not another scope
 	call.contextAttempted = true
 	r.mu.Unlock()
 	ctx, cancel := context.WithTimeout(parent, 5*time.Second)
 	r.mu.Lock()
 	call.context, call.cancel, call.contextReturned = ctx, cancel, true
+	call.clockAttempted = true
+	r.mu.Unlock()
+	observed := time.Now() // post-constructor observation; never a constructor timestamp
+	r.mu.Lock()
+	call.observedAt, call.clockReturned = observed, true
+	call.deadlineAttempted = true
+	r.mu.Unlock()
+	deadline, finite := ctx.Deadline()
+	r.mu.Lock()
+	call.deadline, call.deadlineFinite, call.deadlineReturned = deadline, finite, true
+	r.mu.Unlock()
+	if !finite || deadline.After(observed.Add(5*time.Second)) {
+		return errResidentChildOriginal // retain owned unknown context; no synthetic cancellation
+	}
+	r.mu.Lock()
 	call.receiveAttempted = true
 	r.mu.Unlock()
 	raw, err := r.control.ReceiveOriginalData(ctx)

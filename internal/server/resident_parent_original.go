@@ -50,18 +50,24 @@ type residentParentPending struct {
 	intent, bootstrapRaw, frame         []byte
 	preflightFrameBytes                 int
 	active                              *residentParentOperation
+	prepareOperation, launchOperation   *residentParentOperation
+	protocol                            *residentParentProtocolCall
+	protocolPhases                      [4]*residentProtocolPhase
 	prepareTried, prepared, launchTried bool
 	startAttempted, startReturned       bool
 	startError                          error
 	process                             *os.Process
+	startCall                           *residentParentStartCall
 	transferWritten                     bool // DATA only; never Ready/ACK/native/worker success
 	firstError                          error
 }
 type residentParentOperation struct {
-	ctx         context.Context
-	kind, phase string
-	abnormal    bool
-	cause       any
+	ctx            context.Context
+	kind, phase    string
+	abnormal       bool
+	normalFinished bool
+	finalError     error
+	cause          any
 }
 
 // Pure parent allocation/settings copy. Expected executable/env come only from
@@ -121,6 +127,12 @@ func (r *residentParentPending) beginOriginal(ctx context.Context, kind string) 
 		return nil, errResidentParentOriginal
 	}
 	op := &residentParentOperation{ctx: ctx, kind: kind, phase: "registered_before_original_effect"}
+	if kind == "prepare" {
+		r.prepareOperation = op
+	}
+	if kind == "launch-and-transfer" {
+		r.launchOperation = op
+	}
 	r.active = op
 	return op, nil
 }
@@ -160,6 +172,13 @@ func (r *residentParentPending) finishOriginal(op *residentParentOperation, norm
 			r.prepared = true
 		}
 		r.active = nil
+	}
+	if *normal && !op.abnormal {
+		op.normalFinished, op.finalError = true, *resultErr
+	}
+	if r.protocol != nil && r.protocol.op == op {
+		r.protocol.normalReturned = *normal && !op.abnormal && op.normalFinished && *resultErr == nil && r.protocol.bodyReturned && r.protocol.bodyError == nil
+		r.protocol.finalError = *resultErr
 	}
 	r.mu.Unlock()
 	if cause != nil {
@@ -369,12 +388,14 @@ func (r *residentParentPending) launchAndTransferBody(ctx context.Context) error
 	r.phaseOriginal("ONE_actual_original_Cmd_Start_pending")
 	r.mu.Lock()
 	r.startAttempted = true
+	r.startCall = &residentParentStartCall{owner: r, op: r.active, command: r.command, attempted: true}
 	r.mu.Unlock()
 	startError := r.command.Start() // THE SOLE ACTUAL COMPOSED PARENT START
 	r.mu.Lock()
 	r.startReturned = true
 	r.startError = startError
 	r.process = r.command.Process
+	r.startCall.returned, r.startCall.err, r.startCall.process = true, startError, r.command.Process
 	r.mu.Unlock()
 	if startError != nil {
 		return startError
@@ -382,25 +403,10 @@ func (r *residentParentPending) launchAndTransferBody(ctx context.Context) error
 	if r.process == nil {
 		return errResidentParentOriginal
 	}
-	r.phaseOriginal("actual_one_bounded_original_frame_transfer_no_ACK_claim")
-	transferError := r.group.SendOriginalP1Frame(ctx, r.command, r.frame)
-	transfer, inspectError := r.group.TransferOriginalP1Data()
-	r.mu.Lock()
-	r.transferWritten = transfer.FullWrite
-	r.mu.Unlock()
-	if transferError != nil {
-		return transferError
-	}
-	if inspectError != nil {
-		return inspectError
-	}
-	if !transfer.FullWrite {
-		return errResidentParentOriginal
-	}
-	// Keep process and every actual parent original until a future reviewed real
-	// ACK/current-authority exchange and owned reference-retirement cut. No wait,
-	// Release, close, daemon marker, ordinary admission or Ready occurs here.
-	return ctx.Err()
+	r.phaseOriginal("actual_original_boundAck_currentChallenge_currentProof_exchange")
+	// SAME original launch-and-transfer operation remains active through all
+	// four phases. No parent reference retirement, worker or public Ready here.
+	return r.exchangeParentProtocolOriginal()
 }
 func (r *residentParentPending) validateFinalCommandOriginalData(ctx context.Context) error {
 	if r == nil || r.self != r || ctx == nil {
