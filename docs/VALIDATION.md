@@ -12507,3 +12507,38 @@ source SHA256/Git-blob pairs and twenty-four raw package-qualified run/pass pair
 agree with the audited result. Later changes are documentation only; no test or
 binary was rerun for composition. This preserves selected normal DATA/refusal
 qualification and every stated original-auth/native and live-upgrade limitation.
+
+## Original parent fence postStart — selected normal DATA/refusal qualification
+
+[Normalized evidence](validation/resident-parent-fence-normal-2026-10-31.json)
+records six selected roots and 40 unique raw named run/pass pairs in one birth-
+package selection. Three new roots cover serialized intent/service/footer/
+context DATA with 24 mutations, missing actual original-operation refusals and
+pending/abnormal/error completion metadata. Three existing PURE/refusal roots
+include ten canonical-footer mutations. No failure or skip occurred.
+
+The actual six-consumer dependency graph contains 839 packages and 88 official
+modules. Official mod/ZIP/expanded-source Hash1/go.sum authentication agrees
+before and after, with unmodified SQLite 1.60.1 and uniform
+`GOFLAGS=-buildvcs=false`. The read-only dependency cache and network refusal remain.
+Six-target default vet and native command compilation pass. The retained
+74,632,306-byte artifact has SHA-256 recorded in the normalized evidence and
+was never executed.
+
+All four original Go commands and owning wrapper joined with exit zero; eight
+raw stream hashes and exact rosters agree. All 3,303 candidate/working inputs,
+1,916 Go files, 515 support pins and 18 proposal files including the manifest
+remain unchanged. The existing-file edit restores exactly after removing its
+five insertion hunks/nineteen lines; 3,300 whole tracked files and old method
+bodies remain protected. Three temporary inventories are empty, with no
+sampled-stop alarm. The run completed in 43.073238 seconds. Prior failed
+evidence/artifacts/scratch remain retained. Raw operational records stay
+private; selected normal host evidence is not a race/full-suite/Linux run or
+a native-Closed/release-credit observation.
+
+No successful original postStart/service/auth/Process/Start/held-native/current
+read/SQL/RNG/timer/role/helper/socket fixture is exercised. Child signing, actual
+private Root protocol/phase contexts/nonce/fresh commitment/no-pending gate,
+parent retirement, workers/controller/schema/admission/assets/API/UI, public
+`arm start`, actual eligibility, managed-run/proxy upgrade survival and shutdown/
+recovery remain unaccepted.

@@ -4769,3 +4769,25 @@ old preStart/ShortSeal methods remain protected. Child proof signing and actual
 Root protocol/entropy/no-pending sequencing remain later cuts, followed by
 reference retirement, workers and public startup. Actual managed-job/proxy
 continuity across an upgrade remains unverified.
+
+## Original parent fence postStart — reviewed normal scope
+
+The existing upgrade task continues on `codex/resident-parent-fence-poststart`
+from `419abca`, with focused source commit `9b25de6bd9e476dc0f992e8dea42fb06354c1eb4`.
+The separate parent postStart held/name/current-launch observation and exact
+completed selector are implemented without Root callers. Actual original
+withdrawal/short-seal operations are retained before effects; their normal
+final results are required. Independent source and selected normal reviews
+pass; composed landing remains an integration gate. The
+[normalized result](validation/resident-parent-fence-normal-2026-10-31.json)
+records six roots/40 named DATA/refusal cases, six-package vet and a native
+compile-only command build.
+
+Actual successful postStart/service/Process/Start/held-native/current-read
+behavior remains unexercised. Child CurrentProof signing and actual private
+Root protocol/context/nonce/fresh commitment/no-pending proof sequencing remain
+next cuts. Parent-owned retirement, workers/schema/controller/admission/assets,
+API/UI replacement and public first/repeat/concurrent `arm start` remain open.
+Actual eligibility, managed-run/proxy upgrade survival and shutdown/recovery
+remain unaccepted. Prior failed records, preserved branches and separately
+passing scopes retain their classifications.

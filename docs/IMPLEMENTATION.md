@@ -6062,3 +6062,41 @@ scoped evidence as `80152bb`. Every qualified runtime, module and embedded input
 is identical to the reviewed snapshot. SQLite remains the unmodified official
 driver. No new Root caller is activated and no running backend or managed child
 is changed by this integration.
+
+## Distinct original parent launch-fence postStart observation
+
+FreshFence now retains its actual original withdrawal and short-seal operation
+pointers at their existing begin allocation. Original direct finish records
+final normal/error metadata after its final context/recovery decisions. The
+new once-only postStart admission requires both distinct own normal operations
+and nil final errors. Existing holders lacking those actual records refuse;
+flags do not reconstruct history. All old preStart/ShortSeal/Withdraw/validate/
+validateIntent/commandSelectors/path-walk/list/empty-ledger bodies stay unchanged.
+
+The new call retains actual prepared fence/group/command/state and completed
+service observation before foreign/native effects. It checks that same actual
+group/command service observation before and after native/journal work, outside
+the publication mutex. Six held Fstat/access/CLOEXEC checks and five relative
+NOFOLLOW name checks use only existing original directories/references. No
+open, listing, lock, writer, close, rebind or adoption is added. A separate
+20-KiB maximum read retains at most 32 advancing ReadAt and two Stat with exact
+attempt/n/error records and stable identity/size/mtime. Old intent, verification,
+append/prepared evidence and custody remain unchanged.
+
+The actual read must contain the exact own immutable intent and one canonical
+footer. It matches actual service3/third-FRAME digest and authenticated context
+to own key/profile/image bytes/home selectors, plus exact intent/footer/full-
+launch lengths and hashes. Footer SettingsSHA matches authenticated Context,
+while actual Root settings/typed intent/control/native/canonical comparisons
+remain mandatory. Held/relative observations do not establish absolute-home
+currency or atomic namespace stability. Codec/parser/runtime costs remain
+additional and opaque.
+
+Result publication follows the original direct finish; completed selectors
+release the local mutex before service checks and recheck the exact own call.
+A nonnil Process is consistency only; actual normal Root Start/exact Process/
+bootstrap/active launch ownership remains a private Root prerequisite. The
+Rack-only completed selectors correctly refuse after challenge advancement;
+future Root must retain actual normal pre-challenge call facts. No new Root
+caller, child signer, phase/context/entropy work, worker/schema or public-start
+activation is added. Normal DATA/API observations issue no Ready/Closed/credit.

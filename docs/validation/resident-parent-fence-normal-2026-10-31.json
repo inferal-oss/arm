@@ -1,0 +1,289 @@
+{
+  "implemented_boundaries": {
+    "Root_prerequisites": "A nonnil exact command.Process is consistency only. Actual normal Root Cmd.Start/exact returned Process/bootstrap/active launch operation remain mandatory. Footer SettingsSHA agrees with authenticated Context, while actual Root settings snapshot, typed intent/control endpoint, current A/native and cross-component canonical commitment remain separate structural comparisons. Completed Rack-only selectors correctly refuse after challenge phase advancement; future Root must retain its actual completed pre-challenge call facts.",
+    "currency_and_activation": "Held references/relative names are point observations under held directories, not absolute-home currency or atomic namespace stability. Codec/parser/runtime costs remain additional and opaque. No new Root caller/context/entropy/worker/schema/public-start activation, Ready, native Closed or resource credit.",
+    "current_journal": "A separate at-most-20-KiB read uses at most 32 advancing ReadAt and two Stat, with retained attempt/n/error records, stable SameFile/size/mtime, exact own immutable intent prefix and one closed canonical footer. Exact actual service3 third-FRAME digest, generation/debit/key-domain/profile/image bytes/home selectors, commitment and authenticated context are compared with exact intent/footer/full-launch lengths and hashes. Original intent/verification/writes/prepared evidence remain unchanged.",
+    "native_direct_API_bounds": {
+      "F_GETFD": 6,
+      "F_GETFL": 6,
+      "File_Stat": 2,
+      "Geteuid": 1,
+      "advancing_File_ReadAt": 32,
+      "held_Fstat": 6,
+      "new_journal_buffer_bytes": 20480,
+      "relative_Fstatat_NOFOLLOW": 5
+    },
+    "original_operations": "Exactly two fixed owner fields retain the actual withdraw/short-seal operations allocated by original begin, before effects. Final normal/error metadata is recorded by the unchanged direct finish after final context/recovery decisions; completed postStart requires distinct exact own normal operations and nil final errors. Old holders without those actual operations refuse without reconstruction.",
+    "postStart_ownership": "A separate once-call retains the same actual prepared fence/group/command/state/service observation before foreign/native work. The completed original same-group service observation is checked before and after held/name/journal work, outside the publication mutex. Result publication follows original direct finish; completed selectors snapshot/unlock/check service/relock exact original call.",
+    "protected_effects": "All old preStart/ShortSeal/Withdraw/commandSelectors/validate/validateIntent/path-walk/list/empty-ledger method bodies remain byte-identical. No open, listing, lock, write, Sync, close, rebind, FD adoption, Verify or retry in postStart. No service/transport/child/Root/driver/module edits."
+  },
+  "normal_qualification": {
+    "CGO_ENABLED": "0",
+    "GOFLAGS": "-buildvcs=false",
+    "Go_version": "1.27.3",
+    "actual_dependency_graph": {
+      "POST_authenticated_modules": 88,
+      "PRE_POST_equal": true,
+      "PRE_authenticated_modules": 88,
+      "authentication": "Actual referenced official mod/ZIP/expanded-source Hash1 and go.sum; no replacements, downloads, cache seeding or dependency-cache write relaxation.",
+      "packages": 839,
+      "referenced_official_modules": 88,
+      "sqlite": "modernc.org/sqlite@v1.60.1"
+    },
+    "existing_mutation_subtests": 10,
+    "genuine_role_or_native_positive_fixtures": 0,
+    "helper_subprocesses": 0,
+    "native_command_compile_only": {
+      "artifact_bytes": 74632306,
+      "artifact_executed": false,
+      "artifact_sha256": "5cd19543e6dc5081c0f97aca1a64abae633ada32453ee64e7c770a8c64742063",
+      "result": "pass",
+      "target": {
+        "GOARCH": "arm64",
+        "GOOS": "darwin"
+      }
+    },
+    "new_mutation_subtests": 24,
+    "new_named_results": 27,
+    "new_roots": 3,
+    "real_secret_or_entropy_access": false,
+    "relevant_existing_roots": 3,
+    "root_count": 6,
+    "supervision": {
+      "active_elapsed_seconds": 43.073238,
+      "all_original_Go_commands_joined_exit_zero": true,
+      "candidate_and_working_source_files_verified": 3303,
+      "command_stream_hashes_verified": 8,
+      "failed_predecessors_and_scratch_retained": true,
+      "new_temporary_inventories_empty": true,
+      "original_Go_commands": 4,
+      "owning_wrapper_joined_exit_zero": true,
+      "proposal_files_including_manifest_verified": 18,
+      "sampled_stop_alarm": false,
+      "source_support_and_proposal_pins_unchanged": true,
+      "support_pins_verified": 515
+    },
+    "test_packages": [
+      {
+        "named_results": [
+          {
+            "result": "pass",
+            "test": "TestP1CurrentLaunchJournalDataRequiresExactIntentFooterAndHashes"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1CurrentLaunchRequiresActualFooterAndServiceObservationBeforeEffects"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/empty"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/overflow"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/truncated"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/extended"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/intent"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/footer"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/service-generation"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/service-commitment"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/service-sha"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/service-count"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/own-debit"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/own-key"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/own-profile"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/own-image-bytes"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/inventory-image"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/home"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/inventory-home"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/context-generation"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/context-footer-hash"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/context-journal-hash"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/context-intent-hash"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/context-settings"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/footer-count"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext/journal-count"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartRefusesFlagsWithoutRetainedOriginalOperations"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1ParentPostStartSelectorRefusesPendingAndAbnormalFinishMetadata"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/magic"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/checksum"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/end"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/length"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/truncated"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/trailing"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/oversize"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/duplicate"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/unknown"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage/alias"
+          },
+          {
+            "result": "pass",
+            "test": "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage"
+          }
+        ],
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "root_tests": [
+          "TestP1ParentPostStartJournalDataRequiresOwnedIntentServiceAndContext",
+          "TestP1ParentPostStartRefusesFlagsWithoutRetainedOriginalOperations",
+          "TestP1ParentPostStartSelectorRefusesPendingAndAbnormalFinishMetadata",
+          "TestP1FooterClosedCanonicalFrameDataRejectsAliasesAndDamage",
+          "TestP1CurrentLaunchJournalDataRequiresExactIntentFooterAndHashes",
+          "TestP1CurrentLaunchRequiresActualFooterAndServiceObservationBeforeEffects"
+        ]
+      }
+    ],
+    "test_selection_count": 1,
+    "unique_package_qualified_named_run_pass_pairs": 40,
+    "vet": {
+      "packages": [
+        "getarm.org/internal/server/internal/residentbirth",
+        "getarm.org/internal/server/internal/residentservice",
+        "getarm.org/internal/server/internal/nativeowner",
+        "getarm.org/internal/residentrefs",
+        "getarm.org/internal/server",
+        "getarm.org/cmd/arm"
+      ],
+      "result": "pass"
+    }
+  },
+  "remaining_gates": [
+    "Actual successful postStart service observation, Process/normal Start, held/native/current journal read and complete original protocol remain unexercised.",
+    "Child CurrentProof signer and sole private Root protocol/phase contexts/nonce/fresh commitment/no-pending proof gate.",
+    "Parent-owned reference retirement, workers/controller/schema/admission/assets/API/UI replacement and public first/repeat/concurrent arm start.",
+    "Genuine funding/native/prepared/journal/environment eligibility, managed-run/proxy/log/heartbeat/finish/renew/cancel/expiry/accounting upgrade continuity, shutdown and recovery."
+  ],
+  "schema": 1,
+  "scope": "Original parent launch-fence postStart observation: selected normal synthetic DATA and early-refusal qualification",
+  "source": {
+    "base_commit": "419abcab83987445d99a62afee44e811960be1ed",
+    "existing_file_exact_insertion_hunks": 5,
+    "existing_file_inserted_lines": 19,
+    "feature_commit": "9b25de6bd9e476dc0f992e8dea42fb06354c1eb4",
+    "qualified_Go_files": 1916,
+    "qualified_source_files": 3303,
+    "qualified_source_manifest_sha256": "df0b6432fc5062ba4440a971f7b88f5484200a590d128c1a28fe4dbc37886cb2",
+    "reviewed_Go_files": {
+      "internal/server/internal/residentbirth/fence.go": {
+        "git_blob": "da56dd09256002119fc1a6936787132e66cada37",
+        "sha256": "73c7c9c38258532fbc0cef52f4a6ba7d95ce74470fa293c13d1d091e18397f58"
+      },
+      "internal/server/internal/residentbirth/post_start.go": {
+        "git_blob": "09e6025d27497dbac363bbc7fbbb6ae118ccd3d7",
+        "sha256": "ec569aac2894e806e607c0b0bf830eccc16b2dd7c43dea0716d47f24a655c678"
+      },
+      "internal/server/internal/residentbirth/post_start_test.go": {
+        "git_blob": "94eabab58ce43b3c81ecdb382e17ac3a91acaf0f",
+        "sha256": "84ea053a1b48d6f0fa0a817199cc46c8605891c87d57aed86605e0660c1db6c3"
+      }
+    },
+    "whole_protected_Go_files": 1913,
+    "whole_protected_files": 3300
+  },
+  "status": "scoped_normal_qualification_pass"
+}
