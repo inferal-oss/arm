@@ -118,6 +118,13 @@ func TestOriginalResidentServerBindsActualManagerAndNativeIngress(t *testing.T) 
 		if err := actual.validateOriginalIngressProof(t.Context(), proof); err != nil {
 			t.Fatal("actual original Server ingress refused", err)
 		}
+		// OpenOriginal already loaded the exact empty pressure control group.
+		// Read through this same original Manager after startup, without a
+		// replacement pool or a forged borrower.
+		status, err := actual.Manager.Status()
+		if err != nil || status.Host == "" || len(status.Leases) != 0 {
+			t.Fatal("original resident Manager could not read its fresh ledger", err)
+		}
 		forged := &residentServerBinding{owner: pending, server: actual, claim: pending.claim}
 		if err := actual.validateOriginalIngressProof(t.Context(), &ingressProof{generation: actual.generation, original: forged}); err == nil {
 			t.Fatal("copied Server binding accepted")
