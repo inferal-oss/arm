@@ -31,6 +31,8 @@ type residentServerPending struct {
 	firstError         error
 	preparedTried      bool
 	preparedValidation *residentServerPreparedCall
+	currentTried       bool
+	currentValidation  *residentServerCurrentCall
 }
 
 type residentServerBinding struct {
@@ -40,10 +42,11 @@ type residentServerBinding struct {
 }
 
 type residentServerOperation struct {
-	owner       *residentServerPending
-	kind, phase string
-	abnormal    bool
-	cause       any
+	owner          *residentServerPending
+	kind, phase    string
+	abnormal       bool
+	normalFinished bool // final original normal metadata only
+	cause          any
 }
 
 type residentServerInspection struct {
@@ -103,6 +106,11 @@ func (o *residentServerPending) begin(kind string) (*residentServerOperation, er
 			return nil, errResidentServerOriginal
 		}
 		o.preparedTried = true
+	case "validate_current":
+		if !o.opened || o.startTried || o.started || o.currentTried || o.preparedValidation == nil {
+			return nil, errResidentServerOriginal
+		}
+		o.currentTried = true
 	default:
 		return nil, errResidentServerOriginal
 	}
@@ -145,6 +153,7 @@ func (o *residentServerPending) finish(op *residentServerOperation, normal *bool
 			}
 		}
 		o.active = nil
+		op.normalFinished = true
 	}
 	o.mu.Unlock()
 	if cause != nil {

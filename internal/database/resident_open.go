@@ -41,12 +41,15 @@ type ResidentOpen struct {
 	closeError            error
 	preparedTried         bool
 	preparedValidation    *residentPreparedDatabaseCall
+	currentTried          bool
+	currentValidation     *residentCurrentDatabaseCall
 }
 type residentSQLOperation struct {
-	owner       *ResidentOpen
-	kind, phase string
-	abnormal    bool
-	cause       any
+	owner          *ResidentOpen
+	kind, phase    string
+	abnormal       bool
+	normalFinished bool // final original normal metadata only
+	cause          any
 }
 type ResidentDatabaseBinding struct {
 	owner      *ResidentOpen
@@ -127,6 +130,11 @@ func (o *ResidentOpen) beginOriginal(kind string) (*residentSQLOperation, error)
 			return nil, errResidentDatabaseOriginal
 		}
 		o.preparedTried = true
+	case "validate_current":
+		if o.firstError != nil || o.closeTried || o.connectSealed || o.currentTried || !o.openTried || o.binding == nil || o.pool == nil || o.claim == nil || o.preparedValidation == nil {
+			return nil, errResidentDatabaseOriginal
+		}
+		o.currentTried = true
 	default:
 		return nil, errResidentDatabaseOriginal
 	}
@@ -197,6 +205,9 @@ func (o *ResidentOpen) finishOriginal(op *residentSQLOperation, normal *bool, re
 	}
 	o.fileObservation = residentSQLFileObservation{o.files.opened, o.files.closed, live}
 	o.closeObservation.NativeOutcome = "unknown"
+	if *normal && !op.abnormal {
+		op.normalFinished = true
+	}
 	o.mu.Unlock()
 	if cause != nil {
 		panic(cause)

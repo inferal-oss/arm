@@ -43,13 +43,16 @@ type ResidentManagerPending struct {
 	server                                           *ResidentManagerServerBinding
 	preparedTried                                    bool
 	preparedValidation                               *residentManagerPreparedCall
+	currentTried                                     bool
+	currentValidation                                *residentManagerCurrentCall
 }
 
 type residentManagerOperation struct {
-	owner       *ResidentManagerPending
-	kind, phase string
-	abnormal    bool
-	cause       any
+	owner          *ResidentManagerPending
+	kind, phase    string
+	abnormal       bool
+	normalFinished bool // final original normal metadata only
+	cause          any
 }
 
 // This is a single actual Server's lifetime borrower, not a worker token. The
@@ -144,6 +147,11 @@ func (o *ResidentManagerPending) beginOriginal(kind string) (*residentManagerOpe
 			return nil, errResidentManagerOriginal
 		}
 		o.preparedTried = true
+	case "validate_current":
+		if !o.ready || o.startTried || o.started || o.currentTried || !o.standingBindingCompleted || o.server == nil || !o.server.validated || o.preparedValidation == nil {
+			return nil, errResidentManagerOriginal
+		}
+		o.currentTried = true
 	default:
 		return nil, errResidentManagerOriginal
 	}
@@ -188,6 +196,7 @@ func (o *ResidentManagerPending) finishOriginal(op *residentManagerOperation, no
 			}
 		}
 		o.active = nil
+		op.normalFinished = true
 	}
 	o.mu.Unlock()
 	if cause != nil {
