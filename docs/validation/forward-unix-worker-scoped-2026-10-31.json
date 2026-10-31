@@ -1,0 +1,126 @@
+{
+  "schema": "arm.scoped-validation/v1",
+  "date": "2026-10-31",
+  "component": "private-forwarding-unix-worker",
+  "source_file_sha256": {
+    "internal/manager/forward_listener.go": "63ce79f25b5c3a14deaa3751634a2ae6a4ae733d199695de4c22479a1c752c6d",
+    "internal/manager/forward_unix_accept.go": "50eb417114b138d7c5926cfe93bd9bdaa15e5b901502ff032e2e12c99eac454c",
+    "internal/manager/forward_unix_default_root_test.go": "4fd96917e35a085684c977e7dc998aa05b6fe5923fddada0b5707ba6058bb99b",
+    "internal/manager/forward_unix_pair_bind.go": "ea0acf295cda5dbfac6cd051b8e9f90450b37520156055f49cce0d7331ed84b4",
+    "internal/manager/forward_unix_pair_bind_test.go": "4d585c2da51f440071ecefc24ee5a77942ebea300666d47458878e46fb7a85ac",
+    "internal/manager/forward_unix_pair_issuer.go": "afea905eb40fbfd14e847a7969118c02170bc57841b0839445a352e04dada649",
+    "internal/manager/forward_unix_pair_reader.go": "2987f8ce11ad7769fd0e94206be1720954fcdcbc0df745e7d1e4ae28ccfc1af8",
+    "internal/manager/forward_unix_peer_darwin.go": "1523d186382030a535c8574d1d83da174daae748a7e54dfddb53c28d02bd2053",
+    "internal/manager/forward_unix_peer_linux.go": "7c7befa01ca5f45d7b0a631a71ebe656e4d0ed066752f22af88ef6d66410fd45",
+    "internal/manager/forward_unix_storage_attention_test.go": "99d2e13b682295bfaab1914e632107e044a010348a91d75b4750072494991061",
+    "internal/meshforward/admitted.go": "f65067f486c7f83fc675edc41dc6f2093ea7834ff3492ce00ac51fbd5e0a7727",
+    "internal/meshsshrelay/binding.go": "faa12f25aa3217f6fc038f31f595ecd3e1f9f7b6b2626cf8ac320f6df875d9ca",
+    "internal/meshsshrelay/carrier.go": "de0598fcbc6c1379ee896c93c1c5d563c4e5802cd5b3a37a1d3c2cab6a359c07",
+    "internal/meshsshrelay/connection.go": "162cc34e9463651d864869971372e467bd38e8b0f0170730e1394f87c5aec29c",
+    "internal/meshsshrelay/native_close.go": "c79c8fa188c2983211439477cafc7a7866e2bf1aef56c06aac26a7f4710358a5",
+    "internal/meshsshrelay/native_close_test.go": "d52c82cf4b1bd2eb98919b3fd9f1ce7c08dc10397e1f3dd525b45b18b8fdc8ac",
+    "internal/server/mesh_forward_route_test.go": "e43eb5f0b3d570c345bc9c6e9f3c54024588dc80a253501e09132aefd027ae0c",
+    "internal/server/mesh_forward_source.go": "b2d7aa82a903d7e11b60a2b4480bd7db0366a9cd44799fc65842e915c49403d3",
+    "internal/server/mesh_forward_source_route.go": "a6512c4d9897bb5b8c3b0a61cf0288c50bfcba624c1ac19082313f1f0904c33c",
+    "internal/server/mesh_forward_source_route_retry_test.go": "612c7830d0eb2ce3741a7e10b582103ab5dac8eae98a60bdb13fa7993ad50d24",
+    "internal/server/mesh_forward_unix_admitted_close_test.go": "bf490851653d1b036fcbab6775971512be4ca40f7a8a6cb1d571c4578e683e03",
+    "internal/server/mesh_forward_unix_close_diagnostic_test.go": "2400ffa45126ae0f1d794b0b0c8a2a8f59b7f6f5d399dd0e451558a6e11b43ee",
+    "internal/server/mesh_forward_unix_default_root_test.go": "e34adbcad439b2d934904039037f3e36c559854d8ad00d6c08b45209311dded8",
+    "internal/server/mesh_forward_unix_test_cleanup_test.go": "052a974ec086180b8f8cd91171f1b4b2bb96f2d64a7c559ac5d6f89c97140a0e",
+    "internal/server/mesh_forward_unix_worker.go": "c023954a31b6847bb475318ce827643a6031d605239882abafcd3f2cb631b13f",
+    "internal/server/mesh_forward_unix_worker_test.go": "25b49e7e3e87bbe17fb536ac833a6239513fea0b671790e22c92189174a73ffc",
+    "internal/server/node_registry_test.go": "f1433138ab47ca024d2d6ffa267191607059dab257fd722446798f1a8065e6ea",
+    "internal/server/workspace_graph_stream_test.go": "7c2829b16ad762860db522c87b090cc78a195aaae0045c8f49ee1a906da9cfa5"
+  },
+  "full_component": {
+    "source_base": "bdc571b829c82f2b59e58628e5311fce2a5e29e6",
+    "normal": {
+      "roots": 62,
+      "named": 112,
+      "passed": 112,
+      "skipped": 0
+    },
+    "race": {
+      "roots": 62,
+      "named": 112,
+      "passed": 112,
+      "skipped": 0
+    },
+    "complete_package_qualified_rosters_equal": true
+  },
+  "final_pressure_composition": {
+    "source_base": "790f2174824add8a2cd0847a35d101bfdb6c0f83",
+    "source_members_rechecked": 3326,
+    "owned_images_identical_to_full_component": 28,
+    "normal": {
+      "roots": 11,
+      "named": 33,
+      "passed": 33,
+      "skipped": 0
+    },
+    "race": {
+      "roots": 11,
+      "named": 33,
+      "passed": 33,
+      "skipped": 0
+    },
+    "complete_package_qualified_rosters_equal": true,
+    "scope": "Changed schema/proof census, pressure namespace, Manager startup/recovery, original route and placement refusal, and uncertain-close charge retention."
+  },
+  "vet_packages": [
+    "./internal/server",
+    "./internal/manager",
+    "./internal/meshforward",
+    "./internal/meshsshrelay",
+    "./internal/storage",
+    "./internal/database"
+  ],
+  "linux_arm64_compile_only": {
+    "linux-server": {
+      "sha256": "638ec6cbf327b3357a90fa356e92c491d3998f7401261178a32a0a7e981890eb",
+      "bytes": 67002307,
+      "elf64_arm64": true,
+      "executed": false
+    },
+    "linux-manager": {
+      "sha256": "8d17a552aedda75230997aecd33a2abe4953ae755065fd7993ddc96957f5a0b1",
+      "bytes": 58677123,
+      "elf64_arm64": true,
+      "executed": false
+    },
+    "linux-meshforward": {
+      "sha256": "c122136d9feedf8f6c6c6fbae9ad43630949be7a4c92800f589f7660ee2c7dd0",
+      "bytes": 10009977,
+      "elf64_arm64": true,
+      "executed": false
+    },
+    "linux-meshsshrelay": {
+      "sha256": "2b93a9a69fd5121f78d8e85fca755b003b365c1f531600c90d75cfcbd54df164",
+      "bytes": 45921967,
+      "elf64_arm64": true,
+      "executed": false
+    }
+  },
+  "linux_execution": false,
+  "execution_integrity": {
+    "all_original_validation_and_outer_commands_returned_zero": true,
+    "validation_stderr_empty": true,
+    "quiet_output_exact": true,
+    "ordinary_nonforced_stop_and_postjoin_closure_verified": true,
+    "final_source_membership_hashes_modes_and_git_state_unchanged": true
+  },
+  "corrected_regression": "After intentional durable placement corruption, exact original lease rows verify retained claims; aggregate Status correctly refuses invalid accounting. Typed placement refusal and zero local application bytes remain required.",
+  "earlier_unsuccessful_attempts_counted_as_pass": false,
+  "limits": {
+    "workers": 8,
+    "global_pairs": 16,
+    "pairs_per_worker": 2,
+    "copy_buffer_bytes_per_direction": 32768
+  },
+  "remaining_gates": [
+    "Public TCP worker/factory enablement and its complete readiness/recovery acceptance.",
+    "Checked native socket-buffer accounting and broader resource/platform evidence.",
+    "Linux runtime and full-suite acceptance."
+  ],
+  "production_forwarding_enabled": false
+}

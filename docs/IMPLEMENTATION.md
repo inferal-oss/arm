@@ -6166,3 +6166,22 @@ Selected controlled fixtures exercise only their own admitted original child.
 The default policy remains warning-only; authenticated public permit handling
 and production native pausing are not enabled. Broader native/model, crash
 recovery and platform acceptance remain separate gates.
+
+## Bounded private forwarding Unix worker
+
+Reviewed feature `824955b7` connects the original Unix listener pair to admitted
+routes through a private worker. It bounds workers to eight, aggregate pairs to
+sixteen and pairs per worker to two, with 32 KiB copy buffers per direction.
+Canonical default-root placement is rechecked before native binding and local
+application bytes. Tests measure zero local bytes after a placement change and
+retain the exact original source and storage claims.
+
+Native raw-close uncertainty retains the original pair, worker slot and charged
+obligations. An application-level TLS close result does not substitute for raw
+transport closure, and retry cannot discard an uncertain original close. Test
+fixtures join their own original callers on failure paths.
+
+Relays remain bounded transport for general TCP; destination-local service
+grants retain endpoint authority. This milestone adds no public worker/factory
+activation. Complete readiness/recovery, checked native socket-buffer
+accounting and broader platform evidence remain required.

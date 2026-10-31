@@ -12618,3 +12618,26 @@ unchanged final source hashes, modes and Git state.
 This is selected component and test-owned native-fixture evidence. It does not
 establish production pause activation, authenticated public permits, complete
 suite, Linux runtime, physical sleep/wake or broad crash-recovery acceptance.
+
+## Private forwarding worker: component and pressure composition
+
+The [normalized scoped record](validation/forward-unix-worker-scoped-2026-10-31.json)
+binds all 28 source images in feature `824955b7`. On component base `bdc571b8`,
+normal and race each pass 62 roots / 112 named cases. On final pressure base
+`790f2174`, the affected schema/proof, startup/recovery, route, placement and
+retained-close boundary passes 11 roots / 33 named cases in each mode. Each
+pair has identical complete package-qualified rosters and no skips. The
+component result is not described as a full 62-root rerun on the later base.
+
+Six-package vet passes on the final composition. Four Linux ARM64 test binaries
+compile with verified ELF target headers and artifact hashes; none is executed.
+Original commands, exact quiet output, ordinary nonforced backend shutdown,
+endpoint/lock/listener closure and final source membership, hashes, modes and
+Git state are verified. Earlier unsuccessful attempts remain unsuccessful.
+
+The corrected placement regression reads the two exact original lease rows
+after intentional corruption: aggregate Status properly refuses invalid
+accounting, while the test independently verifies retained unended claims.
+Typed placement refusal and zero local application bytes remain required.
+These results do not enable public forwarding or establish checked native
+socket-buffer accounting, Linux runtime or full-suite acceptance.
