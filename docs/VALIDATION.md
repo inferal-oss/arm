@@ -13521,3 +13521,40 @@ only the PENDIN bit difference; whole raw termios equality remains false. The
 binds source hashes, exact cases and artifact. Fake clients do not establish
 real-client compatibility, real-chat delivery or enrollment; no new composed
 race, full-suite, Linux or upgrade-continuity acceptance is claimed.
+
+## Worker native custody: normal metadata/refusal controls
+
+The [normalized evidence](validation/resident-worker-native-custody-normal-2026-10-31.json)
+binds source `32c3278d` and all eight production/test images to the qualified
+3,409-file, 2,002-Go-file snapshot. All 3,401 preexisting hashes and modes remain
+unchanged. Actual graph discovery reports 654 packages and 51 official modules;
+canonical archive-member, expanded-source and go.mod h1 records agree before
+and after tests. Both original Go commands and their enclosing execution joined
+with exit zero, with source/tool images unchanged and temporary inventories empty.
+
+Exactly 224 named cases ran and passed once across 36 roots without skips or
+failures. Fifteen new roots/37 names cover constructors, copied/foreign/zero
+owners, selectors, canceled calls, bounded image DATA, retained unknowns and
+original defer behavior on error/panic/Goexit. Twenty-one roots/187 names retain
+the prior worker DATA and strict legacy compatibility controls. None executes
+a positive native operator, journal, image capture, grant/debit or funding path.
+
+No race/vet/product build or native product, 13-descriptor worker core, actual
+child environment/native birth/charge, format-5 Manager/database, worker process,
+public readiness or live upgrade was exercised. Complete standing measurement,
+eligible original-owned native fixture teardown, public `arm start` and actual
+job/proxy/native-child continuity remain required. Documentation-only additions
+assert no rebuilt source or new binary identity.
+
+
+## Worker native custody: composed pure qualification
+
+Current-main source `7e536c6` passes the same 36-root/224-name normal selection
+once without skips or failures. Actual package discovery reports 654 packages;
+51 official archive/source/go.mod integrity records match before and after.
+All 3,423 source images and tool pins match, and both original Go commands and
+the enclosing execution join with zero status. See the
+[composed record](validation/resident-worker-native-custody-composed-2026-10-31.json).
+This scope adds no race/vet/product build, positive native journal/image I/O,
+worker birth/charge, public startup or live upgrade acceptance. Retained unknowns
+and storage obligations remain unchanged; no reclamation credit follows.

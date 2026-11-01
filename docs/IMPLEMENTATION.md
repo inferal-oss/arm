@@ -6758,3 +6758,42 @@ and worker DATA sources. The nine owner Go inputs and six protected boundaries
 match the independently qualified owner cut. This dependency adds no provider
 execution or automatic participation; Agent Status setup remains a separate
 optional onboarding review.
+
+## Original worker authorization and debit custody
+
+Source `32c3278d` introduces distinct self-bound worker operator, parent and opaque
+debit owners. Actual native files use the existing private service namespace,
+strict worker journal3, bounded original input reads and current native identity
+checks. Plan output is a separate bounded deep DATA copy; apply requires its
+exact digest and revalidates inputs/image/home before authority mutation. Saved
+records remain observations and never reconstruct the writer's sync outcome.
+
+Native append state is retained before stat/write/sync. Parent debit readback
+separates actual original sync return from later operation/path uncertainty;
+failed or abnormal operations cannot retry or release custody. Raw file helpers
+reuse only bookkeeping: every other legacy owner field, including future fields,
+must remain zero. Native observations read the mutex-published raw-file census
+and explicitly preserve uncertainty about image/runtime and pending effects.
+
+A private executable-image holder is retained before all image effects. Its one
+slot records the original successful descriptor before wrapping, keeps partial
+errors without Close/reset/retry, hashes through a retained 256 KiB buffer with
+a 256 MiB artifact limit and bounds proof calls to eight. File identity, mode,
+size, modification time, owner and link count are checked against the held file
+and current name. Linux kernel-self and Darwin startup-snapshot semantics remain
+distinct; no getter exposes a descriptor, pathname or launch authority. Native
+capture costs remain additional genuine measurement/admission obligations.
+
+This cut provides no child Start, WorkerManagerCharge, birth, format-5 open,
+worker controller or public startup. A future same-process authorization-to-
+launch path must transfer the actual held lock/image explicitly; this source
+does not close/reopen them or manufacture a parent from an authorization receipt.
+
+
+## Worker native custody: composed prerequisite
+
+The eight worker custody files compose as `7e536c6` with current onboarding and
+resident sources. Their original authorization, image and debit ownership remains
+separate from legacy capabilities. No positive child or manager authority is
+issued by the pure constructor/refusal tests; the next typed birth/charge chain
+and explicit same-process lock/image transfer remain distinct implementation work.

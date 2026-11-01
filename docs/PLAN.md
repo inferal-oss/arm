@@ -5538,3 +5538,30 @@ Only the explicitly checked recipient was queued after separate confirmation;
 default-no queued nothing. Real-client compatibility and delivery remain outside
 this scoped acceptance. The Agent Status onboarding continuation may now use
 this reviewed dependency; its own setup and provider consent remain separate.
+
+## Worker authorization and parent debit custody: scoped source complete
+
+Source `32c3278d` on `codex/resident-worker-standing` adds eight reviewed native
+operator/parent/journal/image-custody files. Normal qualification passes exactly
+36 roots/224 named nodes: 15 new roots/37 names plus 21 roots/187 retained
+controls. The [normalized record](validation/resident-worker-native-custody-normal-2026-10-31.json)
+binds the qualified images, complete roster and official module integrity.
+
+These checks perform metadata/refusal work only. Actual grant/debit/image I/O,
+13-descriptor worker birth/current environment/native views and positive funding
+remain unverified. Authorization-to-launch in one process needs explicit original
+lock/image transfer; reopening the still-held lock is not an integration path.
+Next are the typed child/charge/birth and native role dependencies, fresh format
+5, worker controller/API/UI/assets and public `arm start`. Real active-job and
+native-child survival across a public upgrade remains the completion gate.
+
+
+## Worker native custody: current-main composition landed
+
+Reviewed owner source `32c3278` lands as `7e536c6` over the qualified onboarding
+and earlier resident prerequisites. The exact current composition passes all
+36 roots/224 named pure normal checks and official dependency verification. See
+the [composed record](validation/resident-worker-native-custody-composed-2026-10-31.json).
+Actual typed inherited-descriptor birth/charge, complete native standing proof,
+fresh worker database/controller, public startup and live job/child continuity
+remain open. This integration does not enable worker replacement.
