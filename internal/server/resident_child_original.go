@@ -68,6 +68,7 @@ type residentChildPending struct {
 	active                         *residentChildOperation
 	prepareOperation               *residentChildOperation
 	protocol                       *residentRootProtocolCall
+	runtimeCall                    *residentRuntimeCall
 	protocolTried                  bool
 	protocolPhases                 [4]*residentProtocolPhase
 	prepareTried, bindingsPrepared bool

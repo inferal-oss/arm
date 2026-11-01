@@ -28,6 +28,7 @@ type residentCoreEntryCall struct {
 	validationAttempted, validationReturned         bool
 	rootBoundAttempted, rootBoundReturned           bool
 	protocolAttempted, protocolReturned             bool
+	runtimeAttempted, runtimeReturned               bool
 	returnedError                                   error
 	cause                                           any // private, never formatted or logged
 	keeperRegistered, keeperEntered, waitPending    bool
@@ -77,6 +78,16 @@ func (e *residentCoreEntry) ownsPreparingRoot(root *residentChildPending) bool {
 	return e.root == root && e.call != nil && e.call.initializationAttempted && e.call.initializationReturned && e.call.prepareAttempted && !e.call.bodyReturned && !e.call.abnormal && !e.call.keeperEntered
 }
 
+func (e *residentCoreEntry) ownsStartingRuntime(root *residentChildPending) bool {
+	if e != &processResidentCoreEntry || root == nil || root.self != root || root.entry != e {
+		return false
+	}
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	c := e.call
+	return e.root == root && c != nil && c.initializationReturned && c.prepareAttempted && c.validationReturned && c.rootBoundReturned && c.protocolReturned && c.runtimeAttempted && !c.runtimeReturned && !c.bodyReturned && !c.abnormal && !c.keeperEntered
+}
+
 // Directly deferred by the actual caller; recover must stay HERE. This is the
 // same original caller's deferred frame, never a caretaker or callback. Tests
 // can exercise it with a pure entry without constructing inherited authority.
@@ -117,8 +128,9 @@ func (e *residentCoreEntry) retainOriginal(call *residentCoreEntryCall, normal *
 // RunOriginalResidentCore returns ONLY for pure arity/duplicate-entry rejection.
 // Once the actual original call begins, its outermost deferred frame retains
 // this SAME entry/Root and parks even on ordinary error, panic(nil) or Goexit.
-// Private authenticated handoff requires its original funded parent; Manager
-// loops, listeners, workers and public arm start readiness remain later stages.
+// Private authenticated handoff requires its original funded parent. Its own
+// runtime may then launch Manager loops and pending native control; workers and
+// public arm start readiness remain later stages.
 func RunOriginalResidentCore(args []string) (resultCode int) {
 	resultCode = 1
 	if !originalResidentCoreArgs(args) {
@@ -180,6 +192,15 @@ func RunOriginalResidentCore(args []string) (resultCode int) {
 		resultErr = root.exchangeRootProtocolOriginal()
 		e.mu.Lock()
 		call.protocolReturned = true
+		e.mu.Unlock()
+	}
+	if resultErr == nil {
+		e.mu.Lock()
+		call.runtimeAttempted = true
+		e.mu.Unlock()
+		resultErr = root.startOriginalRuntime()
+		e.mu.Lock()
+		call.runtimeReturned = true
 		e.mu.Unlock()
 	}
 	normal = true // set ONLY after the actual body returned, including errors

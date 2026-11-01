@@ -33,6 +33,7 @@ type residentServerPending struct {
 	preparedValidation *residentServerPreparedCall
 	currentTried       bool
 	currentValidation  *residentServerCurrentCall
+	ingress            *residentIngressPending
 }
 
 type residentServerBinding struct {

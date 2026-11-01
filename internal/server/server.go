@@ -455,7 +455,13 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 	defer sink.closeAndJoin()
 	wsWG.Add(1)
 	go func() { defer wsWG.Done(); sink.runWriter() }()
-	send := func(msg model.WireResponse) bool { return sink.enqueue(msg, nil) }
+	send := func(msg model.WireResponse) bool {
+		if !s.pendingResponseFits(msg) {
+			sink.fence() // only this original ingress, never resident/root/job lifetime
+			return false
+		}
+		return sink.enqueue(msg, nil)
+	}
 	var workflowSendMu sync.Mutex
 	var workflowIdentity string
 	var workflowSubscription context.CancelFunc
@@ -482,6 +488,10 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 		if e = wsjson.Read(ctx, c, &req); e != nil {
 			return
 		}
+		if !s.pendingRequestEnvelopeFits(req) {
+			sink.fence()
+			return
+		}
 		resp := model.WireResponse{Version: 1, ID: req.ID}
 		if req.Version != 1 || req.ID == "" {
 			resp.Error = &model.Error{Code: "protocol_error", Message: "version 1 and a request ID are required"}
@@ -494,6 +504,12 @@ func (s *Server) ws(w http.ResponseWriter, r *http.Request) {
 		if _, err := s.callerContext(caller); err != nil {
 			send(dispatchError(req.ID, err))
 			return
+		}
+		if err := s.guardPendingIngressOperation(caller, req.Operation); err != nil {
+			if !send(dispatchError(req.ID, err)) {
+				return
+			}
+			continue
 		}
 
 		if req.Operation == "mesh_operator_watch" && !remoteNodeContext(ctx) {

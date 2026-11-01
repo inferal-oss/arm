@@ -21,6 +21,12 @@ func (s *Server) prepareCall(caller *authenticatedCaller, request model.WireRequ
 	if _, err := s.callerContext(caller); err != nil {
 		return nil, err
 	}
+	if !s.pendingRequestEnvelopeFits(request) {
+		return nil, model.Err("invalid_request", "pending resident control request exceeds its fixed envelope limits")
+	}
+	if err := s.guardPendingIngressOperation(caller, request.Operation); err != nil {
+		return nil, err
+	}
 	request.Params = append([]byte(nil), request.Params...)
 	return &preparedCall{owner: s, caller: caller, request: request, paramsHash: sha256.Sum256(request.Params)}, nil
 }
@@ -37,6 +43,24 @@ func (s *Server) dispatchPrepared(call *preparedCall) dispatchResult {
 	ctx, err := s.callerContext(call.caller)
 	if err != nil {
 		return deniedDispatch(call.request.ID, err)
+	}
+	if err := s.guardPendingIngressOperation(call.caller, call.request.Operation); err != nil {
+		return deniedDispatch(call.request.ID, err)
+	}
+	if pending := s.originalPendingIngress(); pending != nil {
+		switch call.request.Operation {
+		case "status", "startup_inspect", "resident_runtime_inspect":
+			// K0 is a separate pending-control endpoint: each operation returns
+			// bounded diagnosis, never the unbounded full domain Status/leases.
+			result, err := pending.inspectOriginalRuntime(call.request.Params)
+			response := model.WireResponse{Version: 1, ID: call.request.ID, Result: result}
+			if err != nil {
+				response = dispatchError(call.request.ID, err)
+			}
+			// Ordinary status projection reads custom names from the Manager.
+			// This distinct pending schema must never invoke that domain read.
+			return dispatchResult{response: response, disposition: dispatchDomainResult}
+		}
 	}
 	result, err := s.dispatch(ctx, call.request)
 	return s.projectDispatch(ctx, call.request, result, err)
