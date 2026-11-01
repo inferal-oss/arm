@@ -6712,3 +6712,49 @@ The separate worker DATA prerequisite is integrated as `9549f59`. Its complete
 current-main package passed the same strict normal controls without importing
 unfinished native-custody drafts. No production worker authority is enabled by
 this change. Typed native custody and the running worker controller remain open.
+
+
+## Checked-chat activation after onboarding
+
+Source `df41185` replaces the picker's copy-only offer with separate verification
+and message review for the exact checked snapshot. Accepting verification never
+sends. Supported Codex chats require current ARM eligibility, matching project
+and revision, exact client home/directory/original UUID, compatible immutable
+original start, current native generation, ready instructions and an exact queue
+capability. Desktop metadata inclusion is explicit in this checked path; ordinary
+discovery keeps its existing defaults. Saved titles and references remain display
+selectors rather than ARM identities. Unchecked chats receive no activation.
+
+The final default-no review exposes each recipient, message, executable hash,
+sealed review and stable delivery key. Sending uses the unchanged activation
+store, with the fresh eligibility check inside its existing policy lock.
+`CheckContext` threads cancellation through the existing read-only decision and
+scope resolver; legacy `Check` retains the Background-context behavior. No policy,
+identity, invitation or resource authorization is created by delivery. Older
+New-sessions, observation, stale, revoked and otherwise ineligible chats remain
+blocked by the actual policy decision. Active Claude injection remains manual.
+
+Verification is sequential with a two-minute batch / 20-second per-chat budget;
+delivery has a five-minute batch / 40-second per-chat budget, for at most 512
+checked entries. Existing inner native limits can shorten those budgets. The
+unchanged 256-record ledger can refuse later recipients without evicting history.
+Partial and pending/unknown outcomes keep their original keys; uncertain outcomes
+stop the remaining batch and never trigger an automatic retry. Exit closes the
+task registry, cancels and joins owned work, retaining actual receipts even if
+the terminal missed their result messages. Recovery commands retain the selected
+ARM home. Queued means a prompt was queued; each recipient must still identify
+and acknowledge enrollment under current policy.
+
+The [scoped validation](validation/onboard-checked-activation-scoped-2026-10-31.json)
+uses fake client metadata and queue helpers, including the actual sequential
+terminal-program handoff. Current-main composition and real-client discovery,
+liveness, message delivery and enrollment remain separate gates.
+
+
+## Checked-chat activation: composed dependency
+
+The checked-activation source is integrated as `40f694f` with the current resident
+and worker DATA sources. The nine owner Go inputs and six protected boundaries
+match the independently qualified owner cut. This dependency adds no provider
+execution or automatic participation; Agent Status setup remains a separate
+optional onboarding review.

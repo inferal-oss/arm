@@ -1,0 +1,1317 @@
+{
+  "version": 1,
+  "scope": "Checked-chat activation after interactive project onboarding; synthetic metadata and queue transport, owned terminal fixtures",
+  "code_commit": "df41185b66dde55b6b0afcfcd26809266bc38238",
+  "code_tree": "2c51e569511e80b61e2f7478e3fb4a0dd628480f",
+  "source_base": "400f5e1693692fef7fdcd7fd0e19747d98fe376a",
+  "source_sha256": {
+    "internal/agentsessions/codex.go": "de11fdd967432ef54e4266504c7ec12eaba15a3718f75e8a7e9b96c6ef03f099",
+    "internal/agentsessions/codex_appserver_test.go": "aa63acf2d5e6182527eaba2b58007e2e60a06a8e77609da888f1b58032c4ea50",
+    "internal/cli/onboard_checked_activation.go": "ad21f521e1c1dfdadcb804b26223db19ee43dc0f6db08914f06be8d06768dec5",
+    "internal/cli/onboard_checked_activation_test.go": "afe112255e11c9ecb826a540c66a235fb671ca4656c1de562d394a00a12872e7",
+    "internal/cli/onboard_project_picker.go": "a1fbe012a83efd95662a9c00c82ceaa46902f379e4952c68ce1be5b830b486ed",
+    "internal/cli/onboard_project_picker_test.go": "d94886e1162af3100d13ede693259e51388a8f1d1efacac070038d263ce4ad60",
+    "internal/cli/rollout_onboard.go": "3f3acab18d3f318e051ebdc5032cfc3ddcd411ccb98927aa8ef93685abd3f26a",
+    "internal/rollout/check_context_test.go": "cbf65fce56b1d4e14c7eb3288d94f2e2547835fc3d6187e4a36fc797b0f01f3d",
+    "internal/rollout/rollout.go": "9a56d3549c2bdfdff1d6f6031438c1a8a8604d96e0a366b7e321871999b254df"
+  },
+  "unchanged_protected_sha256": {
+    "internal/activation/activation.go": "85bc1e990ee3d91b8aa8745838e3a3f7cc9e9b8010cb3112c90f61054a6dd258",
+    "internal/agents/agents.go": "8377bcb52ec2e63626c2384546441d11a69e8166694b1089e043f5acf92d32a1",
+    "internal/agentsessions/sessions.go": "9419b623cdae60418ac370d465f7dc259f18e794ea373c582c92f06a141bcfd0",
+    "internal/cli/onboard_project_policy.go": "fc69feaa4c8fb9855629966c3a4af1c49a849f305be642ffae966b789c31e658",
+    "internal/cli/onboard_tree.go": "1aa388b21419283fac29fc6b9fceab0e65ccb37758ae4293c4c56469c3bd9f4a",
+    "internal/cli/rollout_activation.go": "576a5aa0fbdb5a2a2a94b09aef8a0dad96a632d9689e79baaaca6e2825f572a2"
+  },
+  "cohort": {
+    "new_roots": 20,
+    "new_named_cases": 36,
+    "targeted_roots": 160,
+    "targeted_named_cases": 300,
+    "packages": [
+      "agentprojects",
+      "agentsessions",
+      "activation",
+      "rollout",
+      "cli"
+    ]
+  },
+  "qualified_phases": {
+    "normal": {
+      "status": "pass",
+      "roots": 160,
+      "named_cases": 300,
+      "no_skips_repeats_or_missing_results": true
+    },
+    "race": {
+      "status": "pass",
+      "roots": 160,
+      "named_cases": 300,
+      "no_skips_repeats_or_missing_results": true,
+      "exit_grace": "GORACE=atexit_sleep_ms=0; race instrumentation and diagnostic exit enabled; default exit grace not tested"
+    },
+    "vet": {
+      "status": "pass",
+      "packages": 5
+    },
+    "native_build": {
+      "status": "compile-only pass",
+      "platform": "darwin/arm64",
+      "bytes": 75542834,
+      "sha256": "80509ebd86a7117c5f336b59df81184ee3f9d28ae1bec82830af00174f19cc64",
+      "source_binding": "Built before the code commit with VCS recording disabled; qualified Go source hashes match the committed source. Later notes change documentation only."
+    },
+    "terminal": {
+      "status": "pass",
+      "cases": 2,
+      "current_grid_frames": 35,
+      "same_native_build_exercised": true,
+      "queue_case": {
+        "frames": 18,
+        "checked_messages_queued": 1,
+        "unchecked_messages_queued": 0,
+        "collector_session_message_and_directory_match_ledger": true,
+        "ledger_key_review_and_generation_match_displayed_review": true
+      },
+      "default_no_case": {
+        "frames": 17,
+        "messages_queued": 0,
+        "activation_ledger_created": false
+      },
+      "both_cases": {
+        "policy_bytes_unchanged_after_activation": true,
+        "enrolled_or_identified_sessions_created": 0,
+        "protected_metadata_and_instructions_unchanged": true,
+        "installer_commands": 4,
+        "direct_originals_natural_zero_joined_native_exit_and_eof": 6,
+        "broker_owned_go_originals_natural_zero_joined": 2,
+        "owned_control_and_terminal_fds_closed": true
+      },
+      "terminal_configuration": {
+        "natural_configuration_equal": true,
+        "explicit_configuration_equal": true,
+        "raw_whole_state_natural_equal": false,
+        "raw_whole_state_explicit_equal": false,
+        "allowed_difference": "Darwin PENDIN input-state bit only; every other flag, speed and control character matched. No complete kernel-state or aggregate-FD bound claimed."
+      }
+    }
+  },
+  "shared_verification": {
+    "original_go_helper_fifo_natural_zero_joined_and_output_eof": true,
+    "source_and_tool_images_unchanged_before_after": true,
+    "no_command_retries_or_requested_child_stops": true,
+    "scoped_evidence_independently_reviewed": true,
+    "all_previous_failures_unknowns_and_retained_obligations_remain_separate": true,
+    "cleanup_or_reclamation_credit": false
+  },
+  "unsupported_or_unverified": [
+    "Real native Codex or Claude compatibility, identity/liveness attestation and real-chat delivery were not exercised.",
+    "Claude active injection remains unsupported and is blocked with manual guidance.",
+    "Queue acceptance is not identification, enrollment, an operator invitation or resource authorization.",
+    "New-sessions/observation eligibility is not inferred from saved metadata; blocked chats require an eligible current policy or separately reviewed identification/invitation.",
+    "The unchecked terminal sibling shares a directory with the checked chat; unique unchecked-directory exclusion is not established by this terminal fixture.",
+    "Current-main composition, broader suites, other runtime platforms and physical/kernel resource bounds remain separate gates."
+  ],
+  "expected_named_nodes": [
+    {
+      "name": "TestActivationMessageAndReviewKeepOriginalIdentity",
+      "package": "activation"
+    },
+    {
+      "name": "TestActivationPendingRecordDoesNotRestartDelivery",
+      "package": "activation"
+    },
+    {
+      "name": "TestActivationQueuedKeysNeverSendTwice",
+      "package": "activation"
+    },
+    {
+      "name": "TestActivationRefusesChangedPreviewAndCanceledStart",
+      "package": "activation"
+    },
+    {
+      "name": "TestActivationRefusesCorruptLedgerAndChangedExecutable",
+      "package": "activation"
+    },
+    {
+      "name": "TestActivationUnknownAndCanceledDeliveryNeverRetry",
+      "package": "activation"
+    },
+    {
+      "name": "TestActivationUnknownAndCanceledDeliveryNeverRetry/exec_sleep_30",
+      "package": "activation"
+    },
+    {
+      "name": "TestActivationUnknownAndCanceledDeliveryNeverRetry/exit_1",
+      "package": "activation"
+    },
+    {
+      "name": "TestDiscoveryCanonicalPathsCancellationAndBudgets",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestDiscoveryKeepsSelectedAndSessionHintsAtCatalogLimit",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestDiscoveryMissingUnsafeAndUnsupportedMetadataIsReadOnly",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyCanceledSnapshotAndSourceBounds",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyCanceledSnapshotAndSourceBounds/diagnostic",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyCanceledSnapshotAndSourceBounds/sessions",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyCanceledSnapshotAndSourceBounds/warnings",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyChangedGitRelationshipsFallBackTogether",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/git-common",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/multiple-primary",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/root-common",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyCombinedChildLimitPreservesAdapterCoverage",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyConflictingGitIdentitiesFallBackTogether",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyFinalCancellationDiscardsBuiltSnapshot",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyGitRootsCountTowardDirectoryAndGroupLimits",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyMetadataDirectoriesCountTowardGlobalPathLimit",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyReferenceConflictsContextAndCopiedDisplay",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyRetainsExactMemberCheckoutEvidence",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyTextAndLegacyNameBounds",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyUnknownPrimaryDoesNotTrimCommonPath",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestHierarchyVerifiedGitRootsAndExactDirectoryFallback",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestNativeProjectDiscoveryMergesDirectoriesWithoutPrivateContent",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestProjectTitlesCatalogBudgets",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestProjectTitlesExactAssociationSharedDirectoriesAndFallback",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestProjectTitlesSanitizeAndBoundRendering",
+      "package": "agentprojects"
+    },
+    {
+      "name": "TestClaudeSavedMarkersCancellationAfterFirstDirectoryValidation",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/cancel",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/home",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/marker",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/marker-directory",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/marker-root",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/replace-directory",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersCloseCancellationAndStabilityDiscard/replace-marker",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersConflictsAndUnsupportedRecords",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersEntryAndByteBounds",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersEntryAndByteBounds/aggregate",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersEntryAndByteBounds/entries",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersEntryAndByteBounds/record",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersEntryAndByteBounds/symlink",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSavedMarkersScopeAndNoNativeIdentity",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestClaudeSessionMarkersAreBoundedAndUnverified",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexAppServerDiscoveryIsExplicit",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexMetadataTitlesCancellationJoinsProxy",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/malformed",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/missing",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/named",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/renamed",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexMetadataTitlesRemainOptionalAndSeparateFromIdentity/unavailable",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexMetadataUsesReadOnlyAPIAndIgnoresConversationFields",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/canceled",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-connection",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-database",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-home",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-rows",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-session_index.jsonl",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/close-state_5.sqlite",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/home-replaced",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/index-replaced",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/main-replaced",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogCloseCancellationAndStabilityDiscard/missing-index-appears",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/directory",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/malformed-line",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/missing",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/oversized",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/symlink",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogIndexAvailabilityAndUnsafeRefusal/unknown-layout",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogNameRecordAndTailBounds",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogNamesUnnamedAndExactScope",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/aggregate-1025",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/canonical-only-and-conflicting-cwd",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/named-513-refuses-before-remaining",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/terminal-duplicate",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogRawWindowsConflictsAndSentinels/unique-named-capacity",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogRequiresExplicitScope",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/extent",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/generated",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/view",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexSavedCatalogSchemaExtentAndReadonlyWAL/wal",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit/2",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesAmbiguityAndSelectedRowLimit/513",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesCatalogAndIndexBounds",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesContextCancellationAndReaderCleanup",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesDetectChangedSnapshot",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesExactSharedLatestAndLaterDirectory",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesFilterUnnamedHistoryAndQuotedPaths",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/fifo-index",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/malformed-index",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/missing-db",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/missing-index",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/oversized-db",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/oversized-index",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/symlink-db",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesMissingMalformedAndUnsafeMetadata/symlink-index",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesNeverUsesPromptFallback",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesReadCommittedWALWithoutLogicalWrites",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesRejectUnsupportedSchemas",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesRejectUnsupportedSchemas/generated",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesRejectUnsupportedSchemas/missing-column",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesRejectUnsupportedSchemas/nontext",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesRejectUnsupportedSchemas/stored-generated",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesRejectUnsupportedSchemas/view",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestCodexStoredNamesRejectUnsupportedSchemas/virtual",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestNativeMetadataHelper",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestNativeMetadataMissingUnsafeAndMalformed",
+      "package": "agentsessions"
+    },
+    {
+      "name": "TestActivationNativeCLIHelper",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationAggregateVerificationCancellation",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationCanceledBeforeAnyNativeWork",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationChangedNativeContextRefuses",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationChangedNativeContextRefuses/directory",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationChangedNativeContextRefuses/home",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationClaudeRemainsBlocked",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationCloseJoinsOriginalAndKeepsReceipt",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationDeclineIgnoresQueuedLateConfirmation",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationDeclineIgnoresQueuedLateConfirmation/enter",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationDeclineIgnoresQueuedLateConfirmation/esc",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationDeclineIgnoresQueuedLateConfirmation/n",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationExactSubsetQueuesAfterReview",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationNativeChangeGivesPartialResults",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationPolicyBlocksBeforeNativeProbe",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationPolicyBlocksBeforeNativeProbe/disabled",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationPolicyBlocksBeforeNativeProbe/new-sessions",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationPolicyBlocksBeforeNativeProbe/observe",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationPolicyChangesRefuseFinalSend",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationProgressShowsOriginalLookup",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationQuitIgnoresLateMetadataAndTasks",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationReviewDefaultsToNo",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationReviewDefaultsToNo/enter",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationReviewDefaultsToNo/esc",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationReviewDefaultsToNo/n",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationSelectionContextIsDefensive",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationSelectionContextIsDefensive/directory",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationSelectionContextIsDefensive/duplicate",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationSelectionContextIsDefensive/group",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationSelectionContextIsDefensive/home",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationSelectionContextIsDefensive/missing",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationStopAfterCurrentReceipt",
+      "package": "cli"
+    },
+    {
+      "name": "TestCheckedActivationUnknownStopsBatchAndRetainsKey",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeBoundsAndEmptyProject",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership/empty-identity",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership/metadata-path-limit",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership/missing-chat-member",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership/unrelated-root",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeCheckoutEvidenceIsDefensivelyCopied",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeEnterUsesLatestMatchedChildAndExplicitSets",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeKeysKeepClientHomeAndNativeContext",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeParentToggleCoversHiddenSnapshotChildren",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeRejectsOversizedTextBeforeCopying",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeRejectsUnprovenDirectoryMembership",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeSnapshotCopiesAndFallbackLabels",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeUncheckedChatsPreserveProjectOnlySelection",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerCancellationIgnoresLateWork",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/checked",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/directory-identity",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/missing-proof",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/policy",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/project",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDefaultNoAndAtomicPolicySave",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDefaultNoAndAtomicPolicySave/false",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDefaultNoAndAtomicPolicySave/true",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/before-confirmation/human=false",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/before-confirmation/human=true",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/definitive-refusal/human=false",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/definitive-refusal/human=true",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/known-success/human=false",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/known-success/human=true",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/possible-save-result/human=false",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/possible-save-result/human=true",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerEntryDeadlineCancellationAndStageSeparation",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerExactCheckedActivationOffer",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerExplicitNestedRootsAndUncheckedCoverage",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerInitialSpaceSelectsParentAndTypingFocusesSearch",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerLatestChildTypeaheadAndCheckboxFocus",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerManualProjectOnlyAndDiagnostics",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerMembershipProbeStageHasIndependentCeiling",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerPageNavigationBlursSearchInput",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerParentHiddenChildrenAndNoMatchFooter",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerPendingApplyResizeAndUnknownRecovery",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerPrintableKeysPasteAndEscape",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/different-group",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/duplicate-chat",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/invalid-id",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/root-conflict",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/unknown-chat",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerReadinessDisabledAndUnchanged",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerReadinessPreservesDisabledAndNoopSemantics",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerRefreshUpdatesSelectedHomeReadiness",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerRevalidatesUncheckedNestedMembershipBeforeApply",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerSettingsSurviveFilterBackAndInvalidatePreview",
+      "package": "cli"
+    },
+    {
+      "name": "TestProjectPickerTypedPossibleSaveFailureDoesNotOfferActivation",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutActivationHelpOffline",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutActivationRefusesPolicyAndNativeGenerationChanges",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutActivationUIRequiresSeparateExactSendConfirmation",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutActivationUIReviewCopyAndNoDefaultSend",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutActivationUnknownSurvivesSharedInterruption",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutDiscoveryAndActivationAreSeparateFromEnrollment",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutDiscoveryClosesAndJoinsOwnedWork",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardActiveReplacementWinsOverRemovedFence",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardCanSaveDisabledProjectWithoutInstructions",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy/apply",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy/decline",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=false",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=true",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=false",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=true",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=false",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=true",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardReadinessAndStaleReviewCannotApply",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/ctrl+c/failure",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/ctrl+c/success",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/esc/failure",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/esc/success",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/q/failure",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/q/success",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardSkipsRemovedProjectIdentity",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardStoredNamesWithoutNativeBinary",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadEditingNavigationAndNoMatch",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadLatestQueryWinsBeforeEnter",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadPasteManualAndCancellation",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/Zebra_needle",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/j",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/k",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/projects/second",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/q",
+      "package": "cli"
+    },
+    {
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/\u65e5\u672c\u8a9e",
+      "package": "cli"
+    },
+    {
+      "name": "TestBindingRemovalAllowsMissingPathsAndRequiresExactReview",
+      "package": "rollout"
+    },
+    {
+      "name": "TestBindingRemovalBlocksAncestorFallbackAndCanBeRebound",
+      "package": "rollout"
+    },
+    {
+      "name": "TestBoundaryInspectionDetectsChangedGitMetadata",
+      "package": "rollout"
+    },
+    {
+      "name": "TestBoundaryInspectionReportsStaleRootsWithoutChangingLedger",
+      "package": "rollout"
+    },
+    {
+      "name": "TestCheckContextCanceledBeforeStateOrScope",
+      "package": "rollout"
+    },
+    {
+      "name": "TestCheckContextMatchesLegacyWithoutWrites",
+      "package": "rollout"
+    },
+    {
+      "name": "TestCheckContextUnknownOriginalStartRemainsIneligible",
+      "package": "rollout"
+    },
+    {
+      "name": "TestClientBindingRemovalRevokesOnlyItsParticipants",
+      "package": "rollout"
+    },
+    {
+      "name": "TestClockRollbackAndRosterDoNotImplyLiveness",
+      "package": "rollout"
+    },
+    {
+      "name": "TestConcurrentApplyCannotConsumeOneReviewTwice",
+      "package": "rollout"
+    },
+    {
+      "name": "TestDirectoryOverlapSymlinksAndClientMappingsContainAdoption",
+      "package": "rollout"
+    },
+    {
+      "name": "TestDisabledReadsAndDeniedWritesCreateNothing",
+      "package": "rollout"
+    },
+    {
+      "name": "TestGitRepositoryReplacementRequiresReviewedRebinding",
+      "package": "rollout"
+    },
+    {
+      "name": "TestGitScopeExcludesNestedReposAndUnboundWorktrees",
+      "package": "rollout"
+    },
+    {
+      "name": "TestLedgerMissingVersionUnknownFieldsAndNonregularFilesRefuse",
+      "package": "rollout"
+    },
+    {
+      "name": "TestManualCohortRequiresSeparateAcknowledgment",
+      "package": "rollout"
+    },
+    {
+      "name": "TestNewSessionsUseOriginalStartAndNotNewTasks",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchAtomicProjectsApplyTimeAndNoop",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchCancellationBeforeSaveAndLateSuccess",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchCapacityRefusesBeforeSave",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchCapacityRefusesBeforeSave/bindings",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchCapacityRefusesBeforeSave/context",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchCapacityRefusesBeforeSave/history",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchCapacityRefusesBeforeSave/projects",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchCapacityRefusesBeforeSave/request",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchDedupOrderingAndConflicts",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchDedupOrderingAndConflicts/action",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchDedupOrderingAndConflicts/identities",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchDedupOrderingAndConflicts/kind",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchDedupOrderingAndConflicts/mode",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchDedupOrderingAndConflicts/owner",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchDedupOrderingAndConflicts/reason",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchPossibleSaveFailureRetainsUnknown",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchProjectSnapshotsAndAffectedIdentitiesAreCopied",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/binding",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/context",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/state",
+      "package": "rollout"
+    },
+    {
+      "name": "TestOnboardBatchSharedGitBudgetSpansPreflightAndLockedRecheck",
+      "package": "rollout"
+    },
+    {
+      "name": "TestPauseRevokeAndDisabledPreserveExistingParticipationRecords",
+      "package": "rollout"
+    },
+    {
+      "name": "TestProjectOnboardingInvalidPolicyLeavesNoPartialProject",
+      "package": "rollout"
+    },
+    {
+      "name": "TestProjectOnboardingIsAtomicAndReusesReviewedBinding",
+      "package": "rollout"
+    },
+    {
+      "name": "TestProjectOnboardingUnchangedPreservesInvitationsAndLedgerBytes",
+      "package": "rollout"
+    },
+    {
+      "name": "TestProjectRemovalPreservesHistoryAndFencesAdoption",
+      "package": "rollout"
+    },
+    {
+      "name": "TestReviewDigestBindsStateRequestAndCanonicalDirectory",
+      "package": "rollout"
+    },
+    {
+      "name": "TestStaleIdentitiesCannotInheritInvitationsOrEnrollment",
+      "package": "rollout"
+    },
+    {
+      "name": "TestUnsupportedProtocolBoundsAndCorruptLedgerFailClosed",
+      "package": "rollout"
+    }
+  ]
+}

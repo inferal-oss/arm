@@ -5483,3 +5483,58 @@ records equal before and after. See the
 [composed record](validation/resident-worker-standing-data-composed-2026-10-31.json).
 The actual typed-native custody chain remains in progress; no worker/public-start
 or active-job upgrade acceptance follows from this DATA prerequisite.
+
+## Agent Status Page: implementation and onboarding continuation
+
+The user approved implementation after the design presentation, selecting
+GPT-6.1 Terra and a comparable Claude model. The isolated
+`codex/agent-status-page` task owns the Agents tab, agent-contributed accounts,
+bounded optional summarization, isolated visual reports and associated local
+lease/run links. Label-only resource associations remain explicitly ambiguous;
+saved metadata and optional client fields cannot establish registration ownership.
+
+Independent component checks currently accept 18 Go roots/29 named cases and
+five JavaScript files/21 cases. These are synthetic component scopes, without
+paid inference, real-agent messaging, enrollment or rendered-page acceptance.
+Final affected race/vet/build, native-window rendering and composed integration
+remain required. Provider execution stays disabled until separately configured.
+
+The same task also owns the user-requested rollout-onboarding integration:
+an optional, default-no status-page setup review after actual project-policy save.
+Status preferences use a separate bounded sidecar and do not enroll agents,
+change rollout policy, enable provider billing or imply delivery. Offline
+plan/apply/inspect retains original keys and uncertain write outcomes. Shared
+picker wiring waits for the independently qualified checked-activation dependency;
+own helper implementation proceeds separately within this existing scope.
+
+
+## Checked-chat activation after onboarding
+
+Source `df41185` on `codex/onboard-checked-activation` implements the separate
+checked-chat verification and activation review after policy save. Only the
+confirmed checked snapshot can become recipients; unchecked chats retain project
+policy coverage and receive no activation message. Current authoritative
+eligibility, exact native context and the existing durable delivery review are
+rechecked before sending. Claude and unsupported native routes remain blocked
+with manual guidance; no policy enablement or invitation is automatic.
+
+The owned source passes 160 roots / 300 named cases in normal and race runs,
+five-package vet and a native compile-only build. That exact binary also passes
+two controlled terminal scenarios / 35 current-grid checks: checked-only queue
+after separate confirmation and default-no with no queue. The race run changes
+exit grace only; terminal configuration permits only the PENDIN state difference
+and retains raw whole-state inequality. The [scoped evidence](validation/onboard-checked-activation-scoped-2026-10-31.json)
+records the synthetic transport, source, rosters and limitations. Current-main
+composition and real-client compatibility remain open integration gates.
+
+
+## Checked-chat activation: current-main composition landed
+
+Reviewed owner source `df41185` lands as `40f694f` over the resident ingress and
+worker DATA prerequisites. Current-main qualification passed 25 roots/41 named
+normal cases, the native command build and two synthetic terminal scenarios with
+35 current-grid checks. See the [composed record](validation/onboard-checked-activation-composed-2026-10-31.json).
+Only the explicitly checked recipient was queued after separate confirmation;
+default-no queued nothing. Real-client compatibility and delivery remain outside
+this scoped acceptance. The Agent Status onboarding continuation may now use
+this reviewed dependency; its own setup and provider consent remain separate.

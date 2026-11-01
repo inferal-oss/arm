@@ -13468,3 +13468,56 @@ passed once without skips; all 51 official modules matched before and after.
 Original commands and enclosing execution joined with exit zero. Later changes
 are documentation only. No race/vet/product build, native funding/birth, public
 worker startup, active-job continuity or reclamation credit is claimed.
+
+
+## Checked-chat activation after onboarding — owned scope
+
+Reviewed source `df41185` passes the exact 160-root / 300-named-case selection in
+both normal and race runs across project metadata, native metadata, activation,
+rollout and CLI packages. Each expected run/pass appears once, with no skipped,
+missing, repeated or failing result. Targeted vet passes for all five packages.
+Race instrumentation and diagnostic exits remain enabled with
+`GORACE=atexit_sleep_ms=0`; default race exit grace is not qualified here.
+
+The fresh native build passes and that exact binary then passes two actual
+terminal scenarios with 35 current-grid checks. Both select two saved siblings
+sharing one directory, uncheck one, save an explicit All policy and independently
+verify the checked recipient. Confirmed send produces exactly one fake-transport
+message matching the durable ledger's session, directory and exact message. The
+ledger's key/review/generation match the displayed review. Enter at the send review
+produces no queue or activation ledger. Policy bytes, protected
+metadata/instructions and empty participation records remain unchanged.
+
+Four installer originals, two controlling-session brokers and their two Go
+originals exit naturally with zero status, matching native exit observations,
+waits, output EOF and owned descriptor closure; no child stop is requested.
+Terminal configuration matches naturally and after explicit restore except for
+the documented PENDIN input-state bit. Whole raw termios equality is false in
+both scenarios and is retained separately. This establishes neither complete
+kernel-state preservation nor a measured aggregate descriptor/resource bound.
+
+The [normalized evidence](validation/onboard-checked-activation-scoped-2026-10-31.json)
+records the source and artifact binding, complete named roster and scope. All
+native transports are owned fakes: real clients, sockets, model turns, backend
+startup, identification, enrollment and real-chat delivery are not exercised.
+Prior failures/unknowns and retained accounting obligations remain distinct; no
+cleanup credit follows. Current-main composition, real-client compatibility and
+broader platform/suite acceptance remain open.
+
+
+## Checked-chat activation: composed qualification
+
+Composed source `40f694f` passed exactly 25 roots/41 named normal checks in three
+packages and a fresh native build. That exact artifact passed two owned terminal
+scenarios/35 current-grid checks: checked-only confirmed queue and default-no.
+Collector and durable-ledger session, directory and full message match; displayed
+key, review and generation match the saved record. Policy and protected inputs
+remain unchanged, and no participation sessions are created.
+
+Original installer, broker and command handles exit naturally and join with
+native exit observations and output EOF. Both terminal configurations retain
+only the PENDIN bit difference; whole raw termios equality remains false. The
+[composed record](validation/onboard-checked-activation-composed-2026-10-31.json)
+binds source hashes, exact cases and artifact. Fake clients do not establish
+real-client compatibility, real-chat delivery or enrollment; no new composed
+race, full-suite, Linux or upgrade-continuity acceptance is claimed.

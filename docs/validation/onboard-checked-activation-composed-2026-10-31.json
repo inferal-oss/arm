@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "scope": "Current-main checked-chat activation composition; synthetic metadata and queue transport, owned terminal fixtures",
+  "source_commit": "40f694f7391cfa557a56238061c771f4592cafff",
+  "source_tree": "d7f766b6c9dd07ac05d4ac597253df0732508638",
+  "owner_source_commit": "df41185b66dde55b6b0afcfcd26809266bc38238",
+  "source_sha256": {
+    "internal/agentsessions/codex.go": "de11fdd967432ef54e4266504c7ec12eaba15a3718f75e8a7e9b96c6ef03f099",
+    "internal/agentsessions/codex_appserver_test.go": "aa63acf2d5e6182527eaba2b58007e2e60a06a8e77609da888f1b58032c4ea50",
+    "internal/cli/onboard_checked_activation.go": "ad21f521e1c1dfdadcb804b26223db19ee43dc0f6db08914f06be8d06768dec5",
+    "internal/cli/onboard_checked_activation_test.go": "afe112255e11c9ecb826a540c66a235fb671ca4656c1de562d394a00a12872e7",
+    "internal/cli/onboard_project_picker.go": "a1fbe012a83efd95662a9c00c82ceaa46902f379e4952c68ce1be5b830b486ed",
+    "internal/cli/onboard_project_picker_test.go": "d94886e1162af3100d13ede693259e51388a8f1d1efacac070038d263ce4ad60",
+    "internal/cli/rollout_onboard.go": "3f3acab18d3f318e051ebdc5032cfc3ddcd411ccb98927aa8ef93685abd3f26a",
+    "internal/rollout/check_context_test.go": "cbf65fce56b1d4e14c7eb3288d94f2e2547835fc3d6187e4a36fc797b0f01f3d",
+    "internal/rollout/rollout.go": "9a56d3549c2bdfdff1d6f6031438c1a8a8604d96e0a366b7e321871999b254df"
+  },
+  "unchanged_protected_sha256": {
+    "internal/activation/activation.go": "85bc1e990ee3d91b8aa8745838e3a3f7cc9e9b8010cb3112c90f61054a6dd258",
+    "internal/agents/agents.go": "8377bcb52ec2e63626c2384546441d11a69e8166694b1089e043f5acf92d32a1",
+    "internal/agentsessions/sessions.go": "9419b623cdae60418ac370d465f7dc259f18e794ea373c582c92f06a141bcfd0",
+    "internal/cli/onboard_project_policy.go": "fc69feaa4c8fb9855629966c3a4af1c49a849f305be642ffae966b789c31e658",
+    "internal/cli/onboard_tree.go": "1aa388b21419283fac29fc6b9fceab0e65ccb37758ae4293c4c56469c3bd9f4a",
+    "internal/cli/rollout_activation.go": "576a5aa0fbdb5a2a2a94b09aef8a0dad96a632d9689e79baaaca6e2825f572a2"
+  },
+  "qualification": {
+    "normal": {
+      "status": "pass",
+      "packages": 3,
+      "roots": 25,
+      "named_cases": 41,
+      "no_skips_repeats_missing_or_failures": true
+    },
+    "native_build": {
+      "status": "pass",
+      "platform": "darwin/arm64",
+      "bytes": 75650674,
+      "sha256": "a67edc2c0f0d030176e486e3dfd23167a24fb1947b82c49ca0b094827d7e5724",
+      "source_binding": "Exact composed source; VCS metadata disabled. Subsequent changes are documentation only."
+    },
+    "terminal": {
+      "status": "pass",
+      "cases": 2,
+      "current_grid_checks": 35,
+      "confirmed_checked_messages": 1,
+      "unchecked_messages": 0,
+      "default_no_messages": 0,
+      "collector_session_cwd_and_exact_message_equal_ledger": true,
+      "displayed_key_review_generation_equal_ledger": true,
+      "policy_bytes_unchanged_after_activation": true,
+      "participation_sessions_created": 0,
+      "metadata_and_instructions_preserved": true,
+      "four_installer_and_two_broker_originals_natural_zero_with_native_exit_and_join": true,
+      "two_broker_owned_command_originals_natural_zero_with_native_exit_and_join": true,
+      "output_EOF_and_owned_control_FDs_closed": true,
+      "terminal_configuration": "All configuration flags/speeds/control characters equal except Darwin PENDIN input-state bit; whole raw state remains unequal."
+    }
+  },
+  "originals_and_integrity": {
+    "original_FIFO_and_helpers_natural_zero_joined_output_EOF": true,
+    "source_images_rechecked": 3413,
+    "source_and_tool_images_unchanged": true,
+    "no_retries_or_requested_stops": true,
+    "all_prior_unknowns_and_retained_obligations_preserved": true,
+    "reclamation_credit": false
+  },
+  "limits": [
+    "Synthetic local transport only; no real native client compatibility, liveness or real-chat delivery acceptance.",
+    "No backend, model calls, identification, enrollment or resource workloads. Queuing does not adopt a protocol.",
+    "No full Go suite, new composed race run, Linux runtime or upgrade/job-child survival acceptance. Owner normal/race evidence is separately scoped.",
+    "Sampled owned scratch and cooperative resource claims do not establish kernel resource bounds or unobserved peaks."
+  ],
+  "expected_named_nodes": [
+    {
+      "package": "agentsessions",
+      "name": "TestCodexAppServerDiscoveryIsExplicit"
+    },
+    {
+      "package": "agentsessions",
+      "name": "TestNativeMetadataHelper"
+    },
+    {
+      "package": "cli",
+      "name": "TestActivationNativeCLIHelper"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationAggregateVerificationCancellation"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationCanceledBeforeAnyNativeWork"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationChangedNativeContextRefuses"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationChangedNativeContextRefuses/directory"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationChangedNativeContextRefuses/home"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationClaudeRemainsBlocked"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationCloseJoinsOriginalAndKeepsReceipt"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationDeclineIgnoresQueuedLateConfirmation"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationDeclineIgnoresQueuedLateConfirmation/enter"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationDeclineIgnoresQueuedLateConfirmation/esc"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationDeclineIgnoresQueuedLateConfirmation/n"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationExactSubsetQueuesAfterReview"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationNativeChangeGivesPartialResults"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationPolicyBlocksBeforeNativeProbe"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationPolicyBlocksBeforeNativeProbe/disabled"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationPolicyBlocksBeforeNativeProbe/new-sessions"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationPolicyBlocksBeforeNativeProbe/observe"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationPolicyChangesRefuseFinalSend"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationProgressShowsOriginalLookup"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationQuitIgnoresLateMetadataAndTasks"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationReviewDefaultsToNo"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationReviewDefaultsToNo/enter"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationReviewDefaultsToNo/esc"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationReviewDefaultsToNo/n"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationSelectionContextIsDefensive"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationSelectionContextIsDefensive/directory"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationSelectionContextIsDefensive/duplicate"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationSelectionContextIsDefensive/group"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationSelectionContextIsDefensive/home"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationSelectionContextIsDefensive/missing"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationStopAfterCurrentReceipt"
+    },
+    {
+      "package": "cli",
+      "name": "TestCheckedActivationUnknownStopsBatchAndRetainsKey"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeKeysKeepClientHomeAndNativeContext"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerExactCheckedActivationOffer"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerReadinessPreservesDisabledAndNoopSemantics"
+    },
+    {
+      "package": "rollout",
+      "name": "TestCheckContextCanceledBeforeStateOrScope"
+    },
+    {
+      "package": "rollout",
+      "name": "TestCheckContextMatchesLegacyWithoutWrites"
+    },
+    {
+      "package": "rollout",
+      "name": "TestCheckContextUnknownOriginalStartRemainsIneligible"
+    }
+  ]
+}
