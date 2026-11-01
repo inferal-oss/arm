@@ -5565,3 +5565,18 @@ the [composed record](validation/resident-worker-native-custody-composed-2026-10
 Actual typed inherited-descriptor birth/charge, complete native standing proof,
 fresh worker database/controller, public startup and live job/child continuity
 remain open. This integration does not enable worker replacement.
+
+
+## Worker-enabled inherited child custody (2026-10-31)
+
+Source `ae0cbe2f` on `codex/resident-worker-standing` adds the distinct worker
+bootstrap, inherited service/image bindings, nonclosing charge/birth views and
+legacy/worker census guards. The [normalized record](validation/resident-worker-child-custody-normal-2026-10-31.json) reports 53 selected
+pure/refusal roots and 284 named RUN/PASS nodes across three packages. The first
+compile failure remains recorded separately; its exact type correction passed
+the fresh qualification.
+
+This is a reviewed prerequisite. A genuine worker fixed13 producer/private role,
+control/fence/serve/current protocol, complete funding and fresh format 5 remain
+to be composed. Worker controller/API/UI/assets, public `arm start` and real
+active-job/native-child survival through a public upgrade are still required.

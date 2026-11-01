@@ -13558,3 +13558,19 @@ the enclosing execution join with zero status. See the
 This scope adds no race/vet/product build, positive native journal/image I/O,
 worker birth/charge, public startup or live upgrade acceptance. Retained unknowns
 and storage obligations remain unchanged; no reclamation credit follows.
+
+
+## Worker inherited child custody normal qualification (2026-10-31)
+
+For source `ae0cbe2f`, the [normalized evidence](validation/resident-worker-child-custody-normal-2026-10-31.json) records an actual
+664-package graph and 51 pinned official modules authenticated before and after
+the three selected package tests. All 53 roots/284 named cases ran and passed
+once, with no failures/skips; all four original Go commands and enclosing
+execution joined normally. Source/tool pins and protected file modes matched.
+
+The first attempt failed service-test compilation on an int64/int journal-bound
+comparison; no tests ran then. Its failed outcome and subsequent read-only
+postflight remain separate. Only the explicit integer conversion changed before
+the successful fresh attempt. No positive native fixed13/service/image/funding
+operation, race, vet, product build or product execution occurred. Public
+`arm start` and real active-job/proxy/native-child upgrade survival remain open.

@@ -6797,3 +6797,22 @@ resident sources. Their original authorization, image and debit ownership remain
 separate from legacy capabilities. No positive child or manager authority is
 issued by the pure constructor/refusal tests; the next typed birth/charge chain
 and explicit same-process lock/image transfer remain distinct implementation work.
+
+
+## Worker inherited child and charge custody (2026-10-31)
+
+Source `ae0cbe2f` separates bootstrap2/worker domain and journal3 bindings
+from legacy issuers. New child custody validates actual inherited service
+identities, the exact original context/environment and a distinct opaque mesh
+runtime view before issuing its self/registry-linked charge and birth views.
+The image surface reuses the concrete inherited native verifier internally; no
+old runtime borrower, descriptor/path getter, closer or old charge escapes.
+Parent/operator journal sources remain concrete and child I/O uses only the
+actual delegated journal view. Original census scope guards precede view claims.
+
+The worker census producer and positive native path are not implemented by this
+cut. A floor comparison is not complete native/runtime/driver funding. The
+[normalized evidence](validation/resident-worker-child-custody-normal-2026-10-31.json) covers pure/refusal controls, not original native
+birth, format 5, public startup or live upgrade survival. API/UI replacement
+keeps the running resident/Manager/SQLite/retained handlers at their separate
+drain boundary.
