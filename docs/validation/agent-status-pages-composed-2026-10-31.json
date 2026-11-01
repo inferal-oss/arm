@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "feature_source_commit": "26987c1",
+  "qualified_commit": "a1438affdcd5e2ae1813825413b0dea59b77d7f6",
+  "source_manifest_sha256": "963cada02f341d6614b65a6a27f752a5e4c92699fa5a7e47977b0e796ebb8fb1",
+  "source_files": 3488,
+  "composed_normal": {
+    "root_tests": 52,
+    "named_tests": 93,
+    "all_run_pass_once": true,
+    "failures": 0,
+    "skips": 0,
+    "includes": "Original feature cohort, trusted terminal JSON formatting and two shared pending-ingress order boundaries"
+  },
+  "distributable": {
+    "bytes": 76303650,
+    "sha256": "0971ba6e4c5289473e6e99140744e6ebdf4b43df30de717f8073eb1feb3a2931",
+    "embedded_web_sha256": "b17204a4c3fd9387426067ae0489eea06bfd3389811023c0543d7aca3642f69f",
+    "embedded_web_bytes": 4390702,
+    "complete_asset_bytes_confirmed": true,
+    "execution": "compile only"
+  },
+  "owner_scopes": {
+    "normal_and_race": "49 roots / 90 names, plus later two-root formatting normal selection and CLI vet",
+    "web": "Audited broad file results with focused successors; final five Agents checks and generated asset",
+    "terminal": "Linked positive cases: 13 + 14 + 19 grids; failed full commands remain failed",
+    "browser": "29 final checks with normal report visible, trusted navigation, CSP and independent window lifecycle",
+    "native_cli": "One Codex account/HTML; requested model only, actual model and dollar charge not reported. Claude authentication unavailable."
+  },
+  "limits": [
+    "No full Go suite, composed race or Linux runtime claim.",
+    "No separate API summarizer or authenticated ARM reply delivery exercised.",
+    "No new inference or runtime acceptance from the composed build.",
+    "Earlier failures, unknown billing and initial teardown errors remain distinct.",
+    "The narrow capture is scoped to its recorded width/scroll position."
+  ]
+}

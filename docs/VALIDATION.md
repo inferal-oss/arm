@@ -13674,3 +13674,18 @@ enrollment/wakeup or the separate API summarizer's live behavior; that provider
 remained disabled. Final composed source review/build and remote/live-provider
 coverage remain separate gates. Private receipts, native session identifiers and
 screenshots are not repository artifacts.
+
+
+### Agent Status Page: composed normal checks and distributable
+
+The clean composition `a1438af` passes 52 roots/93 named normal cases once across
+three packages, without failures or skips. Original execution and output join
+normally, and all 3,488 source inputs and tool pins match before and after.
+A fresh native CLI build succeeds and contains all 4,390,702 bytes of the exact
+final web asset. The binary was not executed. The
+[normalized record](validation/agent-status-pages-composed-2026-10-31.json) binds
+source, selected scope, binary and asset hashes. Earlier component race, browser,
+native CLI and linked terminal scopes remain as documented; none was rerun or
+broadened by these composed checks. Documentation-only followup changes neither
+Go nor web inputs. Full-suite, Linux runtime, live API and authenticated delivery
+acceptance remain outside this scope.

@@ -1,6 +1,6 @@
 # ARM delivery plan
 
-## Agent Status Page — local implementation candidate
+## Agent Status Page — reviewed local implementation
 
 Owner: `codex/agent-status-page`, based on reviewed `2af28b7`. Additive source
 implements local current/retained identity inventory, exact-reviewed owning-agent
@@ -9,7 +9,7 @@ summaries and isolated HTML windows/standalone routes. The resource database,
 pending ingress fences and native environment boundaries remain unchanged.
 Providers default disabled. Owner source review and scoped validation are
 complete, including a real Codex CLI canary; Claude authentication was unavailable.
-Current-main composition and the distributable build are in review. Authenticated
+Current-main composition and the distributable build passed. Authenticated
 agent delivery, live API generation, cross-host coverage, exact resource provenance
 and scheduled generation remain separate gates. See
 [the implementation contract](design/agent-status-pages.md).
@@ -5668,3 +5668,15 @@ Claude inference remains unverified after an authentication failure. Actual agen
 delivery and the separate API summarizer were not exercised. Final diff review,
 focused commit integration and the composed distributable build remain coordinator
 gates; the earlier native binary does not contain the final web layout.
+
+
+## Agent Status Page: current-main qualification
+
+Focused source `26987c1` composes with the integrated activation and worker-role
+code. All 52 selected roots/93 named cases pass once, including the shared pending
+ingress boundaries. The distributable build embeds the exact final web asset.
+See the [composed record](validation/agent-status-pages-composed-2026-10-31.json).
+This qualifies local registered/retained agents, explicit contribution and report
+controls, isolated windows/routes and separate rollout setup. Live API generation,
+authenticated ARM reply delivery and successful Claude inference remain unverified.
+No provider is enabled or agent enrolled by this integration.

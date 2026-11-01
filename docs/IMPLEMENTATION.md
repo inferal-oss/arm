@@ -6880,3 +6880,12 @@ Terminal review preserves formatter-generated JSON lines while escaping terminal
 controls inside data. Final scoped evidence includes native terminal onboarding,
 CLI canaries and actual stock-window rendering. Integration and the final composed
 binary build remain separate coordinator gates.
+
+
+### Agent Status Page integration
+
+Source `26987c1` and its current-main composition preserve the original pending
+request/response envelopes and ingress guard. The final report-first asset is
+embedded in the composed CLI build. Providers remain disabled by default,
+resource associations remain explicitly based on legacy labels, and this change
+does not enable rollout participation or alter existing resource obligations.
