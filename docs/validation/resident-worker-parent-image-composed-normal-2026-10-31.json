@@ -15,6 +15,12 @@
     "Four original bounded parent transport operations with separate worker HMAC domains, context binding, current child RootBound3 authentication and nonce challenge/proof.",
     "Service and control reference retirement only after original authenticated protocol completion, including the separate executable capture reference; no explicit unlock or resource-release credit."
   ],
+  "integration": {
+    "Go_and_module_inputs_equal_qualified_images": 2080,
+    "owned_source_images_equal_owner_commit": 22,
+    "scope": "Byte/mode source equivalence only. Documentation composition adds no separate test or runtime acceptance.",
+    "source_commit": "79d6c80"
+  },
   "normal": {
     "alarm_requested": false,
     "all_original_commands_joined_zero": true,

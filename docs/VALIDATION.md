@@ -13706,3 +13706,7 @@ commit run. Selected tests compiled their scoped packages; no product build,
 vet/race, positive fixed13/native Start, runtime funding, public `arm start`,
 container or live upgrade fixture was executed. Real A-to-B active-job and native
 child survival remains unverified and required before completing resident workers.
+
+Integrated source `79d6c80` has the same 2,080 Go/module input bytes and modes
+as that qualified composition, including all 22 owner source images. The
+documentation-only composition does not add a second run or native acceptance.
