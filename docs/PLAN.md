@@ -5380,3 +5380,34 @@ Public API/storage/model execution and native-window lifecycle contracts require
 central composition review; existing upgrade and picker work stays preserved.
 The task must present its proposal before implementation and use an isolated
 worktree. Resource-intensive checks require their own bounded allocation.
+
+
+## Coordinator review: resident continuation and checked-session activation
+
+The resident ingress source `135544d` and its scoped owner evidence `a2b0dda`
+passed independent source review. Reviewer composition `60ce045` preserves the
+accepted picker inputs. Its dependency graph/integrity stage passed; the server
+boundary cohort ran nine named cases successfully. The CLI boundary stage then
+failed because a picker fixture assumed HOME was present. The native build did
+not start. Reviewed fixture correction `9e72c0c` supplies an owned temporary home;
+corrected composed CLI/build and final integrity checks remain pending. The failed
+result remains a failed predecessor, without a full composition acceptance claim.
+
+Worker standing DATA source `75f2cbd` and documentation `5f52327` are accepted
+within their owner scope: six separate profile/evidence/journal files, 21 roots
+and 187 normal named checks, no skips or failures. This prerequisite is not yet
+landed on main. The next assigned source slice implements distinct original
+worker operator/parent/debit custody. Genuine child birth, complete standing
+admission, fresh worker database format, controller and public startup remain
+required, followed by an actual upgrade preserving active jobs and children.
+
+The checked-session activation continuation on `codex/onboard-checked-activation`
+passed source review and its corrected synthetic-fixture normal cohort: 160 roots
+and 300 named checks in five packages. Race, vet, native build, owned terminal
+validation and independent current-main composition remain open. Earlier unused
+validation packets were not executed. Real client delivery/enrollment is not
+established by these fake-client fixtures.
+
+The Agent Status Page task presented its initial proposal. Shared identity,
+transport, model execution, storage and isolated HTML contracts still require
+review before implementation; no paid inference or agent wakeup has run.
