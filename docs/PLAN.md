@@ -5697,3 +5697,14 @@ backend startup integration. Real active-job/native-child upgrade survival
 remains a required completion gate. Current Agent Status costs and root-owned
 accepted job lifetimes must be retained; derive the final operation roster from
 the composed source.
+
+### Fresh resident worker fence prerequisite
+
+Source `64d8be7` on `codex/resident-worker-standing` adds distinct fresh worker
+fence/journal/footer source and original parent observations. Independent
+review and one composed normal qualification passed 104 roots/465 named nodes;
+the [normalized record](validation/resident-worker-fresh-fence-composed-normal-2026-11-01.json)
+binds all 14 owned images to that run. No owner rerun or positive native launch
+was performed. The actual private root, worker-native format5 Manager/database/
+server, complete final-binary funding, controller and public startup remain.
+Real active-job/native-child A-to-B upgrade survival is still a completion gate.

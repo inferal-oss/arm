@@ -13710,3 +13710,24 @@ child survival remains unverified and required before completing resident worker
 Integrated source `79d6c80` has the same 2,080 Go/module input bytes and modes
 as that qualified composition, including all 22 owner source images. The
 documentation-only composition does not add a second run or native acceptance.
+
+### Fresh worker fence composed normal qualification
+
+The [normalized record](validation/resident-worker-fresh-fence-composed-normal-2026-11-01.json)
+records one run on composed `e7829bb` plus 14 uncommitted fresh-fence source
+images, subsequently committed unchanged as `64d8be7`. All 104 roots/465 named
+nodes across eight scoped packages ran and passed once, with zero failures or
+skips. The actual graph contained 758 packages and 63 official modules with
+matching source authentication before/after. All nine original commands and
+their queue owner joined with status zero; source/tool/packet inputs stayed
+unchanged and all command stderr streams were empty.
+
+This is source-image equivalence, not an owner or clean-commit run. Selected tests
+compiled their scoped packages. No product build, vet/race, positive fixed13/
+native Start, complete funding, public `arm start`, container or live upgrade
+fixture was executed. Real active-job/native-child upgrade survival remains
+unverified and required.
+
+Integrated source `a2e8b36` has the same 2,094 Go/module input bytes and modes
+as that qualified composition, including all 14 owner source images. The
+documentation-only composition adds no second run or native acceptance.

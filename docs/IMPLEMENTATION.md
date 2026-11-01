@@ -6909,3 +6909,21 @@ Start and cross-component handoff. The [scoped evidence](validation/resident-wor
 covers DATA/refusal behavior, not a positive native worker launch. Fresh format5,
 worker lifecycle/controller, public startup and real upgrade continuity remain
 unimplemented by this prerequisite.
+
+### Distinct fresh worker fence and parent observation source
+
+Source `64d8be7` adds worker-only fresh/prepared fence and launch journal owners,
+canonical birth intent checks, footer2 DATA and original ACK-backed parent
+service observations. The source retains six actual fence references in the
+same fixed13 command layout and preserves bounded native histories. The parent
+holds the service and launch locks, opens the daemon descriptor without flock,
+and leaves the first exclusive daemon flock to the actual child native issuer.
+
+Post-Start source validates held references, current names and the exact journal
+against the authenticated context. Fence reference retirement requires the
+original completed proof and must precede service retirement; control endpoints
+remain last. No close path explicitly unlocks inherited descriptions or claims
+released capacity. The actual root's normal Start and cross-component handoff
+remain separate prerequisites. The [scoped qualification](validation/resident-worker-fresh-fence-composed-normal-2026-11-01.json)
+covers DATA/refusal behavior; it does not initialize format5 or demonstrate
+public startup, native child launch or upgrade continuity.
