@@ -6849,3 +6849,34 @@ lifetime. Earlier build/profile digests do not qualify a later composed core.
 ### Worker role integration identity
 
 The central worker role source `62715ca` contains exactly the reviewed 16 feature images. Subsequent composition differences are documentation only; no public command or replacement controller is enabled by this cut.
+
+
+## Local agent status pages and rollout setup
+
+The local Agents tab and independent bounded version-1 status store implement
+cooperative structured contributions through existing reviewed operator messaging.
+Indexed reply-key lookup preserves exact registration and original-message
+relationships. A separate explicitly configured tool-free summarizer selects
+GPT-6.1 Terra or Claude Sonnet 5.5, with no automatic fallback/retry. Parser-rewritten
+HTML renders inside opaque sandboxed report frames; stock windows and authenticated
+standalone routes retain trusted controls outside the report. String-only resource
+links remain explicitly legacy attribution. Each status view renders at most
+12 leases and 12 runs per resource page, with independent navigation, exact totals
+and page clamping. Floating views keep their observation timer; hidden docked
+views stop following. The model-written report precedes diagnostics, complete
+provenance starts collapsed, and normal windows retain trusted close/full-page
+navigation. No SQLite/Request/native-role or credential environment-forwarding
+change is included; see [the contract and limits](design/agent-status-pages.md).
+
+Rollout onboarding offers independent status setup after project policy is
+actually saved, including projects with no checked chats. A separate default-no
+review records full saved project boundaries and revisions in a private bounded
+sidecar; it does not enable a provider, enroll an agent or deliver messages.
+Offline `rollout status-pages plan/apply/inspect` preserves original operation
+keys and uncertain outcomes, including custom ARM homes. The existing Agents list
+projects at most 128 compact preference summaries from one sidecar and one policy
+snapshot; matching/stale/unknown refers to policy provenance, never agent ownership.
+Terminal review preserves formatter-generated JSON lines while escaping terminal
+controls inside data. Final scoped evidence includes native terminal onboarding,
+CLI canaries and actual stock-window rendering. Integration and the final composed
+binary build remain separate coordinator gates.

@@ -1,5 +1,19 @@
 # ARM delivery plan
 
+## Agent Status Page — local implementation candidate
+
+Owner: `codex/agent-status-page`, based on reviewed `2af28b7`. Additive source
+implements local current/retained identity inventory, exact-reviewed owning-agent
+contributions, indexed request/reply evidence, explicit tool-free Terra/Sonnet
+summaries and isolated HTML windows/standalone routes. The resource database,
+pending ingress fences and native environment boundaries remain unchanged.
+Providers default disabled. Owner source review and scoped validation are
+complete, including a real Codex CLI canary; Claude authentication was unavailable.
+Current-main composition and the distributable build are in review. Authenticated
+agent delivery, live API generation, cross-host coverage, exact resource provenance
+and scheduled generation remain separate gates. See
+[the implementation contract](design/agent-status-pages.md).
+
 ## Original Server and native validation gate — selected scope qualified
 
 Owner: `codex/resident-original-server-ingress`, based on `ed32fed`.
@@ -5408,9 +5422,6 @@ validation and independent current-main composition remain open. Earlier unused
 validation packets were not executed. Real client delivery/enrollment is not
 established by these fake-client fixtures.
 
-The Agent Status Page task presented its initial proposal. Shared identity,
-transport, model execution, storage and isolated HTML contracts still require
-review before implementation; no paid inference or agent wakeup has run.
 
 ## Original resident runtime and pending control: scoped source complete
 
@@ -5641,3 +5652,19 @@ and deadlines through API worker replacement.
 ### Worker role integration identity
 
 Reviewed worker role source is integrated as `62715ca`; all qualified Go/module inputs match the committed composition. The [integration record](validation/resident-worker-native-roles-integrated-2026-10-31.json) distinguishes actual working-tree qualification from commit equivalence. This remains a prerequisite; public startup and live job/native-child survival are open.
+
+
+## Agent Status Page implementation handoff
+
+The Agent Status Page source commit `71f34bf` on `codex/agent-status-page` depends
+on the reviewed checked-activation prerequisite `df41185`. Local identity, contribution,
+bounded summarization, isolated report windows and optional rollout setup are
+implemented. Review fixes cover provider usage evidence, bounded resource pages,
+hidden-view polling, readable terminal review and report visibility at normal
+window size. Scoped normal/race/vet, affected JavaScript checks, generated assets,
+linked terminal cases and the final 29-check browser capture are qualified in
+`docs/VALIDATION.md`. A native Codex canary returned an account and HTML; successful
+Claude inference remains unverified after an authentication failure. Actual agent
+delivery and the separate API summarizer were not exercised. Final diff review,
+focused commit integration and the composed distributable build remain coordinator
+gates; the earlier native binary does not contain the final web layout.

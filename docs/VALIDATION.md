@@ -13610,3 +13610,67 @@ remain open.
 ### Worker role integration identity
 
 Integration `62715ca` matches every qualified Go/module input and mode from the successful 70-root/322-name working-tree run. Documentation-only composition did not rerun or broaden that scope. See the [integration record](validation/resident-worker-native-roles-integrated-2026-10-31.json).
+
+
+## Agent status pages — scoped evidence
+
+The focused normal and race cohorts each passed 49 roots / 90 named checks across
+agentstatus, server and CLI. They cover strict account/HTML limits, bounded private
+storage, fake HTTP model calls, exact-recipient evidence, one-call/daily budget
+reservation, cancellation, registration replacement, ingress/node-scope fences,
+worker/queue limits and onboarding publication/recovery boundaries. Four-package
+vet passed. A later terminal-review formatting correction passed two affected CLI
+checks and CLI vet. All other Go/module inputs remain unchanged from the broader
+qualification; these results do not establish the full Go suite or Linux runtime.
+
+Final Agents UI validation passed five checks, including independent bounded
+resource pages, inventory shrink clamping and hidden/detached polling ownership.
+Earlier broad 53-file JavaScript coverage uses audited positive file results and
+focused corrected successors. Failed wrapper assertions and earlier fixture
+failures remain separate failures; there is no claim of a new all-suite command
+pass. The production web build regenerated five assets and preserved the WAT and
+license notices. The final JavaScript-only layout correction was tested through
+the actual compiled UI, not the earlier native ARM binary. The composed build
+must embed the final asset.
+
+The final browser capture passed 29 checks with actual stock windows and the
+production CSP. At normal 522×442 geometry, the owning account's current-work text
+is fully inside the window's content clip with zero scrolling; close/full-page
+navigation remains visible and provenance starts collapsed. Captures also cover
+the roster, maximized report, narrow standalone view and independent status/run
+windows. The narrow capture qualifies width at its recorded scroll position,
+not an overlay-free whole-page presentation. Opaque iframe permissions, blob
+revocation on auth reset, retained run
+cursor behavior and independent close/dock controls passed. Original Chromium
+exit/close, context/server shutdown and temporary profile removal were observed.
+The prior browser functional pass and its failed normal-layout assessment remain
+distinct evidence.
+
+Three native-terminal onboarding scenarios are qualified by two positive cases
+from one run (13 + 14 current-grid assertions) and the remaining save case from a
+focused successor (19 assertions). They verify default No, separate exact review,
+Back/review identity retention, undersized-terminal save fencing, actual saved
+policy/binding provenance and a status preference with zero checked chats.
+Client metadata and saved policy bytes remain unchanged through status setup;
+no provider, backend or enrollment state is created. Original native exit events,
+waits, descriptor closure and output EOF were recorded. Terminal configuration
+restoration passed; raw termios equality did not because of the explicitly scoped
+PENDIN state bit. Failed predecessor commands and their initial teardown errors
+remain failed; this is linked case qualification, not one successful three-case
+command or complete kernel-state attestation.
+
+A real Codex CLI canary returned one structured account and model-written HTML
+with GPT-6.1 Terra requested. It reported token usage but no actual model ID or
+settled dollar charge. The captured account and HTML passed production
+DecodeAccount, Document and ValidateDocument checks. The Claude CLI attempt
+stopped at an authentication failure and produced no account or report; successful
+Claude inference remains unverified. An earlier interrupted Codex attempt retains
+its unknown billing outcome. No absence of usage is treated as zero cost.
+
+Browser records are explicitly controller-mediated fixtures built from the actual
+Codex result and actual Claude failure. The run transcript is a captured-output
+fixture. These checks do not prove authenticated ARM reply delivery, real agent
+enrollment/wakeup or the separate API summarizer's live behavior; that provider
+remained disabled. Final composed source review/build and remote/live-provider
+coverage remain separate gates. Private receipts, native session identifiers and
+screenshots are not repository artifacts.
