@@ -5708,3 +5708,20 @@ binds all 14 owned images to that run. No owner rerun or positive native launch
 was performed. The actual private root, worker-native format5 Manager/database/
 server, complete final-binary funding, controller and public startup remain.
 Real active-job/native-child A-to-B upgrade survival is still a completion gate.
+
+### Worker-native Manager/database/Server prerequisite
+
+Source `6dc15ae` on `codex/resident-worker-standing` adds distinct original
+worker-native database, Manager and Server owners. Independent source review
+and linked composed qualification cover 127 roots/499 named tests, including
+six owned official SQLite schema cases. The [normalized evidence](validation/resident-worker-manager-composed-normal-2026-11-01.json)
+preserves the original incomplete POST checkpoint and separate successful
+read-only integrity audit. Twenty-eight owner images match exactly; the Server
+field delta was qualified in the composition that retains current Agent Status.
+No owner or clean-commit execution is claimed.
+
+Actual private root/current proof, complete final-binary funding and helper
+lifetimes, nonempty controller transitions, worker launch/renewal/activation,
+API/UI/assets, public `arm start` and automatic backend startup remain required.
+Real active-job/native-child survival through a Docker A-to-B upgrade is still
+a completion gate. Fresh empty-table schema checks do not accept runtime state.

@@ -6927,3 +6927,26 @@ released capacity. The actual root's normal Start and cross-component handoff
 remain separate prerequisites. The [scoped qualification](validation/resident-worker-fresh-fence-composed-normal-2026-11-01.json)
 covers DATA/refusal behavior; it does not initialize format5 or demonstrate
 public startup, native child launch or upgrade continuity.
+
+### Worker-native original Manager and database ownership
+
+Source `6dc15ae` keeps the actual worker-native claim, original database registry,
+official Connector, one physical Connect, original pool, Manager and Server in
+distinct retained owners. The official driver connection remains unwrapped;
+automatic replacement Connect attempts are refused. Startup and prepared checks
+retain bounded selected-file queries and their actual rows. Legacy capability
+types and the ordinary shutdown path cannot adopt these owners.
+
+The full standing promise is retained before native charge binding, outside
+Manager.mu. Recurring accounting reads retained DATA; unknown, mixed or orphan
+ownership closes admission while preserving known held quantities. Fresh
+format5 installation adds exactly six worker tables and six autoindexes to the
+existing base schema. Validation currently requires the original generation,
+preparing/revision0 singleton and empty controller tables. No runtime/nonempty
+controller validation or original native startup is established by this cut.
+
+The same actual Server uses the original root lifecycle. Its qualified field
+delta preserves current Agent Status, authenticated caller binding and pending
+ingress guards. No API/UI worker, listener, public startup or upgrade behavior
+is implemented here. The [scoped evidence](validation/resident-worker-manager-composed-normal-2026-11-01.json)
+distinguishes SQL grammar/interface fixtures from original native authority.

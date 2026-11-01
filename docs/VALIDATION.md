@@ -13731,3 +13731,34 @@ unverified and required.
 Integrated source `a2e8b36` has the same 2,094 Go/module input bytes and modes
 as that qualified composition, including all 14 owner source images. The
 documentation-only composition adds no second run or native acceptance.
+
+### Worker-native Manager composed qualification and separate POST audit
+
+The [normalized record](validation/resident-worker-manager-composed-normal-2026-11-01.json)
+links composed `75ebc59` plus 29 uncommitted source changes, subsequently
+committed as owner source `6dc15ae`. All 127 roots/499 named nodes across eleven
+scoped packages ran and passed once, with no failure or skip. The actual graph
+contained 815 packages and 69 official modules. All twelve original Go commands
+joined with status zero and empty stderr. Selected fixtures include six owned
+in-memory SQLite schema cases and existing official connection/interface,
+cancellation and replacement-refusal controls.
+
+The original enclosing qualification remained incomplete: its 95-second work
+checkpoint occurred during POST dependency verification after all Go commands
+finished. That queue owner joined with status one. No test was retried. A
+separate read-only audit joined with status zero, reparsed all original raw
+results, completed matching authentication of all 69 modules, and verified the
+unchanged composed source, tool inputs and bounded storage census. Its success
+does not relabel the original incomplete outcome.
+
+Twenty-eight owner file images are exact equivalents; Server has only the
+reviewed worker-owner field delta against the composition containing current
+Agent Status. This is dirty composed-source evidence, not an owner or clean
+commit run. No product build/execution, vet/race, original positive native
+startup, complete funding, worker controller, public `arm start`, container or
+live upgrade fixture ran. Actual Docker upgrade survival of the same active
+jobs and native child remains unverified and required.
+
+Integrated source `89d4362` has the same 2,116 Go/module input bytes and modes
+as the qualified composition, including the exact composed Server image. The
+documentation-only composition adds no test rerun or native acceptance.
