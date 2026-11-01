@@ -6682,3 +6682,33 @@ picker test home in `ca4e202`. Current-main runtime/module/embedded inputs match
 the qualified composition; coordinator and owner notes are preserved additively.
 This landing implements bounded pending control only. It does not enable the
 public worker startup path or establish live upgrade continuity.
+
+## Separate worker standing profile and journal DATA
+
+Source `75f2cbd4` defines `WorkerMeasuredProfile` schema 3 with unchanged schema 2
+Core validation, exact worker purpose and fixed format-5 contract. A separate
+worker evidence bundle binds canonical outer evidence, nested Core evidence
+and contract digests. Its eight ordered measurement entries reference bounded
+known Core artifacts; all nine Core workloads, six cost scopes, raw evidence
+and unknown qualifications remain mandatory. Validation does not prove claims.
+
+Distinct worker grant/debit/root DATA and schema-3 journal magic preserve strict
+legacy readers. The journal permits three chained frames, each at most 16 KiB
+including its 80-byte header and eight-byte footer. Intent preflight includes
+the whole grant envelope before future authority creation. Variable strings,
+Core evidence and artifact references are bounded before general encoding.
+Transport payload limits likewise subtract the 36-byte framing header.
+
+Checked arithmetic derives known logical worker reservation floors of 60,694,528
+retained bytes and 2,208,178,176 I/O bytes. Count minima are deliberately weak.
+Complete core/runtime/native/driver/parser/SQL/package/assets and unknown costs
+remain additional genuine measurement/admission requirements. No DATA decoder
+constructs an old grant, original debit, charge, birth or native capability.
+Actual worker-enabled native custody, format-5 opening, worker replacement,
+public startup and live job continuity remain unimplemented by this cut.
+
+
+The separate worker DATA prerequisite is integrated as `9549f59`. Its complete
+current-main package passed the same strict normal controls without importing
+unfinished native-custody drafts. No production worker authority is enabled by
+this change. Typed native custody and the running worker controller remain open.

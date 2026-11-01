@@ -5455,3 +5455,31 @@ subsequent differences are documentation only. See the
 [composed record](validation/resident-runtime-ingress-composed-2026-10-31.json).
 Worker-native custody, fresh worker database/controller, public startup and
 actual active-job/native-child upgrade survival remain open completion gates.
+
+## Worker standing DATA: reviewed and qualified prerequisite
+
+Source `75f2cbd4` on `codex/resident-worker-standing` adds six separate worker
+profile/evidence/journal DATA files. Independent review and normal qualification
+accept 14 new roots/130 named nodes and seven compatibility roots/57 nodes:
+21 roots/187 nodes total, all run and pass without skips. The exact roster,
+source images and official dependency checks are in the
+[normalized evidence](validation/resident-worker-standing-data-normal-2026-10-31.json).
+This completes the DATA prerequisite; it does not start or authorize workers.
+
+Next: actual typed worker operator/parent/debit/child/birth/charge and views,
+fresh format 5, worker admission/controller/transport/assets, public `arm start`,
+and a real upgrade preserving active supervised/proxy/native jobs. Complete
+standing costs and original unknown retention remain required. Worker replacement
+keeps the resident core, Manager, SQLite driver and retained handlers running;
+core/database upgrades retain their separate drain boundary.
+
+
+## Worker standing DATA: current-main composition complete
+
+The six reviewed files in `75f2cbd` compose and land as `9549f59` over the accepted
+resident ingress and picker source. Independent current-main qualification ran
+and passed all 21 roots/187 named normal cases once, with 51 official dependency
+records equal before and after. See the
+[composed record](validation/resident-worker-standing-data-composed-2026-10-31.json).
+The actual typed-native custody chain remains in progress; no worker/public-start
+or active-job upgrade acceptance follows from this DATA prerequisite.

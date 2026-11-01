@@ -13433,3 +13433,38 @@ uses a synthetic temporary home, without widening the isolated environment.
 All runtime inputs match the qualified source. Documentation follows validation.
 No compiled-product execution, full suite, Linux runtime, worker/public startup,
 actual managed-job survival or native resource-reclamation credit is claimed.
+
+## Worker standing DATA: normal qualification only
+
+The [normalized record](validation/resident-worker-standing-data-normal-2026-10-31.json)
+binds source `75f2cbd4` and all six production/test images to the 3,400-file,
+1,994-Go-file qualified snapshot. Every one of the 3,394 preexisting images and
+modes remained unchanged. The actual dependency graph contains 654 packages
+and 51 official modules; canonical archive-member, expanded-source and go.mod
+h1 records agree before and after the selected tests. Both original Go commands
+and their enclosing execution joined with exit zero.
+
+Exactly 187 named cases ran and passed once across 21 roots, without skips or
+failures: 14 new roots/130 names and seven legacy roots/57 names. These cover
+strict worker/legacy grammar separation, both evidence hashes and contract
+binding, fixed limits/coverage/reference ordering, overflow-safe logical floors,
+pre-marshal bounds, full-frame grant sizing and journal integrity. All fixtures
+are synthetic DATA; none enters an original operator or native issuer.
+
+This cut ran no race/vet/product build or native product. It provides no actual
+measurement, funding, original charge/birth, format-5 Manager/database opening,
+worker admission/replacement, public readiness, closure/resource credit or live
+upgrade survival proof. Later documentation-only changes assert no rebuild.
+The actual typed-native chain, public `arm start` and real active-job upgrade
+continuity remain required completion gates.
+
+
+## Worker standing DATA: composed normal qualification
+
+The [composed record](validation/resident-worker-standing-data-composed-2026-10-31.json)
+binds `9549f59` to six exact source images, a 3,407-file/1,998-Go-file snapshot,
+a 654-package actual graph and 21-root/187-name normal cohort. All cases ran and
+passed once without skips; all 51 official modules matched before and after.
+Original commands and enclosing execution joined with exit zero. Later changes
+are documentation only. No race/vet/product build, native funding/birth, public
+worker startup, active-job continuity or reclamation credit is claimed.
