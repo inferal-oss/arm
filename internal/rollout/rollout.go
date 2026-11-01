@@ -481,7 +481,13 @@ func eligible(p Project, x Session, now time.Time) (bool, string) {
 	return false, "observation only; an operator invitation is required"
 }
 func decision(st State, q Query, now time.Time) (Decision, error) {
+	return decisionContext(context.Background(), st, q, now)
+}
+func decisionContext(ctx context.Context, st State, q Query, now time.Time) (Decision, error) {
 	d := Decision{Protocol: Protocol, Provenance: "local operator project policy; installation and messaging registration grant no adoption", Obligations: "Existing leases, ownership, running work and cleanup/accounting obligations remain in force.", Suggestion: "Choose a project and explicitly enable new-sessions (suggested) or all; observation supports manual pilots."}
+	if err := ctx.Err(); err != nil {
+		return d, err
+	}
 	if q.Session != "" {
 		id, e := uuid.Parse(q.Session)
 		if e != nil {
@@ -489,7 +495,10 @@ func decision(st State, q Query, now time.Time) (Decision, error) {
 		}
 		q.Session = id.String()
 	}
-	p, blocked, e := resolve(st, q)
+	p, blocked, e := resolveContext(ctx, st, q)
+	if err := ctx.Err(); err != nil {
+		return d, err
+	}
 	if e != nil {
 		return d, e
 	}
@@ -523,11 +532,20 @@ func decision(st State, q Query, now time.Time) (Decision, error) {
 	return d, nil
 }
 func (s Store) Check(q Query) (Decision, error) {
+	return s.CheckContext(context.Background(), q)
+}
+
+// CheckContext preserves Check's read-only policy decision and bounds scope
+// resolution by the caller's lifetime. It never identifies or enrolls a chat.
+func (s Store) CheckContext(ctx context.Context, q Query) (Decision, error) {
+	if err := ctx.Err(); err != nil {
+		return Decision{}, err
+	}
 	st, e := s.Read()
 	if e != nil {
 		return Decision{}, e
 	}
-	return decision(st, q, s.now())
+	return decisionContext(ctx, st, q, s.now())
 }
 
 // ResolveScopeContext evaluates a retained snapshot for read-only native discovery.

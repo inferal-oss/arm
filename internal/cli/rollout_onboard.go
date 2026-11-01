@@ -126,8 +126,9 @@ func (a *app) rolloutOnboard(args []string) error {
 	if e = model.result(e); e != nil {
 		return e
 	}
-	// The picker owns its exact, separately confirmed copy-only activation offer.
-	// Saving policy never starts broad native discovery or the legacy proxy path.
+	if model.activateChecked {
+		return a.activateCheckedSessions(clonePickerSelection(model.selection))
+	}
 	return nil
 }
 

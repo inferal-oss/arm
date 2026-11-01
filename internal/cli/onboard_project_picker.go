@@ -35,7 +35,6 @@ const (
 	pickerReview
 	pickerApplying
 	pickerOffer
-	pickerActivation
 	pickerDiagnostics
 	pickerDone
 )
@@ -84,6 +83,7 @@ type projectOnboardModel struct {
 	notice, reviewContent             string
 	err                               error
 	cancelled, applyStarted, applied  bool
+	activateChecked                   bool
 	opCancel                          context.CancelFunc
 	// Pass-local fixture seams; production supplies no replacements.
 	discover     func(context.Context) (agentprojects.Catalog, agentprojects.Hierarchy, error)
@@ -413,25 +413,10 @@ func (m *projectOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case pickerOffer:
 			if key == "y" || key == "Y" {
-				m.stage = pickerActivation
-				m.cursor = 0
-				m.setReview(m.activationGuide(0))
-				return m, nil
-			}
-			if key == "enter" || key == "n" || key == "N" || key == "esc" || key == "q" {
+				m.activateChecked = true
 				return m, m.finish(false)
 			}
-		case pickerActivation:
-			switch key {
-			case "left":
-				m.cursor = max(0, m.cursor-1)
-				m.setReview(m.activationGuide(m.cursor))
-				return m, nil
-			case "right":
-				m.cursor = min(len(m.selection.Checked)-1, m.cursor+1)
-				m.setReview(m.activationGuide(m.cursor))
-				return m, nil
-			case "esc", "q":
+			if key == "enter" || key == "n" || key == "N" || key == "esc" || key == "q" {
 				return m, m.finish(false)
 			}
 		case pickerDiagnostics:
@@ -451,7 +436,7 @@ func (m *projectOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = m.updateTree(message)
 	case pickerManual, pickerID:
 		m.editor, cmd = m.editor.Update(message)
-	case pickerReview, pickerActivation, pickerDiagnostics:
+	case pickerReview, pickerDiagnostics:
 		m.review, cmd = m.review.Update(message)
 	}
 	return m, cmd
@@ -962,11 +947,8 @@ func (m *projectOnboardModel) View() tea.View {
 		fmt.Fprintln(&b, "Revalidating reviewed membership and applying policy…")
 	case pickerOffer:
 		fmt.Fprintln(&b, "Project policy saved. No chats were activated.")
-		fmt.Fprintf(&b, "Review manual activation for exactly %d checked chats? [y/N]\n", len(m.selection.Checked))
-		fmt.Fprintln(&b, "Current native verification is unavailable; copy-only instructions.")
-	case pickerActivation:
-		fmt.Fprintln(&b, m.review.View())
-		fmt.Fprintln(&b, "←/→ checked chat · ↑/↓ scroll · Esc done")
+		fmt.Fprintf(&b, "Verify exactly %d checked chats for activation? [y/N]\n", len(m.selection.Checked))
+		fmt.Fprintln(&b, "Supported recipients get a separate message review before sending.")
 	case pickerDiagnostics:
 		fmt.Fprintln(&b, title.Render("Discovery coverage and diagnostics"))
 		fmt.Fprintln(&b, m.review.View())
@@ -982,7 +964,11 @@ func (m *projectOnboardModel) View() tea.View {
 			} else {
 				fmt.Fprintln(&b, "Reviewed project policies saved.")
 			}
-			fmt.Fprintln(&b, "No activation was delivered. Unchecking adds no revocations; existing obligations remain.")
+			if m.activateChecked {
+				fmt.Fprintln(&b, "Opening the separately requested checked-chat activation review.")
+			} else {
+				fmt.Fprintln(&b, "No activation was delivered. Unchecking adds no revocations; existing obligations remain.")
+			}
 		}
 		fmt.Fprintln(&b, "Inspect: `"+terminalSafe(installNextCommand(m.home, "rollout status"))+"`")
 	}

@@ -17,6 +17,9 @@ import (
 type Codex struct {
 	Home, Binary string
 	Roots        []string
+	// IncludeAppServer explicitly includes desktop tasks in a bounded native
+	// metadata request. It confers no delivery, liveness or enrollment authority.
+	IncludeAppServer bool
 }
 
 func (Codex) Name() string { return "codex" }
@@ -138,9 +141,10 @@ func (c Codex) discover(ctx context.Context, names map[string]string) Result {
 			Next string `json:"nextCursor"`
 		}
 		params := map[string]any{"limit": 100, "archived": false, "useStateDbOnly": true, "sortKey": "updated_at", "sortDirection": "desc", "cwd": c.Roots}
-		if names != nil {
+		if names != nil || c.IncludeAppServer {
 			// Desktop tasks can use appServer rather than the native default
-			// cli/vscode source kinds. This affects display metadata only.
+			// cli/vscode source kinds. Exact checked activation opts in separately;
+			// ordinary native discovery retains its existing defaults.
 			params["sourceKinds"] = []string{"cli", "vscode", "appServer"}
 		}
 		if cursor != "" {

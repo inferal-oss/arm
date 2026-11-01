@@ -263,7 +263,7 @@ func TestProjectPickerDefaultNoAndAtomicPolicySave(t *testing.T) {
 	}
 }
 
-func TestProjectPickerExactCopyOnlyActivationOffer(t *testing.T) {
+func TestProjectPickerExactCheckedActivationOffer(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
 	m, home := pickerFixture(t, true)
 	pickerKey(m, "ctrl+space")
@@ -280,8 +280,8 @@ func TestProjectPickerExactCopyOnlyActivationOffer(t *testing.T) {
 		t.Fatal(m.stage, m.selection)
 	}
 	pickerKey(m, "y")
-	if m.stage != pickerActivation {
-		t.Fatal(m.stage)
+	if m.stage != pickerDone || !m.activateChecked {
+		t.Fatal(m.stage, m.activateChecked)
 	}
 	for index := range m.selection.Checked {
 		guide := m.activationGuide(index)
