@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "source_commit": "62715ca",
+  "qualified_composition_base": "d74ad87",
+  "qualified_input_manifest_sha256": "471ee98002a1f20e5ea5836d56b033546f07e847341efe31a2e4c3b7478d0f60",
+  "qualification": "One actual normal run on the uncommitted current-main working-tree cut; committed feature inputs match exactly. Later integration differences are documentation only.",
+  "matching_go_and_module_inputs": 2037,
+  "normal": {
+    "root_tests": 70,
+    "named_tests": 322,
+    "failures": 0,
+    "skips": 0,
+    "dependency_packages": 756,
+    "official_module_integrity_records_pre_equal_post": 63,
+    "original_go_commands_joined_zero": 8
+  },
+  "details": "resident-worker-native-roles-composed-normal-2026-10-31.json",
+  "limits": "No owner test run, product build, race, vet, positive native operation, public startup or live upgrade continuity accepted. Failed and unrun predecessors remain distinct."
+}

@@ -6844,3 +6844,8 @@ format 5, worker lifecycle and public startup remain to be composed. Include the
 bootstrap copy backing allocation/runtime overhead and the server-owned Agent
 Status service in final costs; accepted model jobs must not adopt an API worker
 lifetime. Earlier build/profile digests do not qualify a later composed core.
+
+
+### Worker role integration identity
+
+The central worker role source `62715ca` contains exactly the reviewed 16 feature images. Subsequent composition differences are documentation only; no public command or replacement controller is enabled by this cut.

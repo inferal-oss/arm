@@ -13605,3 +13605,8 @@ attempt. Older owner/composed packets stayed unrun. No positive native fixed13
 materialization/funding/issuer/database/worker operation, race, vet or product
 build/execution occurred. Public startup and real active-job upgrade continuity
 remain open.
+
+
+### Worker role integration identity
+
+Integration `62715ca` matches every qualified Go/module input and mode from the successful 70-root/322-name working-tree run. Documentation-only composition did not rerun or broaden that scope. See the [integration record](validation/resident-worker-native-roles-integrated-2026-10-31.json).

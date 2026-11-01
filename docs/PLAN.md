@@ -5636,3 +5636,8 @@ composition, complete current-binary funding, fresh format 5, worker controller
 and public `arm start`. Real active-job/native-child upgrade survival is still
 required. Server-owned Agent Status jobs must retain their original lifetime
 and deadlines through API worker replacement.
+
+
+### Worker role integration identity
+
+Reviewed worker role source is integrated as `62715ca`; all qualified Go/module inputs match the committed composition. The [integration record](validation/resident-worker-native-roles-integrated-2026-10-31.json) distinguishes actual working-tree qualification from commit equivalence. This remains a prerequisite; public startup and live job/native-child survival are open.
