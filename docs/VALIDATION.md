@@ -13574,3 +13574,16 @@ postflight remain separate. Only the explicit integer conversion changed before
 the successful fresh attempt. No positive native fixed13/service/image/funding
 operation, race, vet, product build or product execution occurred. Public
 `arm start` and real active-job/proxy/native-child upgrade survival remain open.
+
+
+## Corrected worker child custody: composed normal qualification
+
+Current-main source `496825e` passes 54 roots/285 named pure normal cases across
+three packages, without failures or skips. The actual graph contains 664
+packages and 51 official module integrity records match before and after. All
+3,438 source images/modes and tool pins match; the four original Go commands and
+enclosing execution join with zero status. See the
+[normalized composed record](validation/resident-worker-child-custody-composed-2026-10-31.json).
+The earlier owner compile failure stays failed; the uncorrected composed packet
+stays unrun. No race/vet/build, positive native operation, public startup or
+live-upgrade continuity acceptance follows from this selection.

@@ -6816,3 +6816,12 @@ cut. A floor comparison is not complete native/runtime/driver funding. The
 birth, format 5, public startup or live upgrade survival. API/UI replacement
 keeps the running resident/Manager/SQLite/retained handlers at their separate
 drain boundary.
+
+
+## Worker inherited custody: corrected composition
+
+The worker child/charge/birth source composes as `268b9f7`, with `496825e`
+separating immutable role lineage from native-operation admission. An unrelated
+active operation no longer turns a valid metadata check into a sticky failure.
+The original process claim, self/census/fixed-slot relationships and original
+error checks remain required. This prerequisite does not activate replacement.

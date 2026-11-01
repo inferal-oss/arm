@@ -5580,3 +5580,14 @@ This is a reviewed prerequisite. A genuine worker fixed13 producer/private role,
 control/fence/serve/current protocol, complete funding and fresh format 5 remain
 to be composed. Worker controller/API/UI/assets, public `arm start` and real
 active-job/native-child survival through a public upgrade are still required.
+
+
+## Corrected worker child custody: current-main composition
+
+Reviewed source `268b9f7` and the separate concurrency correction `496825e`
+compose with current onboarding and resident sources. The
+[composed qualification](validation/resident-worker-child-custody-composed-2026-10-31.json)
+passes 54 roots/285 named pure normal checks once. Immutable ownership checking
+now tolerates an in-progress original native operation; native admission stays
+in the original queue. The worker role/fence/serve source continuation remains
+under review. Public startup and actual job/native-child survival remain open.

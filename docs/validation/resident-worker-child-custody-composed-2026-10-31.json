@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "scope": "Corrected worker inherited child custody, current-main pure normal composition",
+  "qualified_source": {
+    "commit": "496825ed364992915905e4a8db372feb0663a491",
+    "tree": "c7a945be49d4695d12b82cfe9fe6ca31882c2d62",
+    "manifest_sha256": "24de1db3874b8452e466f8eaf19361d3b26abcfe5693541e3918e3e4dad14ddd",
+    "files": 3438
+  },
+  "source_commits": [
+    "268b9f7",
+    "496825e"
+  ],
+  "normal": {
+    "packages": 3,
+    "root_tests": 54,
+    "named_tests": 285,
+    "all_run_and_pass_once": true,
+    "failures": 0,
+    "skips": 0,
+    "actual_dependency_packages": 664,
+    "official_module_integrity_records_pre_equal_post": 51,
+    "original_commands_joined_zero": 4
+  },
+  "raw_output_hashes": {
+    "1": "8a6ee992e9abcbaea1665677c2f0bb900e1a81e60e4bb2f248678ef5ab3469d3",
+    "2": "37d84a5f6396e1b75a9842c50f70946aafb685e75230b4841809cba3029a0a31",
+    "3": "e09b76568121ed605a856c626844470941d3a899efd7ec78b7e1c238abf06c9b"
+  },
+  "correction": "Immutable role/ownership metadata remains valid during an active original native operation; actual syscall admission remains in its original queue. Fake originals and wrong roles/slots/errors remain refused.",
+  "retained_outcomes": [
+    "Original owner compile failure remains failed; its corrected source subsequently passed.",
+    "Uncorrected composed qualification packet was never executed."
+  ],
+  "limits": [
+    "No race, vet, product build or positive native service/fence/image operation was exercised.",
+    "No public startup, worker controller, complete measured funding, fresh worker database or live job/native-child continuity is accepted by this cut.",
+    "Original retained obligations remain unchanged."
+  ]
+}
