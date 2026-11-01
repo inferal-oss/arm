@@ -69,6 +69,7 @@ type recipientState struct {
 	imageView                      *ImageView
 	last                           *originalOperation
 	controlPhases                  [4]*controlPhaseCall
+	workerControlPhases            [4]*workerControlPhaseCall
 }
 type originalEntry struct {
 	self                            *originalEntry
@@ -133,6 +134,12 @@ var processChildClaim struct {
 // original there before later allocation, so abnormal return cannot lose it.
 // A nil/occupied destination refuses without consuming or replacing custody.
 func NewFixedChildPending(destination **ChildPending) error {
+	return newFixedChildPending(destination, legacyChildCore)
+}
+
+// Private scope selection only. Both public role-specific factories consume
+// the same process-wide exclusion, including the fixed4 receiver.
+func newFixedChildPending(destination **ChildPending, scope childCoreScope) error {
 	processChildClaim.mu.Lock()
 	defer processChildClaim.mu.Unlock()
 	if destination == nil || *destination != nil || processChildClaim.attempted {
@@ -142,7 +149,7 @@ func NewFixedChildPending(destination **ChildPending) error {
 	c := &ChildPending{}
 	processChildClaim.original = c
 	*destination = c // actual original published BEFORE later state/entry allocation
-	s := &childState{self: c}
+	s := &childState{self: c, scope: scope}
 	c.state = s
 	for i := range s.entries {
 		e := &originalEntry{census: s, number: i + 3}

@@ -245,3 +245,48 @@ func (v *WorkerServeBirthView) ValidateOriginal(ctx context.Context) (selectors 
 	normal = true
 	return selectors, resultErr
 }
+
+// Require the actual worker fence recipient of this same original process
+// census, then compare its current native identities with the committed intent.
+func (v *WorkerServeBirthView) ValidateOriginalFence(ctx context.Context, fence *residentrefs.FenceOriginal) (selectors WorkerBirthSelectorsData, resultErr error) {
+	if v == nil || v.self != v || v.birth == nil || fence == nil {
+		return selectors, ErrInvalid
+	}
+	p, w, err := v.birth.originalData()
+	if err != nil {
+		return selectors, err
+	}
+	w.raw.mu.Lock()
+	valid := v.birth.serve == v && v.birth.serveTried
+	w.raw.mu.Unlock()
+	if !valid || !sameWorkerContextData(ctx, p.rootContext) {
+		return selectors, ErrInvalid
+	}
+	op, err := p.beginOriginal("worker-birth-current")
+	if err != nil {
+		return selectors, err
+	}
+	normal := false
+	defer w.raw.finish(op, &normal, &resultErr)
+	resultErr = p.currentBodyOriginal(ctx, true)
+	if resultErr == nil {
+		resultErr = fence.RequireOriginalWorkerCore()
+	}
+	if resultErr == nil {
+		resultErr = p.source.ValidateOriginalFenceLink(fence)
+	}
+	if resultErr == nil {
+		var ids residentrefs.FenceIdentities
+		ids, resultErr = fence.ValidateOriginal(ctx)
+		if resultErr == nil && ids != v.birth.intent.Fence {
+			resultErr = ErrInvalid
+		}
+	}
+	if resultErr == nil {
+		w.raw.mu.Lock()
+		selectors = v.birth.selectorsData()
+		w.raw.mu.Unlock()
+	}
+	normal = true
+	return selectors, resultErr
+}

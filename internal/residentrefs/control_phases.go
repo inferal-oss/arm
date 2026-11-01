@@ -53,7 +53,7 @@ func (P1ChallengeRead) MarshalJSON() ([]byte, error) { return nil, ErrOriginal }
 func (*P1ChallengeRead) UnmarshalJSON([]byte) error  { return ErrOriginal }
 
 func (r *ControlOriginal) originalControl() bool {
-	return r != nil && r.self == r && r.state != nil && r.state.census != nil && r.state.census.self != nil && r.state.census.self.state == r.state.census && r.state.original == r && r.state.role == "control" && r.state.census.control == r
+	return r != nil && r.self == r && r.state != nil && r.state.census != nil && r.state.census.self != nil && r.state.census.self.state == r.state.census && r.state.original == r && r.state.role == "control" && r.state.census.control == r && r.state.census.scope == legacyChildCore
 }
 func controlCallCompleteLocked(call *controlPhaseCall, r *ControlOriginal, index int) bool {
 	return call != nil && call.owner == r && call.index == index && call.op != nil && call.op.kind == childControlKinds[index] && call.op.recipient == r.state && call.op.census == r.state.census && call.op.normalFinished && !call.op.abnormal && call.normalReturned && call.resultError == nil && call.bytesComplete && call.frameVerified && call.transferred == len(call.frame)
@@ -102,6 +102,9 @@ func (r *ControlOriginal) registerControlCall(op *originalOperation, index int, 
 func (r *ControlOriginal) beginControlPhase(ctx context.Context, index int, destination **P1ChallengeRead) (*controlPhaseCall, error) {
 	if !r.originalControl() || ctx == nil || index < 0 || index >= len(childControlKinds) {
 		return nil, ErrOriginal
+	}
+	if err := r.RequireOriginalLegacyCore(); err != nil {
+		return nil, err
 	}
 	if _, ok := ctx.Deadline(); !ok {
 		return nil, ErrOriginal
