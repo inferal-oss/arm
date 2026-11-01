@@ -13587,3 +13587,21 @@ enclosing execution join with zero status. See the
 The earlier owner compile failure stays failed; the uncorrected composed packet
 stays unrun. No race/vet/build, positive native operation, public startup or
 live-upgrade continuity acceptance follows from this selection.
+
+
+## Worker native roles current-composition qualification (2026-10-31)
+
+The [normalized record](validation/resident-worker-native-roles-composed-normal-2026-10-31.json) binds 16 owned source images from `3e1869a9`
+to the actual current-composition manifest with 3452 files/2035 Go files. Its
+756-package graph and 63 pinned official modules were checked before/after the
+seven package selections:70 roots/322 named cases ran and passed once, no
+failures/skips, and all eight original Go commands and enclosing execution
+joined normally. Source/modes/tool pins matched. No owner execution is claimed.
+
+The first composed attempt failed compilation on an unused import before any
+tests ran; its POST/final fields remained unperformed until the separate
+read-only postflight. Only that import was removed before the successful fresh
+attempt. Older owner/composed packets stayed unrun. No positive native fixed13
+materialization/funding/issuer/database/worker operation, race, vet or product
+build/execution occurred. Public startup and real active-job upgrade continuity
+remain open.

@@ -5620,3 +5620,19 @@ executed. Existing manual activation remains supported; a conversation-bound
 native transport or lifecycle fence is the remaining gate. No real chat,
 model call, native delivery or process/socket probe was used to establish this
 static finding.
+
+
+## Worker native role boundary and composed controls (2026-10-31)
+
+Source `3e1869a9` on `codex/resident-worker-standing` adds the worker-only
+fixed13/control/fence/native-view boundary. Its 16 owned images match the actual
+qualified current composition; the owner packet remains unrun. The [normalized
+record](validation/resident-worker-native-roles-composed-normal-2026-10-31.json) reports 70 roots/322 named RUN/PASS nodes across seven packages.
+The first composed compile failure and exact unused-import correction remain
+distinct from that successful fresh run.
+
+The next gates remain actual parent/channel/image/fresh-fence and private root
+composition, complete current-binary funding, fresh format 5, worker controller
+and public `arm start`. Real active-job/native-child upgrade survival is still
+required. Server-owned Agent Status jobs must retain their original lifetime
+and deadlines through API worker replacement.

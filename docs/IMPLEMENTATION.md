@@ -6825,3 +6825,22 @@ separating immutable role lineage from native-operation admission. An unrelated
 active operation no longer turns a valid metadata check into a sticky failure.
 The original process claim, self/census/fixed-slot relationships and original
 error checks remain required. This prerequisite does not activate replacement.
+
+
+## Worker-only control, fence and native borrowers (2026-10-31)
+
+Source `3e1869a9` keeps one global fixed13/fixed4 process exclusion while
+selecting a distinct worker scope. Dedicated four-phase control methods and
+challenge receipts preserve legacy refusal; the authenticated bootstrap frame
+stays private and its returned payload is copied. Distinct worker fence and
+native issuer/view types validate actual same-census service/birth/fence and
+current native identities. Original native effect/view-owner checks, bounded
+waiters, zero legacy authority and retained unknowns remain explicit. Borrower
+aliases expose no issuer, descriptor/path/closer or retirement capability.
+
+The [composed validation](validation/resident-worker-native-roles-composed-normal-2026-10-31.json) covers identical 16-file feature images, not
+an owner run or positive native startup. Actual parent/root, complete funding,
+format 5, worker lifecycle and public startup remain to be composed. Include the
+bootstrap copy backing allocation/runtime overhead and the server-owned Agent
+Status service in final costs; accepted model jobs must not adopt an API worker
+lifetime. Earlier build/profile digests do not qualify a later composed core.
