@@ -495,6 +495,12 @@ func workerOperationKindData(kind string) bool {
 		return true
 	case "worker-child-receive", "worker-child-runtime", "worker-child-environment", "worker-child-charge", "worker-charge-current", "worker-child-birth", "worker-birth-current":
 		return true
+	case "worker-group-funding", "worker-group-channel", "worker-group-bind", "worker-group-withdraw", "worker-group-before-start", "worker-group-short-seal", "worker-group-parent-retire":
+		return true
+	case "worker-parent-bootstrap-write", "worker-parent-ack-read", "worker-parent-challenge-write", "worker-parent-proof-read":
+		return true
+	case "worker-parent-ack-auth", "worker-parent-challenge-sign", "worker-parent-proof-auth", "worker-parent-retire-service", "worker-parent-retire-control":
+		return true
 	default:
 		return false
 	}

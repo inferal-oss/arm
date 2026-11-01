@@ -20,6 +20,7 @@ import (
 // partial effects and errors remain retained; there is no error cleanup API.
 type ResidentImagePinPending struct{ *residentImagePinState }
 type residentImagePinState struct {
+	coreScope                                       residentImagePinCoreScope // immutable; legacy constructor keeps zero
 	parentReferences                                *PinParentReferenceOwner
 	parentRetirement                                *pinParentRetirement
 	expectedHome                                    *ResidentImagePinHomeData // selectors only, never funding authority
@@ -82,6 +83,10 @@ type ResidentImagePinInspection struct {
 var errResidentPinOriginal = errors.New("original resident image pin required; preserve pending custody")
 
 func NewResidentImagePinPending(home, debit, sha string, size int64) (*ResidentImagePinPending, error) {
+	return newResidentImagePinPending(home, debit, sha, size, legacyResidentImagePinCore)
+}
+
+func newResidentImagePinPending(home, debit, sha string, size int64, scope residentImagePinCoreScope) (*ResidentImagePinPending, error) {
 	valid := func(s string) bool {
 		if len(s) != 64 || strings.ToLower(s) != s {
 			return false
@@ -92,7 +97,7 @@ func NewResidentImagePinPending(home, debit, sha string, size int64) (*ResidentI
 	if !filepath.IsAbs(home) || filepath.Clean(home) != home || home == "/" || len(home) > 4096 || strings.ContainsRune(home, 0) || len(strings.Split(strings.TrimPrefix(home, "/"), "/")) > 64 || !valid(debit) || !valid(sha) || size < 1 || size > MaxArtifactBytes {
 		return nil, errResidentPinOriginal
 	}
-	o := &ResidentImagePinPending{&residentImagePinState{home: home, debit: debit, expectedSHA: sha, expectedSize: size, source: NewResidentRuntimePending()}}
+	o := &ResidentImagePinPending{&residentImagePinState{coreScope: scope, home: home, debit: debit, expectedSHA: sha, expectedSize: size, source: NewResidentRuntimePending()}}
 	o.self = o
 	return o, nil
 }

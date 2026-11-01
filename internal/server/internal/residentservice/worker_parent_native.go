@@ -10,6 +10,7 @@ import (
 type WorkerParentPending struct {
 	self                                         *WorkerParentPending
 	custody                                      *workerCustody
+	group                                        *WorkerServiceGroup
 	openTried, opened, debitTried, debitComplete bool
 }
 

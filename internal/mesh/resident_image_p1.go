@@ -54,7 +54,7 @@ func NewResidentImageP1Pending(pin *ResidentImagePinPending, command *exec.Cmd) 
 	}
 	pin.mu.Lock()
 	defer pin.mu.Unlock()
-	if pin.p1Binding != nil {
+	if pin.coreScope != legacyResidentImagePinCore || pin.p1Binding != nil {
 		return nil, errResidentImageP1Original
 	}
 	p := &ResidentImageP1Pending{&residentImageP1State{pin: pin, command: command, extraFiles: command.ExtraFiles}}
