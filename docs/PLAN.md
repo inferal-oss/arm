@@ -8,11 +8,45 @@ contributions, indexed request/reply evidence, explicit tool-free Terra/Sonnet
 summaries and isolated HTML windows/standalone routes. The resource database,
 pending ingress fences and native environment boundaries remain unchanged.
 Providers default disabled. Owner source review and scoped validation are
-complete, including a real Codex CLI canary; Claude authentication was unavailable.
+complete, including a real Codex CLI canary. The earlier Claude authentication
+failure remains separate from a subsequent authorized native Claude canary.
 Current-main composition and the distributable build passed. Authenticated
 agent delivery, live API generation, cross-host coverage, exact resource provenance
 and scheduled generation remain separate gates. See
 [the implementation contract](design/agent-status-pages.md).
+
+Continuation owner: `codex/agent-status-claude-layout`, based on `9a40128`.
+One fresh, tool-disabled native Claude invocation returned a valid structured
+account and model-written HTML, reporting Sonnet and an estimated cost of
+approximately USD 0.022. Original client, controller and queue processes exited
+normally; source/tool pins and retained artifacts were independently checked.
+This accepts native capture only, not authenticated ARM delivery, API synthesis
+or rendered presentation. Sanitized capture of that actual reply remains pending.
+
+Approved source scope also covers a compact, timestamped self-report preview
+and improved identity/resource organization, plus managed status prompts editable
+through UI, CLI and bounded single-rule configuration export/import. Prompt
+inheritance covers global, repository/worktrees, canonical directory and exact
+agent scopes. Each request must freeze its reviewed effective prompt and preserve
+retry identity after configuration changes. Store-version fencing, bounded
+parsing, final source review and composed validation remain implementation gates;
+these controls are not yet integrated.
+
+## Resident worker startup funding — source review in progress
+
+Owner: `codex/resident-worker-standing`. The original Manager/database/Server
+component is integrated; its pending-root funding and authenticated handoff
+continuation remains unapplied. A separate disposable Linux component experiment
+qualified its declared official-driver workload and native process exit, with
+logical cleanup acknowledgments. That experiment is not a measurement of the
+complete ARM startup or an acceptance of its resource envelope.
+
+Review is checking original-grant funding before image/native/database effects,
+bounded malformed-input parsing, explicit parent/child overlap and retained
+uncertainty. Public startup, actual worker-controller activation and different
+version API/UI replacement while the same runs, proxy and native child continue
+remain incomplete. No production activation follows from source-cost arithmetic
+or the component experiment alone.
 
 ## Original Server and native validation gate — selected scope qualified
 
