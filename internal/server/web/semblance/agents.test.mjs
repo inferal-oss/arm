@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {createAgentsConsole} from './agents.mjs';
 import {readDashboardRoute,dashboardRouteURL} from '../route.mjs';
 
@@ -14,7 +15,7 @@ function fixture(){
   retain(){this.retainCount++;return this;}focus(){}setPairs(v){this.pairs=v;}showModal(){this.open=true;}dock(){this.detached=false;this.emit('detach');}popOut(){this.detached=true;this.emit('detach');}reveal(){}on(name,fn){if(!this.events.has(name))this.events.set(name,new Set());this.events.get(name).add(fn);return()=>this.events.get(name).delete(fn);}emit(name){for(const fn of this.events.get(name)??[])fn();}
  }
  const make=(kind,label,props={})=>new Handle(kind,{label,...props}),stack=children=>new Handle('Stack').replace(...(children??[]));
- const ui={batch:fn=>fn(),put(){},component:(kind,props)=>new Handle(kind,props),stack,heading:(s)=>make('Heading',s),text:(s,p)=>make('Text',s,p),code:s=>make('Code','',{value:s}),json:(s,label)=>make('Code',label,{value:JSON.stringify(s)}),descriptions:p=>make('Descriptions','',{pairs:p}),toolbar:(label,c)=>make('Toolbar',label).replace(...c),field:(label,p,fn)=>make('Field',label,{...p,activate:fn}),select:(label,o,p,fn)=>make('Choice',label,{value:o[0].value,...p,activate:fn}),check:(label,p,fn)=>make('Checkbox',label,{...p,activate:fn}),button:(label,fn)=>make('Button',label,{activate:fn}),island:(name,widget)=>make('Island',name,{widget}),disclosure:(label,c)=>make('Disclosure',label).replace(...c),dialog:(label,c,actions)=>make('Dialog',label).replace(...c,...actions),detachable:(label,content)=>{const h=make('Tabs',label).replace(content);h.tab=make('Tab',label);return h;}};
+ const ui={batch:fn=>fn(),put(){},component:(kind,props)=>new Handle(kind,props),stack,grid:(c,p)=>make('Grid','',p).replace(...c),card:(label,c,p={})=>make('Card',label,p).replace(...c,...(p.actions??[])),badge:(s,p)=>make('Badge',s,p),stat:(label,value)=>make('Stat',label,{value}),heading:(s)=>make('Heading',s),text:(s,p)=>make('Text',s,p),code:s=>make('Code','',{value:s}),json:(s,label)=>make('Code',label,{value:JSON.stringify(s)}),descriptions:p=>make('Descriptions','',{pairs:p}),toolbar:(label,c)=>make('Toolbar',label).replace(...c),field:(label,p,fn)=>make('Field',label,{...p,activate:fn}),select:(label,o,p,fn)=>make('Choice',label,{value:o[0].value,...p,activate:fn}),check:(label,p,fn)=>make('Checkbox',label,{...p,activate:fn}),button:(label,fn)=>make('Button',label,{activate:fn}),island:(name,widget)=>make('Island',name,{widget}),disclosure:(label,c,p={})=>make('Disclosure',label,p).replace(...c),dialog:(label,c,actions)=>make('Dialog',label).replace(...c,...actions),detachable:(label,content)=>{const h=make('Tabs',label).replace(content);h.tab=make('Tab',label);return h;}};
  return {ui,handles,root:stack()};
 }
 test('standalone route retains only a public identity key',()=>{
@@ -84,5 +85,40 @@ test('resource pages bound rendered rows, retain every association and clamp ind
  button(0,'Lease 26 · active').activate();button(0,'Run 28 · complete').activate();assert.deepEqual(opened,[`${ids[0]}-lease-26`,`${ids[0]}-run-28`]);
  leases=records('leases',2);runs=records('runs',0);console.update({host:'local',leases});console.setActive(true);await turn();
  assert.match(labels(0),/1–2 of 2/);assert.match(labels(0),/0–0 of 0/);assert.equal(button(0,'Previous leases').disabled,true);assert.equal(button(0,'Next runs').disabled,true);
+ console.dispose();
+});
+
+test('roster cards keep labeled self-report provenance and concise uncertainty across refresh',async()=>{
+ const {ui,handles,root}=fixture(),source={},id='1'.repeat(32),at=new Date(Date.now()-20*60*1000).toISOString();
+ let row={id,current:true,identity:{host:'local',contact:{id:'current-agent',adapter:'claude',cwd:'/workspace/project'}},latest:{id:'first-attempt',state:'contributed',reply_observed_at:at},current_preview:'Reported investigation, completion unknown.',current_preview_attempt:'first-attempt',current_preview_observed_at:at};
+ const console=createAgentsConsole({ui,root,timers:{setTimeout(){return 1;},clearTimeout(){}},connected:()=>true,context:()=>source,call:async op=>op==='agent_status_list'?{rows:[row],total:1,scope:'Full provenance belongs in the collapsed details.'}:[],onNavigate(){},onLease(){},onRun(){},location:{href:'http://localhost/'}});
+ const turn=()=>new Promise(resolve=>setImmediate(resolve)),descendants=h=>[h,...h.children.flatMap(descendants)];
+ console.update({host:'local',leases:[]});console.setActive(true);await turn();
+ const card=handles.find(h=>h.kind==='Card'&&!h.disposed),parts=()=>descendants(card),facts=()=>parts().find(h=>h.kind==='Descriptions'&&h.pairs.some(([label])=>label==='Reported current work'));
+ assert.equal(card.label,'current-agent');assert.equal(facts().pairs.find(([label])=>label==='Reported current work')[1],row.current_preview);
+ assert.equal(parts().find(h=>h.label==='Stale contribution').hidden,false);
+ assert.equal(parts().find(h=>h.label==='Details').open,false);assert.equal(handles.find(h=>h.label==='Scope and attribution').open,false);
+ const select=parts().find(h=>h.kind==='Checkbox');select.checked=true;select.activate();
+ const request=handles.find(h=>h.label==='Review contribution requests');assert.equal(request.disabled,false);
+ row={...row,current:false,latest:{id:'next-attempt',state:'unknown',error:'Outcome unknown; inspect the retained original request.'}};
+ console.setActive(true);await turn();
+ assert.equal(card.disposed,false,'refresh must retain each owned card');assert.equal(facts().pairs.find(([label])=>label==='Reported current work')[1],'Not reported','mismatched preview source cannot be relabeled as a new request');
+ assert.equal(request.disabled,true);assert.equal(select.disabled,true);assert.equal(parts().find(h=>h.label==='Stale contribution').hidden,true);
+ assert.ok(parts().some(h=>h.kind==='Text'&&!h.hidden&&h.label.startsWith('Outcome unknown;')),'brief errors must remain visible outside Details');
+ assert.ok(parts().some(h=>h.kind==='Badge'&&h.label==='Outcome uncertain'));
+ console.dispose();
+});
+
+test('all roster badges satisfy the actual pinned stock BadgeShape label bound',async()=>{
+ const shape=readFileSync(new URL('../../../../web/third_party/semblance/ontology/shapes/components.ttl',import.meta.url),'utf8');
+ const bound=Number(shape.match(/c:BadgeShape[\s\S]*?sh:maxLength\s+(\d+)/)?.[1]);assert.equal(bound,32,'review a changed stock badge contract');
+ const {ui,handles,root}=fixture(),source={},states=['pending_delivery','awaiting_reply','contributed','late_reply','ready','generating','failed','cancelled','superseded','timed_out','unknown','other',null];
+ const rows=states.map((state,n)=>({id:String(n),current:n%2===0,identity:{host:'local',contact:{id:'agent-'+n,adapter:['codex','claude','generic'][n%3],idle:n%3===0}},latest:state?{id:'attempt-'+n,state,reply_deadline:new Date(0).toISOString()}:null}));
+ const console=createAgentsConsole({ui,root,timers:{setTimeout(){return 1;},clearTimeout(){}},connected:()=>true,context:()=>source,call:async op=>op==='agent_status_list'?{rows,total:rows.length,config:{enabled:true}}:[],onNavigate(){},onLease(){},onRun(){},location:{href:'http://localhost/'}});
+ console.setActive(true);await new Promise(resolve=>setImmediate(resolve));
+ const badges=handles.filter(h=>h.kind==='Badge'&&!h.disposed);assert.ok(badges.length>=states.length*4);
+ for(const badge of badges)assert.ok(Array.from(badge.label).length<=bound,`stock badge violates pinned shape: ${badge.label}`);
+ assert.ok(badges.some(h=>h.label==='Contributed'));
+ assert.ok(handles.some(h=>h.kind==='Descriptions'&&h.pairs.some(([name,value])=>name==='Participation'&&value==='Agent contributed · ready to summarize')),'full contribution explanation must remain in Details');
  console.dispose();
 });

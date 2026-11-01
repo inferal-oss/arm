@@ -50,9 +50,12 @@ type statusParams struct {
 }
 type statusRow struct {
 	agentstatus.Entry
-	Current  bool                 `json:"current"`
-	Latest   *agentstatus.Attempt `json:"latest,omitempty"`
-	ReportID string               `json:"report_id,omitempty"`
+	Current                bool                 `json:"current"`
+	Latest                 *agentstatus.Attempt `json:"latest,omitempty"`
+	ReportID               string               `json:"report_id,omitempty"`
+	CurrentPreview         string               `json:"current_preview,omitempty"`
+	CurrentPreviewAttempt  string               `json:"current_preview_attempt,omitempty"`
+	CurrentPreviewObserved *time.Time           `json:"current_preview_observed_at,omitempty"`
 }
 
 func (s *Server) agentStatusService() (*statusService, error) {
@@ -241,6 +244,14 @@ func (s *Server) agentStatusOperation(ctx context.Context, op string, raw json.R
 				}
 			}
 			row := statusRow{Entry: entry, Current: current, Latest: strippedAttempt(state.Latest(entry.ID))}
+			if latest := state.Latest(entry.ID); latest != nil && latest.ReplyAt != nil {
+				row.CurrentPreview = agentstatus.CurrentWorkPreview(latest.Account)
+				if row.CurrentPreview != "" {
+					row.CurrentPreviewAttempt = latest.ID
+					observed := *latest.ReplyAt
+					row.CurrentPreviewObserved = &observed
+				}
+			}
 			if report := state.Report(entry.ID); report != nil {
 				row.ReportID = report.ID
 			}

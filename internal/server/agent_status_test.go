@@ -78,6 +78,36 @@ func TestAgentStatusSetupProjectionFailurePreservesInventory(t *testing.T) {
 		t.Fatal("setup failure blocked inventory", setup)
 	}
 }
+
+func TestAgentStatusCurrentPreviewKeepsExactContributionProvenance(t *testing.T) {
+	s, service, contact, entry := statusFixture(t)
+	a := statusContribution(t, s, service, contact, entry, "preview-first")
+	long := strings.Repeat("界", 200)
+	_, err := service.store.Update(func(st *agentstatus.State) error {
+		st.Attempt(a.ID).Account.Current = []string{long, "second entry must not leak"}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := statusCall(t, s, "list", statusParams{}).(map[string]any)["rows"].([]statusRow)
+	if len(rows) != 1 || rows[0].CurrentPreview == "" || len(rows[0].CurrentPreview) > 160 || rows[0].CurrentPreviewAttempt != a.ID || rows[0].CurrentPreviewObserved == nil || !rows[0].CurrentPreviewObserved.Equal(*a.ReplyAt) {
+		t.Fatal("missing bounded source-bound preview", rows)
+	}
+	raw, _ := json.Marshal(rows)
+	if strings.Contains(string(raw), `"account"`) || strings.Contains(string(raw), `"html"`) || strings.Contains(string(raw), long) || strings.Contains(string(raw), "second entry must not leak") {
+		t.Fatal("inventory exposed full account or report")
+	}
+	read := statusCall(t, s, "read", statusParams{ID: entry}).(map[string]any)
+	if read["latest"].(*agentstatus.Attempt).Account.Current[0] != long {
+		t.Fatal("projection mutated retained account")
+	}
+	next := statusAttempt(t, statusCall(t, s, "request", statusParams{ID: entry, Key: "preview-next", Contact: &contact, Confirm: true}))
+	rows = statusCall(t, s, "list", statusParams{}).(map[string]any)["rows"].([]statusRow)
+	if rows[0].Latest.ID != next.ID || rows[0].CurrentPreview != "" || rows[0].CurrentPreviewAttempt != "" || rows[0].CurrentPreviewObserved != nil {
+		t.Fatal("queued request presented an older contribution as fresh", rows)
+	}
+}
 func statusContribution(t *testing.T, s *Server, service *statusService, c agents.Contact, entry, key string) agentstatus.Attempt {
 	t.Helper()
 	a := statusAttempt(t, statusCall(t, s, "request", statusParams{ID: entry, Key: key, Contact: &c, Confirm: true}))

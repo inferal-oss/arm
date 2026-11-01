@@ -5759,3 +5759,19 @@ lifetimes, nonempty controller transitions, worker launch/renewal/activation,
 API/UI/assets, public `arm start` and automatic backend startup remain required.
 Real active-job/native-child survival through a Docker A-to-B upgrade is still
 a completion gate. Fresh empty-table schema checks do not accept runtime state.
+
+
+## Agent Status: structured roster continuation
+
+The dedicated `codex/agent-status-claude-layout` continuation implements stock
+responsive agent cards, bounded latest-contribution previews and collapsed
+diagnostics, including a pinned stock BadgeShape correction. Focused Go/vet/UI
+checks and independently reviewed 37-check/eight-image browser evidence passed.
+The fresh native Claude result is positive; authenticated ARM contribution
+delivery and the separate API summarizer remain distinct unverified gates.
+The exact source-bound frontend bundle was adopted without changing other assets.
+
+This focused roster cut still requires native cmd/arm compile/link/embed evidence
+and coordinator integration. Scoped prompt/question configuration is a separate,
+unadopted source-review draft with independent migration, exact-request replay,
+CLI/UI, cancellation and validation gates; it is not part of this roster commit.

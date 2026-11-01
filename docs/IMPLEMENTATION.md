@@ -6950,3 +6950,22 @@ delta preserves current Agent Status, authenticated caller binding and pending
 ingress guards. No API/UI worker, listener, public startup or upgrade behavior
 is implemented here. The [scoped evidence](validation/resident-worker-manager-composed-normal-2026-11-01.json)
 distinguishes SQL grammar/interface fixtures from original native authority.
+
+
+### Structured agent roster and fresh native Claude capture
+
+The Agents roster uses responsive stock cards with concise registration and
+contribution badges, source-bound current-work previews, labeled project/host/time
+facts and separate label-associated lease/run counts. Paths and full participation
+and attribution explanations start collapsed. Each preview contains only the
+latest attempt's first Current entry, at most 160 UTF-8 bytes including an ellipsis,
+and carries its exact request ID and observation time. A newer pending request
+does not relabel an older contribution as its preview; the full account is retained.
+All badge wording respects the pinned stock BadgeShape's 32-character limit.
+
+The fresh native Claude canary produced Account v1 and model-written HTML. Its
+browser representation uses production parsing/sanitization in an explicitly
+controller-mediated fixture alongside the retained earlier Codex result. It does
+not establish authenticated ARM contribution delivery or separate API generation.
+Scoped evidence is recorded in
+[the roster validation record](validation/agent-status-roster-2026-11-01.json).

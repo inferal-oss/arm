@@ -13762,3 +13762,37 @@ jobs and native child remains unverified and required.
 Integrated source `89d4362` has the same 2,116 Go/module input bytes and modes
 as the qualified composition, including the exact composed Server image. The
 documentation-only composition adds no test rerun or native acceptance.
+
+
+### Structured agent roster and native Claude continuation
+
+Five focused Go roots/twelve named cases and focused Go vet passed for the bounded
+preview projection and existing status boundaries. Twenty-two JavaScript checks
+passed across three files; after correcting a stock badge-label violation, the
+affected Agents file passed all seven checks, including the actual pinned
+BadgeShape constraint. These are linked scoped runs, not a full-suite rerun.
+The offline frontend build preserved the dependency lock and WAT payload.
+
+The final browser run passed 37 checks and produced eight screenshots covering
+desktop/narrow roster, normal/maximized Claude and Codex reports, independent
+report/run windows and a narrow standalone route. Both roster captures had zero
+stock shape-invalid nodes. Actual Current text was visible in normal windows;
+the normal Claude report and all captures were independently inspected. The
+narrow standalone capture records one scroll position with fixed shell overlays,
+not simultaneous visibility of all controls or arbitrary report layouts.
+
+One fresh native Claude CLI invocation outside the executor sandbox succeeded,
+reporting Claude Sonnet 5.5. The invocation contained two native turns: 2 uncached
+input tokens, 4,636 cache-creation input, 0 cache-read input and 323 output tokens.
+The native list-price estimate was USD 0.021778, not settled billing. Its 712-byte
+result wrapper held an Account v1 and model-written HTML, subsequently checked by
+production DecodeAccount, Document and ValidateDocument before browser rendering.
+The earlier Codex capture was retained; Codex was not rerun. Passing capture and
+sanitizer/UI evidence does not establish production state import, authenticated
+ARM reply delivery, separate API summarization, or current API entitlement.
+Failed and uncertain attempts were excluded from these passing claims.
+
+The normalized
+[validation record](validation/agent-status-roster-2026-11-01.json) binds runtime
+source and the adopted stock bundle. Final native cmd/arm compile/link and embedded
+asset verification remain a separate pending delivery gate for this source cut.

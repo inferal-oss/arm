@@ -1,0 +1,81 @@
+{
+  "browser": {
+    "checks": 37,
+    "independentVisualReview": true,
+    "narrowStandalone": "Recorded scroll position with fixed shell overlays; not an all-controls or arbitrary-layout claim.",
+    "normalCurrentVisible": true,
+    "screenshots": 8,
+    "shapeInvalidNodes": {
+      "desktop": 0,
+      "narrow": 0
+    }
+  },
+  "deliveryGates": {
+    "coordinatorIntegration": "pending",
+    "nativeCmdArmCompileAndEmbed": "pending",
+    "separatePromptConfiguration": "not part of this source cut"
+  },
+  "frontend": {
+    "armModule": {
+      "bytes": 4392866,
+      "sha256": "b16394329aae5a082903bd83ad632d3fa5f77253dad79e9e2c8aa53bc9460105"
+    },
+    "dependencyLockSHA256": "b48637aa9fdd1ffab0eb8cba19b5b01ceee3a8c6c894716f286416f4cfaeba8a",
+    "unchangedOtherAssets": 4,
+    "watSHA256": "f9ec89be7d14cbb64ec843002e064f8c1f2c414049e2b878db7e5b9cbcb142ea"
+  },
+  "go": {
+    "fullSuite": false,
+    "namedNodes": 12,
+    "packages": [
+      "agentstatus",
+      "server"
+    ],
+    "roots": 5,
+    "vetPackages": [
+      "agentstatus",
+      "server"
+    ]
+  },
+  "javascript": {
+    "correctedAgentsChecks": 7,
+    "initialChecks": 22,
+    "initialFiles": 3,
+    "qualification": "Affected Agents file rerun after badge correction; other two unchanged files retain scoped prior evidence."
+  },
+  "nativeClaude": {
+    "cliInvocations": 1,
+    "execution": "outside executor sandbox",
+    "inputTokens": {
+      "cacheCreation": 4636,
+      "cacheRead": 0,
+      "total": 4638,
+      "uncached": 2
+    },
+    "nativeListPriceEstimateUSD": 0.021778,
+    "nativeTurns": 2,
+    "outputTokens": 323,
+    "reportedModel": "claude-sonnet-5-5",
+    "requestedModel": "claude-sonnet-5-5",
+    "resultWrapperBytes": 712,
+    "settledBilling": false,
+    "success": true,
+    "validation": [
+      "DecodeAccount",
+      "Document",
+      "ValidateDocument"
+    ]
+  },
+  "nativeCodex": "Earlier successful capture retained; no rerun; actual model ID not reported by that CLI capture.",
+  "reviewedBase": "9a40128cde838efd96ab3116330cf1ebd6259270",
+  "runtimeSources": {
+    "internal/agentstatus/preview.go": "29b0fb5b1e681dc0f3a2f9d6993a039936ed0cec619406f4107f7876be3c6021",
+    "internal/agentstatus/preview_test.go": "729337743c7cd821c4d8f38b022c242d122a6376a0d56b02ba792555d49abb56",
+    "internal/server/agent_status.go": "8d61ef8fbac79b7195f2914db6f73155144fbec14551b3188fb67e73b842aa5a",
+    "internal/server/agent_status_test.go": "943c68913d6d312fb544ef5a312a3795a2d61c605abd81528dc38e77a0dfc29a",
+    "internal/server/web/semblance/agents.mjs": "cab0bf926149871e10a6722688e02d305159846953fece8a4c5aaead05d6f1e2",
+    "internal/server/web/semblance/agents.test.mjs": "0b0f36f95f32ef127a28e0dd6fc2bf8159f7fd918d8f29969012d0854f32dd3b"
+  },
+  "scope": "Focused structured roster and fresh native Claude reply capture; no full-suite, authenticated ARM contribution transport, production state import or separate API generation claim.",
+  "version": 1
+}

@@ -1,19 +1,29 @@
 import {agentResources,participationLabel,contributionFreshness} from './agent-status-model.mjs';
 import {createAgentReportWidget} from './agent-report-widget.mjs';
 
+// Stock BadgeShape limits labels to 32 characters. Keep the complete
+// participation explanation in Details and in the independent status window.
+function participationBadge(attempt){
+ if(!attempt)return 'No contribution';
+ if(attempt.state==='awaiting_reply'&&Date.parse(attempt.reply_deadline)<=Date.now())return 'Reply window ended';
+ return ({pending_delivery:'Delivery pending',awaiting_reply:'Awaiting reply',contributed:'Contributed',late_reply:'Late contribution',ready:'Report ready',generating:'Generating report',failed:'Attempt failed',cancelled:'Cancelled',superseded:'Registration replaced',timed_out:'Reply window ended',unknown:'Outcome uncertain'})[attempt.state]??'State unavailable';
+}
+
 // Stock components own navigation, controls and detachable window lifecycle.
 // The one foreign island contains only the sandboxed static report iframe.
 export function createAgentsConsole({ui,root,call,connected,context,onLease,onRun,onNavigate,location=globalThis.location,timers=globalThis}) {
  let rows=[],offset=0,total=0,active=false,disposed=false,busy=false,epoch=0,timer=null,config=null,scope='',standalone=null;
  let resources={leases:[],runs:[]},localHost='',review=null,reviewDialog=null,sequence=0;
  const views=new Map(),selected=new Set(),cards=new Map(),ownedJobs=new Set();
- const warning=ui.text('',{role:'status'}),count=ui.text(''),inventory=ui.stack(),windows=ui.stack(),page=ui.stack();
+ const warning=ui.text('',{role:'status'}),count=ui.text(''),summarizer=ui.badge('Summaries off'),scopeFacts=ui.descriptions([]),inventory=ui.grid([],{columns:2,minWidth:'23rem'}),windows=ui.stack(),page=ui.stack();
  const filter=ui.field('Filter agents',{type:'search'},render),mode=ui.select('Registration state',[{value:'all',label:'All retained agents'},{value:'current',label:'Current registrations'},{value:'dormant',label:'Idle or historical registrations'}],{},render);
  const previous=ui.button('Previous agents',()=>{offset=Math.max(0,offset-16);selected.clear();refresh();}),next=ui.button('Next agents',()=>{offset+=16;selected.clear();refresh();});
  const refreshButton=ui.button('Refresh observations',()=>refresh()),requestButton=ui.button('Review contribution requests',reviewRequests);
  const setupText=ui.text(''),setupDetails=ui.disclosure('Project status setup preferences',[setupText],{open:false});setupDetails.hidden=true;
- const list=ui.stack([ui.text('Agent accounts and observed resources have separate provenance. Idle, expired or missing replies never prove process exit.'),setupDetails,ui.toolbar('Agent inventory',[refreshButton,requestButton]),filter,mode,count,warning,inventory,ui.toolbar('Agent pages',[previous,next])]);
+ const scopeDetails=ui.disclosure('Scope and attribution',[scopeFacts,ui.text('Agent accounts and observed resources have separate provenance. Resource counts use label matching; exact historical ownership is unavailable. Idle, expired or missing replies never prove process exit.')],{open:false});
+ const list=ui.stack([ui.toolbar('Agent overview',[count,summarizer,ui.badge('Activity unknown')]),ui.grid([filter,mode],{columns:2,minWidth:'18rem'}),ui.toolbar('Agent inventory',[refreshButton,requestButton]),setupDetails,warning,inventory,ui.toolbar('Agent pages',[previous,next]),scopeDetails]);
  root.replace(list,page,windows);
+ const selectedCurrent=()=>rows.some(row=>row.current&&selected.has(row.id));
  function current(cut,source){return !disposed&&cut===epoch&&source===context()&&connected();}
  const observing=()=>active||[...views.values()].some(view=>view.window?.detached);
  function retire(){epoch++;busy=false;if(timer!==null)timers.clearTimeout(timer);timer=null;}
@@ -26,13 +36,25 @@ export function createAgentsConsole({ui,root,call,connected,context,onLease,onRu
   const text=String(filter.value||'').toLowerCase(),shown=rows.filter(row=>{
    const contact=row.identity.contact;return (mode.value!=='current'||row.current)&&(mode.value!=='dormant'||!row.current||contact.idle)&&`${contact.id} ${contact.adapter} ${contact.cwd} ${row.identity.host}`.toLowerCase().includes(text);
   });
-  count.set({label:`${offset+1>total?0:offset+1}–${Math.min(offset+16,total)} of ${total} retained identities · ${scope||'Local authority'} · ${config?.enabled?'Summarizer enabled: '+config.model:'Summarizer disabled; participation and observations remain available'}`});
-  previous.disabled=offset===0||!connected();next.disabled=offset+16>=total||!connected();refreshButton.disabled=!connected();requestButton.disabled=!connected()||selected.size===0;
+  count.set({label:`${offset+1>total?0:offset+1}–${Math.min(offset+16,total)} of ${total} agents`});
+  summarizer.set({label:config?.enabled?'Summaries enabled':'Summaries off'});scopeFacts.setPairs([['Scope',scope||'Local authority'],['Summary generation',config?.enabled?config.model:'Off · contributions and observations remain available']]);
+  previous.disabled=offset===0||!connected();next.disabled=offset+16>=total||!connected();refreshButton.disabled=!connected();requestButton.disabled=!connected()||!selectedCurrent();
   const keep=new Set();for(const row of shown){keep.add(row.id);let card=cards.get(row.id);const c=row.identity.contact,identity={...c,host:row.identity.host};
-   if(!card){const check=ui.check('Select '+c.id,{checked:selected.has(row.id)},()=>{if(check.checked)selected.add(row.id);else selected.delete(row.id);requestButton.disabled=!connected()||!selected.size;});const title=ui.heading(c.id,3),facts=ui.text(''),status=ui.text(''),counts=ui.text(''),open=ui.button('Open status window',()=>openStatus(row.id)),body=ui.stack([check,title,facts,status,counts,open]);card={body,facts,status,counts,check};cards.set(row.id,card);}
-   const observed=agentResources(identity,resources);
-   card.facts.set({label:`${c.adapter} · ${row.identity.host===localHost?'Local host':row.identity.host} · ${c.cwd?.split('/').filter(Boolean).at(-1)||'Project not recorded'} · ${row.current?(c.idle?'Declared idle · activity unknown':'Current registration · activity unknown'):'Historical registration · activity unknown'}`});
-   card.status.set({label:participationLabel(row.latest)+(row.latest?.reply_observed_at?' · Contribution observed '+new Date(row.latest.reply_observed_at).toLocaleString():' · No contribution observed')});card.counts.set({label:`${observed.leases.length} label-associated leases · ${observed.runs.length} label-associated runs · legacy attribution; exact historical ownership unavailable`});
+   if(!card){
+    const check=ui.check('Select '+c.id,{checked:selected.has(row.id)},()=>{if(check.checked)selected.add(row.id);else selected.delete(row.id);requestButton.disabled=!connected()||!selectedCurrent();});
+    const adapter=ui.badge(c.adapter),registration=ui.badge(''),status=ui.badge(''),age=ui.badge('Stale contribution',{tone:'warning'}),error=ui.text('',{role:'status',tone:'warning'}),facts=ui.descriptions([]),details=ui.descriptions([]),leases=ui.stat('Leases',0),runs=ui.stat('Runs',0),open=ui.button('Open status window',()=>openStatus(row.id));
+    const body=ui.card(c.id,[ui.toolbar('Agent state',[adapter,registration,status,age]),error,facts,ui.stack([ui.text('Label-associated resources'),ui.grid([leases,runs],{columns:2,minWidth:'6rem'})]),check,ui.disclosure('Details',[details],{open:false})],{actions:[open]});
+    card={body,adapter,registration,status,age,error,facts,details,leases,runs,check};cards.set(row.id,card);
+   }
+   const observed=agentResources(identity,resources),state=row.latest?.state;
+   card.adapter.set({label:c.adapter||'Unknown client'});card.registration.set({label:row.current?(c.idle?'Declared idle':'Current registration'):'Historical registration'});
+   card.status.set({label:participationBadge(row.latest),tone:['contributed','ready'].includes(state)?'success':state==='failed'?'danger':['late_reply','timed_out','unknown'].includes(state)?'warning':'neutral'});
+   const observedAt=Date.parse(row.latest?.reply_observed_at??''),previewAt=Date.parse(row.current_preview_observed_at??''),previewValid=row.current_preview_attempt===row.latest?.id&&Number.isFinite(previewAt)&&previewAt===observedAt;
+   card.age.hidden=!Number.isFinite(observedAt)||Date.now()-observedAt<=15*60*1000;
+   card.error.hidden=!row.latest?.error;card.error.set({label:Array.from(String(row.latest?.error??'')).slice(0,160).join('')+(Array.from(String(row.latest?.error??'')).length>160?'…':'')});
+   card.facts.setPairs([['Reported current work',previewValid&&row.current_preview?row.current_preview:'Not reported'],['Project',c.cwd?.split('/').filter(Boolean).at(-1)||'Not recorded'],['Host',row.identity.host===localHost?'Local host':row.identity.host],['Last contribution',Number.isFinite(observedAt)?new Date(observedAt).toLocaleString():'Not observed']]);
+   card.leases.set({value:observed.leases.length});card.runs.set({value:observed.runs.length});
+   card.details.setPairs([['Participation',participationLabel(row.latest)],['Project path',c.cwd||'Not recorded'],['Host identity',row.identity.host],['Preview source',previewValid?row.current_preview_attempt:'Not reported'],['Error',row.latest?.error||'None reported'],['Resource attribution','Legacy label matching only; exact historical ownership unavailable'],['Activity','Unknown · registration and replies do not prove process activity']]);
    card.check.disabled=!connected()||!row.current;
   }
   for(const [id,card]of cards)if(!keep.has(id)){cards.delete(id);card.body.dispose();}

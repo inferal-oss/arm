@@ -144,9 +144,20 @@ observed associations. The normal window displays the model report before
 collapsed diagnostics, with close and full-page navigation above it.
 
 Contributions and model calls require explicit operator actions. There is no
-recurring generation schedule. A native Codex canary produced a structured account
-and model-written HTML, subsequently validated by the production account parser
-and HTML sanitizer. Browser evidence uses those captured results in an explicitly
-controller-mediated fixture. Successful Claude inference, authenticated ARM agent
-delivery, the separate API summarizer, cross-host contributions, exact historical
-resource ownership and live provider entitlement remain unverified.
+recurring generation schedule. Native Codex and later native Claude canaries
+produced structured accounts and model-written HTML, subsequently validated by the production account
+parser and HTML sanitizer. The fresh Claude CLI invocation ran outside the
+executor sandbox and reported Claude Sonnet 5.5; its two-turn native usage estimate
+is not settled billing. Browser evidence uses both captured results in an
+explicitly controller-mediated fixture. Authenticated ARM agent delivery, the
+separate API summarizer, cross-host contributions, exact historical resource
+ownership and current API entitlement remain unverified. Older failed/uncertain
+attempts are not counted as successful inference.
+
+The roster presents responsive stock cards with distinct registration/contribution
+badges and labeled current work, project, host and observation time. Full paths,
+participation explanations and legacy attribution stay in collapsed Details.
+Current-work previews are at most 160 UTF-8 bytes, identify the exact latest
+contributing request/time and never borrow a prior account for a newer pending
+attempt. Stock BadgeShape labels are at most 32 characters; browser checks verify
+no native shape-invalid markers before desktop and narrow captures.
