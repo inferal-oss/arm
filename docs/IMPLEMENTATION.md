@@ -6969,3 +6969,32 @@ controller-mediated fixture alongside the retained earlier Codex result. It does
 not establish authenticated ARM contribution delivery or separate API generation.
 Scoped evidence is recorded in
 [the roster validation record](validation/agent-status-roster-2026-11-01.json).
+
+
+### Worker-original pending root, proof and funding
+
+The private same-binary worker-original core entry now composes the retained
+bootstrap, prepared commitment, service3/RootBound footer and current journals,
+and four-phase proof around its original service, fresh fence, pinned image,
+official SQLite Connector, Manager and Server. Its original entry retains partial
+and abnormal operations. The expected RootBound service DATA carries both initial
+package and manifest hashes from the prepared service and checks the same
+canonical prepared commitment before either native append.
+
+The actual standalone launcher scope binds process-initial command selection.
+Parent structural prepayment precedes executable capture; the complete original
+pending source/evidence/ledger comparison precedes parent pin/fence/channel
+construction and child native issuer/database construction. Streaming preflight bounds evidence
+before typed decoding. Input-reference retirement records its original attempts
+and results; failed or unreturned retirement cannot issue successful funding.
+Operator review displays the complete pending source, ledger, overlap and numeric
+unknown assumptions. These are pending-construction costs, not a full runtime
+budget or permission to launch helpers.
+
+The [scoped record](validation/resident-worker-pending-root-funding-scoped-2026-11-01.json)
+distinguishes historical normal coverage from final-source checks and the expected
+failed regression control. This stage enables no public startup or readiness.
+Actual parent runtime/helper lifetimes, package custody, worker controller and
+renewal/activation, API/UI/assets and stable reporting remain separate work.
+Public `arm start`, automatic backend discovery and real active-job/native-child
+survival across a Docker A-to-B upgrade remain completion gates.

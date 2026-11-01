@@ -13802,3 +13802,33 @@ text differed. The documentation-only acceptance update adds no runtime test
 claim. Original compiler, helper and FIFO exits were zero with output EOF and
 empty temporary directories. Shared build-cache coverage remained cooperative
 and unmeasured; no physical reclamation credit is claimed.
+
+
+### Worker-original pending root/funding and RootBound package regression
+
+Historical composed source passes 50 normal roots/62 named RUN/PASS nodes and an
+eleven-package compile-only prerequisite. Complete source review subsequently
+found that its expected RootBound service omitted the initial package and
+manifest hashes required by the actual footer encoder. That historical refusal
+and cost coverage remains scoped evidence; it is not final-source positive
+startup acceptance. The original interrupted prefix remains incomplete.
+
+The corrected current-main composition passes seven positive roots/thirteen
+named nodes: two new codec-chain roots/eight names and five existing guards
+rechecked. Focused Server vet passes. A separate compiler overlay removes only
+the two expected-service assignments; its one test root and package fail with
+exit one as expected. That failed control demonstrates the regression detects
+the omission and is not counted as a production pass. Production source remains
+unchanged by the overlay.
+
+All four original commands and the queue owner joined. All 88 official module
+and go.mod hashes match go.sum before and after the run; source bytes/modes and
+three temporary directories pass the final audit. The bounded storage/headroom
+checks pass. The [normalized record](validation/resident-worker-pending-root-funding-scoped-2026-11-01.json)
+retains exact positive and expected-failure rosters without adding historical
+counts to the final-source count. This is dirty composed-source qualification,
+not an owner or clean-commit execution. No race run is claimed for this pure
+projection change. No product/private-role execution, positive native startup,
+parent/controller activation, API/UI replacement or Docker upgrade fixture ran.
+Actual active-job, quiet proxy/native-child survival through a distinct-code
+A-to-B upgrade remains required before the user task can be complete.

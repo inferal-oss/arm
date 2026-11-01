@@ -491,9 +491,13 @@ func (w *workerCustody) typedOriginalLocked() bool {
 
 func workerOperationKindData(kind string) bool {
 	switch kind {
+	case "worker-parent-startup-funding", "worker-child-startup-funding":
+		return true
 	case "worker-operator-plan", "worker-operator-apply", "worker-operator-inspect", "worker-parent-open", "worker-parent-debit":
 		return true
 	case "worker-child-receive", "worker-child-runtime", "worker-child-environment", "worker-child-charge", "worker-charge-current", "worker-child-birth", "worker-birth-current":
+		return true
+	case "worker-child-prepared", "worker-child-root-bound", "worker-child-ack", "worker-child-challenge-auth", "worker-child-current", "worker-child-proof":
 		return true
 	case "worker-group-funding", "worker-group-channel", "worker-group-bind", "worker-group-withdraw", "worker-group-before-start", "worker-group-short-seal", "worker-group-parent-retire":
 		return true

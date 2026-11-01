@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"getarm.org/internal/residentcost"
 	"io"
 	"os"
 	"path/filepath"
@@ -15,6 +16,8 @@ import (
 // Offline worker authorization owns its actual reads, image and native files.
 // It has no Start, inherited child, Manager, charge, birth or release operation.
 type WorkerOperatorPending struct {
+	requiredSource                                                   *residentcost.PendingSourceContractData
+	requiredSourceRaw                                                []byte
 	self                                                             *WorkerOperatorPending
 	custody                                                          *workerCustody
 	profilePath, evidencePath, key, reason                           string
@@ -27,16 +30,17 @@ type WorkerOperatorPending struct {
 }
 
 type WorkerOperatorPlan struct {
-	Schema          uint32                    `json:"schema"`
-	SHA256          string                    `json:"sha256"`
-	Intent          WorkerOperatorIntent      `json:"intent"`
-	ExistingGrantID string                    `json:"existing_grant_id,omitempty"`
-	Measurements    []WorkerMeasurement       `json:"measurements"`
-	Coverage        []MeasurementCoverage     `json:"core_coverage"`
-	CostScopes      []MeasurementCostScope    `json:"core_cost_scopes"`
-	Artifacts       []OperatorArtifactSummary `json:"artifacts"`
-	Unknowns        []string                  `json:"unknowns"`
-	Limit           string                    `json:"limit"`
+	PendingStartupReview *WorkerPendingStartupReview `json:"pending_startup_review,omitempty"`
+	Schema               uint32                      `json:"schema"`
+	SHA256               string                      `json:"sha256"`
+	Intent               WorkerOperatorIntent        `json:"intent"`
+	ExistingGrantID      string                      `json:"existing_grant_id,omitempty"`
+	Measurements         []WorkerMeasurement         `json:"measurements"`
+	Coverage             []MeasurementCoverage       `json:"core_coverage"`
+	CostScopes           []MeasurementCostScope      `json:"core_cost_scopes"`
+	Artifacts            []OperatorArtifactSummary   `json:"artifacts"`
+	Unknowns             []string                    `json:"unknowns"`
+	Limit                string                      `json:"limit"`
 }
 
 // A stored-record observation never reconstructs the writer's original sync
@@ -114,7 +118,7 @@ func (p *WorkerOperatorPending) PlanOriginal(ctx context.Context) (plan WorkerOp
 	resultErr = p.planBodyOriginal(ctx)
 	if resultErr == nil {
 		raw, err := json.Marshal(p.plan)
-		if err != nil || len(raw) > MaxProfileBytes {
+		if err != nil || len(raw) > MaxWorkerOperatorPlanBytes {
 			resultErr = ErrInvalid
 		} else {
 			resultErr = json.Unmarshal(raw, &plan)
@@ -132,6 +136,9 @@ func (p *WorkerOperatorPending) PlanOriginal(ctx context.Context) (plan WorkerOp
 func (p *WorkerOperatorPending) planBodyOriginal(ctx context.Context) error {
 	if err := workerContextData(ctx); err != nil {
 		return err
+	}
+	if p.requiredSource == nil || len(p.requiredSourceRaw) == 0 {
+		return ErrInvalid
 	}
 	w := p.custody
 	n := w.raw.files
@@ -161,6 +168,9 @@ func (p *WorkerOperatorPending) planBodyOriginal(ctx context.Context) error {
 	if decodeOperatorDocument(profileRaw, MaxProfileBytes, p.profile) != nil || p.profile.Validate() != nil || p.profile.Core.Build != build || p.profile.EvidenceSHA256 != evidenceInput.SHA256 {
 		return ErrInvalid
 	}
+	if residentcost.PreflightEvidenceJSONData(evidenceRaw) != nil {
+		return ErrInvalid
+	}
 	p.evidence = &WorkerEvidenceBundle{}
 	if decodeOperatorDocument(evidenceRaw, MaxEvidenceBytes, p.evidence) != nil || p.evidence.Validate(*p.profile) != nil {
 		return ErrInvalid
@@ -184,12 +194,15 @@ func (p *WorkerOperatorPending) planBodyOriginal(ctx context.Context) error {
 		}
 		p.plan.ExistingGrantID = grant.ID
 	}
+	if err := p.attachCompletePendingReviewData(); err != nil {
+		return err
+	}
 	// Even the initial grant's entire encoded envelope must fit before Apply.
 	if _, err = encodeWorkerJournalData([]WorkerRecordData{{Schema: 3, Sequence: 1, Kind: "worker-operator-authorized", Grant: workerGrantForPlanData(p.plan)}}); err != nil {
 		return err
 	}
 	encoded, err := json.Marshal(p.plan)
-	if err != nil || len(encoded) > MaxProfileBytes {
+	if err != nil || len(encoded) > MaxWorkerOperatorPlanBytes {
 		return ErrInvalid
 	}
 	if err = ctx.Err(); err != nil {

@@ -14,6 +14,20 @@ import (
 // Fixed13 worker entry and native serve are separate dependencies. A record or
 // synthetic descriptor registry cannot supply the original source.
 type WorkerChildPending struct {
+	structural                                                                  *workerStartupVerifierReservation
+	funding                                                                     *WorkerStartupFundingPending
+	fundingTried                                                                bool
+	proofTried                                                                  bool
+	proofSign                                                                   *workerChildProofSignCall
+	preparedTried, rootBoundTried                                               bool
+	preparedValidation                                                          *workerPreparedServiceCall
+	ackSign                                                                     *workerChildAckCall
+	challengeAuth                                                               *workerChildChallengeAuthCall
+	challengeView                                                               *WorkerCurrentChallengeView
+	currentValidation                                                           *workerChildCurrentCall
+	currentObservation                                                          *WorkerCurrentServiceObservation
+	ackTried, challengeTried, currentTried                                      bool
+	rootBound                                                                   *workerChildRootBoundCall
 	self                                                                        *WorkerChildPending
 	custody                                                                     *workerCustody
 	source                                                                      *residentrefs.ServiceOriginal
@@ -93,6 +107,41 @@ func (p *WorkerChildPending) beginOriginal(kind string) (*operation, error) {
 			return nil, ErrInvalid
 		}
 		p.birthTried = true
+	case "worker-child-startup-funding":
+		if !p.received || !p.runtimeBound || p.charge == nil || p.birth == nil || !p.birth.complete || p.birth.serve == nil || p.funding == nil || p.fundingTried || p.preparedTried {
+			return nil, ErrInvalid
+		}
+		p.fundingTried = true
+	case "worker-child-prepared":
+		if !p.received || !p.runtimeBound || p.charge == nil || p.birth == nil || !p.birth.complete || p.birth.serve == nil || p.funding == nil || !p.funding.completedLocked() || p.preparedTried {
+			return nil, ErrInvalid
+		}
+		p.preparedTried = true
+	case "worker-child-root-bound":
+		if p.rootBoundTried || !p.preparedOriginalLocked(p.preparedValidation) || !p.preparedValidation.normalReturned || !p.preparedValidation.op.normalFinished || p.preparedValidation.resultError != nil {
+			return nil, ErrInvalid
+		}
+		p.rootBoundTried = true
+	case "worker-child-ack":
+		if p.ackTried || !p.completedWorkerRootBoundLocked() {
+			return nil, ErrInvalid
+		}
+		p.ackTried = true
+	case "worker-child-challenge-auth":
+		if p.challengeTried || !p.completedWorkerAckLocked() {
+			return nil, ErrInvalid
+		}
+		p.challengeTried = true
+	case "worker-child-current":
+		if p.currentTried || !p.currentWorkerViewLocked(p.challengeView, p.charge) {
+			return nil, ErrInvalid
+		}
+		p.currentTried = true
+	case "worker-child-proof":
+		if p.proofTried || p.currentObservation == nil || !p.currentObservation.completedDataLocked(p, p.challengeView, p.charge) {
+			return nil, ErrInvalid
+		}
+		p.proofTried = true
 	case "worker-birth-current":
 		if p.birth == nil {
 			return nil, ErrInvalid

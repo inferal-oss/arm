@@ -29,6 +29,10 @@ type WorkerFenceData struct {
 
 type WorkerInheritedFencePending struct{ state *workerInheritedFenceState }
 type workerInheritedFenceState struct {
+	currentTried          bool
+	current               *workerCurrentFenceCall
+	footerTried           bool
+	footer                *workerRootBoundFooterCall
 	mu                    sync.Mutex
 	self                  *WorkerInheritedFencePending
 	custody               *residentrefs.FenceOriginal
@@ -40,6 +44,7 @@ type workerInheritedFenceState struct {
 	expected              WorkerFenceData
 	original              residentrefs.FenceIdentities
 	intent                []byte
+	intentCopies          uint32
 	decoded               residentservice.WorkerBirthIntentData
 	bytesRead, readCalls  int
 	before, after         os.FileInfo
@@ -134,9 +139,29 @@ func (p *WorkerInheritedFencePending) begin(ctx context.Context, kind string) (*
 				return nil, errOriginalFence
 			}
 			s.verifyTried = true
-		} else if (kind != "native-validation" && kind != "database-before-connect") || !s.verified {
-			s.mu.Unlock()
-			return nil, errOriginalFence
+		} else {
+			if !s.verified {
+				s.mu.Unlock()
+				return nil, errOriginalFence
+			}
+			switch kind {
+			case "native-validation", "database-before-connect":
+			case "worker-current-journal":
+				if s.currentTried || s.current != nil || s.footer == nil || !s.completedFooterLocked(s.footer.service) {
+					s.mu.Unlock()
+					return nil, errOriginalFence
+				}
+				s.currentTried = true
+			case "worker-rootbound-footer":
+				if s.footerTried || s.footer != nil {
+					s.mu.Unlock()
+					return nil, errOriginalFence
+				}
+				s.footerTried = true
+			default:
+				s.mu.Unlock()
+				return nil, errOriginalFence
+			}
 		}
 		op := &workerInheritedFenceOperation{kind: kind, done: make(chan struct{})}
 		s.active = op
@@ -365,4 +390,36 @@ func (p *WorkerInheritedFencePending) ValidateOriginalBirth(view *residentservic
 		return residentservice.WorkerBirthSelectorsData{}, errOriginalFence
 	}
 	return selectors, nil
+}
+
+// IntentOriginalData lends bounded DATA only. The actual root consumes two
+// copies: initial cross-journal binding and prepared-state comparison. It lends
+// no journal/File/FD, closer, original issuer or live native-state authority.
+func (p *WorkerInheritedFencePending) IntentOriginalData() ([]byte, error) {
+	if p == nil || p.state == nil || p.state.self != p || p.state.custody == nil || p.state.rootContext == nil {
+		return nil, errOriginalFence
+	}
+	s := p.state
+	if err := s.custody.RequireOriginalWorkerCore(); err != nil {
+		return nil, err
+	}
+	if err := s.rootContext.Err(); err != nil {
+		return nil, err
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if !s.verified || !s.verifyTried || s.active != nil || s.firstError != nil || !workerFenceShapeData(s.expected) || len(s.intent) != s.expected.IntentBytes || s.bytesRead != len(s.intent) || s.readCalls <= 0 || s.readCalls > 32 || s.before == nil || s.after == nil || s.journal == nil || s.original != s.expected.Identities || s.decoded.Validate() != nil || s.intentCopies >= 2 {
+		return nil, errOriginalFence
+	}
+	s.intentCopies++ // retain the original bounded allocation attempt first
+	return workerIntentSnapshotData(s.intent)
+}
+
+// Private DATA copy helper only. Actual original lineage remains mandatory in
+// IntentOriginalData; this helper cannot produce a view, native claim or proof.
+func workerIntentSnapshotData(raw []byte) ([]byte, error) {
+	if len(raw) == 0 || len(raw) > residentrefs.MaxWireBytes-36 {
+		return nil, errOriginalFence
+	}
+	return append([]byte(nil), raw...), nil
 }

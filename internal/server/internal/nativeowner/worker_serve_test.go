@@ -12,7 +12,7 @@ import (
 func unissuedWorkerNativeData(t *testing.T) *WorkerServeIssuer {
 	t.Helper()
 	var p *WorkerServeIssuer
-	if err := NewInheritedWorkerServePending(&p, &residentbirth.WorkerInheritedFencePending{}, &residentservice.WorkerServeBirthView{}); err != nil || p == nil {
+	if err := NewInheritedWorkerServePending(&p, &residentbirth.WorkerInheritedFencePending{}, &residentservice.WorkerServeBirthView{}, &residentservice.WorkerStartupFundingView{}); err != nil || p == nil {
 		t.Fatal("pure pending allocation failed", err)
 	}
 	return p
@@ -36,20 +36,23 @@ func assertWorkerNativeNoIO(t *testing.T, p *WorkerServeIssuer) {
 
 func TestWorkerNativeConstructorAndOriginalCopiesRefuse(t *testing.T) {
 	fence, birth := &residentbirth.WorkerInheritedFencePending{}, &residentservice.WorkerServeBirthView{}
-	if err := NewInheritedWorkerServePending(nil, fence, birth); err == nil {
+	if err := NewInheritedWorkerServePending(nil, fence, birth, &residentservice.WorkerStartupFundingView{}); err == nil {
 		t.Fatal("nil destination accepted")
 	}
 	occupied := &WorkerServeIssuer{}
 	p := occupied
-	if err := NewInheritedWorkerServePending(&p, fence, birth); err == nil || p != occupied {
+	if err := NewInheritedWorkerServePending(&p, fence, birth, &residentservice.WorkerStartupFundingView{}); err == nil || p != occupied {
 		t.Fatal("occupied destination replaced")
 	}
 	p = nil
-	if err := NewInheritedWorkerServePending(&p, nil, birth); err == nil || p != nil {
+	if err := NewInheritedWorkerServePending(&p, nil, birth, &residentservice.WorkerStartupFundingView{}); err == nil || p != nil {
 		t.Fatal("nil fence published custody")
 	}
-	if err := NewInheritedWorkerServePending(&p, fence, nil); err == nil || p != nil {
+	if err := NewInheritedWorkerServePending(&p, fence, nil, &residentservice.WorkerStartupFundingView{}); err == nil || p != nil {
 		t.Fatal("nil birth published custody")
+	}
+	if err := NewInheritedWorkerServePending(&p, fence, birth, nil); err == nil || p != nil {
+		t.Fatal("nil funding published custody")
 	}
 	p = unissuedWorkerNativeData(t)
 	copyPending := *p

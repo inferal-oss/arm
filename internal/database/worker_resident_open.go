@@ -19,6 +19,8 @@ import (
 // pool, file registry and original operation, including partial/unknown outcomes.
 // No function here constructs a service grant or adopts an existing Manager.
 type WorkerResidentOpen struct {
+	currentTried          bool
+	currentValidation     *workerCurrentDatabaseCall
 	mu                    sync.Mutex
 	self                  *WorkerResidentOpen
 	rootContext           context.Context
@@ -120,6 +122,11 @@ func (o *WorkerResidentOpen) beginOriginal(kind string) (*workerResidentSQLOpera
 			return nil, fmt.Errorf("original database open already attempted")
 		}
 		o.openTried = true
+	case "validate_current":
+		if o.currentTried || !o.currentPreparedLocked(o.binding, o.claim, o.pool) {
+			return nil, errWorkerResidentDatabaseOriginal
+		}
+		o.currentTried = true
 	case "validate_prepared":
 		if o.firstError != nil || o.closeTried || o.connectSealed || o.preparedTried || !o.openTried || o.binding == nil || o.pool == nil || o.claim == nil {
 			return nil, errWorkerResidentDatabaseOriginal

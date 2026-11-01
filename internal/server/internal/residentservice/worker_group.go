@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"syscall"
 
 	"getarm.org/internal/mesh"
@@ -68,7 +69,7 @@ func NewWorkerServiceGroupWithParentReferences(parent *WorkerParentPending, debi
 	w := parent.custody
 	w.raw.mu.Lock()
 	defer w.raw.mu.Unlock()
-	if parent.group != nil || w.raw.active != nil || w.raw.firstError != nil || !w.originalWorkerDebitLocked(debit) || w.grant.Intent.Profile.Validate() != nil || w.grant.Intent.Profile.Core.Bounds.Descriptors < 13 {
+	if parent.group != nil || w.raw.active != nil || w.raw.firstError != nil || !w.originalWorkerDebitLocked(debit) || !parent.pendingFundingCompletedLocked(debit) || w.grant.Intent.Profile.Validate() != nil || w.grant.Intent.Profile.Core.Bounds.Descriptors < 13 {
 		return nil, nil, ErrInvalid
 	}
 	p := &WorkerServiceGroup{parent: parent, debit: debit, command: command, extra: command.ExtraFiles}
@@ -154,9 +155,12 @@ func (p *WorkerServiceGroup) fundingBodyOriginal(ctx context.Context, readCurren
 	}
 	w := p.parent.custody
 	w.raw.mu.Lock()
-	valid := p.parent.group == p && w.originalWorkerDebitLocked(p.debit)
+	valid := p.parent.group == p && w.originalWorkerDebitLocked(p.debit) && p.parent.pendingFundingCompletedLocked(p.debit)
 	w.raw.mu.Unlock()
 	if !valid || p.command.Env == nil || !equalEnvironmentEntries(p.command.Env, p.environment) {
+		return ErrInvalid
+	}
+	if !sameWorkerContextData(ctx, p.parent.funding.ctx) || runtime.GOMAXPROCS(0) != 1 {
 		return ErrInvalid
 	}
 	if err := w.grant.Intent.Profile.Core.RuntimeEnvironment.MatchesActual(p.environment); err != nil {

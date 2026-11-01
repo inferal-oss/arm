@@ -30,6 +30,7 @@ import (
 	"getarm.org/internal/mesh"
 	"getarm.org/internal/model"
 	"getarm.org/internal/providerexec"
+	"getarm.org/internal/residentrefs"
 	"getarm.org/internal/server"
 	"github.com/google/uuid"
 )
@@ -37,6 +38,7 @@ import (
 var Version = buildinfo.Version
 
 type app struct {
+	workerLauncherOriginal        *residentrefs.WorkerLauncherOriginal
 	home                          string
 	in                            io.Reader
 	out, err                      io.Writer
@@ -55,6 +57,17 @@ type app struct {
 }
 
 func Main(args []string, in io.Reader, out, errout io.Writer) int {
+	return mainWithOriginalWorkerLauncher(args, in, out, errout, nil)
+}
+
+func MainWithOriginalWorkerLauncher(args []string, in io.Reader, out, errout io.Writer, scope *residentrefs.WorkerLauncherOriginal) int {
+	if scope != nil && scope.RequireOriginalStandaloneStart() != nil {
+		return 1
+	}
+	return mainWithOriginalWorkerLauncher(args, in, out, errout, scope)
+}
+
+func mainWithOriginalWorkerLauncher(args []string, in io.Reader, out, errout io.Writer, scope *residentrefs.WorkerLauncherOriginal) int {
 	if len(args) > 0 && args[0] == kubeprovision.HelperArgument {
 		return kubeprovision.HelperMain(args[1:])
 	}
@@ -79,7 +92,7 @@ func Main(args []string, in io.Reader, out, errout io.Writer) int {
 	if len(args) > 0 && args[0] == "_cargo-helper" {
 		return cargoHelperMain(args[1:], out, errout)
 	}
-	a := app{home: local.Home(), in: in, out: out, err: errout, ctx: context.Background()}
+	a := app{home: local.Home(), in: in, out: out, err: errout, ctx: context.Background(), workerLauncherOriginal: scope}
 	a.outputTTY, a.errorTTY, a.inputTTY = terminal(out), terminal(errout), terminal(in)
 	a.colors = os.Getenv("NO_COLOR") == "" && os.Getenv("TERM") != "dumb"
 	f := a.rootFlags()

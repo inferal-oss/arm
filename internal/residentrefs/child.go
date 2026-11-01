@@ -123,6 +123,7 @@ func (e *abnormalOriginal) Unwrap() error { err, _ := e.cause.(error); return er
 // caller may invoke any native operation, wrapper, stat, service/image/native
 // constructor or legacy receiver. Parent-process reference owners are distinct.
 var processChildClaim struct {
+	launcher  *WorkerLauncherOriginal
 	mu        sync.Mutex
 	attempted bool
 	original  *ChildPending

@@ -3,11 +3,16 @@ package residentservice
 import (
 	"context"
 	"crypto/rand"
+	"getarm.org/internal/residentrefs"
 	"runtime"
 	"strings"
 )
 
 type WorkerParentPending struct {
+	launcher                                     *residentrefs.WorkerLauncherOriginal
+	structural                                   *workerStartupVerifierReservation
+	funding                                      *WorkerStartupFundingPending
+	fundingTried                                 bool
 	self                                         *WorkerParentPending
 	custody                                      *workerCustody
 	group                                        *WorkerServiceGroup
@@ -60,6 +65,11 @@ func (p *WorkerParentPending) beginOriginal(kind string) (*operation, error) {
 			return nil, ErrInvalid
 		}
 		p.debitTried = true
+	case "worker-parent-startup-funding":
+		if !p.opened || !p.debitComplete || p.funding == nil || p.fundingTried || p.group != nil {
+			return nil, ErrInvalid
+		}
+		p.fundingTried = true
 	default:
 		return nil, ErrInvalid
 	}
@@ -87,6 +97,9 @@ func (p *WorkerParentPending) openBodyOriginal(ctx context.Context) error {
 	if err := workerContextData(ctx); err != nil {
 		return err
 	}
+	if p.launcher == nil || p.launcher.RequireOriginalStandaloneStart() != nil {
+		return ErrInvalid
+	}
 	w := p.custody
 	n := w.raw.files
 	if err := n.openExistingAuthorized(w.path); err != nil {
@@ -106,6 +119,9 @@ func (p *WorkerParentPending) openBodyOriginal(ctx context.Context) error {
 	w.raw.mu.Lock()
 	w.journal, w.grant = journal, grant
 	w.raw.mu.Unlock()
+	if err := p.prepayStructuralOriginal(ctx); err != nil {
+		return err
+	}
 	n.progress("worker_parent_runtime_image_capture_pending")
 	image, err := w.captureRuntimeImageOriginal(ctx)
 	if err != nil {
@@ -208,7 +224,10 @@ func (p *WorkerParentPending) prepareBodyOriginal(ctx context.Context, debit *Wo
 	if err = w.appendJournalOriginal(ctx, next); err != nil {
 		return err
 	}
-	return n.validateCurrent(w.path)
+	if err = n.validateCurrent(w.path); err != nil {
+		return err
+	}
+	return p.bindStructuralDebitOriginal(debit)
 }
 
 type WorkerDebitObservation struct {

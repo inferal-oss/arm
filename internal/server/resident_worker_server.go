@@ -15,6 +15,8 @@ import (
 // Manager, claim, descriptor or lifetime cancellation function. Construction is
 // pure; no listener, HTTP route, native work or Manager loop is started here.
 type residentWorkerServerPending struct {
+	currentTried       bool
+	currentValidation  *residentWorkerServerCurrentCall
 	rootContext        context.Context
 	mu                 sync.Mutex // publication only; no native effects or joins
 	self               *residentWorkerServerPending
@@ -105,6 +107,11 @@ func (o *residentWorkerServerPending) begin(kind string) (*residentWorkerServerO
 			return nil, errResidentWorkerServerOriginal
 		}
 		o.startTried = true
+	case "validate_current":
+		if o.currentTried || !o.currentPreparedLocked(o.view) {
+			return nil, errResidentWorkerServerOriginal
+		}
+		o.currentTried = true
 	case "validate_prepared":
 		if !o.opened || o.startTried || o.started || o.preparedTried {
 			return nil, errResidentWorkerServerOriginal

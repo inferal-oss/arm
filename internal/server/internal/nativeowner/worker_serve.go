@@ -18,14 +18,16 @@ import (
 // old Manager/Server view or old service charge. raw holds concrete native
 // effect/descriptor bookkeeping only, with every legacy issuer field zero.
 type WorkerServeIssuer struct {
-	self     *WorkerServeIssuer
-	raw      *nativeOwner
-	fence    *residentbirth.WorkerInheritedFencePending
-	birth    *residentservice.WorkerServeBirthView
-	expected residentbirth.WorkerFenceData
-	bound    residentservice.WorkerBirthSelectorsData
-	manager  *WorkerManagerView
-	server   *WorkerServerView
+	funding        *residentservice.WorkerStartupFundingView
+	fundingBinding *residentservice.WorkerServeFundingBinding
+	self           *WorkerServeIssuer
+	raw            *nativeOwner
+	fence          *residentbirth.WorkerInheritedFencePending
+	birth          *residentservice.WorkerServeBirthView
+	expected       residentbirth.WorkerFenceData
+	bound          residentservice.WorkerBirthSelectorsData
+	manager        *WorkerManagerView
+	server         *WorkerServerView
 }
 
 type WorkerManagerView struct {
@@ -59,11 +61,11 @@ type WorkerSnapshot struct {
 // Pure allocation only. Root retains destination before any later native
 // validation, UID/entropy observation, open or lock. Zero/foreign inputs cannot
 // pass OpenOriginal. Root must fund its complete composed ledger before Open.
-func NewInheritedWorkerServePending(destination **WorkerServeIssuer, fence *residentbirth.WorkerInheritedFencePending, birth *residentservice.WorkerServeBirthView) error {
-	if destination == nil || *destination != nil || fence == nil || birth == nil {
+func NewInheritedWorkerServePending(destination **WorkerServeIssuer, fence *residentbirth.WorkerInheritedFencePending, birth *residentservice.WorkerServeBirthView, funding *residentservice.WorkerStartupFundingView) error {
+	if destination == nil || *destination != nil || fence == nil || birth == nil || funding == nil {
 		return errNotOriginal
 	}
-	p := &WorkerServeIssuer{fence: fence, birth: birth}
+	p := &WorkerServeIssuer{fence: fence, birth: birth, funding: funding}
 	p.self = p
 	*destination = p
 	p.raw = &nativeOwner{}
@@ -73,7 +75,7 @@ func NewInheritedWorkerServePending(destination **WorkerServeIssuer, fence *resi
 
 // Caller holds raw.mu. A finite type walk refuses future authority fields too.
 func (p *WorkerServeIssuer) originalLocked() bool {
-	if p == nil || p.self != p || p.raw == nil || p.fence == nil || p.birth == nil || p.raw.state == nil || p.raw.state.registry != p.raw {
+	if p == nil || p.self != p || p.raw == nil || p.fence == nil || p.birth == nil || p.funding == nil || p.raw.state == nil || p.raw.state.registry != p.raw {
 		return false
 	}
 	if active := p.raw.active; active != nil && (active.owner != p.raw || !workerNativeEffectKindData(active.kind)) {
@@ -128,6 +130,12 @@ func (p *WorkerServeIssuer) OpenOriginal() (resultErr error) {
 }
 
 func (p *WorkerServeIssuer) openBodyOriginal() error {
+	if err := p.funding.ClaimOriginalServeBinding(&p.fundingBinding, p.birth); err != nil {
+		return err
+	}
+	if err := p.fundingBinding.RequireOriginalBirth(p.birth); err != nil {
+		return err
+	}
 	o := p.raw
 	n := o.state
 	data, err := p.fence.NativeSelectorsOriginal()
@@ -182,6 +190,12 @@ func (p *WorkerServeIssuer) openBodyOriginal() error {
 // Private bool selects the already registered concrete open step. It is never
 // caller-supplied authority or a conditional skip of original fence validation.
 func (p *WorkerServeIssuer) matchOriginalBody(requireLock bool) error {
+	if p.fundingBinding == nil {
+		return errNotOriginal
+	}
+	if err := p.fundingBinding.RequireOriginalBirth(p.birth); err != nil {
+		return err
+	}
 	home, ids, err := p.fence.ValidateForOriginalNative()
 	if err != nil {
 		return err

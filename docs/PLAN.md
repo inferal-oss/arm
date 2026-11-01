@@ -5776,3 +5776,25 @@ on the focused source. The coordinator composed the roster with current main,
 preserving its existing changes. Scoped prompt/question configuration remains a
 separate, unadopted source-review draft with independent migration, exact-request
 replay, CLI/UI, cancellation and validation gates.
+
+
+## Worker-original pending root/proof and funding prerequisite
+
+The `codex/resident-worker-standing` continuation completes the reviewed private
+pending root/proof and original pending funding stage. Review corrected missing
+initial package/manifest propagation before RootBound footer encoding. The
+[current-source record](validation/resident-worker-pending-root-funding-scoped-2026-11-01.json)
+covers seven positive roots/thirteen names, focused vet and a separately expected
+failed compiler-overlay control. Earlier 50-root/62-name normal and eleven-package
+compile coverage remains historical evidence on its own source. No clean-commit
+or positive original startup run is claimed.
+
+This integration contains only the 67 reviewed pending-stage source images and
+this scoped documentation. The separate parent/runtime drafts are not integrated.
+Next work is the actual parent and helper lifetime, complete runtime cost/package
+custody, Manager/controller and replaceable worker transport, renewal and sealed
+activation/retirement, stable core reporting and API/UI/assets. Wire public
+`arm start`, `daemon start` and automatic backend discovery before accepting a
+real compatible A-to-B Docker upgrade that preserves active jobs and their
+original native child. Brief API reconnection is allowed; that live acceptance
+has not run and remains the completion gate.

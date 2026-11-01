@@ -25,6 +25,8 @@ import (
 // separately obtain actual standing service authorization BEFORE invoking it.
 // This constructor provides no such grant, no live migration and no fresh abort.
 type ResidentWorkerManagerPending struct {
+	currentTried                                     bool
+	currentValidation                                *residentWorkerManagerCurrentCall
 	standingChargeRetained, standingBindingCompleted bool // published initial-binding observations only
 	rootContext                                      context.Context
 	charge                                           *serviceview.WorkerManagerCharge
@@ -145,6 +147,11 @@ func (o *ResidentWorkerManagerPending) beginOriginal(kind string) (*residentWork
 		if !o.ready || o.server != nil {
 			return nil, fmt.Errorf("one initialized original Server borrower required")
 		}
+	case "validate_current":
+		if o.currentTried || !o.currentPreparedLocked(o.view, o.charge, o.server) {
+			return nil, errResidentWorkerManagerOriginal
+		}
+		o.currentTried = true
 	case "validate_prepared":
 		if !o.ready || o.startTried || o.started || o.preparedTried || !o.standingBindingCompleted || o.server == nil || !o.server.validated {
 			return nil, errResidentWorkerManagerOriginal

@@ -1,0 +1,323 @@
+{
+  "final_focused_qualification": {
+    "actual_command_exit_codes": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "all_original_commands_and_queue_joined": true,
+    "expected_failed_control": {
+      "actual_exit": 1,
+      "compiler_overlay": "Omit only initial package and manifest hash assignments from expected service DATA; actual production source remains unchanged",
+      "exact_root_and_package_failed_as_expected": true,
+      "production_pass": false,
+      "root": "TestWorkerExpectedRootBoundCarriesPreparedPackageThroughActualFooterCodecsData"
+    },
+    "new_named_nodes": 8,
+    "new_roots": 2,
+    "positive_named_run_pass_nodes": 13,
+    "positive_roots": 7,
+    "race_run": false,
+    "race_scope": "Pure DATA projection/codec correction changes no concurrent ownership/lifecycle; parent/runtime lifecycle races remain separate.",
+    "test_rosters": [
+      {
+        "kind": "test",
+        "name": "rootbound-package-focused-server",
+        "named_roster": [
+          "TestWorkerCurrentServerRequiresOriginalManagerAndRootContext",
+          "TestWorkerExpectedRootBoundCarriesPreparedPackageThroughActualFooterCodecsData",
+          "TestWorkerExpectedRootBoundRefusesMissingOrMutatedPackageBeforeAppendData",
+          "TestWorkerExpectedRootBoundRefusesMissingOrMutatedPackageBeforeAppendData/missing-both",
+          "TestWorkerExpectedRootBoundRefusesMissingOrMutatedPackageBeforeAppendData/missing-manifest",
+          "TestWorkerExpectedRootBoundRefusesMissingOrMutatedPackageBeforeAppendData/missing-package",
+          "TestWorkerExpectedRootBoundRefusesMissingOrMutatedPackageBeforeAppendData/mutated-manifest",
+          "TestWorkerExpectedRootBoundRefusesMissingOrMutatedPackageBeforeAppendData/mutated-package",
+          "TestWorkerExpectedRootBoundRefusesMissingOrMutatedPackageBeforeAppendData/swapped-commitments",
+          "TestWorkerRootBootstrapCanonicalOuterFrameAndRoleSeparationData",
+          "TestWorkerRootPreparedAndProtocolFlagsCannotCreateAuthority"
+        ],
+        "package": "getarm.org/internal/server",
+        "passed": true,
+        "roots": [
+          "TestWorkerCurrentServerRequiresOriginalManagerAndRootContext",
+          "TestWorkerExpectedRootBoundCarriesPreparedPackageThroughActualFooterCodecsData",
+          "TestWorkerExpectedRootBoundRefusesMissingOrMutatedPackageBeforeAppendData",
+          "TestWorkerRootBootstrapCanonicalOuterFrameAndRoleSeparationData",
+          "TestWorkerRootPreparedAndProtocolFlagsCannotCreateAuthority"
+        ]
+      },
+      {
+        "kind": "test",
+        "name": "rootbound-package-existing-cost-guards",
+        "named_roster": [
+          "TestOwnHeaderReservationDataRejectsMissingDuplicateOversizeAndOverflow",
+          "TestPendingCostDataAddsUnknownsWithoutDoubleCountingOverlap"
+        ],
+        "package": "getarm.org/internal/residentcost",
+        "passed": true,
+        "roots": [
+          "TestOwnHeaderReservationDataRejectsMissingDuplicateOversizeAndOverflow",
+          "TestPendingCostDataAddsUnknownsWithoutDoubleCountingOverlap"
+        ]
+      }
+    ],
+    "unchanged_named_nodes_rechecked": 5,
+    "unchanged_roots_rechecked": 5,
+    "unexpected_fail_or_skip": false,
+    "vet_packages": [
+      "getarm.org/internal/server"
+    ]
+  },
+  "final_integrity": {
+    "PRE_equals_POST_and_historical_PRE": true,
+    "alarm_or_cancellation": false,
+    "bounded_storage_census_and_headroom_passed": true,
+    "module_and_go_mod_h1_match_go_sum": true,
+    "official_modules_POST": 88,
+    "official_modules_PRE": 88,
+    "source_bytes_modes_unchanged": true,
+    "three_temporary_directories_empty": true
+  },
+  "historical_qualification": {
+    "compile_only_packages": 11,
+    "failed_compiler_and_queue_attempts_not_passing_evidence": true,
+    "interpretation": "Earlier scoped refusal/cost evidence on historical source only. It missed the package/manifest expected-service propagation bug found during complete source review. Do not relabel it as final-source positive startup or add it to final focused counts.",
+    "normal_named_nodes": 62,
+    "normal_roots": 50,
+    "original_interrupted_prefix_stays_incomplete": true,
+    "source_manifest_sha256": "807ae8de7062e0318a369c4fcf3598df515c5567c7edced89a8f71bd1e1e3372",
+    "test_rosters": [
+      {
+        "kind": "test",
+        "name": "worker-root-funding-internal-database",
+        "named_roster": [
+          "TestWorkerCurrentDatabaseRejectsPreparedFlagsBeforeEffects",
+          "TestWorkerDatabaseOriginalClaimBeforePhysicalEffects",
+          "TestWorkerDatabaseUnissuedOwnersAndBindingsRefuse"
+        ],
+        "package": "getarm.org/internal/database",
+        "passed": true,
+        "roots": [
+          "TestWorkerCurrentDatabaseRejectsPreparedFlagsBeforeEffects",
+          "TestWorkerDatabaseOriginalClaimBeforePhysicalEffects",
+          "TestWorkerDatabaseUnissuedOwnersAndBindingsRefuse"
+        ]
+      },
+      {
+        "kind": "test",
+        "name": "worker-root-funding-internal-manager",
+        "named_roster": [
+          "TestWorkerCurrentManagerContextComparisonRejectsUncomparableData",
+          "TestWorkerCurrentManagerRequiresActualPreparedChargeAndChallenge",
+          "TestWorkerManagerPendingRetainsBeforeUnissuedChargeRefusal"
+        ],
+        "package": "getarm.org/internal/manager",
+        "passed": true,
+        "roots": [
+          "TestWorkerCurrentManagerContextComparisonRejectsUncomparableData",
+          "TestWorkerCurrentManagerRequiresActualPreparedChargeAndChallenge",
+          "TestWorkerManagerPendingRetainsBeforeUnissuedChargeRefusal"
+        ]
+      },
+      {
+        "kind": "test",
+        "name": "worker-root-funding-internal-mesh",
+        "named_roster": [
+          "TestWorkerInheritedImageRefusesBeforePublishingOrClaiming",
+          "TestWorkerRuntimeOwnerMetadataCannotIssueOrReplaceView",
+          "TestWorkerRuntimeViewRejectsMetadataCopiesAndOldRuntime"
+        ],
+        "package": "getarm.org/internal/mesh",
+        "passed": true,
+        "roots": [
+          "TestWorkerInheritedImageRefusesBeforePublishingOrClaiming",
+          "TestWorkerRuntimeOwnerMetadataCannotIssueOrReplaceView",
+          "TestWorkerRuntimeViewRejectsMetadataCopiesAndOldRuntime"
+        ]
+      },
+      {
+        "kind": "test",
+        "name": "worker-root-funding-internal-residentcost",
+        "named_roster": [
+          "TestOwnHeaderReservationDataRejectsMissingDuplicateOversizeAndOverflow",
+          "TestPendingCostDataAddsUnknownsWithoutDoubleCountingOverlap",
+          "TestPendingCostDataRejectsEachOverflowingCountAndReceipt",
+          "TestPendingCostDataRejectsNonfiniteSignedZeroAndEachShortBound",
+          "TestPendingCostDataRejectsOverflowMissingScopesAndUnfundedUnknowns",
+          "TestPendingJSONPreflightAcceptsBoundedScalarsBeforeCanonicalChecks",
+          "TestPendingJSONPreflightRejectsMalformedAllocationAmplification",
+          "TestPendingLedgerDataCanonicalDecoderRejectsDuplicateAndTrailingFields",
+          "TestPendingObserverSourceBudgetIncludesBothSamplesAndSnapshotMemory"
+        ],
+        "package": "getarm.org/internal/residentcost",
+        "passed": true,
+        "roots": [
+          "TestOwnHeaderReservationDataRejectsMissingDuplicateOversizeAndOverflow",
+          "TestPendingCostDataAddsUnknownsWithoutDoubleCountingOverlap",
+          "TestPendingCostDataRejectsEachOverflowingCountAndReceipt",
+          "TestPendingCostDataRejectsNonfiniteSignedZeroAndEachShortBound",
+          "TestPendingCostDataRejectsOverflowMissingScopesAndUnfundedUnknowns",
+          "TestPendingJSONPreflightAcceptsBoundedScalarsBeforeCanonicalChecks",
+          "TestPendingJSONPreflightRejectsMalformedAllocationAmplification",
+          "TestPendingLedgerDataCanonicalDecoderRejectsDuplicateAndTrailingFields",
+          "TestPendingObserverSourceBudgetIncludesBothSamplesAndSnapshotMemory"
+        ]
+      },
+      {
+        "kind": "test",
+        "name": "worker-root-funding-internal-residentrefs",
+        "named_roster": [
+          "TestWorkerControlUnissuedScopeAndCopiesRefuseBeforeEffects",
+          "TestWorkerFactoryRefusesNilAndOccupiedBeforeProcessClaim",
+          "TestWorkerLauncherSelectionUsesOnlyStandaloneStartCommandShapeData",
+          "TestWorkerLauncherUnissuedAndCopiedViewsCannotAuthorizeSchedulerChange"
+        ],
+        "package": "getarm.org/internal/residentrefs",
+        "passed": true,
+        "roots": [
+          "TestWorkerControlUnissuedScopeAndCopiesRefuseBeforeEffects",
+          "TestWorkerFactoryRefusesNilAndOccupiedBeforeProcessClaim",
+          "TestWorkerLauncherSelectionUsesOnlyStandaloneStartCommandShapeData",
+          "TestWorkerLauncherUnissuedAndCopiedViewsCannotAuthorizeSchedulerChange"
+        ]
+      },
+      {
+        "kind": "test",
+        "name": "worker-root-funding-internal-server",
+        "named_roster": [
+          "TestWorkerCurrentServerRequiresOriginalManagerAndRootContext",
+          "TestWorkerPrivateRoleAndRootRefuseBeforeProcessCensus",
+          "TestWorkerRootBootstrapCanonicalOuterFrameAndRoleSeparationData",
+          "TestWorkerRootPreparedAndProtocolFlagsCannotCreateAuthority",
+          "TestWorkerServerContextDataAndConflictingOwnerRefuse",
+          "TestWorkerServerRootContextAndUnissuedManagerRefuseBeforeEffects"
+        ],
+        "package": "getarm.org/internal/server",
+        "passed": true,
+        "roots": [
+          "TestWorkerCurrentServerRequiresOriginalManagerAndRootContext",
+          "TestWorkerPrivateRoleAndRootRefuseBeforeProcessCensus",
+          "TestWorkerRootBootstrapCanonicalOuterFrameAndRoleSeparationData",
+          "TestWorkerRootPreparedAndProtocolFlagsCannotCreateAuthority",
+          "TestWorkerServerContextDataAndConflictingOwnerRefuse",
+          "TestWorkerServerRootContextAndUnissuedManagerRefuseBeforeEffects"
+        ]
+      },
+      {
+        "kind": "test",
+        "name": "worker-root-funding-internal-server-internal-nativeowner",
+        "named_roster": [
+          "TestWorkerNativeClaimsRejectZeroCopiedAndForeignViews",
+          "TestWorkerNativeConstructorAndOriginalCopiesRefuse",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects/fence",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects/foreign-operation",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects/identities",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects/issuer",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects/legacy-operation",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects/manager",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects/retired",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects/sealed",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects/server",
+          "TestWorkerNativeMetadataCannotReplaceActualFenceBeforeIO"
+        ],
+        "package": "getarm.org/internal/server/internal/nativeowner",
+        "passed": true,
+        "roots": [
+          "TestWorkerNativeClaimsRejectZeroCopiedAndForeignViews",
+          "TestWorkerNativeConstructorAndOriginalCopiesRefuse",
+          "TestWorkerNativeLegacyAuthorityAlwaysRefusesBeforeEffects",
+          "TestWorkerNativeMetadataCannotReplaceActualFenceBeforeIO"
+        ]
+      },
+      {
+        "kind": "test",
+        "name": "worker-root-funding-internal-server-internal-residentbirth",
+        "named_roster": [
+          "TestWorkerCurrentLaunchDataRequiresExactOriginalIntentAndFooter",
+          "TestWorkerFooterAndCurrentLaunchRequireIssuedOriginalOwners",
+          "TestWorkerIntentDataRefusesUnissuedCopiedAndMetadataOnlyFence",
+          "TestWorkerIntentSnapshotDataIsBoundedAndMutationIsolated"
+        ],
+        "package": "getarm.org/internal/server/internal/residentbirth",
+        "passed": true,
+        "roots": [
+          "TestWorkerCurrentLaunchDataRequiresExactOriginalIntentAndFooter",
+          "TestWorkerFooterAndCurrentLaunchRequireIssuedOriginalOwners",
+          "TestWorkerIntentDataRefusesUnissuedCopiedAndMetadataOnlyFence",
+          "TestWorkerIntentSnapshotDataIsBoundedAndMutationIsolated"
+        ]
+      },
+      {
+        "kind": "test",
+        "name": "worker-root-funding-internal-server-internal-residentservice",
+        "named_roster": [
+          "TestWorkerChallengeAndCurrentObservationCannotBeReconstructed",
+          "TestWorkerChildCopyAndCancellationBeforeNativeData",
+          "TestWorkerChildPreparedRootBoundChallengeAndProofRefuseUnissued",
+          "TestWorkerChildRequiresReceivedRuntimeAndSameContextData",
+          "TestWorkerOperatorCancelledCallsRetainOriginalFailureData",
+          "TestWorkerOperatorCancelledCallsRetainOriginalFailureData/apply",
+          "TestWorkerOperatorCancelledCallsRetainOriginalFailureData/inspect",
+          "TestWorkerOperatorCancelledCallsRetainOriginalFailureData/plan",
+          "TestWorkerOperatorCopiesAndSelectorsRefuseBeforeNativeData",
+          "TestWorkerOperatorMissingSourceRetainsFailureWithoutNativeEffectsData",
+          "TestWorkerParentCancelledOpenHasNoImageOrNativeEffectsData",
+          "TestWorkerParentConstructorCopyAndPreopenDebitRefuseData",
+          "TestWorkerParentMissingLauncherRetainsOriginalFailureBeforeEffectsData",
+          "TestWorkerPendingSourceFloorMatchesEntireBoundProspectiveContractData",
+          "TestWorkerRootBoundFrameMatchesActualWorkerJournalGrammarData",
+          "TestWorkerServeFundingViewCannotBeCopiedSerializedOrForgedData",
+          "TestWorkerStartupFundingIncompleteLineagesRefuseBeforeReadData"
+        ],
+        "package": "getarm.org/internal/server/internal/residentservice",
+        "passed": true,
+        "roots": [
+          "TestWorkerChallengeAndCurrentObservationCannotBeReconstructed",
+          "TestWorkerChildCopyAndCancellationBeforeNativeData",
+          "TestWorkerChildPreparedRootBoundChallengeAndProofRefuseUnissued",
+          "TestWorkerChildRequiresReceivedRuntimeAndSameContextData",
+          "TestWorkerOperatorCancelledCallsRetainOriginalFailureData",
+          "TestWorkerOperatorCopiesAndSelectorsRefuseBeforeNativeData",
+          "TestWorkerOperatorMissingSourceRetainsFailureWithoutNativeEffectsData",
+          "TestWorkerParentCancelledOpenHasNoImageOrNativeEffectsData",
+          "TestWorkerParentConstructorCopyAndPreopenDebitRefuseData",
+          "TestWorkerParentMissingLauncherRetainsOriginalFailureBeforeEffectsData",
+          "TestWorkerPendingSourceFloorMatchesEntireBoundProspectiveContractData",
+          "TestWorkerRootBoundFrameMatchesActualWorkerJournalGrammarData",
+          "TestWorkerServeFundingViewCannotBeCopiedSerializedOrForgedData",
+          "TestWorkerStartupFundingIncompleteLineagesRefuseBeforeReadData"
+        ]
+      }
+    ]
+  },
+  "implemented": [
+    "Private same-binary worker-original core entry retains its original root across partial/abnormal operations.",
+    "Original worker bootstrap/prepared binding, service3/footer/current journals and four-phase proof bind the same genuine worker service, fence, image, official Connector/Manager/Server.",
+    "The expected pre-append RootBound DATA now carries exact prepared package/manifest hashes and checks the same canonical prepared commitment before native effects.",
+    "Standalone launcher scope, parent structural prepayment before image capture, and full original pending source/evidence/ledger comparison before parent pin/fence/channel construction and child native/SQL construction.",
+    "Bounded streaming input preflight and retained original read/close attempts; a failed/unreturned input retirement cannot issue successful pending funding.",
+    "Operator pending review displays complete source/ledger/overlap and quantified unknown assumptions; pending proof/funding creates no runtime or readiness claim."
+  ],
+  "privacy": "Normalized project results, source hashes and test names only; no private tool/session/host/path or raw execution receipts.",
+  "remaining": [
+    "Actual positive native original parent/core startup and complete original helper/process lifetimes.",
+    "New parent composition, full runtime costs and native package custody.",
+    "Manager loops/controller, automatic worker lease renewal and sealed replacement/activation/native retirement.",
+    "Actual API/UI implementation, HTML/assets, stable core reporting, public arm start/daemon start and backend discovery integration.",
+    "Distinct-code A-to-B upgrade in a disposable Docker environment preserving original jobs, quiet proxy/native child and finite owned teardown."
+  ],
+  "review": "Independent complete pending-stage source review with focused RootBound correction; scoped validation only",
+  "schema": 1,
+  "scope": "Worker-original pending root, original four-phase proof and complete pending funding gate; public activation remains unsupported",
+  "tested_final_source": {
+    "baseline_commit": "327f72b416d1e550dc577a88603b1c2f74a9bef4",
+    "dirty_composed_images": 67,
+    "existing_images": 15,
+    "manifest_sha256": "265e5049b36294c48eaeec3b87eacfd96aeb21692a04166f642ec4b763e7c63d",
+    "new_images": 52,
+    "owner_or_clean_commit_execution": false,
+    "source_files": 3601
+  }
+}
