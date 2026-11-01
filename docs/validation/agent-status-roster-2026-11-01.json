@@ -11,8 +11,8 @@
     }
   },
   "deliveryGates": {
-    "coordinatorIntegration": "pending",
-    "nativeCmdArmCompileAndEmbed": "pending",
+    "coordinatorIntegration": "reviewed composition with current main; runtime, module and web inputs equivalent",
+    "nativeCmdArmCompileAndEmbed": "passed; compile/link and exact embedded module verified without binary invocation",
     "separatePromptConfiguration": "not part of this source cut"
   },
   "frontend": {
@@ -77,5 +77,24 @@
     "internal/server/web/semblance/agents.test.mjs": "0b0f36f95f32ef127a28e0dd6fc2bf8159f7fd918d8f29969012d0854f32dd3b"
   },
   "scope": "Focused structured roster and fresh native Claude reply capture; no full-suite, authenticated ARM contribution transport, production state import or separate API generation claim.",
-  "version": 1
+  "version": 1,
+  "nativeBuild": {
+    "sourceCommit": "776e2684e4444e6e3c711aa62f7ed043c0df9ccc",
+    "sourceManifestSHA256": "9f18125056dc21050156fd446010341536802abf08d5113817c148be1b5e5ab9",
+    "compiler": "go1.27.3",
+    "target": "darwin/arm64",
+    "testBodiesRun": 0,
+    "binaryBytes": 76525634,
+    "binarySHA256": "69ec2623a27dd460175128ae76250b6e2895e599706728e361978e2c6af8b3ad",
+    "embeddedModuleBytes": 4392866,
+    "embeddedModuleSHA256": "b16394329aae5a082903bd83ad632d3fa5f77253dad79e9e2c8aa53bc9460105",
+    "binaryInvoked": false,
+    "backendStarted": false,
+    "installed": false,
+    "originalGoHelperAndFIFOExit": 0,
+    "outputEOF": true,
+    "temporaryFilesEmpty": true,
+    "sharedBuildCacheCoverage": "cooperative and unmeasured",
+    "composition": "runtime, module and web inputs match; coordinator plan text differs; later acceptance changes are documentation only"
+  }
 }

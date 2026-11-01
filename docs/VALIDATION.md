@@ -13794,5 +13794,11 @@ Failed and uncertain attempts were excluded from these passing claims.
 
 The normalized
 [validation record](validation/agent-status-roster-2026-11-01.json) binds runtime
-source and the adopted stock bundle. Final native cmd/arm compile/link and embedded
-asset verification remain a separate pending delivery gate for this source cut.
+source and the adopted stock bundle. Final native cmd/arm compilation and linking
+passed on candidate `776e268`; a read-only scan verified the exact 4,392,866-byte
+frontend module inside the binary. The binary was not invoked or installed. The
+composed runtime, module and web inputs are byte-identical; only coordinator plan
+text differed. The documentation-only acceptance update adds no runtime test
+claim. Original compiler, helper and FIFO exits were zero with output EOF and
+empty temporary directories. Shared build-cache coverage remained cooperative
+and unmeasured; no physical reclamation credit is claimed.

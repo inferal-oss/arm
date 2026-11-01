@@ -5771,7 +5771,8 @@ The fresh native Claude result is positive; authenticated ARM contribution
 delivery and the separate API summarizer remain distinct unverified gates.
 The exact source-bound frontend bundle was adopted without changing other assets.
 
-This focused roster cut still requires native cmd/arm compile/link/embed evidence
-and coordinator integration. Scoped prompt/question configuration is a separate,
-unadopted source-review draft with independent migration, exact-request replay,
-CLI/UI, cancellation and validation gates; it is not part of this roster commit.
+Native cmd/arm compilation, linking and exact embedded-asset verification passed
+on the focused source. The coordinator composed the roster with current main,
+preserving its existing changes. Scoped prompt/question configuration remains a
+separate, unadopted source-review draft with independent migration, exact-request
+replay, CLI/UI, cancellation and validation gates.
