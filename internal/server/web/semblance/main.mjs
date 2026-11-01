@@ -13,6 +13,7 @@ import {createLeaseActions,createLeaseReviews,REVIEW_CAPABILITY} from './lease-c
 import {createRemoteNodeDashboard} from './remote.mjs';
 import {createScreenViewer} from './screen.mjs';
 import {createRunsConsole} from './runs.mjs';
+import {createAgentsConsole} from './agents.mjs';
 import {createConnectionLinkHandler,createDashboardAuthentication} from '../connection-links.mjs';
 import {nodeWindowRoute,openNodeWindow,receiveNodeWindow,nodeContextClosed} from '../node-window.mjs';
 import {createDashboardHistory} from '../route.mjs';
@@ -53,7 +54,7 @@ let storage,preferences;try{storage=sessionStorage;}catch{}try{preferences=local
 let hideInactive=readHideInactive(preferences),capacityFreshness=null;
 try{const remembered=preferences?.getItem('arm-semblance-theme');if(remembered&&app.store.match(f.namedNode(remembered),f.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),f.namedNode('https://semblance.dev/ns/style#Theme')).length)ui.put(ARM+'shell','https://semblance.dev/ns/style#theme',remembered,true);}catch{}
 try{const scheme=preferences?.getItem('arm-semblance-color-scheme');if(['Light','Dark','System'].some(x=>scheme==='https://semblance.dev/ns/style#'+x))ui.put(ARM+'shell','https://semblance.dev/ns/style#colorScheme',scheme,true);}catch{}
-const roots=Object.fromEntries(['monitor','resources','leases','messages','activity','host','mesh','screen','runs'].map(name=>[name,ui.bind(name+'Content')]));
+const roots=Object.fromEntries(['monitor','resources','leases','messages','activity','host','mesh','screen','runs','agents'].map(name=>[name,ui.bind(name+'Content')]));
 const connectionBadge=ui.bind('connection','Badge'),hostLabel=ui.bind('host','Text'),noticeBox=ui.bind('notice','Alert'),freshness=ui.text('Waiting for first sample');
 ui.bind('statusline').append(freshness);
 let copyLoginGeneration=0,copyingLogin=false,loginDialog=null,loginInputs=null,paletteNodes=[],palettePools=[],paletteKubernetes=null,paletteRefreshBusy=false;
@@ -92,6 +93,7 @@ const inactiveToggle=ui.check('Hide inactive leases',{checked:hideInactive},()=>
 const detailHostContext=()=>({localHost:state.connected&&localOperator()&&!remoteDashboard?state.status?.host:'',hosts:[state.status,...paletteNodes].filter(Boolean)});
 runsConsole=createRunsConsole({ui,root:roots.runs,preferences,hostContext:detailHostContext,call:(...args)=>connection.call(...args),connected:()=>state.connected&&!remoteDashboard,context:()=>connection,onLease:id=>showLease(id)});
 const messages=createOperatorMessaging({ui,root:roots.messages,call:(...args)=>connection.call(...args),connected:()=>state.connected&&!remoteDashboard,onLease:id=>showLease(id),storage});
+const agentsConsole=createAgentsConsole({ui,root:roots.agents,call:(...args)=>connection.call(...args),connected:()=>state.connected&&localOperator()&&!remoteDashboard,context:()=>connection,onLease:id=>showLease(id),onRun:record=>{navigation.navigate({view:'runs',lease:null});runsConsole.open(record);},onNavigate:route=>navigation.navigate(route)});
 const detailBody=ui.stack(),detailClose=ui.button('Close lease detail',()=>detail.close()),detail=ui.dialog('Lease detail',[detailBody],[detailClose]);
 detail.on('close',()=>{if(detail.open||resettingSession)return;if(navigation.current.lease){navigation.navigate({...navigation.current,lease:null});return;}disposeDetail();});
 const when=value=>value?new Date(value).toLocaleString():'—';
@@ -99,14 +101,16 @@ const owner=record=>ownerDisplay(record,state.status,record?.host);
 const rate=value=>value==null?'unavailable':bytes(value)+'/s';
 function notice(text=''){noticeBox.set({label:text,hidden:!text});}
 function owned(root,children){const old=[...root.children];root.replace(...children);for(const h of old)if(!root.children.includes(h))h.dispose();}
-function connectionState(text,live=false){ui.batch(()=>{connectionBadge.set({label:text,tone:live?'success':'warning'});state.connected=live;updatePeerStatus();ui.bind('sessionScope','Text').set({label:session?(localOperator()?'Local operator session':'Node session'):(targetWindow?.host?'Node dashboard':'Local dashboard')});copyLogin.disabled=!live||!localOperator();namesButton.disabled=!live||!localOperator();namesButton.hidden=!localOperator();namingConsole.updateConnection();activityButton.hidden=!localOperator();updatePalette();detailPanel?.updateConnection();detailReviews?.updateConnection();poolConsole?.updateConnection();meshConsole?.updateConnection();messages.updateConnection?.();runsConsole?.updateConnection();if(!live){clearLogin();remoteDashboard?.disconnect();screenViewer?.disconnect();}updateActivityFeed();});}
+function connectionState(text,live=false){ui.batch(()=>{connectionBadge.set({label:text,tone:live?'success':'warning'});state.connected=live;updatePeerStatus();ui.bind('sessionScope','Text').set({label:session?(localOperator()?'Local operator session':'Node session'):(targetWindow?.host?'Node dashboard':'Local dashboard')});copyLogin.disabled=!live||!localOperator();namesButton.disabled=!live||!localOperator();namesButton.hidden=!localOperator();namingConsole.updateConnection();activityButton.hidden=!localOperator();updatePalette();detailPanel?.updateConnection();detailReviews?.updateConnection();poolConsole?.updateConnection();meshConsole?.updateConnection();messages.updateConnection?.();runsConsole?.updateConnection();agentsConsole.updateConnection();if(!live){clearLogin();remoteDashboard?.disconnect();screenViewer?.disconnect();}updateActivityFeed();});}
 function disposeDetail(){detailRequest++;detailLeaseID='';detailPanel?.dispose();detailReviews?.dispose();detailPanel=detailReviews=null;}
 navigation=createDashboardHistory({location,history,onRoute:applyRoute});
 function applyRoute(route){
  const name=remoteDashboard&&!['resources','leases','host','screen'].includes(route.view)?'resources':route.view;
  const changingView=view!==name;view=name;ui.put(ARM+'shell',ARM+'view',ARM+({activity:'activityView',host:'hostView'}[name]??name),true);
- ui.bind('heading','Heading').set({label:({monitor:'Host monitor',resources:'Resource budgets',leases:'Leases',messages:'Operator messages',activity:'Activity',host:'Host & capabilities',mesh:'Mesh',screen:'Screen Sharing',runs:'Runs'})[name]});
+ ui.bind('heading','Heading').set({label:({monitor:'Host monitor',resources:'Resource budgets',leases:'Leases',messages:'Operator messages',activity:'Activity',host:'Host & capabilities',mesh:'Mesh',screen:'Screen Sharing',runs:'Runs',agents:'Agents'})[name]});
  runsConsole?.setActive(name==='runs'&&!remoteDashboard);
+ agentsConsole.setActive(name==='agents'&&localOperator());
+ if(name==='agents')agentsConsole.applyRoute(route);
  if(name!=='screen')screenViewer?.disconnect();else if(!screenViewer)screenViewer=createScreenViewer({ui,root:roots.screen,token:session?.token,context:session?.context??{local:true}});
  if(remoteDashboard){if(name!=='screen'){if(remoteView&&remoteView!==name)roots[remoteView].replace();roots[name].replace(remoteSlot);remoteView=name;remoteDashboard.show(name);}if(changingView)ui.bind('heading').focus();return;}
  renderCurrent();poolConsole?.applyRoute(route);
@@ -115,8 +119,8 @@ function applyRoute(route){
 }
 function showLease(id){navigation.navigate({...navigation.current,view,lease:id});}
 installDashboardShortcuts({document,selectView:name=>navigation.navigate({view:name,lease:null})});
-function renderCurrent(){ui.batch(()=>{({monitor:renderMonitor,resources:renderResources,leases:renderLeases,messages:updateMessages,activity:renderActivity,host:renderHost,mesh:renderMesh,screen:()=>{},runs:()=>{}})[view]?.();});}
-function updateMessages(){messages.update({contacts:state.contacts,messages:state.messages,leases:state.status?.leases??[]});updatePalette();}
+function renderCurrent(){ui.batch(()=>{({monitor:renderMonitor,resources:renderResources,leases:renderLeases,messages:updateMessages,activity:renderActivity,host:renderHost,mesh:renderMesh,screen:()=>{},runs:()=>{},agents:()=>{}})[view]?.();});}
+function updateMessages(){agentsConsole.update({leases:state.status?.leases??[],host:state.status?.host});messages.update({contacts:state.contacts,messages:state.messages,leases:state.status?.leases??[]});updatePalette();}
 function addEvent(event){const events=new Map(state.events.map(e=>[String(e.sequence),e]));events.set(String(event.sequence),event);state.events=[...events.values()].sort((a,b)=>a.sequence<b.sequence?-1:a.sequence>b.sequence?1:0).slice(-200);if(view==='activity')renderActivity();updateActivityFeed();}
 function acceptMonitor(page){state.history=mergeHistory(state.history,page,state.epoch);state.epoch=page.epoch;state.cursor=page.cursor;state.monitor=page;state.received=performance.now();if(view==='monitor')renderMonitor();scheduleRefresh();updateFreshness();}
 function scheduleRefresh(){if(!refreshTimer)refreshTimer=setTimeout(()=>{refreshTimer=null;refresh();},200);}
@@ -148,7 +152,7 @@ async function connect(){
 }
 const authentication=createDashboardAuthentication({exchange:async(ticket,signal)=>{const response=await fetch('/v1/browser/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticket}),credentials:'omit',cache:'no-store',redirect:'error',signal});if(!response.ok)throw Error('Connection link expired or already used. Run arm dashboard again.');return decodeSessionJSON(await response.text());},
  readSession:()=>{try{const value=decodeSessionJSON(storage?.getItem(sessionKey)??'null');return targetWindow?.host&&value?.context?.host!==targetWindow.host?null:value;}catch{return null;}},writeSession:value=>{try{storage?.setItem(sessionKey,stringifyJSON(value));}catch{}},clearSession:()=>{try{storage?.removeItem(sessionKey);}catch{}},
- onStart:()=>{runsConsole?.reset();hostLabel.set({label:targetWindow?.host?'Node '+String(targetWindow.host).slice(0,8):'Local dashboard'});copyLoginGeneration++;copyingLogin=false;clearLogin();paletteNodes=[];palettePools=[];paletteKubernetes=null;screenViewer?.dispose();screenViewer=null;roots.screen.replace();remoteDashboard?.dispose();remoteDashboard=null;remoteSlot?.dispose();remoteSlot=null;remoteView=null;resettingSession=true;try{disposeDetail();if(detail.open)detail.close();}finally{resettingSession=false;}clearTimeout(retryTimer);clearTimeout(refreshTimer);refreshTimer=null;retry=0;const previous=connection;connection=null;session=null;previous?.disconnect();peerPicture=null;peerPoll.reset(null);connectionState('Authenticating');},onSession:value=>{if(targetWindow?.host&&value.context?.host!==targetWindow.host)throw Error('Open this exact node from the local Mesh page.');session=value;nodeContextInvalid=false;return connect();},onError:error=>{connectionState('Not connected');notice(error.message);}});
+ onStart:()=>{agentsConsole.reset();runsConsole?.reset();hostLabel.set({label:targetWindow?.host?'Node '+String(targetWindow.host).slice(0,8):'Local dashboard'});copyLoginGeneration++;copyingLogin=false;clearLogin();paletteNodes=[];palettePools=[];paletteKubernetes=null;screenViewer?.dispose();screenViewer=null;roots.screen.replace();remoteDashboard?.dispose();remoteDashboard=null;remoteSlot?.dispose();remoteSlot=null;remoteView=null;resettingSession=true;try{disposeDetail();if(detail.open)detail.close();}finally{resettingSession=false;}clearTimeout(retryTimer);clearTimeout(refreshTimer);refreshTimer=null;retry=0;const previous=connection;connection=null;session=null;previous?.disconnect();peerPicture=null;peerPoll.reset(null);connectionState('Authenticating');},onSession:value=>{if(targetWindow?.host&&value.context?.host!==targetWindow.host)throw Error('Open this exact node from the local Mesh page.');session=value;nodeContextInvalid=false;return connect();},onError:error=>{connectionState('Not connected');notice(error.message);}});
 const connectionLinks=createConnectionLinkHandler({location,navigation,onConnect:link=>authentication.start(targetWindow?.host?{error:'Node windows require a host-bound handoff. Open this node again from the local Mesh page.'}:link),onStored:()=>authentication.start()});
 window.addEventListener('popstate',connectionLinks.change);window.addEventListener('hashchange',connectionLinks.change);
 

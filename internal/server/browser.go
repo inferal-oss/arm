@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"getarm.org/internal/agentstatus"
 	"getarm.org/internal/local"
 	"getarm.org/internal/model"
 )
@@ -154,6 +155,8 @@ func (s *Server) dashboardLoginLink(raw json.RawMessage) (model.BrowserLink, err
 
 func browserAllowedOperation(op string) bool {
 	switch op {
+	case "agent_status_list", "agent_status_read", "agent_status_request", "agent_status_collect", "agent_status_generate", "agent_status_cancel":
+		return true // Local operator presentation; config remains CLI-only.
 	case "runs", "run_inspect", "run_output":
 		return true // Read-only local execution observations.
 	case "name_list", "name_mutate":
@@ -287,7 +290,7 @@ func (s *Server) browserHeaders(w http.ResponseWriter) {
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Referrer-Policy", "no-referrer")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self' ws://"+s.authority+"; img-src 'self' data: blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
+	w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' '"+agentstatus.StyleHash()+"'; frame-src blob:; connect-src 'self' ws://"+s.authority+"; img-src 'self' data: blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
 }
 
 func (s *Server) browserSession(w http.ResponseWriter, r *http.Request) {

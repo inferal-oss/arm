@@ -28,6 +28,8 @@ func (a *app) rollout(args []string) error {
 	}
 	action, args := args[0], args[1:]
 	switch action {
+	case "status-pages":
+		return a.rolloutStatusPages(args)
 	case "discover":
 		return a.rolloutDiscover(args)
 	case "activate":

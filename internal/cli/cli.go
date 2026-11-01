@@ -126,6 +126,10 @@ func (a *app) finishCommand(code int, e error) int {
 			return 130
 		}
 		var detail *model.Error
+		if errors.As(e, &detail) && (detail.Code == "status_onboarding_outcome_unknown" || detail.Code == "status_onboarding_interrupted") {
+			a.reportError(detail)
+			return 130
+		}
 		if errors.As(e, &detail) && detail.Code == "activation_outcome_unknown" {
 			a.reportError(detail)
 			return 130
@@ -1021,6 +1025,9 @@ func (a *app) agent(args []string) error {
 		return fmt.Errorf("agent requires probe, register, list, publish, endpoints, send, reply, message-lookup, inbox, watch, receive, or ack")
 	}
 	action, args := args[0], args[1:]
+	if action == "status" {
+		return a.agentStatus(args)
+	}
 	if action == "publish" {
 		return a.agentPublished(args)
 	}

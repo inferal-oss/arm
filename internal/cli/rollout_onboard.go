@@ -123,7 +123,11 @@ func (a *app) rolloutOnboard(args []string) error {
 		opts = append(opts, tea.WithColorProfile(colorprofile.ASCII))
 	}
 	_, e = tea.NewProgram(model, opts...).Run()
-	if e = model.result(e); e != nil {
+	e = model.result(e)
+	if summary := model.statusSetupSummary(); summary != "" {
+		fmt.Fprintln(a.out, summary)
+	}
+	if e != nil {
 		return e
 	}
 	if model.activateChecked {

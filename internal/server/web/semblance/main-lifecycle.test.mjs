@@ -24,7 +24,7 @@ const onDetailClose=between("detail.on('close',()=>{",');\nconst when=').slice("
 const id='a'.repeat(32),tick=()=>new Promise(resolve=>setImmediate(resolve));
 
 function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus=false,displayName}={}){
-  const log=[],calls=[],instances=[],actions=[],reviews=[];
+  const log=[],calls=[],instances=[],actions=[],reviews=[],agentLifecycle=[];
   const oldPanel={disposed:false,dispose(){this.disposed=true;}},oldReviews={disposed:false,dispose(){this.disposed=true;}};
   const lease=Object.freeze({id,display_name:'Build cache',host:'c'.repeat(32),revision:9007199254740993n,state:'active',owner:'operator',request:{reason:'Build'},expires_at:new Date(Date.now()+60000).toISOString()});
   let api;
@@ -35,6 +35,7 @@ function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus
     state:{connected:false,status:null,epoch:0,cursor:0},targetWindow:null,view,retry:0,
     retryTimer:null,refreshTimer:null,refreshBusy:false,refreshAgain:false,nodeContextInvalid:false,remoteDashboard:null,remoteSlot:null,remoteView:null,screenViewer:null,peerPicture:null,
     runsConsole:null,poolConsole:null,meshConsole:null,detailRequest:0,detailLeaseID:open?id:'',detailPanel:oldPanel,detailReviews:oldReviews,resettingSession:false,
+    agentsConsole:{setActive:value=>agentLifecycle.push(['active',value]),applyRoute:route=>agentLifecycle.push(['route',route]),reset:()=>agentLifecycle.push(['reset']),updateConnection:()=>agentLifecycle.push(['connection'])},
     copyLoginGeneration:0,copyingLogin:false,paletteNodes:[],palettePools:[],paletteKubernetes:null,
     pendingLeaseActions:new Set(),pendingReviewConfigurations:new Set(),
     roots:{screen:{replace(){}}},detailBody:{},
@@ -65,9 +66,18 @@ function fixture({open=true,view='leases',ready=()=>Promise.resolve(),failStatus
     },
   };
   api=runInNewContext(declarations+'\n({connect,refresh,applyRoute,disposeDetail,loadLease,reset:'+reset+',onDetailClose:'+onDetailClose+'})',scope);
-  return {scope,api,log,calls,instances,actions,reviews,oldPanel,oldReviews,lease};
+  return {scope,api,log,calls,instances,actions,reviews,agentLifecycle,oldPanel,oldReviews,lease};
 }
 function onlyReads(f){const allowed=new Set(['status','inspect','monitor_subscribe','events','messages','agents','subscribe','mesh_operator_watch']);assert.ok(f.calls.every(c=>allowed.has(c.operation)));}
+
+test('Agents and Runs route activation stays independent and authentication reset retires both controllers',()=>{
+ const f=fixture({open:false}),runs=[];
+ f.scope.runsConsole={setActive:value=>runs.push(['active',value]),reset:()=>runs.push(['reset'])};
+ const route={view:'agents',agent:'1'.repeat(32),lease:null};
+ f.api.applyRoute(route);assert.equal(f.agentLifecycle.at(-2)[1],true);assert.equal(f.agentLifecycle.at(-1)[1],route);assert.deepEqual(runs,[['active',false]]);
+ f.api.applyRoute({view:'runs',lease:null});assert.deepEqual(f.agentLifecycle.at(-1),['active',false]);assert.deepEqual(runs.at(-1),['active',true]);
+ f.api.reset();assert.deepEqual(f.agentLifecycle.at(-1),['reset']);assert.deepEqual(runs.at(-1),['reset']);assert.equal(f.calls.length,0,'navigation/reset must not submit producer operations');
+});
 
 test('a new connection reloads an open lease and replaces callbacks bound to the old connection',async()=>{
   const f=fixture();await f.api.connect();await tick();

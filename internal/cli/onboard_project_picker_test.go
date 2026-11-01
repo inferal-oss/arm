@@ -248,14 +248,17 @@ func TestProjectPickerDefaultNoAndAtomicPolicySave(t *testing.T) {
 				return
 			}
 			pickerRun(t, m, pickerKey(m, "y"))
-			if m.stage != pickerOffer || !m.applied {
+			if m.stage != pickerStatusOffer || !m.applied {
 				t.Fatal(m.stage, m.notice, m.err)
 			}
 			state, err := (rollout.Store{Home: home}).Read()
 			if err != nil || len(state.Projects) != 1 || len(state.Sessions) != 0 || state.Projects[0].Mode != "new-sessions" {
 				t.Fatal(state, err)
 			}
-			pickerKey(m, "enter")
+			pickerKey(m, "enter") // Default-No status setup.
+			if m.stage == pickerOffer {
+				pickerKey(m, "enter")
+			} // Existing activation decision.
 			if m.stage != pickerDone || m.cancelled {
 				t.Fatal(m.stage, m.cancelled)
 			}
@@ -276,6 +279,10 @@ func TestProjectPickerExactCheckedActivationOffer(t *testing.T) {
 		return agentprojects.Catalog{}, agentprojects.Hierarchy{}, nil
 	}
 	pickerRun(t, m, pickerKey(m, "y"))
+	if m.stage != pickerStatusOffer {
+		t.Fatal(m.stage)
+	}
+	pickerKey(m, "enter") // Status setup is separate from checked activation.
 	if m.stage != pickerOffer || len(m.selection.Checked) != 2 {
 		t.Fatal(m.stage, m.selection)
 	}
@@ -357,7 +364,7 @@ func TestProjectPickerPendingApplyResizeAndUnknownRecovery(t *testing.T) {
 		t.Fatal(unknown)
 	}
 	pickerRun(t, m, original)
-	if !m.applied || m.stage != pickerOffer {
+	if !m.applied || m.stage != pickerStatusOffer {
 		t.Fatal(m.stage, m.notice, m.err)
 	}
 	state, err := (rollout.Store{Home: home}).Read()
@@ -409,6 +416,10 @@ func TestProjectPickerManualProjectOnlyAndDiagnostics(t *testing.T) {
 	m.settings[0].Mode = "disabled"
 	pickerRun(t, m, pickerKey(m, "enter"))
 	pickerRun(t, m, pickerKey(m, "y"))
+	if m.stage != pickerStatusOffer {
+		t.Fatal(m.stage)
+	}
+	pickerKey(m, "enter") // Zero checked chats still receive the optional status offer.
 	if m.stage != pickerDone || !m.applied {
 		t.Fatal(m.stage, m.err, m.notice)
 	}

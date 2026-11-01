@@ -204,7 +204,7 @@ export function createGraphUI(app, {onError = error => console.error(error),widg
     // Its content handle stays owned here while the renderer moves the same node.
     detachable(label,content){return batch(()=>{
       if(!ui.windowDesktop){
-        const desktop=component('Desktop'),taskbar=component('Taskbar',{label:'Log windows'});
+        const desktop=component('Desktop'),taskbar=component('Taskbar',{label:'Windows'});
         put(taskbar.iri,C.of,desktop.iri,true);put(desktop.iri,C.hosts,taskbar.iri,true);
         replaceOwnership(desktop,[taskbar]);desktop.children=[taskbar];
         ui.windowDesktop=desktop;ui.windowFrames=new Set();ui.windowSequence=0;ui.desktopHosts.add(desktop.iri);ui.syncDesktop();

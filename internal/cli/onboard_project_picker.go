@@ -37,6 +37,10 @@ const (
 	pickerOffer
 	pickerDiagnostics
 	pickerDone
+	pickerStatusOffer
+	pickerStatusPreparing
+	pickerStatusReview
+	pickerStatusApplying
 )
 
 type pickerLoadedMsg struct {
@@ -84,6 +88,7 @@ type projectOnboardModel struct {
 	err                               error
 	cancelled, applyStarted, applied  bool
 	activateChecked                   bool
+	statusSetup                       *onboardStatusSetup
 	opCancel                          context.CancelFunc
 	// Pass-local fixture seams; production supplies no replacements.
 	discover     func(context.Context) (agentprojects.Catalog, agentprojects.Hierarchy, error)
@@ -183,6 +188,9 @@ func (m *projectOnboardModel) finish(cancelled bool) tea.Cmd {
 	return tea.Quit
 }
 func (m *projectOnboardModel) result(err error) error {
+	if statusErr := m.statusSetupResult(err); statusErr != nil {
+		return statusErr
+	}
 	// A delivered possible-save result is authoritative even if the terminal
 	// loop is canceled before it can observe the queued Quit command.
 	if m.err != nil {
@@ -199,6 +207,9 @@ func (m *projectOnboardModel) result(err error) error {
 func (m *projectOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	if m.stage == pickerDone {
 		return m, nil
+	}
+	if handled, cmd := m.updateStatusSetup(message); handled {
+		return m, cmd
 	}
 	switch msg := message.(type) {
 	case tea.WindowSizeMsg:
@@ -293,10 +304,7 @@ func (m *projectOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		m.plan = msg.plan
 		m.applied = true
 		m.notice = ""
-		if len(m.selection.Checked) == 0 {
-			return m, m.finish(false)
-		}
-		m.stage = pickerOffer
+		m.offerStatusSetup()
 		return m, nil
 	case tea.KeyPressMsg:
 		key := msg.String()
@@ -436,7 +444,7 @@ func (m *projectOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = m.updateTree(message)
 	case pickerManual, pickerID:
 		m.editor, cmd = m.editor.Update(message)
-	case pickerReview, pickerDiagnostics:
+	case pickerReview, pickerDiagnostics, pickerStatusReview:
 		m.review, cmd = m.review.Update(message)
 	}
 	return m, cmd
@@ -949,6 +957,8 @@ func (m *projectOnboardModel) View() tea.View {
 		fmt.Fprintln(&b, "Project policy saved. No chats were activated.")
 		fmt.Fprintf(&b, "Verify exactly %d checked chats for activation? [y/N]\n", len(m.selection.Checked))
 		fmt.Fprintln(&b, "Supported recipients get a separate message review before sending.")
+	case pickerStatusOffer, pickerStatusPreparing, pickerStatusReview, pickerStatusApplying:
+		fmt.Fprint(&b, m.statusSetupView())
 	case pickerDiagnostics:
 		fmt.Fprintln(&b, title.Render("Discovery coverage and diagnostics"))
 		fmt.Fprintln(&b, m.review.View())

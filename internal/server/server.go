@@ -35,6 +35,8 @@ import (
 )
 
 type Server struct {
+	statusMu              sync.Mutex
+	status                *statusService
 	resident              *residentServerPending // original root-owned Server; never an API/UI worker
 	responses             responseTracking
 	callers               residentCallers
@@ -795,6 +797,8 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		Lease    string        `json:"lease"`
 	}
 	switch r.Operation {
+	case "agent_status_list", "agent_status_read", "agent_status_request", "agent_status_collect", "agent_status_generate", "agent_status_cancel", "agent_status_config":
+		return s.agentStatusOperation(ctx, r.Operation, r.Params)
 	case "runs", "run_inspect", "run_output", "run_create", "run_append", "run_finish":
 		return s.runOperation(r.Operation, r.Params)
 	case "name_list", "name_mutate":

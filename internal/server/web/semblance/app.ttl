@@ -39,11 +39,11 @@ arm:host a c:Text ; c:label "Local operator session" .
 arm:theme a c:Choice ; c:label "Theme" ; c:controls arm:shell ; c:property sty:theme .
 arm:shell arm:view arm:monitor .
 arm:navigation a c:Segmented ; c:label "Views" ; c:controls arm:shell ; c:property arm:view ; c:compactAs c:Picker ;
- c:options ( arm:monitor arm:resources arm:leases arm:messages arm:activityView arm:hostView arm:mesh arm:screen arm:runs ) .
+ c:options ( arm:monitor arm:resources arm:leases arm:agents arm:messages arm:activityView arm:hostView arm:mesh arm:screen arm:runs ) .
 arm:heading a c:Heading ; c:level 2 ; c:label "Host monitor" .
 arm:notice a c:Alert ; c:label "Waiting for backend" ; c:hidden true .
 arm:content a c:Switch ; c:controls arm:shell ; c:property arm:view ;
- c:cases ( arm:monitorCase arm:resourcesCase arm:leasesCase arm:messagesCase arm:activityCase arm:hostCase arm:meshCase arm:screenCase arm:runsCase ) .
+ c:cases ( arm:monitorCase arm:resourcesCase arm:leasesCase arm:agentsCase arm:messagesCase arm:activityCase arm:hostCase arm:meshCase arm:screenCase arm:runsCase ) .
 arm:activity a c:AccordionItem ; c:label "Live activity" ; c:expanded false ; c:content arm:liveActivityContent .
 arm:liveActivityContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-2 .
 arm:desktop a c:Stack ; pos:direction pos:Column .
@@ -59,6 +59,9 @@ arm:leases rdfs:label "Leases" .
 arm:leasesCase c:when arm:leases ; c:content arm:leasesContent .
 arm:leasesContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
 arm:messages rdfs:label "Messages" .
+arm:agents rdfs:label "Agents" .
+arm:agentsCase c:when arm:agents ; c:content arm:agentsContent .
+arm:agentsContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
 arm:messagesCase c:when arm:messages ; c:content arm:messagesContent .
 arm:messagesContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
 arm:activityView rdfs:label "Activity" .

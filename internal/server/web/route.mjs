@@ -1,5 +1,5 @@
 export const dashboardViews = Object.freeze([
-  'monitor', 'resources', 'leases', 'messages', 'activity', 'host', 'mesh', 'screen', 'runs',
+  'monitor', 'resources', 'leases', 'messages', 'activity', 'host', 'mesh', 'screen', 'runs', 'agents',
 ]);
 const validLease = value => typeof value === 'string' && /^[a-f0-9]{32}$/.test(value);
 const validPool = value => typeof value === 'string' && /^pool_[a-f0-9]{32}$/.test(value);
@@ -20,7 +20,7 @@ export function readDashboardRoute(address) {
     const url = new URL(address), params = url.searchParams;
     if (
       url.search.length > 1024 ||
-      ['view', 'lease', 'pool', 'pool_after', 'pool_before', 'host'].some(key => params.getAll(key).length > 1) ||
+      ['view', 'lease', 'pool', 'pool_after', 'pool_before', 'host', 'agent'].some(key => params.getAll(key).length > 1) ||
       (params.has('pool_after') && params.has('pool_before'))
     ) return emptyRoute();
     const lease = validLease(params.get('lease')) ? params.get('lease') : null;
@@ -28,6 +28,7 @@ export function readDashboardRoute(address) {
     const requested = params.get('view') ?? (pool ? 'resources' : lease ? 'leases' : 'monitor');
     const view = dashboardViews.includes(requested) ? requested : 'monitor';
     const route = {...emptyRoute(), view, lease};
+    if (view === 'agents' && validLease(params.get('agent'))) route.agent = params.get('agent');
     if (view === 'resources' && pool) {
       route.pool = pool;
       route.poolBefore = journalBoundary(params.get('pool_before'), true);
@@ -51,6 +52,7 @@ export function dashboardRouteURL(route, address) {
     else if (before === null && after !== null && after !== '0') params.set('pool_after', after);
   }
   if (lease) params.set('lease', lease);
+  if (view === 'agents' && validLease(route.agent)) params.set('agent', route.agent);
   // Only public navigation identifiers survive. Never copy credentials, drafts,
   // unknown query fields or untrusted history.state into another entry.
   const host = route.host ?? url.searchParams.get('host');
