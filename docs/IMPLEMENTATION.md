@@ -6630,3 +6630,55 @@ reviewing copy-only activation guides remain separate default-no decisions.
 Project coverage includes the complete selected checkout snapshot; checked chat
 selection controls only which manual guides are offered. Discovery and this UI
 create no verified live identity, invitation, enrollment or delivery capability.
+
+## Private original runtime continuation and pending control
+
+Source `135544d` adds the original private core entry's call to a retained runtime
+continuation after its own final-normal authenticated protocol. The gate checks
+the same entry/root, actual completed prepare/RootBound/protocol operations and
+four phases, original Manager/Server/charge and P1 grant/debit lineage. It does
+not reuse a consumed challenge or infer authority from a copied observation.
+
+The continuation checks the actual original standing charge before calling the
+existing Server pending owner and Manager's nine original loop launches. Its
+listener, entropy, publication, HTTP Serve and connection operations are retained
+before effects on the independent root lifetime. An ingress error cannot cancel
+the root, Manager or jobs. This is private source wiring; successful genuine
+runtime execution and public startup have not been demonstrated.
+
+The fixed `resident-control.json` publisher uses the held original service-home
+directory, canonical payload at most 16 KiB, at most 32 writes, file Sync/Close
+and exclusive no-overwrite rename. Partial outcomes remain retained without
+cleanup/unlink retry. No ordinary `endpoint.json` is published. Parent-directory
+crash durability, native closure and resource release are not established.
+
+Native control accepts only literal loopback Host and bearer credentials through
+the original Server caller, prepared-call and response owners. Browser and node
+contexts are refused. Its only operations are `status`, `startup_inspect` and
+`resident_runtime_inspect`; each returns `arm.resident-control.pending.v1` with
+`ready=false` and bounded generation/configuration/phase fields. It never invokes
+ordinary Status/custom-name domain projection. Request/reflection and response
+shapes are bounded before general encoding; operation guards precede existing
+subscription/watch/monitor/request effects. Legacy Servers without this ingress
+keep their existing behavior.
+
+Eight connection slots are acquired before original Accept. Reuse requires the
+exact original connection's successful Close and actual handler's normal return;
+missing/partial/abnormal outcomes retain the slot. Abnormal Serve/handler exits
+retain their same deferred frames. These application-reference observations do
+not prove complete native/runtime settlement or standing-resource reclamation.
+
+Logical application floors are 91 tasks, 23 descriptors, 10 sockets, 91 pending
+positions and 20,103,168 bytes each of I/O and retained-receipt allowance, with no
+additional child in this cut. Reader-held requests and all three publication
+copies are included. Native/runtime/HTTP/WS/parser/allocator/driver/database costs
+remain additional measured obligations; these numbers are not an RSS census or
+positive admission fixture. Worker-enabled profile/birth/format/controller,
+public `arm start`, API/UI readiness and live upgrade survival remain unfinished.
+
+
+The reviewed pending-ingress source is integrated as `1f91675`, with an isolated
+picker test home in `ca4e202`. Current-main runtime/module/embedded inputs match
+the qualified composition; coordinator and owner notes are preserved additively.
+This landing implements bounded pending control only. It does not enable the
+public worker startup path or establish live upgrade continuity.

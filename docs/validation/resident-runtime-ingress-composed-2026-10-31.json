@@ -1,0 +1,122 @@
+{
+  "schema": "resident-runtime-ingress-composed-v1",
+  "date": "2026-10-31",
+  "owner_source_commit": "135544da958a10cb026b0761b32f737eb194c1c0",
+  "integrated_source_commit": "1f91675",
+  "integrated_fixture_commit": "ca4e202",
+  "qualified_source_commit": "9e72c0cf8b0baaf98c5919e47c3de244abe21869",
+  "qualified_source_tree": "68668e033339b5f90cf3144931a576bbedaf964c",
+  "source_equivalence": {
+    "qualified_images": 3399,
+    "identical_before_documentation_import": 3398,
+    "only_difference_before_documentation_import": "docs/PLAN.md",
+    "all_Go_module_embedded_assets_inputs_identical": true,
+    "later_changes": "documentation only"
+  },
+  "inputs": [
+    {
+      "path": "internal/residentrefs/endpoint_publication.go",
+      "sha256": "ea8e8158a1fb6c379b55e45943b1948b06d7a9e8344c61749bfa068c39533468"
+    },
+    {
+      "path": "internal/residentrefs/endpoint_publication_darwin.go",
+      "sha256": "a70f809654b0c458e6aff0057bb24ab7e0818a4196c5071da8cb6d20d500a99d"
+    },
+    {
+      "path": "internal/residentrefs/endpoint_publication_linux.go",
+      "sha256": "e5a72f82d691820f4aaac43c34d5c2f19f48332dbece661b55fe7e715cefd87e"
+    },
+    {
+      "path": "internal/residentrefs/endpoint_publication_test.go",
+      "sha256": "b1ec5140fb85d26aebc395a475ced6e68916d6caa3fbb6ba3baf739963f63686"
+    },
+    {
+      "path": "internal/server/internal/residentservice/runtime_budget.go",
+      "sha256": "9a6999be3cdffd2fc66e094192412996125eeeee0123f53dcf5ad5105d1a3dcc"
+    },
+    {
+      "path": "internal/server/internal/residentservice/runtime_budget_test.go",
+      "sha256": "6a3200f00bab5a858dbeb8a777132ad682d122cdf326d93dee98d88bcbc9e766"
+    },
+    {
+      "path": "internal/server/resident_child_original.go",
+      "sha256": "5f81019cb6ae0e3e5c2d3ee2994ad1853e88583d4736c8879ad5505f0f023f30"
+    },
+    {
+      "path": "internal/server/resident_core_entry.go",
+      "sha256": "d1614da1e3e5089c65a2a43a2907fb35219d1152a6e221aa3ddafea8be71f485"
+    },
+    {
+      "path": "internal/server/resident_dispatch.go",
+      "sha256": "3035bc8b3e6f55f65030fbf853334ede0140cf17a02b58c30f6337de9793c02f"
+    },
+    {
+      "path": "internal/server/resident_ingress_control.go",
+      "sha256": "51e4fd4af5ebeda9dd92d85e737d422d28a3655913aecb3ab1ceec3919c38c42"
+    },
+    {
+      "path": "internal/server/resident_ingress_control_test.go",
+      "sha256": "316e87a26594cdd1a815a7dd87289049b8751572bbb0a3aac50f12313485445e"
+    },
+    {
+      "path": "internal/server/resident_ingress_listener.go",
+      "sha256": "fe8cdee44eb63555392b56145059c2605359d217e8e049b8de988cfec6da284d"
+    },
+    {
+      "path": "internal/server/resident_ingress_listener_test.go",
+      "sha256": "858e4f907eb163df62732a73b191f6e19cc6942c3adb9a25782d0ce26afa4c25"
+    },
+    {
+      "path": "internal/server/resident_ingress_order_test.go",
+      "sha256": "a81dc8675137ac15e1dc890d4894512b0e443b6c42c10a2abbac68b3396677a9"
+    },
+    {
+      "path": "internal/server/resident_ingress_pending.go",
+      "sha256": "cbb1ef6711f25f4c0fb90fa827333cb94b411b28b1e097a596604095d69a809b"
+    },
+    {
+      "path": "internal/server/resident_runtime.go",
+      "sha256": "ab7903ccdb346beda462c90d71678e105d4bf9f47e2ce770ceaa5e6b19772148"
+    },
+    {
+      "path": "internal/server/resident_runtime_test.go",
+      "sha256": "285f3094b854d350840b4a8d80c2648b63041d100d7f3cb077593eafdafaafb3"
+    },
+    {
+      "path": "internal/server/resident_server.go",
+      "sha256": "75f485c2c4c7be784fc24527cbe354cb25a33d4da16d103bb0aa87e1d3065b54"
+    },
+    {
+      "path": "internal/server/server.go",
+      "sha256": "f4eb63e1da1e8cd78d51491376437117c47cbd427b580f7b919b4b255db38867"
+    },
+    {
+      "path": "internal/cli/onboard_project_picker_test.go",
+      "sha256": "854a5017fd5a0664580874fbefd85edb06085e14d7011b9a603a64fd78133a01"
+    }
+  ],
+  "composed": {
+    "server_roots": 6,
+    "server_named_cases_RUN_PASS_once": 9,
+    "CLI_roots": 3,
+    "CLI_named_cases_RUN_PASS_once": 3,
+    "skips_failures_in_accepted_cohorts": 0,
+    "actual_dependency_graph_packages": 834,
+    "official_modules_PRE_POST_equal": 88,
+    "native_compile": {
+      "sha256": "c9b8f0b413cdfa2cdcc040dd2d21670da5c50f5913c8b511ed439efae976695e",
+      "bytes": 75564546,
+      "executed": false
+    },
+    "originals": "All accepted Go commands and enclosing executions joined with exit zero. Final integrity audit executed no Go command.",
+    "failed_predecessor": "Original composition CLI fixture panicked with HOME absent; build did not start. Server cohort passed on byte-identical source. The original failed attempt remains failed; a focused synthetic-HOME test correction precedes successful CLI/build continuation.",
+    "final_integrity": "Requalified eight successful original command streams, separately preserved two failed CLI streams, verified source/artifact and canonical archive-member/expanded-source/go.mod h1 equality. No raw archive byte hash claimed."
+  },
+  "limits": [
+    "Scoped owner normal/race qualification and composed boundary checks only; no full Go suite or Linux runtime acceptance.",
+    "Compiled product was not executed by this composition.",
+    "No worker-enabled native funding, birth, database/controller/public-start or API/HTML readiness acceptance.",
+    "Actual active-job/native-child upgrade survival remains required.",
+    "Sampled and retained resource observations do not establish kernel hard limits, unobserved peaks, closure or reclamation credit."
+  ]
+}

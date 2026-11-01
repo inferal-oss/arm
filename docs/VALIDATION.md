@@ -13376,3 +13376,60 @@ unknowns remain distinct; no cleanup/reclamation credit is inferred.
 These checks do not establish the full Go suite, Linux runtime, actual client
 identity/liveness, automatic activation/enrollment, message delivery or live
 upgrade/job/child continuity.
+
+## Original resident runtime and pending-control checks
+
+The [normalized record](validation/resident-runtime-ingress-normal-linked-integrity-race-2026-10-31.json)
+binds source `135544d` and all nineteen production/test images to the reviewed
+3,393-file, 1,988-Go-file snapshot. Both normal and race modes ran the same 38
+roots and 116 package-qualified named cases across five packages, without skips
+or failures. These preserve the previous handoff/retirement controls and add
+unissued/copied-owner refusal, logical bounds, pending schema/envelope limits,
+pre-marshal projection refusal and structural dispatch-guard ordering checks.
+
+All eight original normal Go commands returned and joined with exit zero:
+dependency graph, five selected test commands, ten-package vet and native command
+compilation. The enclosing attempt then reached its work fence during final
+official-module verification and retained exit 124, alarm and incomplete POST
+records. It is not relabeled as a successful original normal attempt.
+
+A separately reviewed subsequent integrity audit invoked no Go commands. It
+rechecked all source copies/modes, sixteen command streams, original joins and
+the unexecuted artifact, and verified all 88 official modules' ZIP-member,
+expanded-source and go.mod h1 records against the actual pre-test records. This
+completes a separate linked integrity gate; it preserves the original stopped
+outcome. An earlier sandboxed inspection refusal performed no module audit and
+remains distinct from the later completed audit.
+
+The race successor consumes that exact stopped attempt and accepted supplement,
+then runs six original Go commands successfully. Its 12 streams, complete 116-case
+roster and official-module PRE/POST equality are independently reviewed. Actual
+normal/race graphs contain 854/856 packages with the same 88 modules. Source,
+tool and support images remain unchanged; actual Go/test/GOPATH temporary
+inventories are empty. Retained failures and uncertain obligations receive no
+cleanup or reclamation credit.
+
+The native compile-only artifact is 75,185,618 bytes with SHA-256
+`c98da5bf385bbb39b8b88e375667b1efd82207916003d68741bc57d311c033a1`.
+It was never executed and remains unchanged after race checks. These later
+documentation-only changes do not assert a rebuilt artifact or new code image.
+
+No successful genuine original Manager-loop/listener/publication/charge/
+connection-settlement fixture, native Closed/resource release, public readiness,
+worker/package/API/HTML/assets activation or real A-to-B managed job/native-child
+survival is accepted here. Quiet reporting/finish, renewal/cancellation/expiry,
+Linux eligibility and controlled fixture setup remain required runtime gates.
+No installed backend or real job was replaced or terminated.
+
+
+## Resident pending ingress: composed boundary qualification
+
+The [composed record](validation/resident-runtime-ingress-composed-2026-10-31.json)
+binds the landing inputs to six server roots/nine named cases, three CLI roots/
+three named cases, an 834-package graph, a native compile-only artifact and final
+integrity equality for 88 official modules. Accepted cases ran and passed once.
+The original HOME-dependent CLI failure remains failed; the corrected continuation
+uses a synthetic temporary home, without widening the isolated environment.
+All runtime inputs match the qualified source. Documentation follows validation.
+No compiled-product execution, full suite, Linux runtime, worker/public startup,
+actual managed-job survival or native resource-reclamation credit is claimed.

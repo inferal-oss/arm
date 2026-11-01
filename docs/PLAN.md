@@ -5411,3 +5411,47 @@ established by these fake-client fixtures.
 The Agent Status Page task presented its initial proposal. Shared identity,
 transport, model execution, storage and isolated HTML contracts still require
 review before implementation; no paid inference or agent wakeup has run.
+
+## Original resident runtime and pending control: scoped source complete
+
+Source `135544d` on `codex/resident-runtime-ingress` wires the genuine private
+core entry to its original runtime continuation after its own completed normal
+authenticated handoff. The continuation checks its actual standing charge before
+calling the same original Manager start and constructing bounded native control.
+It publishes only `resident-control.json`; its distinct pending diagnosis always
+has `ready=false`. Public `arm start` and replaceable workers remain unwired.
+
+Independent review accepts 38 roots and 116 named normal/race cases, ten-package
+vet and native command compilation. The original normal attempt completed all
+eight Go commands, then stopped with exit 124 during final dependency integrity
+verification. A separate subsequent audit completed that integrity gate without
+rerunning Go or rewriting the stopped outcome. Race qualification completed its
+six commands. The [normalized evidence](validation/resident-runtime-ingress-normal-linked-integrity-race-2026-10-31.json)
+binds all nineteen source/test images, complete rosters, module checks and the
+unexecuted artifact. Documentation changes do not assert another build.
+
+Genuine positive original runtime, listener, publication, charge and connection
+settlement remain untested. The next implementation requires distinct typed
+worker profile/grant/debit/birth/claims, fresh format 5, native worker admission,
+controller activation, actual API/HTML/assets and public first/repeated/concurrent
+startup. Existing profile 1/2, format 4 and P1 guards must remain strict.
+
+Completion still requires a real A-to-B public upgrade preserving active managed
+jobs and native child processes, including proxy output, quiet heartbeat/finish,
+renewal, cancellation, expiry and failed-candidate continuity. Worker replacement
+will not replace the resident core, Manager, SQLite driver or retained resident
+operation handlers; core/database changes retain their explicit drain boundary.
+
+
+## Resident pending ingress: scoped composition landed
+
+Reviewed owner source `135544d` lands as `1f91675`; fixture correction `ca4e202`
+gives the picker activation test an isolated temporary home. Composed source
+`9e72c0c` passed the scoped server/CLI boundary cohorts and native command build.
+The final read-only integrity audit verified all original successful streams,
+source/artifact and 88 official dependency records, preserving the failed
+HOME-dependent predecessor separately. Runtime inputs match the landing cut;
+subsequent differences are documentation only. See the
+[composed record](validation/resident-runtime-ingress-composed-2026-10-31.json).
+Worker-native custody, fresh worker database/controller, public startup and
+actual active-job/native-child upgrade survival remain open completion gates.
