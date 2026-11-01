@@ -5591,3 +5591,18 @@ passes 54 roots/285 named pure normal checks once. Immutable ownership checking
 now tolerates an in-progress original native operation; native admission stays
 in the original queue. The worker role/fence/serve source continuation remains
 under review. Public startup and actual job/native-child survival remain open.
+
+
+## Checked Claude session activation continuation
+
+User-requested continuation on `codex/onboard-claude-activation` investigates a
+verified live inbox route for exact checked Claude sessions. Current native
+delivery remains unchanged; idle metadata is not writer-release authority and
+concurrent resume/fork is not an activation strategy. The first gate is a
+version-specific source/capability and receipt contract, followed by independent
+review and focused validation. Real session delivery, model turns, setup and
+enrollment are outside the current investigation allocation.
+
+The existing Agent Status task owns optional post-save status onboarding; its
+shared picker control flow must be composed centrally with this continuation.
+No new chat or duplicate activation implementation is needed.
