@@ -65,11 +65,19 @@ func requireCoreScope(r *recipientState, original any, scope childCoreScope) err
 	s := r.census
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.self.state != s || s.scope != scope || s.firstError != nil || r.firstError != nil || r.original != original {
+	return coreScopeMetadataLocked(r, original, scope)
+}
+
+// Pure immutable lineage checking only. An active census operation cannot
+// change ownership or scope; actual native admission uses the original queue.
+// This helper alone never establishes the process-wide original claim.
+func coreScopeMetadataLocked(r *recipientState, original any, scope childCoreScope) error {
+	if r == nil || r.census == nil || r.census.self == nil {
 		return ErrOriginal
 	}
-	if s.active != nil {
-		return ErrPending
+	s := r.census
+	if s.self.state != s || s.scope != scope || s.firstError != nil || r.firstError != nil || r.original != original {
+		return ErrOriginal
 	}
 	var indices []int
 	switch r.role {
