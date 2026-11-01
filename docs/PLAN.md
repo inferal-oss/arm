@@ -20,8 +20,9 @@ One fresh, tool-disabled native Claude invocation returned a valid structured
 account and model-written HTML, reporting Sonnet and an estimated cost of
 approximately USD 0.022. Original client, controller and queue processes exited
 normally; source/tool pins and retained artifacts were independently checked.
-This accepts native capture only, not authenticated ARM delivery, API synthesis
-or rendered presentation. Sanitized capture of that actual reply remains pending.
+This accepts native capture only, not authenticated ARM delivery or API synthesis.
+Sanitized rendered presentation and the native distributable build subsequently
+passed their scoped checks; see the roster validation record.
 
 Approved source scope also covers a compact, timestamped self-report preview
 and improved identity/resource organization, plus managed status prompts editable
@@ -32,16 +33,16 @@ retry identity after configuration changes. Store-version fencing, bounded
 parsing, final source review and composed validation remain implementation gates;
 these controls are not yet integrated.
 
-## Resident worker startup funding — source review in progress
+## Resident worker startup funding — private pending stage integrated
 
 Owner: `codex/resident-worker-standing`. The original Manager/database/Server
-component is integrated; its pending-root funding and authenticated handoff
-continuation remains unapplied. A separate disposable Linux component experiment
+component and reviewed private pending-root funding/proof stage are integrated.
+Actual parent startup and runtime activation remain unfinished. A separate disposable Linux component experiment
 qualified its declared official-driver workload and native process exit, with
 logical cleanup acknowledgments. That experiment is not a measurement of the
 complete ARM startup or an acceptance of its resource envelope.
 
-Review is checking original-grant funding before image/native/database effects,
+Review qualified original-grant funding gates before image/native/database effects,
 bounded malformed-input parsing, explicit parent/child overlap and retained
 uncertainty. Public startup, actual worker-controller activation and different
 version API/UI replacement while the same runs, proxy and native child continue
