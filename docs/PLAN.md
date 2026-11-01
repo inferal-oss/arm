@@ -5279,3 +5279,12 @@ new machine-code identity is claimed for documentation-only differences.
 This accepts the private component's source and scoped qualification. Successful
 native retirement, resident/controller operation, replaceable workers and actual
 public upgrade/job continuity remain required before the upgrade feature is done.
+
+The existing upgrade task's next assigned slice is
+`codex/resident-runtime-ingress`, based on `2ad57b5`: continue the genuine
+authenticated root into its same original Manager loops and a bounded,
+native-only pending control ingress. It may publish only its pending control
+record; ordinary endpoint readiness, worker formats/roles and public startup
+remain closed. The focused source, refusal/ordering checks and genuine native
+effects require review and qualification before integration. No runtime window
+or successful native behavior is established by this source assignment.
