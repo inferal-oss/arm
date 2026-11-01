@@ -89,8 +89,10 @@ type originalJobSettlement struct {
 }
 
 type Manager struct {
-	resident        *ResidentManagerPending // original resident owner; never a worker lifetime
-	residentService *residentServiceBinding // actual original nonretiring standing charge
+	resident              *ResidentManagerPending       // original resident owner; never a worker lifetime
+	residentService       *residentServiceBinding       // actual original nonretiring standing charge
+	residentWorker        *ResidentWorkerManagerPending // actual worker-native original owner
+	residentWorkerService *residentWorkerServiceBinding // distinct actual worker standing binding
 
 	proxyReported map[string]time.Time
 
@@ -561,7 +563,7 @@ func openWithSyncSchemaAndStartupLock(home string, capacity model.Resources, clo
 }
 
 func (m *Manager) Start() {
-	if m.resident != nil {
+	if m.hasResidentOwner() {
 		panic("resident Manager must be started by its original pending owner")
 	}
 	m.startOriginalLoops()
@@ -640,7 +642,7 @@ func (m *Manager) Observation(kind string) model.ResourceMeasurement {
 	return m.observations[kind]
 }
 func (m *Manager) Close() error {
-	if m.resident != nil {
+	if m.hasResidentOwner() {
 		return model.Err("resident_owner_required", "resident Manager/database closure is unavailable through the legacy close path")
 	}
 	var closeErr error
@@ -855,7 +857,7 @@ func (m *Manager) Status() (model.Status, error) {
 		m.attachBudgetEvidence(&ls[i])
 		m.attachPoolEvidence(&ls[i])
 	}
-	if m.resident != nil {
+	if m.hasResidentOwner() {
 		var err error
 		s.Reserved, err = checkedResidentJobTotals(ls)
 		if err != nil {
@@ -1246,7 +1248,7 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 		}
 	}
 	var used model.Resources
-	if m.resident != nil {
+	if m.hasResidentOwner() {
 		var err error
 		used, err = checkedResidentJobTotals(ls)
 		if err != nil {
@@ -1255,7 +1257,7 @@ func (m *Manager) acquireWithSourcePermit(r model.Request, run *RunRequest, rela
 	}
 	queued := false
 	for _, l := range ls {
-		if m.resident == nil && consuming(l.State) {
+		if !m.hasResidentOwner() && consuming(l.State) {
 			used = used.Add(l.Request.Resources)
 		}
 		if l.State == "queued" {
@@ -1777,7 +1779,7 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 		return l, e
 	}
 	var residentTotals model.Resources
-	if m.resident != nil {
+	if m.hasResidentOwner() {
 		var err error
 		residentTotals, err = checkedResidentJobTotals(ls)
 		if err != nil {
@@ -1793,7 +1795,7 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	}
 	if l.Request.Resources.Memory > 0 {
 		var reserved int64
-		if m.resident != nil {
+		if m.hasResidentOwner() {
 			reserved = residentTotals.Memory
 		} else {
 			for _, lease := range ls {
@@ -1808,7 +1810,7 @@ func (m *Manager) renew(id string, ttl time.Duration) (model.Lease, error) {
 	}
 	if l.Request.Resources.CPU > 0 {
 		var reserved float64
-		if m.resident != nil {
+		if m.hasResidentOwner() {
 			reserved = residentTotals.CPU
 		} else {
 			for _, lease := range ls {
@@ -1941,7 +1943,7 @@ func (m *Manager) tick() {
 	if err := m.reconcileIncidents(); err != nil {
 		return
 	}
-	if m.resident != nil {
+	if m.hasResidentOwner() {
 		// Queue projection checks resident promise subtotals and may refuse
 		// corrupt accounting. Settle existing endings before that projection
 		// or any later budget calculation can stop this tick. A port ending
@@ -1964,7 +1966,7 @@ func (m *Manager) tick() {
 	var residentTotalsErr error
 	for _, l := range ls {
 		if consuming(l.State) {
-			if m.resident == nil {
+			if !m.hasResidentOwner() {
 				used = used.Add(l.Request.Resources)
 			} else if residentTotalsErr == nil {
 				used, residentTotalsErr = checkedResidentJobAdd(used, l.Request.Resources)
@@ -1976,7 +1978,7 @@ func (m *Manager) tick() {
 		return
 	}
 	used.Disk = diskReserved
-	if m.resident == nil {
+	if !m.hasResidentOwner() {
 		// Preserve the legacy ordering of reconciliation, totals and endings.
 		m.settleEndingResources(ls)
 	}
@@ -2081,7 +2083,7 @@ func (m *Manager) tick() {
 			break
 		}
 		if consuming(l.State) {
-			if m.resident == nil {
+			if !m.hasResidentOwner() {
 				used = used.Add(l.Request.Resources)
 			} else {
 				var err error

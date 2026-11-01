@@ -85,10 +85,19 @@ func validStandingVector(vector model.Resources) bool {
 // Callers hold Manager.mu or run before any Manager pointer/loop is published.
 // A failure never zeroes a prior full promise; it only closes NEW admission.
 func (m *Manager) standingService() (held model.Resources, quantityKnown, admission bool) {
-	if m.resident == nil {
+	if m.residentWorker != nil || m.residentWorkerService != nil {
+		return m.workerStandingService()
+	}
+	if !m.hasResidentOwner() {
 		return held, true, true
 	}
 	b := m.residentService
+	if m.resident == nil {
+		if b != nil && b.manager == m && b.validated && validStandingVector(b.held) {
+			return b.held, true, false
+		}
+		return held, false, false
+	}
 	if b == nil || b.manager != m || !b.validated || !validStandingVector(b.held) {
 		return held, false, false
 	}
@@ -158,7 +167,7 @@ func checkedResidentJobTotals(leases []model.Lease) (model.Resources, error) {
 	return total, nil
 }
 func (m *Manager) standingCPUReserved(jobs float64) (float64, bool) {
-	if m.resident == nil {
+	if !m.hasResidentOwner() {
 		return jobs, true
 	} // exact legacy input semantics
 	held, known, _ := m.standingService()
@@ -166,7 +175,7 @@ func (m *Manager) standingCPUReserved(jobs float64) (float64, bool) {
 	return total, known && valid
 }
 func (m *Manager) standingMemoryReserved(jobs int64) (int64, bool) {
-	if m.resident == nil {
+	if !m.hasResidentOwner() {
 		return jobs, true
 	} // exact legacy input semantics
 	held, known, _ := m.standingService()
@@ -174,7 +183,7 @@ func (m *Manager) standingMemoryReserved(jobs int64) (int64, bool) {
 	return total, known && valid
 }
 func (m *Manager) standingDiskReserved(jobs int64) (int64, bool) {
-	if m.resident == nil {
+	if !m.hasResidentOwner() {
 		return jobs, true
 	} // exact legacy input semantics
 	held, known, _ := m.standingService()
@@ -183,7 +192,10 @@ func (m *Manager) standingDiskReserved(jobs int64) (int64, bool) {
 }
 
 func (m *Manager) standingProjection(kind string) *model.ResidentServiceConsumer {
-	if m.resident == nil {
+	if m.residentWorker != nil || m.residentWorkerService != nil {
+		return m.workerStandingProjection(kind)
+	}
+	if !m.hasResidentOwner() {
 		return nil
 	}
 	held, known, admission := m.standingService()

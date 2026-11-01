@@ -79,7 +79,7 @@ func (m *Manager) requestFitsCeiling(r model.Resources) bool {
 	}
 	// Static feasibility includes the immutable standing promise when known.
 	// Unknown service state blocks actual admission later, not queued settlement.
-	if held, known, _ := m.standingService(); m.resident != nil && known {
+	if held, known, _ := m.standingService(); m.hasResidentOwner() && known {
 		capacity.CPU = max(0, capacity.CPU-held.CPU)
 		capacity.Memory = max(int64(0), capacity.Memory-held.Memory)
 		capacity.Disk = max(int64(0), capacity.Disk-held.Disk)

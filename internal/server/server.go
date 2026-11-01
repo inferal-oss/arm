@@ -37,7 +37,8 @@ import (
 type Server struct {
 	statusMu              sync.Mutex
 	status                *statusService
-	resident              *residentServerPending // original root-owned Server; never an API/UI worker
+	resident              *residentServerPending       // original root-owned Server; never an API/UI worker
+	workerResident        *residentWorkerServerPending // distinct actual worker-native root Server
 	responses             responseTracking
 	callers               residentCallers
 	peerCacheMu           sync.RWMutex

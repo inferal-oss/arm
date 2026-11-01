@@ -130,7 +130,15 @@ func (m *Manager) saveStoragePools() error {
 	}
 	defer tx.Rollback()
 	format := database.StoragePoolWorkspaceFormat
-	if m.resident != nil {
+	if m.residentWorker != nil {
+		if m.resident != nil {
+			return errResidentWorkerManagerOriginal
+		}
+		if err = m.residentWorker.checkOriginalWorkspace(context.Background(), tx); err != nil {
+			return err
+		}
+		format = residentWorkerManagerWorkspaceFormat
+	} else if m.resident != nil {
 		if err = m.resident.checkOriginalWorkspace(context.Background(), tx); err != nil {
 			return err
 		}

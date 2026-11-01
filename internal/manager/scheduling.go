@@ -266,7 +266,7 @@ func (m *Manager) explainQueued(l model.Lease, position int, before []string, s 
 	totalCPU, cpuQuantityKnown := m.standingCPUReserved(s.used.CPU)
 	if l.Request.Resources.CPU > 0 && (!cpuQuantityKnown || l.Request.Resources.CPU > max(0, m.capacity.CPU-totalCPU) || totalCPU > m.capacity.CPU) {
 		detail := "CPU budget is committed to existing leases."
-		if m.resident != nil {
+		if m.hasResidentOwner() {
 			detail = "CPU budget is committed to existing lease promises and the resident standing charge."
 		}
 		add("budget_reserved", m.host+"/cpu", "logical-core-equivalents", detail, number(model.FloatQuantity(l.Request.Resources.CPU)), number(model.FloatQuantity(max(0, m.capacity.CPU-totalCPU))))
@@ -441,7 +441,7 @@ func (m *Manager) refreshQueueInfo() error {
 	if err != nil {
 		return err
 	}
-	s, err := schedulingSnapshotWithResidentTotals(leases, m.resident != nil)
+	s, err := schedulingSnapshotWithResidentTotals(leases, m.hasResidentOwner())
 	if err != nil {
 		return err
 	}
@@ -471,7 +471,7 @@ func (m *Manager) refreshQueueInfo() error {
 	return nil
 }
 func (m *Manager) queueViews(leases []model.Lease) error {
-	s, err := schedulingSnapshotWithResidentTotals(leases, m.resident != nil)
+	s, err := schedulingSnapshotWithResidentTotals(leases, m.hasResidentOwner())
 	if err != nil {
 		return err
 	}

@@ -23,11 +23,12 @@ type authenticatedCaller struct {
 }
 
 type ingressProof struct {
-	generation string
-	original   *residentServerBinding
-	directory  *database.Directory
-	admission  browserAdmission
-	nativeNode bool
+	generation     string
+	original       *residentServerBinding
+	workerOriginal *residentWorkerServerBinding
+	directory      *database.Directory
+	admission      browserAdmission
+	nativeNode     bool
 }
 
 type residentIngress struct {
@@ -69,7 +70,14 @@ func (s *Server) authenticateLocalIngress(r *http.Request, now time.Time) (*auth
 		return nil, &ingressFailure{http.StatusForbidden, "invalid native node negotiation"}
 	}
 	proof := &ingressProof{generation: s.generation, admission: admission, nativeNode: len(native) == 1}
-	if s.resident != nil {
+	if s.workerResident != nil {
+		if s.resident != nil {
+			return nil, &ingressFailure{http.StatusServiceUnavailable, "conflicting original resident owners"}
+		}
+		s.workerResident.mu.Lock()
+		proof.workerOriginal = s.workerResident.binding
+		s.workerResident.mu.Unlock()
+	} else if s.resident != nil {
 		s.resident.mu.Lock()
 		proof.original = s.resident.binding
 		s.resident.mu.Unlock()
@@ -251,6 +259,15 @@ func validIngressDirectory(d *database.Directory) bool {
 func (s *Server) validateOriginalIngressProof(ctx context.Context, p *ingressProof) error {
 	if p == nil || s.generation == "" || p.generation != s.generation {
 		return model.Err("forbidden", "resident ingress identity changed")
+	}
+	if s.workerResident != nil {
+		if s.resident != nil || p.directory != nil || p.original != nil || p.workerOriginal == nil {
+			return model.Err("forbidden", "original worker resident binding required")
+		}
+		return s.workerResident.validateIngressBinding(ctx, p.workerOriginal, s)
+	}
+	if p.workerOriginal != nil {
+		return model.Err("forbidden", "worker resident proof cannot enter another owner")
 	}
 	if s.resident != nil {
 		if p.directory != nil || p.original == nil {
