@@ -7,6 +7,7 @@ import (
 
 	"getarm.org/internal/agentprojects"
 	"getarm.org/internal/agentsessions"
+	"getarm.org/internal/gitmeta"
 )
 
 func onboardTreeFixture() []agentprojects.Group {
@@ -21,6 +22,64 @@ func onboardTreeFixture() []agentprojects.Group {
 		{Key: "beta", Kind: "directory", Name: "Beta directory", Directory: "/work/beta", Directories: []string{"/work/beta"}, Sessions: []agentsessions.SavedSession{
 			{Ref: ref("claude", "/clients/claude", 1), Directory: "/work/beta", Name: "Duplicate title"},
 		}},
+	}
+}
+
+func onboardTreeProofFixture() []agentprojects.Group {
+	groups := onboardTreeFixture()
+	for index, path := range groups[0].Directories {
+		info := gitmeta.Info{Root: gitmeta.Directory{Path: path, Identity: fmt.Sprintf("root-%d", index)}, Git: gitmeta.Directory{Path: fmt.Sprintf("/metadata/git-%d", index), Identity: fmt.Sprintf("git-%d", index)}, Common: gitmeta.Directory{Path: "/metadata/common", Identity: "common"}}
+		groups[0].Memberships = append(groups[0].Memberships, agentprojects.Membership{Member: gitmeta.Directory{Path: path, Identity: fmt.Sprintf("member-%d", index)}, Checkout: &info})
+	}
+	return groups
+}
+
+func TestOnboardTreeCheckoutEvidenceIsDefensivelyCopied(t *testing.T) {
+	groups := onboardTreeProofFixture()
+	tree, err := newOnboardTree(groups)
+	if err != nil {
+		t.Fatal(err)
+	}
+	groups[0].Memberships[0].Checkout.Root.Path = "/work/replaced"
+	groups[0].Memberships[0].Member.Identity = "replaced"
+	if tree.groups[0].Memberships[0].Checkout.Root.Path != "/work/alpha" || tree.groups[0].Memberships[0].Member.Identity != "member-0" {
+		t.Fatal("input evidence aliases snapshot")
+	}
+	tree.projects["alpha"] = true
+	exported := tree.selectedGroups()
+	exported[0].Memberships[0].Checkout.Common.Identity = "replaced"
+	if tree.groups[0].Memberships[0].Checkout.Common.Identity != "common" {
+		t.Fatal("exported evidence aliases snapshot")
+	}
+}
+
+func TestOnboardTreeCheckoutEvidenceBoundsAndMembership(t *testing.T) {
+	for _, mode := range []string{"missing-chat-member", "unrelated-root", "empty-identity", "metadata-path-limit"} {
+		t.Run(mode, func(t *testing.T) {
+			groups := onboardTreeProofFixture()
+			switch mode {
+			case "missing-chat-member":
+				groups[0].Memberships = groups[0].Memberships[:1]
+			case "unrelated-root":
+				groups[0].Memberships[0].Checkout.Root.Path = "/unrelated/root"
+			case "empty-identity":
+				groups[0].Memberships[0].Checkout.Common.Identity = ""
+			case "metadata-path-limit":
+				groups = groups[:1]
+				groups[0].Sessions = nil
+				groups[0].Memberships = nil
+				groups[0].Directories = []string{groups[0].Directory}
+				for i := 0; i < 172; i++ {
+					path := fmt.Sprintf("/work/member-%d", i)
+					info := gitmeta.Info{Root: gitmeta.Directory{Path: groups[0].Directory, Identity: "root"}, Git: gitmeta.Directory{Path: fmt.Sprintf("/metadata/git-%d", i), Identity: "git"}, Common: gitmeta.Directory{Path: fmt.Sprintf("/metadata/common-%d", i), Identity: "common"}}
+					groups[0].Directories = append(groups[0].Directories, path)
+					groups[0].Memberships = append(groups[0].Memberships, agentprojects.Membership{Member: gitmeta.Directory{Path: path, Identity: "member"}, Checkout: &info})
+				}
+			}
+			if _, err := newOnboardTree(groups); err == nil {
+				t.Fatal("unsupported evidence accepted", mode)
+			}
+		})
 	}
 }
 

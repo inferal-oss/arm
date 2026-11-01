@@ -306,3 +306,53 @@ func TestHierarchyChangedGitRelationshipsFallBackTogether(t *testing.T) {
 		})
 	}
 }
+
+func TestHierarchyRetainsExactMemberCheckoutEvidence(t *testing.T) {
+	root, common, gitDir := hierarchyFixtureDir(t), hierarchyFixtureDir(t), hierarchyFixtureDir(t)
+	member := filepath.Join(root, "member")
+	if err := os.Mkdir(member, 0700); err != nil {
+		t.Fatal(err)
+	}
+	info := gitmeta.Info{Root: gitmeta.Directory{Path: root, Identity: "owned-root"}, Git: gitmeta.Directory{Path: gitDir, Identity: "owned-git"}, Common: gitmeta.Directory{Path: common, Identity: "owned-common"}}
+	probe := &hierarchyFixtureProbe{infos: map[string]gitmeta.Info{member: info}}
+	out := hierarchyFixtureRun(t, Catalog{Projects: []Project{{Directory: member}}}, nil, probe)
+	if len(out.Groups) != 1 || len(out.Groups[0].Memberships) != 1 {
+		t.Fatal(out)
+	}
+	evidence := out.Groups[0].Memberships[0]
+	actual, err := InspectDirectory(t.Context(), member)
+	if err != nil || evidence.Member != actual || evidence.Checkout == nil || *evidence.Checkout != info {
+		t.Fatal(evidence, err)
+	}
+	probe.infos[member] = gitmeta.Info{}
+	if *out.Groups[0].Memberships[0].Checkout != info {
+		t.Fatal("probe result alias")
+	}
+	fallback := hierarchyFixtureRun(t, Catalog{Projects: []Project{{Directory: member}}}, nil, &hierarchyFixtureProbe{})
+	if len(fallback.Groups) != 1 || fallback.Groups[0].Kind != "directory" || len(fallback.Groups[0].Memberships) != 1 || fallback.Groups[0].Memberships[0].Member != actual || fallback.Groups[0].Memberships[0].Checkout != nil {
+		t.Fatal(fallback)
+	}
+}
+
+func TestHierarchyMetadataDirectoriesCountTowardGlobalPathLimit(t *testing.T) {
+	base, gitDir, common := hierarchyFixtureDir(t), hierarchyFixtureDir(t), hierarchyFixtureDir(t)
+	catalog := Catalog{}
+	for i := 0; i < 511; i++ {
+		path := filepath.Join(base, fmt.Sprintf("%04d", i))
+		if err := os.Mkdir(path, 0700); err != nil {
+			t.Fatal(err)
+		}
+		catalog.Projects = append(catalog.Projects, Project{Directory: path})
+	}
+	first := catalog.Projects[0].Directory
+	info := gitmeta.Info{Root: gitmeta.Directory{Path: first, Identity: "owned-root"}, Git: gitmeta.Directory{Path: gitDir, Identity: "owned-git"}, Common: gitmeta.Directory{Path: common, Identity: "owned-common"}}
+	out := hierarchyFixtureRun(t, catalog, nil, &hierarchyFixtureProbe{infos: map[string]gitmeta.Info{first: info}})
+	if !out.Truncated {
+		t.Fatal("metadata directory overflow was hidden")
+	}
+	for _, group := range out.Groups {
+		if group.Directory == first && (group.Kind != "directory" || group.Memberships[0].Checkout != nil) {
+			t.Fatal("metadata paths escaped global bound", group)
+		}
+	}
+}

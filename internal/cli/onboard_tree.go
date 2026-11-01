@@ -9,6 +9,7 @@ import (
 	"charm.land/bubbles/v2/list"
 	"getarm.org/internal/agentprojects"
 	"getarm.org/internal/agentsessions"
+	"getarm.org/internal/gitmeta"
 )
 
 type onboardTreeRow struct {
@@ -41,7 +42,7 @@ func newOnboardTree(groups []agentprojects.Group) (*onboardTree, error) {
 	refs := map[agentsessions.SavedSessionRef]bool{}
 	total := 0
 	directories := map[string]bool{}
-	names, warnings, textBytes := 0, 0, 0
+	names, warnings, textBytes, membershipCount := 0, 0, 0, 0
 	charge := func(values ...string) bool {
 		for _, value := range values {
 			textBytes += len(value)
@@ -85,10 +86,36 @@ func newOnboardTree(groups []agentprojects.Group) (*onboardTree, error) {
 				return nil, fmt.Errorf("group diagnostic limit reached")
 			}
 		}
+		proofMembers := map[string]bool{}
+		for _, membership := range group.Memberships {
+			membershipCount++
+			if membershipCount > 512 || proofMembers[membership.Member.Path] || !members[membership.Member.Path] {
+				return nil, fmt.Errorf("unsupported checkout member evidence")
+			}
+			proofMembers[membership.Member.Path] = true
+			evidence := []gitmeta.Directory{membership.Member}
+			if membership.Checkout != nil {
+				if group.Kind != "git" || !members[membership.Checkout.Root.Path] {
+					return nil, fmt.Errorf("checkout evidence has unrelated roots")
+				}
+				evidence = append(evidence, membership.Checkout.Root, membership.Checkout.Git, membership.Checkout.Common)
+			} else if group.Kind == "git" {
+				return nil, fmt.Errorf("Git member has no checkout evidence")
+			}
+			for _, directory := range evidence {
+				directories[directory.Path] = true
+				if len(directories) > 512 || !onboardTreePath(directory.Path) || directory.Identity == "" || len(directory.Identity) > 128 || strings.ContainsFunc(directory.Identity, func(r rune) bool { return r < 32 || r == 127 }) || !charge(directory.Path, directory.Identity) {
+					return nil, fmt.Errorf("checkout evidence exceeds snapshot bounds")
+				}
+			}
+		}
 		for _, session := range group.Sessions {
 			total++
 			if !session.Valid() || refs[session.Ref] || !members[session.Directory] || len(session.Name) > 64<<10 || !charge(session.Name, session.Directory, session.Ref.Adapter, session.Ref.Home, session.Ref.ID) {
 				return nil, fmt.Errorf("unsupported or ambiguous saved sessions")
+			}
+			if len(group.Memberships) > 0 && !proofMembers[session.Directory] {
+				return nil, fmt.Errorf("chat has no exact checkout member evidence")
 			}
 			refs[session.Ref] = true
 		}
@@ -110,6 +137,13 @@ func cloneOnboardGroup(group agentprojects.Group) agentprojects.Group {
 	group.Names = slices.Clone(group.Names)
 	group.Warnings = slices.Clone(group.Warnings)
 	group.Sessions = slices.Clone(group.Sessions)
+	group.Memberships = slices.Clone(group.Memberships)
+	for index := range group.Memberships {
+		if group.Memberships[index].Checkout != nil {
+			info := *group.Memberships[index].Checkout
+			group.Memberships[index].Checkout = &info
+		}
+	}
 	return group
 }
 

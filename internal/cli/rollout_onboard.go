@@ -102,7 +102,22 @@ func (a *app) rolloutOnboard(args []string) error {
 	if !a.inputTTY {
 		return fmt.Errorf("onboarding requires terminal input; use --json or --dry-run for discovery only")
 	}
-	model := newRolloutOnboard(a.ctx, a.home, *reason, adapters)
+	var sources []agentprojects.HierarchySource
+	for _, target := range []struct{ kind, home string }{{"codex", *codexHome}, {"claude", *claudeHome}} {
+		if *adapter != "all" && *adapter != target.kind {
+			continue
+		}
+		canonical := target.home
+		if resolved, err := filepath.EvalSymlinks(canonical); err == nil {
+			canonical = resolved
+		}
+		var source agentsessions.SavedSessionSource = agentsessions.CodexStored{Home: target.home}
+		if target.kind == "claude" {
+			source = agentsessions.Claude{Home: target.home}
+		}
+		sources = append(sources, agentprojects.HierarchySource{Adapter: target.kind, Home: canonical, Source: source})
+	}
+	model := newProjectOnboard(a.ctx, a.home, *reason, adapters, sources)
 	opts := []tea.ProgramOption{tea.WithContext(a.ctx), tea.WithInput(a.in), tea.WithOutput(a.out), tea.WithoutSignalHandler()}
 	if !a.colors {
 		opts = append(opts, tea.WithColorProfile(colorprofile.ASCII))
@@ -111,10 +126,9 @@ func (a *app) rolloutOnboard(args []string) error {
 	if e = model.result(e); e != nil {
 		return e
 	}
-	if model.cancelled || model.plan.After.Mode == "disabled" || model.plan.After.ID == "" {
-		return nil
-	}
-	return a.offerRolloutDiscovery(model.plan.After.ID, *adapter, *codexHome, *claudeHome)
+	// The picker owns its exact, separately confirmed copy-only activation offer.
+	// Saving policy never starts broad native discovery or the legacy proxy path.
+	return nil
 }
 
 func (a *app) offerRolloutDiscovery(project, adapter, codexHome, claudeHome string) error {

@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"syscall"
 
 	"getarm.org/internal/agentsessions"
 	"getarm.org/internal/gitmeta"
@@ -52,19 +53,33 @@ func hierarchyPath(path string) bool {
 	return filepath.IsAbs(path) && filepath.Clean(path) == path && len(path) <= 4096 && !strings.ContainsFunc(path, func(r rune) bool { return r < 32 || r == 127 })
 }
 
-func inspectHierarchyDirectory(path string) (string, error) {
+// InspectDirectory records canonical filesystem evidence, not an ARM identity.
+func InspectDirectory(ctx context.Context, path string) (gitmeta.Directory, error) {
+	if err := ctx.Err(); err != nil {
+		return gitmeta.Directory{}, err
+	}
 	if !hierarchyPath(path) {
-		return "", fmt.Errorf("unsupported hierarchy directory")
+		return gitmeta.Directory{}, fmt.Errorf("unsupported hierarchy directory")
 	}
 	canonical, err := filepath.EvalSymlinks(path)
 	if err != nil || canonical != path {
-		return "", fmt.Errorf("noncanonical hierarchy directory")
+		return gitmeta.Directory{}, fmt.Errorf("noncanonical hierarchy directory")
+	}
+	if err := ctx.Err(); err != nil {
+		return gitmeta.Directory{}, err
 	}
 	info, err := os.Stat(path)
 	if err != nil || !info.IsDir() {
-		return "", fmt.Errorf("hierarchy directory unavailable")
+		return gitmeta.Directory{}, fmt.Errorf("hierarchy directory unavailable")
 	}
-	return canonical, nil
+	identity, ok := info.Sys().(*syscall.Stat_t)
+	if !ok {
+		return gitmeta.Directory{}, fmt.Errorf("unsupported directory identity")
+	}
+	if err := ctx.Err(); err != nil {
+		return gitmeta.Directory{}, err
+	}
+	return gitmeta.Directory{Path: canonical, Identity: fmt.Sprintf("%d:%d", identity.Dev, identity.Ino)}, nil
 }
 
 // DiscoverHierarchy bounds all adapters together. One caller-respecting budget
@@ -119,25 +134,29 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 		return true
 	}
 	paths := map[string]bool{}
+	pathBudget := map[string]bool{}
+	members := map[string]gitmeta.Directory{}
 	legacyNames := map[string][]string{}
 	legacyNameCount := 0
 	addPath := func(path string) bool {
 		if paths[path] {
 			return true
 		}
-		if len(paths) >= MaxHierarchyDirectories || !charge(path) {
+		if !pathBudget[path] && (len(pathBudget) >= MaxHierarchyDirectories || !charge(path)) {
 			out.Truncated = true
 			warn("Hierarchy directory or text bound reached; other display suggestions were omitted.")
 			return false
 		}
 		paths[path] = true
+		pathBudget[path] = true
 		return true
 	}
 	for _, project := range catalog.Projects {
 		if budget.Check() != nil {
 			break
 		}
-		if _, err := inspectHierarchyDirectory(project.Directory); err != nil {
+		member, err := InspectDirectory(budget.Context(), project.Directory)
+		if err != nil {
 			warn("Some configured directories are unavailable or noncanonical and were omitted.")
 			continue
 		}
@@ -149,6 +168,7 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 		if !addPath(project.Directory) {
 			continue
 		}
+		members[project.Directory] = member
 		for _, name := range project.Names {
 			if legacyNameCount >= agentsessions.Limit || len(name) > 64<<10 || !charge(name) {
 				out.Truncated = true
@@ -187,7 +207,8 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 			out.Coverage = append(out.Coverage, coverage)
 			continue
 		}
-		home, err := inspectHierarchyDirectory(source.Home)
+		homeEvidence, err := InspectDirectory(budget.Context(), source.Home)
+		home := homeEvidence.Path
 		if err != nil || budget.Check() != nil {
 			cw("This adapter's saved-chat coverage is unavailable.")
 			out.Coverage = append(out.Coverage, coverage)
@@ -251,7 +272,8 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 				out.Truncated = true
 				continue
 			}
-			if _, err = inspectHierarchyDirectory(child.Directory); err != nil || budget.Check() != nil {
+			member, memberErr := InspectDirectory(budget.Context(), child.Directory)
+			if memberErr != nil || budget.Check() != nil {
 				cw("Some saved-chat directories are unavailable or noncanonical and were omitted.")
 				continue
 			}
@@ -259,6 +281,7 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 				coverage.Truncated = true
 				continue
 			}
+			members[child.Directory] = member
 			child.Name = SanitizeTitle(child.Name)
 			children = append(children, child)
 		}
@@ -300,6 +323,20 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 		if !hierarchyPath(info.Root.Path) || info.Root.Identity == "" || !hierarchyPath(info.Git.Path) || info.Git.Identity == "" || !hierarchyPath(info.Common.Path) || info.Common.Identity == "" {
 			warn("Unsupported Git grouping evidence was omitted.")
 			continue
+		}
+		newPaths := map[string]bool{}
+		for _, directory := range []gitmeta.Directory{info.Root, info.Git, info.Common} {
+			if !pathBudget[directory.Path] {
+				newPaths[directory.Path] = true
+			}
+		}
+		if len(pathBudget)+len(newPaths) > MaxHierarchyDirectories || !charge(info.Root.Path, info.Root.Identity, info.Git.Path, info.Git.Identity, info.Common.Path, info.Common.Identity) {
+			out.Truncated = true
+			warn("Checkout evidence exceeds combined directory or text bounds; exact directory groups are shown instead.")
+			continue
+		}
+		for path := range newPaths {
+			pathBudget[path] = true
 		}
 		if !addPath(info.Root.Path) {
 			continue
@@ -393,6 +430,12 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 			out.Groups = append(out.Groups, group)
 		}
 		group := &out.Groups[index]
+		membership := Membership{Member: members[path]}
+		if info, ok := infoByPath[path]; ok {
+			copyInfo := info
+			membership.Checkout = &copyInfo
+		}
+		group.Memberships = append(group.Memberships, membership)
 		if !slices.Contains(group.Directories, path) {
 			group.Directories = append(group.Directories, path)
 		}
@@ -445,6 +488,14 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 		}
 		for _, child := range group.Sessions {
 			textBytes += len(child.Ref.Adapter) + len(child.Ref.Home) + len(child.Ref.ID) + len(child.Directory) + len(child.Name)
+		}
+		for _, membership := range group.Memberships {
+			textBytes += len(membership.Member.Path) + len(membership.Member.Identity)
+			if membership.Checkout != nil {
+				for _, directory := range []gitmeta.Directory{membership.Checkout.Root, membership.Checkout.Git, membership.Checkout.Common} {
+					textBytes += len(directory.Path) + len(directory.Identity)
+				}
+			}
 		}
 	}
 	for _, coverage := range out.Coverage {
