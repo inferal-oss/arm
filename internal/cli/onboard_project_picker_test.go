@@ -264,6 +264,7 @@ func TestProjectPickerDefaultNoAndAtomicPolicySave(t *testing.T) {
 }
 
 func TestProjectPickerExactCopyOnlyActivationOffer(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
 	m, home := pickerFixture(t, true)
 	pickerKey(m, "ctrl+space")
 	unchecked := m.tree.groups[0].Sessions[1]
