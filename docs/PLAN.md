@@ -5288,3 +5288,53 @@ record; ordinary endpoint readiness, worker formats/roles and public startup
 remain closed. The focused source, refusal/ordering checks and genuine native
 effects require review and qualification before integration. No runtime window
 or successful native behavior is established by this source assignment.
+
+
+## Interactive project tree — qualified, composition pending
+
+Code `e132703` on `codex/onboard-project-picker` starts from `66eff26` after
+the qualified catalog composition. The interactive command wires project parents and
+indented chat checkboxes, synchronous typeahead, mixed state, collapse/expand,
+project-only manual entry, per-project ID/scope/policy editing and one default-no
+batch review. Checking parents selects complete discovered snapshots; unchecked
+chats remain in policy coverage and are omitted only from activation.
+
+Exact member filesystem and checkout Root/Git/Common evidence is now retained
+and defensively copied. Metadata directories count toward the same combined
+512-path/8 MiB bounds and never become policy roots. Every selected member,
+including unchecked chats, is freshly revalidated before review and again before
+apply. Changed nested worktree membership refuses write without re-sealing.
+
+The separate activation offer is an exact checked-reference, default-no
+copy-only flow. It starts no native discovery, verification, proxy/server or
+delivery and creates no ARM identity from a saved reference. Global managed-
+instruction readiness, pending-result handling, custom-home recovery and flat
+read-only JSON/dry-run compatibility remain explicit. Independent review accepts
+the exact 66-root/119-case normal and race cohorts, five-package vet, native
+build and three owned terminal scenarios with 63 current-grid assertions.
+The [normalized evidence](validation/onboard-project-picker-scoped-2026-10-31.json)
+binds ten source images and 26 unchanged protected images to this scope.
+
+
+Static review of the first unrun picker source found that a delivered possible-
+save failure could lose its typed recovery guidance after later terminal-loop
+cancellation, and that reload left the displayed instruction readiness stale.
+The qualified successor retains the known outcome, refreshes readiness from the
+same selected ARM home and aligns Page Up/Down search focus. Permanent synthetic
+regressions pass the scoped normal/race cohort; the first source remains an unrun
+static predecessor. Earlier component-only/prepared status above is historical.
+
+Actual terminal coverage uses synthetic Codex rows and a local Claude marker,
+owned linked/nested Git worktrees and explicit disposable instruction targets.
+It verifies default-no, readiness recovery, new-sessions cutoff/bindings, exact
+checked-only copy guides and membership-drift refusal. The unchecked marker
+shares a checkout with a checked chat; broader unchecked-member semantics are
+covered by model tests. Configuration restoration permits only the documented
+Darwin PENDIN state difference, recording raw whole-state inequality separately.
+
+Current-main composition, affected checks and a rebuilt artifact remain central
+integration gates. The qualified staged binary is source-equivalent to the code
+commit, not attested by binary Git metadata; documentation follows qualification.
+Real client compatibility, historical Claude titles and automatic native
+verification/delivery remain outside acceptance. Earlier failed terminal
+contracts and retained resource/cleanup uncertainty imply no reclamation credit.

@@ -13253,3 +13253,80 @@ from the validation snapshot are documentation only, including upstream notes
 through `8d4b666`. Those differences require no repeated runtime qualification,
 and no rebuilt binary or additional native acceptance is asserted. The open
 native retirement, worker/public-start and real job-survival gates above remain.
+
+
+## Interactive project tree — scoped qualification
+
+Producer/tree fixtures cover retained exact member evidence, metadata
+directories in global path limits, defensive proof copying and proof/member
+bounds. Policy fixtures cover explicit nested roots, unchecked-member drift
+after preview while the outer root remains unchanged, changed identities or
+selection context, caller deadlines/cancellation, unsupported/conflicting
+references, readiness semantics and an independent 64-probe membership ceiling.
+
+Interactive model fixtures cover latest-query child selection, initial Space and
+automatic typing focus, hidden-child parent checks, collapse/filter retention,
+no-match footer counts, printable keys/paste, default-no policy, exact copy-only
+activation, disabled/no-op readiness, pending apply through resize/cancel keys,
+late canceled results, manual project-only entry, diagnostics, retained settings
+and typed possible-save uncertainty. Filesystem, instruction installation and
+policy operations in these controls are owned synthetic fixtures; probe
+substitutes do not run Git or native clients.
+
+Code `e132703` passes exact package-qualified normal and race run/pass key sets:
+66 roots/119 named cases in each, with no skips, failures or repeated keys.
+The cohort includes 26 new roots/50 named cases, affected hierarchy/tree and
+legacy CLI controls, plus unchanged batch-store and Git-budget boundaries.
+Five-package vet and the native CLI build pass. Original Go/helper/FIFO processes
+naturally return zero and join with output EOF; source/tool pins, empty owned
+temporary inventories and positive final sampled observations are verified.
+
+
+The qualified successor adds delivered-unknown-then-terminal-cancellation controls
+through the shared finish handler in terminal and JSON modes, including generic
+pre-confirmation interruption and definitive refusal/success controls. It also
+checks readiness recovery and loss across owned refresh and actual input focus
+after Page Up/Down. The first source remains unrun with its static findings
+preserved; the qualified successor has no post-test Go source/comment changes.
+
+Three actual terminal scenarios pass 63 current-grid assertions using synthetic
+client homes, real owned linked/nested worktrees and explicit owned instruction
+targets. They cover flat JSON/dry-run and default-no without policy, checkbox
+counts/typeahead/focus/folding/resizing/settings/review; readiness recovery via
+Refresh after an exact two-target installer preview/apply; a new-sessions save
+with three exact checkout bindings, a confirmation-time nanosecond cutoff and
+zero ARM sessions; exactly three checked-only unverified copy guides; and
+specific checkout-membership drift refusal with no policy write. The unchecked
+Claude marker shares its linked checkout with a checked Codex chat; this native
+fixture does not prove an independently unique unchecked directory. Pure model
+controls cover the broader policy/selection separation.
+
+All 21 parent-owned originals and three broker-owned ARM originals naturally
+return zero with matching native exit notifications and closed watches, private
+initialization/acknowledgment channels, terminal descriptors and output EOF.
+The controlling-session broker permits inspection after the ARM child exits,
+before acknowledgment releases the session. Owned instruction, policy and
+metadata rosters and source/tool postchecks match; final sampled inventory is
+positive and stable. No real client, backend, identify, invitation, enrollment
+or delivery is exercised.
+
+The revised terminal oracle starts with the default fresh terminal and checks
+configuration exactly, permitting only Darwin's PENDIN input-state bit to differ.
+Both natural and explicit-restore configuration checks pass in all three cases;
+raw whole-state equality remains false and is separately retained. The local
+header and [Apple's primary terminal source](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/kern/tty.c)
+support this state distinction, without attesting the exact running kernel.
+355 pure oracle controls reject every other tested flag, speed and control-byte
+change; 21 pure UTC parser and 22 supplemental calendar/boundary controls verify
+exact nanosecond handling. Earlier terminal harness failures remain failures
+under their original contracts; this is not retroactive raw-state acceptance.
+
+The [normalized evidence](validation/onboard-project-picker-scoped-2026-10-31.json)
+contains ten source/26 protected hashes and complete rosters. The verified native
+artifact was built from the staged source before the code commit with VCS
+recording disabled; source-image equality, not embedded Git revision, maps it
+to that commit. Documentation/evidence follows qualification. Current-main
+composition, affected integration checks/rebuild, full-suite/Linux and real
+client/native-delivery compatibility remain unclaimed. Cooperative CPU/memory,
+sampled storage and unmeasured aggregate FD/cache usage imply no kernel or
+physical-reclamation bound; earlier original-process/cleanup uncertainty remains.

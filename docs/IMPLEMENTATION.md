@@ -6537,3 +6537,79 @@ The independently reviewed composition is `75ed890` (source) and `7d695cb`
 qualified Go, module, runtime, asset and test images are unchanged. The private
 component remains unwired; this integration changes no installed backend or job
 and does not activate the proposed public startup/worker interface.
+
+
+## Interactive project tree — implemented and scoped qualification
+
+The real interactive command now uses a distinct checkbox model; the existing
+flat read-only machine path and legacy title/native readers remain unchanged.
+The initial list focus makes Space toggle the highlighted row, while printable
+text starts synchronous search. Search accepts spaces; Tab/navigation focuses
+the list, Ctrl+Space toggles while searching, and left/right folds only in list
+focus. Parent toggles include hidden children, child overrides retain project
+policy, and footer counts survive no-match views. Project settings survive back
+navigation, and every edit invalidates preview. Manual entry replaces selection
+with an explicit project-only boundary.
+
+Each display member retains canonical filesystem identity and, for Git groups,
+its exact observed Root/Git/Common tuple. Tree copies include proof pointers and
+combined metadata path/text limits. Binding roots come only from exact member
+revalidation; nested roots are never collapsed by containment. Directory
+relationships used to show reviewed coverage do not derive new binding roots.
+The review lists all resulting project bindings, including retained/removed
+boundaries, plus checked and unchecked discovered chats.
+
+One caller-respecting 15-second context starts at each review-preparation or
+confirmed-apply entry and passes through membership checks and the unchanged
+Store API. Budgets remain separate stages: review is at most 64 membership plus
+32 Store Git probes; apply is at most 64 membership plus 64 Store probes. Each
+stage has a 1 MiB observed-output bound, at most 2 MiB combined. New stage budget
+constructors cannot extend the earlier caller deadline. Global instruction
+readiness checks retain changed-non-disabled versus disabled/no-op semantics;
+the wizard does not install instructions. Batch, Git resolver and module code
+remain unchanged.
+
+After a known successful policy result, the exact checked set can open a
+separate default-no manual activation view. Saved IDs/cwds are explicitly
+unverified, original start is unknown, and commands ask the actual chat to use
+its own identity. No native proxy, discovery, Normalize, Seal, invitation or send
+is invoked. Possible-save uncertainty blocks activation and retains inspection
+guidance. Code `e132703` passes the source-bound normal/race cohort, affected
+vet and native build. Three actual terminal scenarios additionally qualify
+owned synthetic metadata, real linked/nested Git grouping and isolated policy
+and instruction operations. This supersedes earlier prepared/unwired status for
+the interactive command, without extending the older component-only evidence.
+
+
+The prepared review successor prioritizes an already-delivered possible-save
+outcome over a later terminal error, preserving custom-home status/history
+guidance through shared terminal/JSON reporting. Readiness displayed after reload
+is inspected from that same ARM home during the owned reload; the independent
+before-confirm/apply guards remain unchanged. Page Up/Down now blur the actual
+search input when routing moves to the list. These are source-review corrections,
+not observed production runtime failures. Their permanent controls pass the
+scoped normal/race cohort; no Go source or comment changed after qualification.
+
+The terminal fixture checks the complete project/child selection, settings and
+default-no review; explicit instruction installation followed by Refresh; a
+new-sessions save with three exact checkout bindings and zero ARM sessions;
+three checked-only copy guides; and refusal when an ordinary member becomes a
+linked checkout after preview while the outer checkout remains unchanged.
+The unchecked Claude marker shares a checkout with a selected Codex child;
+the terminal run does not prove an independently unique unchecked directory.
+Model fixtures cover broader selection/policy and unchecked-member behavior.
+
+Terminal configuration checks retain raw before/after structures and require
+every flag, speed and control character to match except the documented Darwin
+PENDIN input-state bit. Raw whole-state inequality is reported separately.
+Actual Go and controlling-session broker originals have matching native exit
+notifications, natural zero waits and closed control/terminal descriptors.
+This establishes the owned fixture's configuration and lifecycle scope, not
+exact running-kernel/raw-state preservation or a measured aggregate FD bound.
+
+The [normalized evidence](validation/onboard-project-picker-scoped-2026-10-31.json)
+records exact test rosters, source images, protected boundaries and artifact
+provenance. The artifact predates the code commit with VCS recording disabled;
+source-image equality supplies the mapping. Later documentation does not change
+tested runtime images. Current-main composition/rebuild, real client metadata,
+native verification, enrollment and delivery remain separate acceptance gates.
