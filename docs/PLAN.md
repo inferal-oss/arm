@@ -5338,3 +5338,21 @@ commit, not attested by binary Git metadata; documentation follows qualification
 Real client compatibility, historical Claude titles and automatic native
 verification/delivery remain outside acceptance. Earlier failed terminal
 contracts and retained resource/cleanup uncertainty imply no reclamation credit.
+
+
+## Project/chat checkbox picker: reviewed composition complete
+
+Focused source `e132703` composes as `706d3a8`; owner evidence/notes `171e1bd`
+compose as `7c0b043`, preserving all current-main documentation. Independent
+review accepts the composed 66-root/119-name normal and race rosters, five-package
+vet, native command build and a fresh terminal replay against that exact binary.
+The three terminal scenarios verify default-no cancellation, explicit instruction
+readiness plus atomic policy save and checked-only guides, and actual nested
+checkout membership drift refusal. No agents were enrolled.
+
+The [composed record](validation/onboard-project-picker-composed-2026-10-31.json)
+binds ten feature inputs and the source/tree/artifact. Subsequent changes are
+documentation only. This completes the picker delivery within owned synthetic
+metadata/Git/terminal scope; full-suite, Linux-runtime and real-client identity
+acceptance are not claimed. Upgrade worker/public-start and live job/child
+continuity gates remain independent and open.

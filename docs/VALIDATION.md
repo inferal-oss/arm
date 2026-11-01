@@ -13330,3 +13330,35 @@ composition, affected integration checks/rebuild, full-suite/Linux and real
 client/native-delivery compatibility remain unclaimed. Cooperative CPU/memory,
 sampled storage and unmeasured aggregate FD/cache usage imply no kernel or
 physical-reclamation bound; earlier original-process/cleanup uncertainty remains.
+
+
+## Project/chat picker: exact composed qualification
+
+Independent review accepts normal and race qualification against clean source
+`706d3a845e8f2d668c62d6f681032befd8dbd5de`: all 66 selected roots and 119 exact
+package-qualified named cases ran and passed in each mode, with no skips or
+repeated nodes. Five-package vet and the native `cmd/arm` build passed. All 2,207
+Go/module/runtime inputs and 26 protected inputs were checked before/after; later
+changes affect documentation only. The [composed evidence](validation/onboard-project-picker-composed-2026-10-31.json)
+records source hashes, exact rosters, artifact and scope.
+
+The resulting 75,473,218-byte binary, SHA-256
+`daa50a0f44a1f33c265358ae9aa074b08eb814b75ad22d8a9ee0b8539a7bd877`,
+then passed three fresh real-terminal scenarios with 63 current-grid assertions.
+They cover default-no refusal, exact owned instruction installation/readiness
+refresh and atomic three-checkout policy save with three checked-only manual
+guides, plus actual nested membership drift refusing a save. Zero ARM sessions
+were created. Original process handles were waited, native exit events observed,
+owned watches/control/terminal descriptors closed and output EOF recorded.
+
+All three terminal configuration comparisons passed naturally and after explicit
+restore. Whole raw termios equality was false: only the recorded PENDIN state bit
+differed; other flags, speeds and control characters matched. This is scoped
+configuration restoration, not complete kernel-state attestation. The unchecked
+Claude fixture shares a checkout with a checked chat; it does not establish a
+unique unchecked checkout boundary. Prior failed harness attempts and retained
+unknowns remain distinct; no cleanup/reclamation credit is inferred.
+
+These checks do not establish the full Go suite, Linux runtime, actual client
+identity/liveness, automatic activation/enrollment, message delivery or live
+upgrade/job/child continuity.

@@ -6613,3 +6613,16 @@ provenance. The artifact predates the code commit with VCS recording disabled;
 source-image equality supplies the mapping. Later documentation does not change
 tested runtime images. Current-main composition/rebuild, real client metadata,
 native verification, enrollment and delivery remain separate acceptance gates.
+
+
+## Project/chat picker: composed delivery
+
+The reviewed picker source is `706d3a8`, composed from `e132703` over the current
+integration base. Its behavior and qualified input files are unchanged by the
+merged owner notes and later composition record. The fresh native binary was
+exercised through the real terminal, including instruction installation into
+owned synthetic targets and same-home readiness refresh. Saving policy and
+reviewing copy-only activation guides remain separate default-no decisions.
+Project coverage includes the complete selected checkout snapshot; checked chat
+selection controls only which manual guides are offered. Discovery and this UI
+create no verified live identity, invitation, enrollment or delivery capability.

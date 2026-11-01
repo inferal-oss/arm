@@ -1,0 +1,841 @@
+{
+  "schema": 1,
+  "scope": "Composed project/chat checkbox onboarding; owned synthetic terminal fixtures only",
+  "source": {
+    "qualified_commit": "706d3a845e8f2d668c62d6f681032befd8dbd5de",
+    "qualified_tree": "74eb6f8d8c24216e090cd05b89e720de6ff97131",
+    "owner_source_commit": "e13270381c4d82cf130277d1e6c867793ea65e9e",
+    "go_and_module_inputs": 1980,
+    "module_files_included": 2,
+    "runtime_support_inputs": 227,
+    "combined_inputs": 2207,
+    "protected_inputs": 26,
+    "feature_files_sha256": {
+      "internal/agentprojects/groups.go": "c0f7287dc9a90d295e31bf2e3d503bc5390d354dbf922af6cabd9116ebc2c0d8",
+      "internal/agentprojects/hierarchy.go": "834c4d2059d06bd510f826dbacb38d917dae6945c688411caf4d4aa853f94d4c",
+      "internal/agentprojects/hierarchy_test.go": "895766aa9227a08e9945dd1b20228d8cf6fbe593a96d5e2f2f745a1ecd785d8e",
+      "internal/cli/onboard_project_picker.go": "73e5b04a50b6b81b0af0c22b7cb57b1b0d41f881e6c28884177ce6114e9b22cd",
+      "internal/cli/onboard_project_picker_test.go": "75fb77e397480cb3ba2304b75f1f5ced8da21bc6e6eeb6579d48ad588eb3d084",
+      "internal/cli/onboard_project_policy.go": "fc69feaa4c8fb9855629966c3a4af1c49a849f305be642ffae966b789c31e658",
+      "internal/cli/onboard_project_policy_test.go": "73b2fe5fae8666b19e1f9916aa6450ea476a0051733464d900f76d72e21e010d",
+      "internal/cli/onboard_tree.go": "1aa388b21419283fac29fc6b9fceab0e65ccb37758ae4293c4c56469c3bd9f4a",
+      "internal/cli/onboard_tree_test.go": "087dd468a7b1194d99d969f1610f69dd92927ae101d22522c9117c16ed8bb3ce",
+      "internal/cli/rollout_onboard.go": "55d87890e7ca41d74fd7c16fbd26701f2c0bc58ed5e21aa4d9b0852b88809070"
+    },
+    "later_changes": "Documentation only; qualified Go/module/runtime/asset/test images unchanged"
+  },
+  "toolchain": {
+    "go": "1.27.3",
+    "platform": "darwin/arm64"
+  },
+  "normal": {
+    "root_tests": 66,
+    "named_tests": 119,
+    "failed": 0,
+    "skipped": 0,
+    "phase_seconds": 25.452
+  },
+  "race": {
+    "root_tests": 66,
+    "named_tests": 119,
+    "failed": 0,
+    "skipped": 0,
+    "phase_seconds": 38.773
+  },
+  "vet": {
+    "packages": [
+      "internal/agentsessions",
+      "internal/agentprojects",
+      "internal/gitmeta",
+      "internal/rollout",
+      "internal/cli"
+    ],
+    "exit": 0
+  },
+  "native_build": {
+    "target": "cmd/arm",
+    "bytes": 75473218,
+    "sha256": "daa50a0f44a1f33c265358ae9aa074b08eb814b75ad22d8a9ee0b8539a7bd877",
+    "vcs_recording": false,
+    "source_binding": "Exact clean commit/tree and all input images checked before and after build and terminal replay"
+  },
+  "normal_race_expected_roots": [
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyCanceledSnapshotAndSourceBounds"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyChangedGitRelationshipsFallBackTogether"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyCombinedChildLimitPreservesAdapterCoverage"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyConflictingGitIdentitiesFallBackTogether"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyFinalCancellationDiscardsBuiltSnapshot"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyGitRootsCountTowardDirectoryAndGroupLimits"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyMetadataDirectoriesCountTowardGlobalPathLimit"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyReferenceConflictsContextAndCopiedDisplay"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyRetainsExactMemberCheckoutEvidence"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyTextAndLegacyNameBounds"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyUnknownPrimaryDoesNotTrimCommonPath"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyVerifiedGitRootsAndExactDirectoryFallback"
+    },
+    {
+      "name": "TestOnboardTreeBoundsAndEmptyProject",
+      "package": "cli"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeCheckoutEvidenceIsDefensivelyCopied"
+    },
+    {
+      "name": "TestOnboardTreeEnterUsesLatestMatchedChildAndExplicitSets",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeKeysKeepClientHomeAndNativeContext",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeParentToggleCoversHiddenSnapshotChildren",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeRejectsOversizedTextBeforeCopying",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeRejectsUnprovenDirectoryMembership",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeSnapshotCopiesAndFallbackLabels",
+      "package": "cli"
+    },
+    {
+      "name": "TestOnboardTreeUncheckedChatsPreserveProjectOnlySelection",
+      "package": "cli"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerCancellationIgnoresLateWork"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDefaultNoAndAtomicPolicySave"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerEntryDeadlineCancellationAndStageSeparation"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerExactCopyOnlyActivationOffer"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerExplicitNestedRootsAndUncheckedCoverage"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerInitialSpaceSelectsParentAndTypingFocusesSearch"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerLatestChildTypeaheadAndCheckboxFocus"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerManualProjectOnlyAndDiagnostics"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerMembershipProbeStageHasIndependentCeiling"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerPageNavigationBlursSearchInput"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerParentHiddenChildrenAndNoMatchFooter"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerPendingApplyResizeAndUnknownRecovery"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerPrintableKeysPasteAndEscape"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerReadinessDisabledAndUnchanged"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerReadinessPreservesDisabledAndNoopSemantics"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerRefreshUpdatesSelectedHomeReadiness"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerRevalidatesUncheckedNestedMembershipBeforeApply"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerSettingsSurviveFilterBackAndInvalidatePreview"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerTypedPossibleSaveFailureDoesNotOfferActivation"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardCanSaveDisabledProjectWithoutInstructions"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardReadinessAndStaleReviewCannotApply"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardStoredNamesWithoutNativeBinary"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadEditingNavigationAndNoMatch"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadLatestQueryWinsBeforeEnter"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPasteManualAndCancellation"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths"
+    },
+    {
+      "package": "gitmeta",
+      "name": "TestGitMetadataCancellationJoinsOriginalProbe"
+    },
+    {
+      "package": "gitmeta",
+      "name": "TestGitMetadataSharedProbeAndOutputBudgets"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchAtomicProjectsApplyTimeAndNoop"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchCancellationBeforeSaveAndLateSuccess"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchPossibleSaveFailureRetainsUnknown"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchSharedGitBudgetSpansPreflightAndLockedRecheck"
+    }
+  ],
+  "normal_race_expected_named_tests": [
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyCanceledSnapshotAndSourceBounds"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyCanceledSnapshotAndSourceBounds/diagnostic"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyCanceledSnapshotAndSourceBounds/sessions"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyCanceledSnapshotAndSourceBounds/warnings"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyChangedGitRelationshipsFallBackTogether"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/git-common"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/multiple-primary"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyChangedGitRelationshipsFallBackTogether/root-common"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyCombinedChildLimitPreservesAdapterCoverage"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyConflictingGitIdentitiesFallBackTogether"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyFinalCancellationDiscardsBuiltSnapshot"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyGitRootsCountTowardDirectoryAndGroupLimits"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyMetadataDirectoriesCountTowardGlobalPathLimit"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyReferenceConflictsContextAndCopiedDisplay"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyRetainsExactMemberCheckoutEvidence"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyTextAndLegacyNameBounds"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyUnknownPrimaryDoesNotTrimCommonPath"
+    },
+    {
+      "package": "agentprojects",
+      "name": "TestHierarchyVerifiedGitRootsAndExactDirectoryFallback"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeBoundsAndEmptyProject"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership/empty-identity"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership/metadata-path-limit"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership/missing-chat-member"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeCheckoutEvidenceBoundsAndMembership/unrelated-root"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeCheckoutEvidenceIsDefensivelyCopied"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeEnterUsesLatestMatchedChildAndExplicitSets"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeKeysKeepClientHomeAndNativeContext"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeParentToggleCoversHiddenSnapshotChildren"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeRejectsOversizedTextBeforeCopying"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeRejectsUnprovenDirectoryMembership"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeSnapshotCopiesAndFallbackLabels"
+    },
+    {
+      "package": "cli",
+      "name": "TestOnboardTreeUncheckedChatsPreserveProjectOnlySelection"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerCancellationIgnoresLateWork"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/checked"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/directory-identity"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/missing-proof"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/policy"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerChangedMemberAndContextCannotReuseReview/project"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDefaultNoAndAtomicPolicySave"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDefaultNoAndAtomicPolicySave/false"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDefaultNoAndAtomicPolicySave/true"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/before-confirmation/human=false"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/before-confirmation/human=true"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/definitive-refusal/human=false"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/definitive-refusal/human=true"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/known-success/human=false"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/known-success/human=true"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/possible-save-result/human=false"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerDeliveredUnknownSurvivesTerminalCancellation/possible-save-result/human=true"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerEntryDeadlineCancellationAndStageSeparation"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerExactCopyOnlyActivationOffer"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerExplicitNestedRootsAndUncheckedCoverage"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerInitialSpaceSelectsParentAndTypingFocusesSearch"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerLatestChildTypeaheadAndCheckboxFocus"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerManualProjectOnlyAndDiagnostics"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerMembershipProbeStageHasIndependentCeiling"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerPageNavigationBlursSearchInput"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerParentHiddenChildrenAndNoMatchFooter"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerPendingApplyResizeAndUnknownRecovery"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerPrintableKeysPasteAndEscape"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/different-group"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/duplicate-chat"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/invalid-id"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/root-conflict"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerProjectionRejectsUnknownAndConflictingSelections/unknown-chat"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerReadinessDisabledAndUnchanged"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerReadinessPreservesDisabledAndNoopSemantics"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerRefreshUpdatesSelectedHomeReadiness"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerRevalidatesUncheckedNestedMembershipBeforeApply"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerSettingsSurviveFilterBackAndInvalidatePreview"
+    },
+    {
+      "package": "cli",
+      "name": "TestProjectPickerTypedPossibleSaveFailureDoesNotOfferActivation"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardBackNavigationSmallTerminalAndSafeLabels"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardCanSaveDisabledProjectWithoutInstructions"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy/apply"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardDefaultNoAndAtomicConfirmedPolicy/decline"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardDiscoveryJSONAndHelpDoNotInitializePolicy"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=false"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/before-confirmation/human=true"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=false"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/committed-without-result/human=true"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=false"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardInterruptedOutcomeSurvivesSharedHandler/pending/human=true"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardReadinessAndStaleReviewCannotApply"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/ctrl+c/failure"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/ctrl+c/success"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/esc/failure"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/esc/success"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/q/failure"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardResizeDuringApplyWaitsForActualResult/q/success"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardSessionNamesDoNotChangeReviewedScopeOrApply"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardSessionNamesSearchAndDirectoryFallback"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardStoredNamesWithoutNativeBinary"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardSuggestsUniqueNameAndIgnoresLateCancelledDiscovery"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadEditingNavigationAndNoMatch"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadLatestQueryWinsBeforeEnter"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPasteManualAndCancellation"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/Zebra_needle"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/j"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/k"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/projects/second"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/q"
+    },
+    {
+      "package": "cli",
+      "name": "TestRolloutOnboardTypeaheadPrintableNamesAndPaths/日本語"
+    },
+    {
+      "package": "gitmeta",
+      "name": "TestGitMetadataCancellationJoinsOriginalProbe"
+    },
+    {
+      "package": "gitmeta",
+      "name": "TestGitMetadataSharedProbeAndOutputBudgets"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchAtomicProjectsApplyTimeAndNoop"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchCancellationBeforeSaveAndLateSuccess"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchPossibleSaveFailureRetainsUnknown"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/binding"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/context"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchRejectsSnapshotStateAndBindingDrift/state"
+    },
+    {
+      "package": "rollout",
+      "name": "TestOnboardBatchSharedGitBudgetSpansPreflightAndLockedRecheck"
+    }
+  ],
+  "native_terminal": {
+    "cases": 3,
+    "current_grid_assertions": 63,
+    "phase_seconds": 6.563,
+    "whole_seconds": 7.454,
+    "scenarios": [
+      "Default-no policy confirmation leaves policy absent",
+      "Explicit owned instruction installation and readiness refresh; exact three checkout bindings saved atomically; three checked-only manual guides",
+      "Actual nested checkout membership drift refuses policy save"
+    ],
+    "arm_sessions_created": 0,
+    "parent_originals_natural_exit_zero": 21,
+    "nested_original_go_processes_natural_exit_zero": 3,
+    "original_handles_waited_and_native_exit_events_observed": true,
+    "owned_native_watches_controls_and_terminal_descriptors_closed": true,
+    "terminal_configuration_restored": true,
+    "whole_raw_termios_equal": false,
+    "observed_raw_delta": "PENDIN 0x20000000 only; all other recorded flags, speeds and control characters equal",
+    "unchecked_chat_limit": "The unchecked synthetic Claude record shares a linked checkout with a checked record; this fixture does not prove a unique unchecked checkout binding",
+    "cutoff": "Pinned strict integer UTC parser and confirmation-interval assertion checked the persisted new-sessions cutoff"
+  },
+  "qualification": [
+    "Every expected package-qualified RUN/PASS node matched exactly in both modes; no skips, repeats or failures",
+    "Actual original commands joined with output EOF; final owned scratch enumeration was positive; source, tools and artifact unchanged",
+    "No shared-cache growth measurement, total browser/process heap claim, kernel-state attestation or reclamation credit",
+    "Earlier failed harness scopes and unknown obligations remain separate from this passing replay"
+  ],
+  "not_claimed": [
+    "Full Go suite",
+    "Linux runtime",
+    "Real native-client identity or liveness attestation",
+    "Agent enrollment, invitations or message delivery",
+    "Automatic activation",
+    "Live upgrade or child-process survival acceptance"
+  ]
+}
