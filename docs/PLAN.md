@@ -5360,3 +5360,23 @@ documentation only. This completes the picker delivery within owned synthetic
 metadata/Git/terminal scope; full-suite, Linux-runtime and real-client identity
 acceptance are not claimed. Upgrade worker/public-start and live job/child
 continuity gates remain independent and open.
+
+
+## Agent Status Page: design-first assignment
+
+A new Agent Status Page task owns the proposed Agents tab and per-agent visual
+status reports. Its first deliverable is an approach for active and dormant
+agents: participation by the owning agent, bounded summaries delegated to a
+cheaper supported model, current/planned work, notes and open questions, and
+links to the agent's actual leases and runs. Reports should open in dashboard
+windows and authenticated standalone pages. Planned implementation branch:
+`codex/agent-status-page`; no implementation or validation acceptance yet.
+
+The design must distinguish reported intentions from observed resource facts
+and uncertain liveness, define refresh/model/cost controls and missing replies,
+and isolate generated HTML from dashboard credentials and execution authority.
+Native identity, rollout participation and message delivery remain separate.
+Public API/storage/model execution and native-window lifecycle contracts require
+central composition review; existing upgrade and picker work stays preserved.
+The task must present its proposal before implementation and use an isolated
+worktree. Resource-intensive checks require their own bounded allocation.
