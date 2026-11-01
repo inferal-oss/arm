@@ -5606,3 +5606,17 @@ enrollment are outside the current investigation allocation.
 The existing Agent Status task owns optional post-save status onboarding; its
 shared picker control flow must be composed centrally with this continuation.
 No new chat or duplicate activation implementation is needed.
+
+
+### Checked Claude activation: current protocol remains unsupported
+
+The completed static investigation found a possible conversation rebind between
+native inbox identity checking and asynchronous admission/queueing in the
+qualified client version. See the
+[reviewed limitation](design/claude-checked-activation.md). Process/socket checks
+and an unconfirmed-write label cannot guarantee the original checked recipient
+through that native transition. The experimental route is not integrated or
+executed. Existing manual activation remains supported; a conversation-bound
+native transport or lifecycle fence is the remaining gate. No real chat,
+model call, native delivery or process/socket probe was used to establish this
+static finding.
