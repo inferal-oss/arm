@@ -42,6 +42,7 @@ type originalWaiter struct{ identity byte }
 const maxOriginalWaiters = 64
 
 type childState struct {
+	scope                                       childCoreScope // zero remains legacy; new worker factory must use the same process claim
 	waiters                                     map[*originalWaiter]struct{}
 	mu                                          sync.Mutex // pure registry publication, never held through native effects
 	self                                        *ChildPending

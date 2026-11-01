@@ -31,6 +31,9 @@ func NewP1ChildPending(custody *residentrefs.ServiceOriginal) (*ChildPending, er
 	if custody == nil {
 		return nil, ErrInvalid
 	}
+	if custody.RequireOriginalLegacyCore() != nil {
+		return nil, ErrInvalid
+	}
 	c := &ChildPending{}
 	o := &owner{child: c, p1Child: custody}
 	c.owner = o

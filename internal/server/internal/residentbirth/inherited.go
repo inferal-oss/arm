@@ -70,6 +70,9 @@ func NewInheritedFencePending(rootContext context.Context, custody *residentrefs
 	if rootContext == nil || custody == nil {
 		return nil, errOriginalFence
 	}
+	if custody.RequireOriginalLegacyCore() != nil {
+		return nil, errOriginalFence
+	}
 	p := &InheritedFencePending{}
 	s := &inheritedFenceState{self: p, custody: custody, rootContext: rootContext}
 	p.state = s

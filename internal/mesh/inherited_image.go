@@ -49,6 +49,9 @@ func NewInheritedImagePending(rootContext context.Context, custody *residentrefs
 	if rootContext == nil || custody == nil {
 		return nil, errResidentInheritedImage
 	}
+	if custody.RequireOriginalLegacyCore() != nil {
+		return nil, errResidentInheritedImage
+	}
 	p := &InheritedImagePending{}
 	s := &inheritedImageState{self: p, custody: custody, rootContext: rootContext, runtime: NewResidentRuntimePending()}
 	p.state = s

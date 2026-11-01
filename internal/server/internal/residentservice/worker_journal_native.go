@@ -36,7 +36,7 @@ func (w *workerCustody) readJournalOriginal(ctx context.Context) (workerJournalD
 	}
 	r := w.raw
 	r.mu.Lock()
-	if !w.typedOriginalLocked() || !w.legacyEmptyLocked() || r.active == nil || r.active.owner != r || r.files.journal == nil || len(w.reads) >= 4 {
+	if !w.typedOriginalLocked() || !w.legacyEmptyLocked() || r.active == nil || r.active.owner != r || !w.journalSourcePresentLocked() || len(w.reads) >= 4 {
 		r.mu.Unlock()
 		return empty, ErrInvalid
 	}
@@ -58,7 +58,7 @@ func (w *workerCustody) readJournalOriginal(ctx context.Context) (workerJournalD
 		return empty, err
 	}
 	r.files.progress("worker_journal_stat_retained")
-	before, err := r.files.journal.file.Stat()
+	before, err := w.journalStatOriginal(ctx)
 	r.mu.Lock()
 	call.before = before
 	r.mu.Unlock()
@@ -80,7 +80,7 @@ func (w *workerCustody) readJournalOriginal(ctx context.Context) (workerJournalD
 			return fail(ErrInvalid)
 		}
 		r.files.progress("worker_journal_original_read_pending")
-		n, readErr := r.files.journal.file.ReadAt(data[at:], int64(at))
+		n, readErr := w.journalReadOriginal(ctx, data[at:], int64(at))
 		at += n
 		r.mu.Lock()
 		call.read, call.calls = at, calls+1
@@ -92,7 +92,7 @@ func (w *workerCustody) readJournalOriginal(ctx context.Context) (workerJournalD
 			return fail(io.ErrNoProgress)
 		}
 	}
-	after, err := r.files.journal.file.Stat()
+	after, err := w.journalStatOriginal(ctx)
 	r.mu.Lock()
 	call.after = after
 	r.mu.Unlock()
@@ -102,7 +102,7 @@ func (w *workerCustody) readJournalOriginal(ctx context.Context) (workerJournalD
 	if !os.SameFile(before, after) || before.Size() != after.Size() || !before.ModTime().Equal(after.ModTime()) {
 		return fail(ErrInvalid)
 	}
-	if err = privateNative(r.files.journal, false); err != nil {
+	if err = w.validateJournalSourceOriginal(ctx); err != nil {
 		return fail(err)
 	}
 	decoded, err := decodeWorkerJournalData(data)
@@ -124,7 +124,7 @@ func (w *workerCustody) appendJournalOriginal(ctx context.Context, next WorkerRe
 	}
 	r := w.raw
 	r.mu.Lock()
-	valid := w.typedOriginalLocked() && w.legacyEmptyLocked() && r.active != nil && r.active.owner == r && r.files.journal != nil && w.append == nil
+	valid := w.typedOriginalLocked() && w.legacyEmptyLocked() && r.active != nil && r.active.owner == r && w.journalSourcePresentLocked() && w.append == nil
 	r.mu.Unlock()
 	if !valid {
 		return ErrInvalid
@@ -152,7 +152,7 @@ func (w *workerCustody) appendJournalOriginal(ctx context.Context, next WorkerRe
 		return err
 	}
 	r.files.progress("worker_journal_preappend_stat_pending")
-	s, err := r.files.journal.file.Stat()
+	s, err := w.journalStatOriginal(ctx)
 	if err != nil {
 		return fail(err)
 	}
@@ -171,7 +171,7 @@ func (w *workerCustody) appendJournalOriginal(ctx context.Context, next WorkerRe
 		call.calls++
 		r.mu.Unlock()
 		r.files.progress("worker_journal_original_write_pending")
-		n, writeErr := r.files.journal.file.WriteAt(frame[at:], call.offset+int64(at))
+		n, writeErr := w.journalWriteOriginal(ctx, frame[at:], call.offset+int64(at))
 		at += n
 		r.mu.Lock()
 		call.written = at
@@ -190,7 +190,7 @@ func (w *workerCustody) appendJournalOriginal(ctx context.Context, next WorkerRe
 	call.syncTried = true
 	r.mu.Unlock()
 	r.files.progress("worker_journal_original_sync_pending")
-	if err = r.files.journal.file.Sync(); err != nil {
+	if err = w.journalSyncOriginal(ctx); err != nil {
 		return fail(err)
 	}
 	r.mu.Lock()

@@ -27,6 +27,7 @@ type workerCustody struct {
 	raw      *owner
 	operator *WorkerOperatorPending
 	parent   *WorkerParentPending
+	child    *WorkerChildPending
 	path     string
 	image    *workerRuntimeImage
 	journal  workerJournalData
@@ -478,19 +479,74 @@ func (w *workerCustody) typedOriginalLocked() bool {
 		return false
 	}
 	if p := w.operator; p != nil {
-		return w.parent == nil && p.self == p && p.custody == w
+		return w.parent == nil && w.child == nil && p.self == p && p.custody == w
 	}
 	p := w.parent
-	return p != nil && p.self == p && p.custody == w
+	if p != nil {
+		return w.child == nil && p.self == p && p.custody == w
+	}
+	c := w.child
+	return c != nil && c.self == c && c.custody == w && c.source != nil && c.journal != nil
 }
 
 func workerOperationKindData(kind string) bool {
 	switch kind {
 	case "worker-operator-plan", "worker-operator-apply", "worker-operator-inspect", "worker-parent-open", "worker-parent-debit":
 		return true
+	case "worker-child-receive", "worker-child-runtime", "worker-child-environment", "worker-child-charge", "worker-charge-current", "worker-child-birth", "worker-birth-current":
+		return true
 	default:
 		return false
 	}
+}
+
+// Concrete journal sources only. No caller interface/factory or raw getter can
+// replace original parent/operator custody or the delegated child's view.
+func (w *workerCustody) journalSourcePresentLocked() bool {
+	if w.child != nil {
+		return w.child.journal != nil && w.child.source != nil
+	}
+	return w.raw.files.journal != nil
+}
+func (w *workerCustody) journalStatOriginal(ctx context.Context) (os.FileInfo, error) {
+	if w.child != nil {
+		return w.child.journal.StatOriginal(ctx)
+	}
+	return w.raw.files.journal.file.Stat()
+}
+func (w *workerCustody) journalReadOriginal(ctx context.Context, data []byte, offset int64) (int, error) {
+	if w.child != nil {
+		return w.child.journal.ReadAtOriginal(ctx, data, offset)
+	}
+	return w.raw.files.journal.file.ReadAt(data, offset)
+}
+func (w *workerCustody) journalWriteOriginal(ctx context.Context, data []byte, offset int64) (int, error) {
+	if w.child != nil {
+		return w.child.journal.WriteAtOriginal(ctx, data, offset)
+	}
+	return w.raw.files.journal.file.WriteAt(data, offset)
+}
+func (w *workerCustody) journalSyncOriginal(ctx context.Context) error {
+	if w.child != nil {
+		return w.child.journal.SyncOriginal(ctx)
+	}
+	return w.raw.files.journal.file.Sync()
+}
+func (w *workerCustody) validateJournalSourceOriginal(ctx context.Context) error {
+	if c := w.child; c != nil {
+		if err := c.source.RequireOriginalWorkerCore(); err != nil {
+			return err
+		}
+		ids, err := c.source.ValidateOriginal(ctx)
+		if err != nil {
+			return err
+		}
+		if ids != c.identities {
+			return ErrInvalid
+		}
+		return nil
+	}
+	return privateNative(w.raw.files.journal, false)
 }
 
 func workerContextData(ctx context.Context) error {
