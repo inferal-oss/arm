@@ -5680,3 +5680,20 @@ This qualifies local registered/retained agents, explicit contribution and repor
 controls, isolated windows/routes and separate rollout setup. Live API generation,
 authenticated ARM reply delivery and successful Claude inference remain unverified.
 No provider is enabled or agent enrolled by this integration.
+
+### Resident worker parent and image handoff prerequisite
+
+Source `7c591c4` on `codex/resident-worker-standing` adds distinct worker parent,
+image binding, control authentication and parent reference owners. Independent
+review and one normal composed qualification passed 92 roots/410 named tests.
+The [normalized record](validation/resident-worker-parent-image-composed-normal-2026-10-31.json)
+binds the 22 owned source images to the tested composition; no owner rerun was
+performed. This completes the parent/image prerequisite, not public startup.
+
+Next: reviewed fresh worker fence and actual private root, complete funding for
+the final composed binary, fresh format5 Manager/database/server, worker
+controller/transport/activation/assets, then public `arm start` and automatic
+backend startup integration. Real active-job/native-child upgrade survival
+remains a required completion gate. Current Agent Status costs and root-owned
+accepted job lifetimes must be retained; derive the final operation roster from
+the composed source.

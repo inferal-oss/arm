@@ -6889,3 +6889,23 @@ request/response envelopes and ingress guard. The final report-first asset is
 embedded in the composed CLI build. Providers remain disabled by default,
 resource associations remain explicitly based on legacy labels, and this change
 does not enable rollout participation or alter existing resource obligations.
+
+### Worker parent, private image and control source
+
+Source `7c591c4` supplies worker-specific parent group/debit linkage, exact
+command/environment binding and fixed service slots, a private scoped image
+pin/binding and separate parent reference owners. The public legacy pin
+constructor keeps its role; legacy P1 binding refuses worker pins. Worker
+control uses four retained bounded transport operations, separate HMAC domains,
+exact context checks, an authenticated child RootBound3 journal and nonce proof.
+Parent journal reads remain bounded to four: grant open, pre-debit grant, final
+pre-Start debit and child RootBound3. Intermediate Stat checks do not prove content.
+
+Service reference retirement requires completed original authentication and
+includes the separately retained executable capture reference. Control endpoints
+retire last; closures never explicitly unlock inherited descriptions or claim
+released capacity. The actual private root must still establish normal native
+Start and cross-component handoff. The [scoped evidence](validation/resident-worker-parent-image-composed-normal-2026-10-31.json)
+covers DATA/refusal behavior, not a positive native worker launch. Fresh format5,
+worker lifecycle/controller, public startup and real upgrade continuity remain
+unimplemented by this prerequisite.

@@ -13689,3 +13689,20 @@ native CLI and linked terminal scopes remain as documented; none was rerun or
 broadened by these composed checks. Documentation-only followup changes neither
 Go nor web inputs. Full-suite, Linux runtime, live API and authenticated delivery
 acceptance remain outside this scope.
+
+### Worker parent/image composed normal qualification
+
+The [normalized record](validation/resident-worker-parent-image-composed-normal-2026-10-31.json)
+records one normal run on the composition based on `ef8cf5c` with 22 uncommitted
+parent/image source changes, later committed unchanged as `7c591c4`. All 92 test
+roots/410 named nodes across eight scoped packages ran and passed once, with no
+failure or skip. The actual dependency graph contained 758 packages and 63
+official modules; source authentication matched before and after execution.
+All nine original commands and their queue owner joined with status zero; source,
+tool and packet inputs stayed unchanged and all command stderr streams were empty.
+
+The owner commit has source-image equivalence, not a separate owner or clean
+commit run. Selected tests compiled their scoped packages; no product build,
+vet/race, positive fixed13/native Start, runtime funding, public `arm start`,
+container or live upgrade fixture was executed. Real A-to-B active-job and native
+child survival remains unverified and required before completing resident workers.
