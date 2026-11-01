@@ -4944,9 +4944,13 @@ issue and upstream plan. The ARM backport remains unintegrated.
 The backport source and its composition preserving the newer onboarding
 foundation have passed review. Its frozen dependency window passes two equal
 fresh WAT builds, 158 RDF cases, 161 application Node cases and five provenance
-checks. Private Vite outputs agree, but an imported loader filename would be
-omitted by Go embedding; those assets are not accepted. Two isolated ordinary
-recipe builds, exact embedding completeness and current native/browser checks
+checks. The private packaging attempt remains rejected because its loader
+filename would be omitted by Go embedding. Two later isolated builds using the
+unchanged ordinary recipe produce five byte-equal assets. A corrected bounded
+consumer verifies their module closure, Go-compatible names, WAT and notices;
+the original producer window retains its separate quote-reader audit failure.
+These ordinary assets are accepted for isolated native qualification only.
+Filesystem-to-embedded parity, served assets and current native/browser checks
 remain open. These results do not qualify the latest full ARM composition.
 Public pressure, forwarding and sync activation remain separate unfinished gates.
 

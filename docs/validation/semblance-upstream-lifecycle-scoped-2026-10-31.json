@@ -12,19 +12,34 @@
     "merged_or_released": false
   },
   "build_and_targeted_window": {
-    "fresh_normal_backends": ["rust", "wat"],
+    "fresh_normal_backends": [
+      "rust",
+      "wat"
+    ],
     "abi_checks_each": 10,
     "strict_typecheck": "passed",
     "targeted_entries": 8,
     "unique_cases_passed": 177,
-    "generic_cases": {"original": 14, "indexed": 45, "cleanup": 10},
+    "generic_cases": {
+      "original": 14,
+      "indexed": 45,
+      "cleanup": 10
+    },
     "failed_pending_skipped_todo": 0,
     "actual_image_reads_and_source_build_bindings_checked": true
   },
   "separate_consumer_windows": {
     "same_accepted_source_and_images": true,
-    "cost": {"entries": 1, "passed": 4, "failed_pending_skipped_todo": 0},
-    "soak": {"entries": 1, "passed": 1, "failed_pending_skipped_todo": 0},
+    "cost": {
+      "entries": 1,
+      "passed": 4,
+      "failed_pending_skipped_todo": 0
+    },
+    "soak": {
+      "entries": 1,
+      "passed": 1,
+      "failed_pending_skipped_todo": 0
+    },
     "distinct_actual_wat_read_bindings_and_reports_checked": true,
     "new_build_abi_or_generic_case_credit": false
   },
@@ -34,22 +49,59 @@
     "subject_base": "bab1047676a732eabda7284e1a8ccfd79683e7a2",
     "fresh_wat_builds": 2,
     "fresh_wat_builds_byte_equal": true,
-    "rdf": {"entries": 17, "passed": 158, "failed_pending_skipped_todo": 0},
+    "rdf": {
+      "entries": 17,
+      "passed": 158,
+      "failed_pending_skipped_todo": 0
+    },
     "generic_titles_equal_reviewed_upstream": 69,
-    "application_node": {"files": 12, "unique_named_passes": 161, "failed_cancelled_skipped_todo": 0},
-    "provenance_node": {"passed": 5, "failed_cancelled_skipped_todo": 0},
+    "application_node": {
+      "files": 12,
+      "unique_named_passes": 161,
+      "failed_cancelled_skipped_todo": 0
+    },
+    "provenance_node": {
+      "passed": 5,
+      "failed_cancelled_skipped_todo": 0
+    },
     "rdf_binding_scope": "Loader locator transformation proof; no instrumented byte-read claim",
     "private_vite_outputs_byte_equal": true,
     "asset_promotion": "Refused: imported private loader chunk would be omitted by Go directory embedding",
-    "next_asset_gate": "Two isolated builds using the unchanged checked-in recipe, then exact filesystem-to-embedded inventory and import closure",
+    "next_asset_gate": "Ordinary recipe builds and bounded consumer complete; actual embedding, native and browser checks remain",
     "original_waits_quiet_logs_nonforced_stop_closure_and_final_pins_checked": true,
     "native_browser_or_current_main_composition_acceptance": false
   },
   "remaining": [
     "Current-main composition preserving the qualified dependency source",
-    "Reproducible ARM assets and native embedding",
+    "Actual filesystem-to-embedded parity, served HTTP/CSP and module-archive layout",
     "Actual browser review and screenshots",
     "Subsequent unified onboarding composition"
   ],
-  "unsupported_claims": ["Full-suite acceptance", "Overall performance acceptance", "Completed ARM migration", "Production activation"]
+  "unsupported_claims": [
+    "Full-suite acceptance",
+    "Overall performance acceptance",
+    "Completed ARM migration",
+    "Production activation"
+  ],
+  "ordinary_asset_qualification": {
+    "source_base": "b12c2c6d07c9e07d1dda1dcd1f0c74a3d5a892d1",
+    "unchanged_checked_in_recipe": true,
+    "isolated_builds": 2,
+    "actual_build_exits": [
+      0,
+      0
+    ],
+    "asset_files": 5,
+    "all_bytes_equal": true,
+    "fresh_wat_sha256": "ef25d706eaf3c0c24b7417a7dc3be274fb6cda5e0b0fe484c5931de346da51e3",
+    "wat_bytes": 115759,
+    "original_producer_window": "FAILED: asset reader did not accept a backtick-quoted literal URL facade",
+    "corrected_consumer": "PASS: literal quote grammar, bounded inventory, import closure, WAT and notices",
+    "original_failed_window_relabelled": false,
+    "additional_build_or_unit_test_credit": false,
+    "independent_bounded_inventory_reachability_and_notices_checked": true,
+    "go_directory_embedding_names_compatible": true,
+    "original_build_waits_and_fresh_consumer_waits_closure_final_pins_checked": true,
+    "acceptance": "Isolated native candidate assets only; not actual embedding or browser acceptance"
+  }
 }

@@ -12858,6 +12858,20 @@ parity precede current native and browser acceptance. Original waits, quiet
 logs, ordinary nonforced stop, closure and final source/input hashes pass
 within the frozen dependency window; they do not qualify latest-main ARM.
 
+Two later isolated builds using the unchanged ordinary recipe both exit
+successfully and produce five byte-equal assets. Their initial consumer audit
+rejects Vite's backtick-quoted URL facade because its matcher accepts only
+single and double quotes. That producer window remains failed. A separately
+reviewed correction adds literal backticks without permitting interpolation
+or escapes, and a fresh bounded consumer passes over the preserved outputs.
+Independent bounded inventory, import reachability, exact WAT and license
+notice checks agree with its report. All five filenames are compatible with
+Go directory embedding. Original build waits and the fresh consumer's waits,
+quiet logs, nonforced stop, closure and final pins are checked; no new compiler
+or unit-test credit is assigned to the consumer. The five ordinary assets are
+accepted for an isolated native candidate only. Actual filesystem-to-embedded
+parity, served HTTP/CSP, module-archive layout and browser review remain open.
+
 
 ## Onboarding saved-name continuation — scoped qualification
 

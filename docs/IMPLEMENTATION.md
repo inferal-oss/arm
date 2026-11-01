@@ -6286,9 +6286,13 @@ qualification: fresh Rust/WAT builds, both ABI cohorts, strict typecheck and
 soak windows pass four and one cases respectively on the same accepted images.
 The frozen ARM backport separately passes fresh WAT builds, 158 RDF cases,
 161 application Node cases and five provenance checks. Its private packaging
-reveals an imported loader chunk omitted by Go embedding, so those assets
-are not promoted. Dependency acceptance still requires reproducible ordinary
-recipe assets, exact embedding completeness and current native/browser review. Stock
+reveals an imported loader chunk omitted by Go embedding, so that packaging
+remains rejected. Two later unchanged ordinary-recipe builds produce five
+byte-equal assets with bounded module closure, Go-compatible names, WAT and
+license-notice checks. A fresh consumer passes after a quote-reader correction;
+the original producer window remains failed at its audit stage. These assets
+are accepted only for isolated native qualification. Dependency acceptance
+still requires exact embedding completeness and current native/browser review. Stock
 Semblance remains the requested default, with Terminal selectable.
 The tested upstream correction is available as
 [draft PR #243](https://github.com/inferal-oss/semblance/pull/243); publication
