@@ -92,21 +92,26 @@ func TestRelayTransitAutomaticClosureDoesNotClaimExecutionCompleted(t *testing.T
 func TestRelayTransitExpiryAndForceStopKeepBlockedJoinCharged(t *testing.T) {
 	for _, mode := range []string{"expiry", "force"} {
 		t.Run(mode, func(t *testing.T) {
-			m := newManager(t)
+			var m *Manager
+			var clock *controlledLeaseClock
+			if mode == "expiry" {
+				// Relay entitlement is fixed at grant and cannot be renewed, so
+				// a rewritten deadline row is a changed binding that grants no
+				// automatic cancellation authority. Reach expiry by advancing
+				// the native elapsed clock past the original deadline instead.
+				m, clock = clockManager(t)
+				m.capacity.CPU = 1
+				cpuReading(m, 64, 64, 0, 64, 0)
+			} else {
+				m = newManager(t)
+			}
 			h, finish := acquireTestRelay(t, m, "relay-"+mode)
 			l, err := h.Lease()
 			if err != nil {
 				t.Fatal(err)
 			}
 			if mode == "expiry" {
-				m.mu.Lock()
-				expired := time.Now().Add(-time.Second)
-				expireLeaseClockForTest(t, &l, expired)
-				err = m.put(l, "test.expired_clock")
-				m.mu.Unlock()
-				if err != nil {
-					t.Fatal(err)
-				}
+				clock.sample.Tick = l.Clock.End
 				m.tick()
 			} else {
 				if _, err = m.BeginShutdown(model.ShutdownRequest{Force: true}); err != nil {

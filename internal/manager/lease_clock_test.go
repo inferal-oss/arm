@@ -264,36 +264,70 @@ func TestLeaseClockReviewContextUsesElapsedRemaining(t *testing.T) {
 	}
 }
 
+// A relay's entitlement is fixed at grant and cannot be renewed. Lost deadline
+// provenance on its durable row is therefore a changed binding: automatic
+// reconciliation must neither cancel the original nor rewrite or settle the
+// row, and a sticky native clock failure likewise grants no automatic
+// withdrawal. In every case the charge stays until explicit End withdraws only
+// the exact registered original and its workers positively join.
 func TestLeaseClockUncertainRelayKeepsChargeUntilOriginalJoin(t *testing.T) {
-	m := newManager(t)
-	h, join := acquireTestRelay(t, m, "uncertain-clock-original-join")
-	l, err := h.Lease()
-	if err != nil {
-		t.Fatal(err)
+	for _, mode := range []string{"changed-provenance", "read-error", "scope-changed"} {
+		t.Run(mode, func(t *testing.T) {
+			m, c := clockManager(t)
+			m.capacity.CPU = 1
+			cpuReading(m, 64, 64, 0, 64, 0)
+			h, join := acquireTestRelay(t, m, "uncertain-clock-original-join-"+mode)
+			l, err := h.Lease()
+			if err != nil {
+				t.Fatal(err)
+			}
+			switch mode {
+			case "changed-provenance":
+				l.Clock.Version++
+				m.mu.Lock()
+				err = m.put(l, "fixture.clock_provenance_lost")
+				m.mu.Unlock()
+				if err != nil {
+					t.Fatal(err)
+				}
+			case "read-error":
+				c.err = errors.New("clock unavailable")
+			case "scope-changed":
+				c.sample.Boot = "other"
+			}
+			// Even a tick at the original deadline cannot establish expiry once
+			// provenance is unknown.
+			c.sample.Tick = l.Clock.End
+			m.tick()
+			select {
+			case <-h.Context().Done():
+				t.Fatal("uncertain provenance granted automatic cancellation authority")
+			default:
+			}
+			if got := clockGet(t, m, l.ID); got.State != "active" || got.Revision != l.Revision || got.Ended != nil || got.Outcome != "" {
+				t.Fatal("uncertain provenance rewrote or settled the relay row", got)
+			}
+			assertRelayCharge(t, m, true)
+			if _, err = m.End(l.ID, "released"); err != nil {
+				t.Fatal(err)
+			}
+			select {
+			case <-h.Context().Done():
+			default:
+				t.Fatal("explicit End did not cancel the exact original relay")
+			}
+			if _, err = h.FinishAfterJoin(); errorCode(err) != "relay_not_joined" {
+				t.Fatal("uncertainty became reclamation", err)
+			}
+			assertRelayCharge(t, m, true)
+			join()
+			result, err := h.FinishAfterJoin()
+			if err != nil || result.State != "terminal" || result.Ended == nil {
+				t.Fatal(result, err)
+			}
+			assertRelayCharge(t, m, false)
+		})
 	}
-	l.Clock.Version++
-	m.mu.Lock()
-	err = m.put(l, "fixture.clock_provenance_lost")
-	m.mu.Unlock()
-	if err != nil {
-		t.Fatal(err)
-	}
-	m.tick()
-	select {
-	case <-h.Context().Done():
-	default:
-		t.Fatal("exact original relay was not cancelled")
-	}
-	if _, err = h.FinishAfterJoin(); errorCode(err) != "relay_not_joined" {
-		t.Fatal("uncertainty became reclamation", err)
-	}
-	assertRelayCharge(t, m, true)
-	join()
-	result, err := h.FinishAfterJoin()
-	if err != nil || result.State != "terminal" || result.RecoveryReason != "lease_clock_uncertain" {
-		t.Fatal(result, err)
-	}
-	assertRelayCharge(t, m, false)
 }
 
 func TestLeaseClockCheckpointFailureRefusesNewAuthority(t *testing.T) {

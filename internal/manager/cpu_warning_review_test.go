@@ -22,8 +22,11 @@ func TestCPUWarningReviewRetiredSampleOwnerIsUncertain(t *testing.T) {
 				changed.State = "terminal"
 			}
 			if change == "expired" {
-				expired := now.Add(-time.Second)
-				changed.Expires = &expired
+				// A genuine elapsed expiry changes the audit wall time and the
+				// boot-scoped deadline together. Changing only Expires is an
+				// inconsistent record whose unknown provenance is reported as
+				// unavailable attribution, not as an expired owner.
+				expireLeaseClockForTest(t, &changed, now.Add(-time.Second))
 			}
 			rows := []model.Lease{changed}
 			if change == "absent" {
@@ -161,8 +164,9 @@ func TestCPUWarningReviewRestartedExpiredInlineObligationIsUncertain(t *testing.
 	reopened.mu.Lock()
 	l, err := reopened.get(h.lease)
 	if err == nil {
-		expired := time.Now().Add(-time.Minute)
-		l.Expires = &expired
+		// Expire both the audit wall time and the elapsed deadline; an
+		// Expires-only change is inconsistent provenance, not expiry.
+		expireLeaseClockForTest(t, &l, time.Now().UTC().Add(-time.Minute))
 		err = reopened.put(l, "review.expired-retained-owner")
 	}
 	reopened.mu.Unlock()
