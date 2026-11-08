@@ -13,6 +13,7 @@ import (
 
 	"getarm.org/internal/database"
 	"getarm.org/internal/local"
+	"getarm.org/internal/model"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/pelletier/go-toml/v2/unstable"
 	"golang.org/x/sys/unix"
@@ -24,6 +25,7 @@ type Edit struct {
 	Pool       string
 	Remove     bool
 	Fields     map[string]string
+	Ladder     []model.GuardianStepRule // guardian.ladder replacement; Remove restores the role default
 	ExpectFile string
 	DryRun     bool
 }
@@ -90,6 +92,9 @@ func editDocument(raw []byte, edit Edit) ([]byte, error) {
 		out := append([]byte{}, raw[:start]...)
 		out = append(out, value...)
 		return append(out, raw[end:]...)
+	}
+	if edit.Key == "guardian.ladder" && edit.Pool == "" && (edit.Ladder != nil || edit.Remove) {
+		return editLadder(raw, sections, edit)
 	}
 	if strings.HasPrefix(edit.Key, "guardian.") && edit.Pool == "" {
 		key := strings.TrimPrefix(edit.Key, "guardian.")

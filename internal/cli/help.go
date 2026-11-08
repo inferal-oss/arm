@@ -180,9 +180,19 @@ var commandHelps = map[string]commandHelp{
 	"mesh bootstrap":            {summary: "Bounded stdin helper used only through verified operator SSH; not a mesh RPC.", hidden: true},
 
 	"dashboard": {usage: "[BROWSER] [OPTIONS]", summary: "Open the local web console for monitoring and reviewed lease controls. BROWSER selects a macOS application (Safari or an .app path) or an executable on PATH; Linux accepts executables. Use terminal for the interactive terminal dashboard with the same six views, live feed and reviewed lease/message controls. It requires terminal input/output, rejects --json and --no-open, and leaves leases running when closed. A one-use link creates an eight-hour session. Requires a running backend. Piped/JSON output and --no-open never launch a browser, even with BROWSER.", example: "arm dashboard\n  arm dashboard Safari\n  arm dashboard firefox\n  arm dashboard terminal\n  arm dashboard --no-open\n  arm dashboard Safari --json", max: 1},
-	"guardian status": {summary: "Show the host guardian: mode, CPU/memory/I/O pressure levels and their evidence, open incidents, the heaviest programs (grouped by application) and recent actions with undo commands. The guardian is off until enabled with arm config set guardian.enabled true.", example: `arm guardian status
-arm guardian status --json`},
-	"guardian undo": {usage: "ACTION_ID", summary: "Revert one active reversible guardian action: resume a frozen program or restore a lowered priority. Each target's identity is revalidated first.", min: 1, max: 1, example: `arm guardian undo ACTION_ID`},
+	"guardian status": {usage: "[--watch [--interval 2s]] [--json]", summary: "Show how the host is doing: a one-line verdict, CPU/memory/I/O pressure levels and their evidence, open incidents, the heaviest programs (grouped by application) and recent actions with undo commands. --watch keeps refreshing: a live view in a terminal (q quits), one JSON object per line with --json or when redirected; failed reads are reported and retried. The guardian is off until enabled with arm config set guardian.enabled true.", example: `arm guardian status
+arm guardian status --watch
+arm guardian status --watch --json --interval 5s`},
+	"guardian ladder": {usage: "[COMMAND] [--json]", summary: "Show the escalation ladder, or change it with a command: show, edit, set, remove, preset or reset. Reads and edits config.toml offline."},
+	"guardian ladder show": {usage: "[--json]", summary: "Show the escalation ladder the next backend start uses: each step, its minimum pressure level, its delay and its effect, whether it is the role default or a custom ladder in config.toml, and warnings about mode and role. Reads the configuration offline. arm guardian ladder without a command does the same.", example: `arm guardian ladder
+arm guardian ladder show --json`},
+	"guardian ladder edit": {usage: "[--dry-run] [--expect-file SHA256]", summary: "Edit the ladder interactively in a terminal: toggle steps, change levels and delays, load the manned or unmanned preset or follow the role default, then save. Refuses to save over a config.toml changed meanwhile. Applies at the next backend start.", example: `arm guardian ladder edit`},
+	"guardian ladder set": {usage: "STEP [--level LEVEL] [--after DURATION] [--dry-run] [--expect-file SHA256]", summary: "Add a step (notify, deprioritize, ask, shed, freeze or terminate) or change its level (elevated, high or critical) and delay. Steps keep their required order. A new step without flags takes its default. The first change copies the current ladder into config.toml. Applies at the next backend start.", min: 1, max: 1, example: `arm guardian ladder set freeze --level critical --after 90s
+arm guardian ladder set terminate --after 3m --dry-run`},
+	"guardian ladder remove": {usage: "STEP [--dry-run] [--expect-file SHA256]", summary: "Remove one step from the ladder. The ladder keeps at least one step; set guardian.mode observe to record without acting. Applies at the next backend start.", min: 1, max: 1, example: `arm guardian ladder remove shed`},
+	"guardian ladder preset": {usage: "manned|unmanned [--dry-run] [--expect-file SHA256]", summary: "Write the default ladder of a role as a custom ladder, for example the unmanned ladder (with freeze and terminate) on a manned host. Applies at the next backend start.", min: 1, max: 1, example: `arm guardian ladder preset unmanned`},
+	"guardian ladder reset":  {usage: "[--dry-run] [--expect-file SHA256]", summary: "Remove the custom ladder from config.toml so the role default applies again. Applies at the next backend start.", example: `arm guardian ladder reset`},
+	"guardian undo":          {usage: "ACTION_ID", summary: "Revert one active reversible guardian action: resume a frozen program or restore a lowered priority. Each target's identity is revalidated first.", min: 1, max: 1, example: `arm guardian undo ACTION_ID`},
 	"monitor": {summary: "Show physical host CPU, memory/swap, filesystem space, per-device disk I/O and network rates with bounded history. --follow streams through the shared backend. Unknown counters and history gaps remain explicit; these are separate from lease budgets.", example: `arm monitor
   arm monitor --follow --json`},
 	"agents":         {summary: "Read the agent operating guide and list embedded workload knowledge cards. Works offline without creating state. Use arm agents card --list for metadata, arm agents card NAME to read a card and arm agent list to list contacts.", example: "arm agents --json\n  arm agents card --list\n  arm agents card rust-build"},
@@ -278,7 +288,8 @@ arm guardian status --json`},
 	"version":                {summary: "Print ARM, Go and platform versions."},
 }
 var groupHelps = map[string]string{
-	"guardian":             "  status          Pressure, heaviest programs, incidents and actions\n  undo ACTION_ID  Resume a frozen program or restore its priority\n",
+	"guardian":             "  status          How the host is doing; --watch keeps refreshing\n  undo ACTION_ID  Resume a frozen program or restore its priority\n  ladder          Show or change the escalation ladder\n",
+	"guardian ladder":      "  show              Saved ladder, its source and warnings\n  edit              Interactive editor\n  set STEP          Add a step or change its level and delay\n  remove STEP       Remove a step\n  preset ROLE       Use the manned or unmanned default as a custom ladder\n  reset             Follow the role default again\n",
 	"resident":             "  authorize plan       Preview exact resident standing-resource authorization offline\n  authorize apply      Apply the identical explicitly reviewed plan\n  authorize inspect    Read the original exact outcome without resending\n",
 	"resident authorize":   "  plan                Read exact profile, evidence, home and resource promises\n  apply               Authorize with identical inputs, --expect and --yes\n  inspect             Read the original exact outcome without resending\n",
 	"rollout status-pages": "  plan       Preview actual saved project scopes\n  apply      Confirm the exact status setup review\n  inspect    Read an original key without replay\n",
@@ -366,7 +377,7 @@ func (a *app) usage(f *flag.FlagSet) {
 		fmt.Fprintln(f.Output())
 	})
 	if h.example != "" {
-		fmt.Fprintln(f.Output(), "\nExamples:\n  "+h.example)
+		fmt.Fprintln(f.Output(), "\nExamples:\n  "+strings.ReplaceAll(h.example, "\n", "\n  "))
 	}
 }
 func hasFlags(f *flag.FlagSet) bool {

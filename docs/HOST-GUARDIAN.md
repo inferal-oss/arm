@@ -122,8 +122,15 @@ pressure, a frozen group is therefore no longer the culprit.
 
 ## Interfaces
 
-- `arm guardian status [--json]` shows mode, pressure, incidents, the
-  heaviest programs and recent actions with undo commands.
+- `arm guardian status [--json]` shows a one-line verdict, mode, pressure,
+  incidents, the heaviest programs and recent actions with undo commands.
+  `--watch` keeps refreshing every `--interval` (2 s by default): a live view
+  in a terminal, or one JSON object per line with `--json` or when output is
+  redirected. A failed read becomes an `error` line and is retried.
+- `arm guardian ladder` shows the ladder the next backend start uses.
+  `edit` opens an interactive editor; `set STEP [--level] [--after]`,
+  `remove STEP`, `preset manned|unmanned` and `reset` change it from scripts.
+  They edit `config.toml` offline and apply at the next backend start.
 - `arm guardian undo ACTION_ID` reverts one action.
 - WebSocket operations `guardian_status` and `guardian_undo`, both allowed for
   the local dashboard. `guardian_status` stays available while a node is

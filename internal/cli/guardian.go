@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -18,9 +19,17 @@ func (a *app) guardianCommand(args []string) (int, error) {
 	switch action {
 	case "status":
 		f := a.flags("guardian status")
-		f.Bool("json", false, "JSON guardian state, pressure, groups and actions")
+		f.Bool("json", false, "JSON guardian state, pressure, groups and actions (JSON lines with --watch)")
+		watch := f.Bool("watch", false, "keep refreshing: a live view in a terminal, one JSON object per line otherwise")
+		interval := f.Duration("interval", 2*time.Second, "refresh interval with --watch, 1s to 1h")
 		if err := a.parse(f, args, false); err != nil {
 			return 2, err
+		}
+		if *interval < time.Second || *interval > time.Hour {
+			return 2, fmt.Errorf("--interval must be between 1s and 1h")
+		}
+		if *watch {
+			return a.guardianWatch(*interval)
 		}
 		var s model.GuardianStatus
 		if err := a.call("guardian_status", nil, &s); err != nil {
@@ -41,6 +50,8 @@ func (a *app) guardianCommand(args []string) (int, error) {
 			return 1, err
 		}
 		return 0, a.print(undone)
+	case "ladder":
+		return a.guardianLadder(args)
 	}
 	return 2, fmt.Errorf("unknown guardian action %q; use arm guardian --help", action)
 }
@@ -54,15 +65,63 @@ func pressureBadge(a *app, level string) string {
 }
 
 func (a *app) guardianHuman(s model.GuardianStatus) error {
+	_, err := io.WriteString(a.out, a.guardianText(s))
+	return err
+}
+
+// guardianVerdict summarizes how the host is doing in one line.
+func guardianVerdict(s model.GuardianStatus) (string, string) {
+	if s.Stale {
+		return "2", "Pressure unknown: observations are stale or unavailable"
+	}
+	worst, rank, under, unknown := model.PressureNormal, 0, []string{}, []string{}
+	for _, r := range []struct {
+		name string
+		p    model.PressureReading
+	}{{"CPU", s.Pressure.CPU}, {"memory", s.Pressure.Memory}, {"I/O", s.Pressure.IO}} {
+		n, ok := model.PressureRank(r.p.Level)
+		if !ok {
+			unknown = append(unknown, r.name)
+			continue
+		}
+		if n > 0 {
+			under = append(under, r.name+" "+r.p.Level)
+		}
+		if n > rank {
+			worst, rank = r.p.Level, n
+		}
+	}
+	// Unknown is never reported as clear.
+	text := "All clear: no resource is under pressure"
+	switch {
+	case len(under) > 0:
+		text = "Under pressure: " + strings.Join(under, ", ")
+	case len(unknown) == 3:
+		return "2", "Pressure unknown: no observations yet"
+	case len(unknown) > 0:
+		return "33", "No pressure detected; " + strings.Join(unknown, ", ") + " unknown"
+	}
+	if len(under) > 0 && len(unknown) > 0 {
+		text += "; " + strings.Join(unknown, ", ") + " unknown"
+	}
+	if len(s.Incidents) > 0 {
+		text += fmt.Sprintf(" · %d open incident(s)", len(s.Incidents))
+	}
+	return map[string]string{model.PressureNormal: "1;32", model.PressureElevated: "1;33", model.PressureHigh: "1;33", model.PressureCritical: "1;31"}[worst], text
+}
+
+func (a *app) guardianText(s model.GuardianStatus) string {
 	var b bytes.Buffer
 	fmt.Fprintln(&b, a.paint("1;36", "ARM · host guardian"))
+	code, verdict := guardianVerdict(s)
+	fmt.Fprintln(&b, a.paint(code, verdict))
 	mode := s.Mode
 	if mode == model.GuardianOff {
 		mode = "off (enable with: arm config set guardian.enabled true, then restart the backend)"
 	}
 	fmt.Fprintf(&b, "Mode %s · role %s · actions %d/%d this hour\n", mode, s.Role, s.Budget.Used, s.Budget.Limit)
 	if s.Stale {
-		fmt.Fprintln(&b, a.paint("2", "Pressure is stale or unavailable; the guardian holds all actions."))
+		fmt.Fprintln(&b, a.paint("2", "The guardian holds all actions while pressure is unknown."))
 	}
 	fmt.Fprintln(&b)
 	for _, r := range []struct {
@@ -117,8 +176,7 @@ func (a *app) guardianHuman(s model.GuardianStatus) error {
 			fmt.Fprintf(&b, "  %s %-12s %-9s %s — %s%s\n", x.At.Local().Format(time.TimeOnly), x.Step, x.Outcome, orDash(x.GroupName), x.Reason, undo)
 		}
 	}
-	_, err := a.out.Write(b.Bytes())
-	return err
+	return b.String()
 }
 
 func orDash(s string) string {

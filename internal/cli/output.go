@@ -329,6 +329,9 @@ func (a *app) human(v any) error {
 	if s, ok := v.(model.GuardianStatus); ok {
 		return a.guardianHuman(s)
 	}
+	if r, ok := v.(guardianLadderReport); ok {
+		return a.guardianLadderHuman(r)
+	}
 	raw, err := json.Marshal(v)
 	if err != nil {
 		return err

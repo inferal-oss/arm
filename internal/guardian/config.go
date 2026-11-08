@@ -25,6 +25,9 @@ type Config struct {
 
 var steps = []string{model.GuardianNotify, model.GuardianDeprioritize, model.GuardianAsk, model.GuardianShed, model.GuardianFreeze, model.GuardianTerminate}
 
+// Steps returns every ladder step in its required order.
+func Steps() []string { return slices.Clone(steps) }
+
 func rule(step, level string, after time.Duration) model.GuardianStepRule {
 	return model.GuardianStepRule{Step: step, Level: level, After: after}
 }

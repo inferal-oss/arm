@@ -248,6 +248,24 @@ inline form; use a `[guardian]` table.
 Set the choice directly with `arm config set guardian.enabled true` (or
 `false`). Changes apply at the next backend start.
 
+Manage the ladder without editing TOML by hand. `arm guardian ladder` shows
+the saved ladder and whether it is the role default or a custom one.
+`arm guardian ladder edit` opens an interactive editor in a terminal. For
+scripts:
+
+```sh
+arm guardian ladder set freeze --level critical --after 90s
+arm guardian ladder remove shed
+arm guardian ladder preset unmanned   # the unmanned ladder on any role
+arm guardian ladder reset             # follow the role default again
+```
+
+Every command that changes the ladder accepts `--dry-run`,
+`--expect-file SHA256` and `--json`, and refuses to save over a
+`config.toml` that changed after it was read. Each rewrites the
+`[[guardian.ladder]]` tables at the end of the `[guardian]` table and keeps
+the other settings; comments placed between ladder tables are not kept.
+
 ```toml
 [guardian]
 enabled = true            # explicit choice; absent means undecided (off)

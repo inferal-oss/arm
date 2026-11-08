@@ -11,7 +11,18 @@ leader's exit reports EPERM; and test fixtures that faked expiry or lost clock
 provenance by editing rows that later deliberate binding rules treat as
 changed. Remaining gate: a Linux run of the same suites.
 
-## Host guardian — implemented, independently reviewed, pending integration review
+## Guardian ladder and status watch — implemented, independently reviewed
+
+Owner: `claude/guardian-ladder`, integrated on the baseline test fixes. Adds `arm guardian
+ladder` (show, set, remove, preset, reset and an interactive editor) and
+`arm guardian status --watch` with a live terminal view and JSON lines. An
+independent review found one high defect (ladder insertion before an array
+that ends `[guardian]`) and eleven lower ones; all are fixed with regression
+tests, and a second review pass confirmed them. The editor and live view
+were driven in a pseudo-terminal. Remaining gate: operator use of the
+interactive views.
+
+## Host guardian — implemented, independently reviewed, integrated
 
 Owner: `claude/host-guardian`, based on `9bfadfe`. Adds the opt-in host
 guardian described in [SPEC.md](../SPEC.md#host-guardian) and

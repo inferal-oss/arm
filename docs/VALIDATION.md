@@ -13842,6 +13842,19 @@ parent/controller activation, API/UI replacement or Docker upgrade fixture ran.
 Actual active-job, quiet proxy/native-child survival through a distinct-code
 A-to-B upgrade remains required before the user task can be complete.
 
+## Guardian ladder and status watch — scoped evidence
+
+- macOS arm64: `internal/daemonconfig` ladder editing tests cover arrays and
+  multi-line values ending `[guardian]`, comments, CRLF round trips, inline
+  forms and removal. `internal/cli` tests cover every ladder command, stale
+  `--expect-file` refusal, the editor's key handling, the verdict line and
+  JSON-lines watch through backend errors.
+- The ladder editor and the live watch view were driven through a
+  pseudo-terminal; the editor saved a valid ladder, and the watch view and
+  JSON lines reported a running scratch backend.
+- `internal/manager` covers reopening a configuration journal written with
+  guardian settings and omitting them from new journal events.
+
 ## Host guardian — scoped evidence
 
 Source: uncommitted `claude/host-guardian` composition on `9bfadfe`.
