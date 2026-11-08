@@ -353,3 +353,71 @@ func TestPriorDeniedSignalSurvivesPositiveSignalRetirement(t *testing.T) {
 		t.Fatal(result, signals, waits)
 	}
 }
+
+// A leader observed live by the preflight can exit before the group signal.
+// Only the same positive terminal-singleton witness retires that denial.
+func TestDeniedSignalAfterPreflightRaceRetiresOnlyWithTerminalWitness(t *testing.T) {
+	observations, signals, witnesses, waits := 0, 0, 0, 0
+	o := &Owner{pid: 123, preflightSignals: true, terminalGroupGrace: 50 * time.Millisecond, observe: func(int) (terminal, error) {
+		observations++
+		return terminal{ready: observations > 2}, nil
+	}, terminalOnlyGroup: func(int) (bool, error) { witnesses++; return true, nil }, signal: func(int, syscall.Signal) error { signals++; return syscall.EPERM }, wait: func() error { waits++; return errors.New("controlled unknown join") }}
+	if err := o.Signal(syscall.SIGKILL); !errors.Is(err, ErrRetired) || o.Active() || o.failure != nil {
+		t.Fatal(err, o.Active(), o.failure)
+	}
+	if signals != 1 || witnesses != 1 || observations != 3 {
+		t.Fatal(signals, witnesses, observations)
+	}
+	if err := o.Signal(syscall.SIGTERM); !errors.Is(err, ErrRetired) || signals != 1 {
+		t.Fatal(err, signals)
+	}
+	result := o.Wait(context.Background())
+	if signals != 1 || waits != 1 || errors.Is(result.CleanupError, syscall.EPERM) {
+		t.Fatal(result, signals, waits)
+	}
+}
+func TestDeniedSignalAfterPreflightRaceKeepsFailureWithoutWitness(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		ready   bool
+		sole    bool
+		soleErr error
+		obsErr  error
+	}{
+		{"live-leader", false, true, nil, nil},
+		{"other-member", true, false, nil, nil},
+		{"unknown-membership", true, true, syscall.EACCES, nil},
+		{"unknown-observation", false, true, nil, syscall.EIO},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			observations, signals, witnesses := 0, 0, 0
+			o := &Owner{pid: 123, preflightSignals: true, terminalGroupGrace: 20 * time.Millisecond, observe: func(int) (terminal, error) {
+				observations++
+				if observations == 1 {
+					return terminal{}, nil
+				}
+				return terminal{ready: tc.ready}, tc.obsErr
+			}, terminalOnlyGroup: func(int) (bool, error) { witnesses++; return tc.sole, tc.soleErr }, signal: func(int, syscall.Signal) error { signals++; return syscall.EPERM }, wait: func() error { return errors.New("controlled unknown join") }}
+			err := o.Signal(syscall.SIGKILL)
+			if !errors.Is(err, syscall.EPERM) || errors.Is(err, ErrRetired) || !errors.Is(o.failure, syscall.EPERM) || signals != 1 {
+				t.Fatal(err, o.failure, signals)
+			}
+			if (tc.soleErr != nil && !errors.Is(o.failure, tc.soleErr)) || (tc.obsErr != nil && !errors.Is(o.failure, tc.obsErr)) {
+				t.Fatal(o.failure)
+			}
+			if !tc.ready && witnesses != 0 {
+				t.Fatal("live or unknown leader consulted terminal-only witness", witnesses)
+			}
+			if o.terminalGroupProven || !o.Active() {
+				t.Fatal("denied signal established a terminal group witness or retired control")
+			}
+		})
+	}
+}
+func TestDeniedSignalWithoutPreflightPlatformIsNeverReinterpreted(t *testing.T) {
+	observations := 0
+	o := &Owner{pid: 123, observe: func(int) (terminal, error) { observations++; return terminal{ready: true}, nil }, terminalOnlyGroup: func(int) (bool, error) { return true, nil }, signal: func(int, syscall.Signal) error { return syscall.EPERM }}
+	if err := o.Signal(syscall.SIGKILL); !errors.Is(err, syscall.EPERM) || !errors.Is(o.failure, syscall.EPERM) || observations != 0 {
+		t.Fatal(err, o.failure, observations)
+	}
+}

@@ -688,7 +688,10 @@ Supervised commands and Cargo helpers retain their original process identity,
 observe without reaping, retire signal authority and then perform the sole
 native wait. Saved PIDs do not reconstruct control authority. Darwin's bounded
 terminal-singleton witness handles zombie-only groups without treating a real
-signal denial as success. Unknown native control or cleanup retains charges.
+signal denial as success. When the leader exits between the signal preflight
+and the group signal, the resulting Darwin EPERM is settled only by that same
+witness taken afterwards; a live leader, an extra member or unknown membership
+keeps the denial. Unknown native control or cleanup retains charges.
 
 SSH native exit and resource settlement are separate: original connection, I/O
 and cancellation joins plus exact current/staged bindings are required before

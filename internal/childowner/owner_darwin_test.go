@@ -101,3 +101,79 @@ func TestNativeDarwinNaturalExitBeforeFirstTermRetiresSignalsAndJoins(t *testing
 		t.Fatal(result, cmd.ProcessState, calls)
 	}
 }
+
+// Reproduces the real Darwin race: the preflight sees a live leader, the
+// leader then exits and the kernel's zombie-only killpg returns EPERM. The
+// owner must prove the terminal singleton instead of recording a denial.
+func TestNativeDarwinLeaderExitBetweenPreflightAndSignalIsProven(t *testing.T) {
+	cmd, o := startOwnedFixture(t, "/bin/sh", "-c", "exit 0")
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+	var kernelErr error
+	calls := 0
+	o.mu.Lock()
+	o.signal = func(pid int, sig syscall.Signal) error {
+		calls++
+		for {
+			ended, err := observeTerminal(pid)
+			if err != nil {
+				return err
+			}
+			if ended.ready {
+				break
+			}
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(time.Millisecond):
+			}
+		}
+		kernelErr = syscall.Kill(-pid, sig)
+		return kernelErr
+	}
+	observe := o.observe
+	o.observe = func(pid int) (terminal, error) {
+		if calls == 0 {
+			return terminal{}, nil // The preflight observed the leader before exit.
+		}
+		return observe(pid)
+	}
+	o.mu.Unlock()
+	if err := o.Signal(syscall.SIGKILL); !errors.Is(err, ErrRetired) || o.Active() {
+		t.Fatal(err, kernelErr, o.Active())
+	}
+	if !errors.Is(kernelErr, syscall.EPERM) {
+		t.Fatal("kernel did not report zombie-only group EPERM", kernelErr)
+	}
+	result := o.Wait(ctx)
+	if !result.Reaped || result.CleanupError != nil || cmd.ProcessState.ExitCode() != 0 || calls != 1 {
+		t.Fatal(result, cmd.ProcessState, calls)
+	}
+}
+
+// A live leader whose signal is genuinely denied keeps the failure even on
+// Darwin's post-denial witness path, and later cleanup cannot erase it.
+func TestNativeDarwinDeniedSignalToLiveLeaderStaysFailure(t *testing.T) {
+	cmd, o := startOwnedFixture(t, "/bin/sh", "-c", "exec sleep 30")
+	o.mu.Lock()
+	original := o.signal
+	o.signal = func(pid int, sig syscall.Signal) error {
+		if sig == syscall.SIGTERM {
+			return syscall.EPERM
+		}
+		return original(pid, sig)
+	}
+	o.mu.Unlock()
+	if err := o.Signal(syscall.SIGTERM); !errors.Is(err, syscall.EPERM) || !o.Active() {
+		t.Fatal(err, o.Active())
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+	if err := o.Signal(syscall.SIGKILL); err != nil {
+		t.Fatal(err)
+	}
+	result := o.Wait(ctx)
+	if !result.Reaped || !errors.Is(result.CleanupError, syscall.EPERM) || cmd.ProcessState.ExitCode() != -1 {
+		t.Fatal(result, cmd.ProcessState)
+	}
+}

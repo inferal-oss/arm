@@ -219,6 +219,21 @@ func (o *Owner) signalLocked(sig syscall.Signal) error {
 		o.killSentAt = time.Now()
 	}
 	err := o.signal(o.pid, sig)
+	if errors.Is(err, syscall.EPERM) && o.preflightSignals {
+		// The preflight observed a live leader, but it may have exited before
+		// the group signal: Darwin killpg skips exiting and zombie members and
+		// then reports EPERM. That EPERM is never itself evidence. Only the same
+		// positive witness as the preflight (terminal unreaped leader plus a
+		// sole-member group snapshot) retires signals without a failure; any
+		// live, unknown or extra member keeps the denial as a failure below.
+		proven, proofErr := o.proveTerminalAfterDeniedSignalLocked()
+		if proven {
+			return ErrRetired
+		}
+		if proofErr != nil {
+			err = errors.Join(err, proofErr)
+		}
+	}
 	if sig == syscall.SIGKILL && err == nil {
 		o.killSucceeded = true
 		o.paused = false
@@ -319,6 +334,47 @@ func (o *Owner) Wait(ctx context.Context) Result {
 		}
 		return Result{WaitError: waitErr, CleanupError: cleanupErr, Reaped: matches}
 	}
+}
+
+// Called under Owner.mu after a denied group signal on a platform that uses
+// the terminal-singleton witness. The leader is still unreaped (only the sole
+// Wait reaps it, and it cannot start while Owner.mu is held), so the numeric
+// group cannot be reused. A leader that stays live through the bounded grace
+// leaves the denial standing; it is never reinterpreted as success.
+func (o *Owner) proveTerminalAfterDeniedSignalLocked() (bool, error) {
+	if o.terminalOnlyGroup == nil {
+		return false, nil
+	}
+	deadline := time.Now().Add(o.terminalGroupGrace)
+	var ended terminal
+	for {
+		var err error
+		ended, err = o.observe(o.pid)
+		if errors.Is(err, syscall.EINTR) {
+			err, ended = nil, terminal{}
+		}
+		if err != nil {
+			return false, fmt.Errorf("original child observation after denied signal is unknown: %w", err)
+		}
+		if ended.ready || !time.Now().Before(deadline) {
+			break
+		}
+		time.Sleep(min(10*time.Millisecond, time.Until(deadline)))
+	}
+	if !ended.ready {
+		return false, nil
+	}
+	sole, err := o.proveTerminalOnlyGroupLocked()
+	if err != nil {
+		return false, fmt.Errorf("original terminal group membership after denied signal is unknown: %w", err)
+	}
+	if !sole {
+		return false, nil
+	}
+	o.terminalGroupProven = true
+	o.terminalGroupExit = ended
+	o.signalsRetired = true
+	return true, nil
 }
 
 // Caller retains the original terminal leader unreaped under Owner.mu. A
