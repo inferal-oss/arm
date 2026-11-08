@@ -102,9 +102,17 @@ func configSettingsShape(raw []byte) error {
 	if _, ok := shape["storage_pools"]; ok {
 		keys = append(keys, "storage_pools")
 	}
+	// Releases that journaled guardian settings wrote an optional object;
+	// current releases leave it out of this capacity record.
+	if _, ok := shape["guardian"]; ok {
+		keys = append(keys, "guardian")
+	}
 	fields, err := configObject(raw, keys...)
 	if err != nil {
 		return err
+	}
+	if g := fields["guardian"]; g != nil && (len(g) == 0 || g[0] != '{') {
+		return fmt.Errorf("configuration evidence guardian must be an object")
 	}
 	_, err = configObject(fields["resources"], "cpu", "memory_bytes", "disk_bytes")
 	return err
@@ -137,6 +145,10 @@ func (m *Manager) applyStartupConfiguration(settings daemonconfig.Settings) erro
 	if err := settings.Validate(); err != nil {
 		return err
 	}
+	// The journal records capacity decisions. Guardian policy is not resource
+	// authority, and leaving it out keeps earlier releases able to read the
+	// journal after a downgrade.
+	settings.Guardian = nil
 	tx, err := m.db.Begin()
 	if err != nil {
 		return err

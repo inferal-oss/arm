@@ -262,3 +262,53 @@ func TestDaemonConfigurationBlobDiscriminatorCannotSkipLatest(t *testing.T) {
 		t.Fatal("configuration evidence replaced", count, e)
 	}
 }
+
+func TestDaemonConfigurationJournalOmitsAndAcceptsGuardian(t *testing.T) {
+	home := filepath.Join(t.TempDir(), "arm")
+	on := true
+	s := daemonSettings()
+	s.Guardian = &model.GuardianSettings{Enabled: &on, Mode: model.GuardianObserve}
+	reopen := func() {
+		t.Helper()
+		m, e := OpenConfigured(home, s)
+		if e != nil {
+			t.Fatal(e)
+		}
+		if e = m.Close(); e != nil {
+			t.Fatal(e)
+		}
+	}
+	reopen()
+	reopen()
+	db, e := sql.Open("sqlite", filepath.Join(home, "state.db"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer db.Close()
+	var count int
+	if e = db.QueryRow(`SELECT count(*) FROM events WHERE type=? AND data LIKE '%guardian%'`, daemonConfigEvent).Scan(&count); e != nil || count != 0 {
+		t.Fatal("guardian settings journaled", count, e)
+	}
+	// A journal written while guardian settings were recorded still opens,
+	// and the next start replaces it with a capacity-only snapshot.
+	if _, e = db.Exec(`UPDATE events SET data=json_set(data,'$.settings.guardian',json('{"enabled":true,"mode":"act"}')) WHERE type=?`, daemonConfigEvent); e != nil {
+		t.Fatal(e)
+	}
+	m, e := OpenConfigured(home, s)
+	if e != nil {
+		t.Fatal(e)
+	}
+	c := daemonJournal(t, m)
+	if len(c) != 2 || c[1].Previous == nil || c[1].Previous.Guardian == nil || c[1].Settings.Guardian != nil {
+		t.Fatal(c)
+	}
+	if e = m.Close(); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = db.Exec(`UPDATE events SET data=json_set(data,'$.settings.guardian',5) WHERE type=? AND sequence=(SELECT max(sequence) FROM events WHERE type=?)`, daemonConfigEvent, daemonConfigEvent); e != nil {
+		t.Fatal(e)
+	}
+	if failed, e := OpenConfigured(home, s); e == nil || failed != nil {
+		t.Fatal("accepted a non-object guardian snapshot")
+	}
+}
