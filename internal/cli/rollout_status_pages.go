@@ -40,6 +40,9 @@ func statusSetupError(home, key string, err error) error {
 }
 
 func (a *app) rolloutStatusPages(args []string) error {
+	if len(args) == 1 && a.group("rollout status-pages", args) {
+		return nil
+	}
 	if len(args) == 0 {
 		return fmt.Errorf("use rollout status-pages plan, apply or inspect")
 	}
