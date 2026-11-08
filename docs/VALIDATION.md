@@ -1,5 +1,14 @@
 # Validation record
 
+## Baseline test fixes — scoped evidence
+
+- macOS arm64: `internal/cli`, `internal/manager`, `internal/childowner` and
+  `internal/database` pass in full at `-p 1`. Native Darwin tests reproduce the
+  kernel EPERM after a group leader exits and confirm a denied signal to a live
+  leader stays a failure.
+- Linux: the Darwin signal witness is not enabled there; this is covered by a
+  controlled test, not a native Linux run of these suites.
+
 ## Original Server and native borrower validation — complementary scopes
 
 The [source-bound record](validation/resident-original-server-2026-10-30.json)

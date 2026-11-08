@@ -1,5 +1,16 @@
 # ARM delivery plan
 
+## Baseline test failures — fixed, reviewed
+
+Owner: `claude/fix-baseline-tests`, based on `3e4292e`. The macOS CLI, manager,
+child-owner and database suites now pass. Causes: CLI tests built ARM homes
+under a symlinked temporary directory; `arm rollout status-pages --help` was
+refused; the ledger proof still required wall-clock review entitlement after
+suspend-inclusive deadlines; a Darwin race where a group signal after the
+leader's exit reports EPERM; and test fixtures that faked expiry or lost clock
+provenance by editing rows that later deliberate binding rules treat as
+changed. Remaining gate: a Linux run of the same suites.
+
 ## Host guardian — implemented, independently reviewed, pending integration review
 
 Owner: `claude/host-guardian`, based on `9bfadfe`. Adds the opt-in host
