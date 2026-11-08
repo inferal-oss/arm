@@ -57,6 +57,7 @@ func collectMonitor(ctx context.Context) monitorRaw {
 			r.swap = memoryValues(total, free, "host-swap", "proc:meminfo", time.Now())
 		}
 	}
+	r.pressure = linuxPressure(ctx)
 	if data, err := readMonitorFile(ctx, "/proc/diskstats"); err != nil {
 		r.diskError = err
 	} else {
@@ -156,7 +157,13 @@ func parseMonitorDisk(data []byte, at time.Time) ([]ioCounter, error) {
 			return rows, fmt.Errorf("invalid diskstats counter")
 		}
 		// diskstats uses fixed 512-byte sectors independent of device geometry.
-		rows = append(rows, ioCounter{id: fmt.Sprintf("linux-block:%d:%d:%s", major, minor, f[2]), name: f[2], read: r * 512, write: w * 512, at: at})
+		row := ioCounter{id: fmt.Sprintf("linux-block:%d:%d:%s", major, minor, f[2]), name: f[2], read: r * 512, write: w * 512, at: at}
+		// Field 14 is weighted milliseconds spent doing I/O: the integral of
+		// requests in flight, so its rate is the mean queue depth.
+		if weighted, e := strconv.ParseUint(f[13], 10, 64); e == nil && weighted <= math.MaxUint64/1_000_000 {
+			row.busy, row.timed = weighted*1_000_000, true
+		}
+		rows = append(rows, row)
 	}
 	return rows, nil
 }

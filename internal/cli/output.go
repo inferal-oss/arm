@@ -326,6 +326,9 @@ func (a *app) human(v any) error {
 	if report, ok := v.(install.Report); ok {
 		return a.installationReport(report)
 	}
+	if s, ok := v.(model.GuardianStatus); ok {
+		return a.guardianHuman(s)
+	}
 	raw, err := json.Marshal(v)
 	if err != nil {
 		return err

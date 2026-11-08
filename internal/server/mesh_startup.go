@@ -10,7 +10,7 @@ func saveConfiguredMeshStartupPolicy(home string, settings daemonconfig.Settings
 	// Ordinary launch records retain their established format. Named locations
 	// need the full inspected hash so fresh/replayed startup cannot drop or replace
 	// the pool selection while retaining only the old scalar ceilings.
-	if len(settings.StoragePools) > 0 {
+	if len(settings.StoragePools) > 0 || settings.Guardian != nil {
 		hash, err := daemonconfig.SnapshotSHA256(settings)
 		if err != nil {
 			return err

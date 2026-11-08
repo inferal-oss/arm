@@ -233,3 +233,44 @@ Strict reset currently refuses the named external-root metadata group because
 its independent native namespace proof has not been extended. Preserve that
 ledger, or explicitly review `--forget` as intentional ledger abandonment; it
 provides no external cleanup or physical reclamation credit.
+
+## Configure the host guardian
+
+The host guardian is off until the operator decides. Interactive `arm install`
+and `arm start` recommend it and ask `Enable the host guardian? [Y/n]`; the
+answer is saved as `guardian.enabled` and the question repeats while no choice
+is recorded. Enter or `y` enables, `n` disables; end of input or any other
+answer records nothing. Interrupting the question stops `arm start`. Scripts,
+`--json` output and non-terminal input are never asked, and `arm start` does
+not ask when the backend is already running, with `--dry-run`, or with
+`--expect-config`. The editor refuses guardian settings written in dotted or
+inline form; use a `[guardian]` table.
+Set the choice directly with `arm config set guardian.enabled true` (or
+`false`). Changes apply at the next backend start.
+
+```toml
+[guardian]
+enabled = true            # explicit choice; absent means undecided (off)
+mode = "act"              # observe | advise | act (default act when enabled)
+role = "manned"           # manned | unmanned: selects the default ladder
+interval = "4s"           # sampling and decision cadence, 1s..1m
+recover = "60s"           # pressure at or below elevated this long closes an incident
+cooldown = "15s"          # minimum spacing between applied steps of one incident
+freeze_max = "5m"         # frozen programs resume after this long
+terminate_grace = "10s"   # forced termination follows graceful termination
+max_actions_per_hour = 12 # process actions; 24 by default for unmanned hosts
+desktop_notifications = true
+protect = ["Slack", "/opt/critical/"]   # names, group names or path prefixes
+
+# Optional replacement ladder, in this order without repeats:
+# notify, deprioritize, ask, shed, freeze, terminate.
+[[guardian.ladder]]
+step = "notify"
+level = "high"            # minimum pressure level: elevated | high | critical
+after = "15s"             # sustained pressure before the step
+```
+
+`observe` records what the ladder would do without acting. `advise` sends
+notifications and agent requests only. `act` applies the configured ladder.
+The full behavior, safety rules and platform limits are in
+[HOST-GUARDIAN.md](HOST-GUARDIAN.md).

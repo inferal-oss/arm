@@ -6998,3 +6998,34 @@ Actual parent runtime/helper lifetimes, package custody, worker controller and
 renewal/activation, API/UI/assets and stable reporting remain separate work.
 Public `arm start`, automatic backend discovery and real active-job/native-child
 survival across a Docker A-to-B upgrade remain completion gates.
+
+## Host guardian
+
+The host guardian is implemented as `internal/guardian`, with pressure sensors
+in `internal/observe/pressure*.go`, host-wide process inspection in
+`internal/usage/inspect*.go`, configuration in
+`internal/daemonconfig/guardian.go`, manager hooks in
+`internal/manager/guardian.go`, server operations in
+`internal/server/guardian.go`, `arm guardian` in `internal/cli/guardian.go`, the
+terminal pressure window in `internal/tui/guardian.go` and the web panel in
+`internal/server/web/semblance/guardian.mjs`. Behavior, thresholds, safety rules
+and limits are in [HOST-GUARDIAN.md](HOST-GUARDIAN.md).
+
+Implemented: pressure levels with unknown never treated as normal; app-bundle,
+service-unit and leader-keyed process-group grouping; protection of ARM and its
+children, supervised work, other users, root, kernel threads, system cgroups and
+paths, session/terminal/remote-access programs and operator entries;
+observe/advise/act modes; manned and unmanned ladders; hysteresis, cooldowns,
+an hourly budget and ladder restart only after a pass with a process step;
+sticky deprioritization limited to eligible groups that keep an original
+target; Chromium browser renderer shedding from process arguments, excluding
+extensions and Electron applications; SIGSTOP freezing with bounded duration
+and Linux cgroup reclaim for dedicated units; leaves-first termination with a
+revalidated forced kill; intent journaling before signals, restart and
+disabled-mode recovery, retried reverts, operator undo with sparing, and
+messaging outside the runtime lock.
+
+Unsupported: acting as root, other users' processes, forced page-out on macOS,
+restoring Linux nice values without privilege, and race-free signalling on
+macOS. Thresholds are heuristics and are not yet tuned from field use.
+

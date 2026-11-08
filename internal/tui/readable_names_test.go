@@ -39,7 +39,7 @@ func TestReadableTUIResponseAdaptersKeepExactModelsAndReadRoster(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(session.operations, []string{"status", "messages", "agents"}) {
+	if !reflect.DeepEqual(session.operations, []string{"status", "messages", "agents", "guardian_status"}) {
 		t.Fatal("name rendering added a read", session.operations)
 	}
 	if data.status.Leases[0].Request.Resources.Disk != int64(9223372036854775807) || data.status.Resources[0].BudgetTotal.String() != "9223372036854775807" || data.status.Resources[0].Users[0].Quantity.String() != "9223372036854775807" {

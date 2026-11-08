@@ -91,10 +91,45 @@ func editDocument(raw []byte, edit Edit) ([]byte, error) {
 		out = append(out, value...)
 		return append(out, raw[end:]...)
 	}
+	if strings.HasPrefix(edit.Key, "guardian.") && edit.Pool == "" {
+		key := strings.TrimPrefix(edit.Key, "guardian.")
+		value, err := guardianLiteral(key, edit.Value)
+		if err != nil {
+			return nil, err
+		}
+		for _, s := range sections {
+			for _, r := range s.values {
+				if s.name == "guardian" && r.key == key || s.name == "" && r.key == edit.Key {
+					return patch(r.start, r.end, value), nil
+				}
+			}
+		}
+		for _, s := range sections {
+			if s.name == "guardian" {
+				insert := key + " = " + value + "\n"
+				if s.end > 0 && raw[s.end-1] != '\n' {
+					insert = "\n" + insert
+				}
+				return patch(s.end, s.end, insert), nil
+			}
+		}
+		for _, s := range sections {
+			for _, r := range s.values {
+				if r.key == "guardian" || strings.HasPrefix(r.key, "guardian.") {
+					return nil, fmt.Errorf("guardian settings use a dotted or inline form; edit the [guardian] table manually")
+				}
+			}
+		}
+		out := append([]byte{}, raw...)
+		if len(out) > 0 && out[len(out)-1] != '\n' {
+			out = append(out, '\n')
+		}
+		return append(out, "\n[guardian]\n"+key+" = "+value+"\n"...), nil
+	}
 	if edit.Pool == "" {
 		key := strings.TrimPrefix(edit.Key, "daemon.")
 		if edit.Key != "daemon."+key || !strings.Contains("|cpu|memory|disk|listen|", "|"+key+"|") {
-			return nil, fmt.Errorf("supported keys: daemon.cpu, daemon.memory, daemon.disk, daemon.listen")
+			return nil, fmt.Errorf("supported keys: daemon.cpu, daemon.memory, daemon.disk, daemon.listen, guardian.%s", strings.Join(guardianKeys, ", guardian."))
 		}
 		value := quoted(edit.Value)
 		if key == "cpu" {

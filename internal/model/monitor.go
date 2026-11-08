@@ -32,6 +32,50 @@ type MonitorSnapshot struct {
 	DiskDetail      string              `json:"disk_detail,omitempty"`
 	NetworkDetail   string              `json:"network_detail,omitempty"`
 	GPU             Measurement         `json:"gpu_busy_percent"`
+	Pressure        MonitorPressure     `json:"pressure"`
+}
+
+// Pressure levels order resource contention. Unknown means the signals were
+// missing, stale or unsupported; it never justifies remedial action.
+const (
+	PressureUnknown  = "unknown"
+	PressureNormal   = "normal"
+	PressureElevated = "elevated"
+	PressureHigh     = "high"
+	PressureCritical = "critical"
+)
+
+// PressureRank orders levels; unknown ranks below normal and reports false.
+func PressureRank(level string) (int, bool) {
+	switch level {
+	case PressureNormal:
+		return 0, true
+	case PressureElevated:
+		return 1, true
+	case PressureHigh:
+		return 2, true
+	case PressureCritical:
+		return 3, true
+	}
+	return -1, false
+}
+
+type PressureSignal struct {
+	ID    string      `json:"id"`
+	Label string      `json:"label"`
+	Value Measurement `json:"value"`
+	// Level is the level this signal alone indicates.
+	Level string `json:"level"`
+}
+type PressureReading struct {
+	Level   string           `json:"level"`
+	Reason  string           `json:"reason,omitempty"`
+	Signals []PressureSignal `json:"signals"`
+}
+type MonitorPressure struct {
+	CPU    PressureReading `json:"cpu"`
+	Memory PressureReading `json:"memory"`
+	IO     PressureReading `json:"io"`
 }
 type MonitorHistoryIO struct {
 	ID    string   `json:"id"`
@@ -47,6 +91,9 @@ type MonitorPoint struct {
 	SwapUsed            *float64           `json:"swap_used_bytes"`
 	FilesystemAvailable *float64           `json:"filesystem_available_bytes"`
 	FilesystemAt        time.Time          `json:"filesystem_at"`
+	CPUPressure         *int               `json:"cpu_pressure_rank"`
+	MemoryPressure      *int               `json:"memory_pressure_rank"`
+	IOPressure          *int               `json:"io_pressure_rank"`
 	DiskIO              []MonitorHistoryIO `json:"disk_io"`
 	Network             []MonitorHistoryIO `json:"network"`
 }

@@ -27,7 +27,7 @@ function fixture({used=12,total=100,available=7,filesystemStale=false,pageStale=
   model.coreMap=new Map();
   model.io=Object.fromEntries(['disk_io','network'].map(name=>[name,{...Object.fromEntries(['quality','summary','rates','readChart','writeChart','selectors'].map(key=>[key,field()])),deviceMap:new Map()}]));
   const state={monitor:page,connected,received:0,history:[]};
-  const scope={paused:false,lastMonitorStale:null,state,monitorModel:model,monitorFresh:field(),
+  const scope={paused:false,lastMonitorStale:null,state,monitorModel:model,guardianPanel:null,monitorFresh:field(),
     performance:{now:()=>elapsed},ui:{batch:fn=>fn()},monitorStale,remainingValue,bytes,numeric,percent,
     when:value=>value,GiB:1024**3,series:()=>[],rate:value=>value==null?'unavailable':bytes(value)+'/s',
     ioSelections:{disk_io:allDevices(),network:allDevices()},selectedDeviceIDs,aggregateIO,aggregateIOWindow,

@@ -30,7 +30,7 @@ func (m *dashboardModel) monitorText() string {
 	if s == nil {
 		return window("HOST MONITOR", muted.Render("Waiting for the first host sample…")+"\n\nCPU, memory, storage and I/O will appear here.\nUnknown measurements stay explicitly unavailable.", width, 8, false, "")
 	}
-	cpu := m.cpuWindow(s, width)
+	cpu := m.pressureWindow(s, width) + "\n" + m.cpuWindow(s, width)
 	if width < 84 {
 		return strings.Join([]string{cpu, m.memoryWindow(s, width), m.storageWindow(s, width), m.ioWindow(s.DiskIO, true, width), m.ioWindow(s.Network, false, width)}, "\n")
 	}
@@ -53,7 +53,7 @@ func (m *dashboardModel) cpuWindow(s *model.MonitorSnapshot, width int) string {
 	}
 	limit := min(len(s.Cores), columns*rows)
 	coreRows := (limit + columns - 1) / columns
-	cpuHeight := max(8, m.bodyHeight()-18)
+	cpuHeight := max(8, m.bodyHeight()-22) // the pressure window takes four lines
 	if width < 84 {
 		cpuHeight = min(12, max(8, m.bodyHeight()/2))
 	}

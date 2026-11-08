@@ -30,7 +30,7 @@ func (a *app) inspectMeshLifecycle() (mesh.LifecycleInspection, error) {
 			}
 			inspection.Startup.Resources = resolved.Settings.Resources
 			inspection.Startup.Listen = resolved.Settings.Listen
-			if len(resolved.Settings.StoragePools) > 0 {
+			if len(resolved.Settings.StoragePools) > 0 || resolved.Settings.Guardian != nil {
 				inspection.Startup.SettingsSHA256 = resolved.SettingsSHA256
 			}
 			inspection.StartupSource = "validated desired configuration; no prior launch policy exists"

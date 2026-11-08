@@ -19,6 +19,7 @@ import (
 	"getarm.org/internal/cargoprofile"
 	"getarm.org/internal/daemonconfig"
 	"getarm.org/internal/database"
+	"getarm.org/internal/guardian"
 	"getarm.org/internal/local"
 	"getarm.org/internal/manager"
 	"getarm.org/internal/mesh"
@@ -95,6 +96,7 @@ type Server struct {
 	storageScan           chan struct{}
 	portScan              chan struct{}
 	monitor               *observe.Monitor
+	guardian              *guardian.Runtime
 	monitorSlots          chan struct{}
 	authority             string
 	browser               browserCredentials
@@ -176,6 +178,7 @@ func serveConfiguredNode(ctx context.Context, home string, settings daemonconfig
 	var listener net.Listener
 	var monitorStop context.CancelFunc
 	var monitorDone <-chan struct{}
+	var guardianDone <-chan struct{}
 	var runtimeExecutable *mesh.RuntimeExecutable
 	var endpointPublished bool
 	var httpClosed error
@@ -213,6 +216,9 @@ func serveConfiguredNode(ctx context.Context, home string, settings daemonconfig
 		}{"endpoint", endpointErr})
 		if monitorStop != nil {
 			monitorStop()
+			if guardianDone != nil {
+				<-guardianDone
+			}
 			<-monitorDone
 		}
 		stages = append(stages, struct {
@@ -339,6 +345,16 @@ func serveConfiguredNode(ctx context.Context, home string, settings daemonconfig
 	monitorFinished := make(chan struct{})
 	monitorDone = monitorFinished
 	go func() { defer close(monitorFinished); s.monitor.Run(monitorCtx) }()
+	guardianFinished := make(chan struct{})
+	guardianDone = guardianFinished
+	if g, err := s.startGuardian(home, settings.Guardian, m); err != nil {
+		fmt.Fprintln(os.Stderr, "ARM host guardian unavailable:", err)
+		close(guardianFinished)
+	} else {
+		s.guardian = g
+		// Runs until the monitor context ends, then reverts its reversible actions.
+		go func() { defer close(guardianFinished); g.Run(monitorCtx) }()
+	}
 	ep := local.Endpoint{URL: "ws://" + listener.Addr().String() + "/v1/ws", Token: s.token, PID: os.Getpid(), Generation: s.generation}
 	if e = local.AtomicJSON(filepath.Join(home, "endpoint.json"), ep); e != nil {
 		return e
@@ -902,6 +918,17 @@ func (s *Server) dispatch(ctx context.Context, r model.WireRequest) (any, error)
 		}
 		page, _, err := s.monitor.Read(q)
 		return page, err
+	case "guardian_status":
+		return s.guardianStatus(), nil
+	case "guardian_undo":
+		var q model.GuardianUndoRequest
+		if err := decode(&q); err != nil {
+			return nil, err
+		}
+		if s.guardian == nil || q.Action == "" {
+			return nil, model.Err("invalid_request", "an action ID of an active host guardian is required")
+		}
+		return s.guardian.Undo(q.Action)
 	case "incidents":
 		var q struct {
 			Lease string `json:"lease"`

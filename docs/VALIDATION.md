@@ -13832,3 +13832,41 @@ projection change. No product/private-role execution, positive native startup,
 parent/controller activation, API/UI replacement or Docker upgrade fixture ran.
 Actual active-job, quiet proxy/native-child survival through a distinct-code
 A-to-B upgrade remains required before the user task can be complete.
+
+## Host guardian — scoped evidence
+
+Source: uncommitted `claude/host-guardian` composition on `9bfadfe`.
+
+- macOS arm64, native: `internal/guardian`, `internal/observe`,
+  `internal/usage`, `internal/daemonconfig` and the guardian CLI tests pass;
+  `internal/guardian` also passes with `-race`. The native ladder test runs a
+  real two-loop process group under synthetic critical CPU pressure through
+  notify, deprioritize (macOS background policy), freeze (process state `T`),
+  operator undo (resumed, then spared), a second incident's termination with
+  a revalidated forced kill, and a refused signal to the exited identity. A
+  user-stopped process is neither frozen nor journaled. Darwin counter
+  offsets are checked against `vm_stat`.
+- Linux arm64, native in containers (kernel without PSI), as user 1000: the
+  same four packages pass, also with `-race`; the native ladder passes with
+  pidfd signalling and per-thread priority. As root, the guardian targets no
+  process. A daemon started with `[guardian] enabled = true, mode =
+  "observe"` reports load, available-memory and disk-queue signals, grouped
+  programs and protection reasons through `arm guardian status`.
+- Live macOS daemon in a disposable home: the interactive `arm start` prompt
+  wrote `[guardian] enabled = true`, and the running guardian reported
+  pressure and grouped programs.
+- Web: 251 Semblance and 470 core `node --test` cases pass, including three
+  guardian view-model cases; the dashboard bundle was rebuilt.
+- Regression comparison: `internal/server`, `internal/cli`, `internal/tui`,
+  `internal/model` and `internal/nodestop` have the same failing-test set on
+  this branch and on unmodified `9bfadfe` (pre-existing failures from
+  symlinked temporary homes and embedded asset expectations).
+- Three independent reviews: core (5 high, 8 medium findings), integration
+  (2 high, 11 lower) and fix verification (3 low). All findings were fixed and
+  regression-tested, except the documented limitations in
+  [HOST-GUARDIAN.md](HOST-GUARDIAN.md).
+
+Not established: PSI-based levels on a real kernel (parser and decision tests
+only), real sustained host pressure (the host was not loaded deliberately),
+desktop notification delivery, agent attribution against a live registered
+agent, and threshold suitability in field use.

@@ -27,6 +27,9 @@ type ioCounter struct {
 	id, name    string
 	read, write uint64
 	at          time.Time
+	// busy is cumulative device service time in nanoseconds when timed.
+	busy  uint64
+	timed bool
 }
 type monitorRaw struct {
 	at                                   time.Time
@@ -36,6 +39,7 @@ type monitorRaw struct {
 	memory, swap                         model.ResourceMeasurement
 	disk, network                        []ioCounter
 	diskError, networkError              error
+	pressure                             pressureRaw
 }
 
 // Monitor has one collector independent of client count, bounded history, and
@@ -85,7 +89,7 @@ func (m *Monitor) publish(view model.MonitorSnapshot, now time.Time) {
 	m.sequence++
 	m.latest = &view
 	m.sampled = now
-	point := model.MonitorPoint{Sequence: m.sequence, At: view.At, CPU: view.CPU.Value, MemoryUsed: view.Memory.Used.Value, MemoryAvailable: view.Memory.Available.Value, SwapUsed: view.Swap.Used.Value, FilesystemAvailable: view.Filesystem.Available.Value, FilesystemAt: view.Filesystem.Available.At, DiskIO: []model.MonitorHistoryIO{}, Network: []model.MonitorHistoryIO{}}
+	point := model.MonitorPoint{Sequence: m.sequence, At: view.At, CPU: view.CPU.Value, MemoryUsed: view.Memory.Used.Value, MemoryAvailable: view.Memory.Available.Value, SwapUsed: view.Swap.Used.Value, FilesystemAvailable: view.Filesystem.Available.Value, FilesystemAt: view.Filesystem.Available.At, CPUPressure: pressurePoint(view.Pressure.CPU.Level), MemoryPressure: pressurePoint(view.Pressure.Memory.Level), IOPressure: pressurePoint(view.Pressure.IO.Level), DiskIO: []model.MonitorHistoryIO{}, Network: []model.MonitorHistoryIO{}}
 	for _, v := range view.DiskIO {
 		point.DiskIO = append(point.DiskIO, model.MonitorHistoryIO{ID: v.ID, Read: v.Read.Value, Write: v.Write.Value})
 	}
@@ -207,6 +211,7 @@ func monitorView(raw, previous monitorRaw) model.MonitorSnapshot {
 			}
 		}
 	}
+	v.Pressure = pressureView(raw, previous)
 	return v
 }
 func cpuMonotone(current, previous cpuCounter) bool {

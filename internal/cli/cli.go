@@ -354,6 +354,8 @@ func (a *app) command(args []string) (int, error) {
 		return a.meshCommand(args)
 	case "monitor":
 		return 0, a.monitorCommand(args)
+	case "guardian":
+		return a.guardianCommand(args)
 	case "dashboard":
 		return 0, a.dashboard(args)
 	case "agent":
@@ -976,6 +978,15 @@ func (a *app) daemon(command string, args []string) (int, error) {
 		}
 		return a.stopBackend(model.ShutdownRequest{Force: *force, Wait: *wait, Timeout: time.Duration(*timeout) * time.Second})
 	}
+	// Ask before resolving, so this startup uses the answer. A running
+	// backend would not apply it, and --expect-config pins the settings.
+	if action == "start" && !*restartDry && *expectConfig == "" {
+		if _, running, err := a.existingStartup(); err == nil && !running {
+			if err := a.recommendGuardian(); err != nil {
+				return 1, err
+			}
+		}
+	}
 	resolved, e := daemonconfig.Resolve(a.home, daemonDefaults(), startupOverrides(f, cpus, mem, disk, listen))
 	if e != nil {
 		return 2, fmt.Errorf("configuration refused before startup; use arm config check: %w", e)
@@ -1285,7 +1296,10 @@ func (a *app) integration(action string, args []string) error {
 		if report.Complete {
 			report.NextCommand = installNextCommand(a.home, "rollout project onboard")
 		}
-		return a.print(report)
+		if e = a.print(report); e != nil {
+			return e
+		}
+		return a.recommendGuardian()
 	}
 	if e := a.uninstallGuard(true); e != nil {
 		return e

@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"getarm.org/internal/database"
+	"getarm.org/internal/guardian"
 	"getarm.org/internal/model"
 	"github.com/pelletier/go-toml/v2"
 )
@@ -33,6 +34,8 @@ type Settings struct {
 	StoragePools []model.StoragePoolConfig `json:"storage_pools,omitempty"`
 	Resources    model.Resources           `json:"resources"`
 	Listen       string                    `json:"listen"`
+	// Guardian is omitted when unconfigured, keeping earlier digests.
+	Guardian *model.GuardianSettings `json:"guardian,omitempty"`
 }
 
 func (s Settings) Validate() error {
@@ -50,6 +53,11 @@ func (s Settings) Validate() error {
 		}
 	}
 
+	if s.Guardian != nil {
+		if err := guardian.ValidateSettings(s.Guardian); err != nil {
+			return err
+		}
+	}
 	if math.IsNaN(s.Resources.CPU) || math.IsInf(s.Resources.CPU, 0) || s.Resources.CPU <= 0 || s.Resources.CPU > 65536 || s.Resources.Memory < 0 || s.Resources.Disk < 0 {
 		return fmt.Errorf("CPU must be finite and positive, at most 65536; memory/disk must be auto or positive byte ceilings")
 	}
@@ -101,6 +109,7 @@ type storagePoolDocument struct {
 
 type document struct {
 	StoragePools []storagePoolDocument `toml:"storage_pools"`
+	Guardian     *guardianDocument     `toml:"guardian"`
 	Schema       int                   `toml:"schema"`
 	Daemon       struct {
 		CPU    *float64 `toml:"cpu"`
@@ -243,6 +252,12 @@ func applyDocument(raw []byte, r *Resolved) error {
 	}
 	if len(doc.StoragePools) > 0 {
 		r.Sources["storage_pools"] = "file"
+	}
+	if r.Settings.Guardian, e = guardianSettings(doc.Guardian); e != nil {
+		return fmt.Errorf("%s: %w", Filename, e)
+	}
+	if r.Settings.Guardian != nil {
+		r.Sources["guardian"] = "file"
 	}
 	if e = apply(&r.Settings, r.Sources, Overrides{doc.Daemon.CPU, doc.Daemon.Memory, doc.Daemon.Disk, doc.Daemon.Listen}, "file"); e != nil {
 		return fmt.Errorf("%s: %w", Filename, e)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"math"
 	"runtime"
 	"sync"
 	"time"
@@ -57,6 +58,7 @@ func collectMonitor(ctx context.Context) monitorRaw {
 		total, free := binary.LittleEndian.Uint64(b[:8]), binary.LittleEndian.Uint64(b[8:16])
 		r.swap = memoryValues(total, free, "host-swap", "sysctl:vm.swapusage", time.Now())
 	}
+	r.pressure = darwinPressure()
 	r.network, r.networkError = darwinMonitorNetwork()
 	if data, e := command(ctx, "/usr/sbin/ioreg", "-a", "-r", "-c", "IOBlockStorageDriver", "-d", "1"); e != nil {
 		r.diskError = e
@@ -195,7 +197,15 @@ func darwinMonitorDisk(data []byte, at time.Time) ([]ioCounter, error) {
 			return rows, fmt.Errorf("disk driver byte counters unavailable")
 		}
 		name, _ := v["IORegistryEntryName"].(string)
-		rows = append(rows, ioCounter{id: fmt.Sprintf("darwin-block-driver:%d", id), name: fmt.Sprintf("%s (%d)", name, id), read: read, write: write, at: at})
+		row := ioCounter{id: fmt.Sprintf("darwin-block-driver:%d", id), name: fmt.Sprintf("%s (%d)", name, id), read: read, write: write, at: at}
+		// Total Time counters are cumulative nanoseconds spent servicing
+		// requests; overlapping requests make their delta exceed wall time.
+		readTime, okReadTime := stats["Total Time (Read)"].(uint64)
+		writeTime, okWriteTime := stats["Total Time (Write)"].(uint64)
+		if okReadTime && okWriteTime && readTime <= math.MaxUint64-writeTime {
+			row.busy, row.timed = readTime+writeTime, true
+		}
+		rows = append(rows, row)
 	}
 	return rows, nil
 }

@@ -1,5 +1,23 @@
 # ARM delivery plan
 
+## Host guardian — implemented, independently reviewed, pending integration review
+
+Owner: `claude/host-guardian`, based on `9bfadfe`. Adds the opt-in host
+guardian described in [SPEC.md](../SPEC.md#host-guardian) and
+[HOST-GUARDIAN.md](HOST-GUARDIAN.md). It covers CPU, memory and I/O pressure
+levels in the shared monitor; a host-wide grouped process inventory; a pure
+decision engine; identity-checked native actuators; a recovering action
+journal; the `guardian_status`/`guardian_undo` operations; `arm guardian`;
+the `[guardian]` configuration with an install/start Y/n recommendation; and
+terminal and web dashboard panels. An independent review of the core found
+five high and eight medium defects. All were fixed and regression-tested
+before the integration work, except the low-severity limitations listed in
+HOST-GUARDIAN.md. Linux behavior is validated natively in arm64 containers
+without PSI. The PSI path is covered by parser and decision tests only.
+Remaining gates: coordinator review of the composed branch, a real-pressure
+run on a PSI-enabled Linux host, and a decision on default thresholds after
+field use.
+
 ## Agent Status Page — reviewed local implementation
 
 Owner: `codex/agent-status-page`, based on reviewed `2af28b7`. Additive source

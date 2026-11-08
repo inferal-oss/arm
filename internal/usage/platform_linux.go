@@ -86,7 +86,8 @@ func linuxInit() error {
 }
 
 type statValues struct {
-	pgid         int
+	ppid, pgid   int
+	comm         string
 	start        string
 	user, system uint64
 	rss          int64
@@ -104,7 +105,13 @@ func parseStat(data []byte) (statValues, error) {
 		return v, fmt.Errorf("process stat counters are incomplete")
 	}
 	v.state = fields[0]
+	if begin := strings.IndexByte(string(data), '('); begin >= 0 && begin < end {
+		v.comm = string(data[begin+1 : end])
+	}
 	var err error
+	if v.ppid, err = strconv.Atoi(fields[1]); err != nil || v.ppid < 0 {
+		return v, fmt.Errorf("parent process is unavailable")
+	}
 	// A group outside this PID namespace is reported as zero. It cannot
 	// match the positive captured group, but is not malformed metadata.
 	if v.pgid, err = strconv.Atoi(fields[2]); err != nil || v.pgid < 0 {
