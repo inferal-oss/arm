@@ -180,7 +180,7 @@ func (p *proofReader) readLeaseReviews() error {
 		for _, c := range v.Context {
 			l, ok := p.leases[c.Lease]
 			policy, has := policies[c.Lease]
-			if !ok || !has || seen[c.Lease] || c.Owner != p.result.Owner || l.Owner != c.Owner || l.Request.Agent != agent || c.Revision <= 0 || c.Revision > l.Revision || c.PolicyGeneration <= 0 || c.PolicyGeneration > policy.Generation || c.Purpose != l.Request.Reason || !equalEvidence(c.Resources, l.Request.Resources) || !equalEvidence(c.Pools, l.Request.Pools) || !equalEvidence(c.Ports, l.Request.Ports) || !c.Expires.After(v.Created) || c.Remaining != c.Expires.Sub(v.Created) || v.Deadline.After(c.Expires) || c.QueuedDemand < 0 {
+			if !ok || !has || seen[c.Lease] || c.Owner != p.result.Owner || l.Owner != c.Owner || l.Request.Agent != agent || c.Revision <= 0 || c.Revision > l.Revision || c.PolicyGeneration <= 0 || c.PolicyGeneration > policy.Generation || c.Purpose != l.Request.Reason || !equalEvidence(c.Resources, l.Request.Resources) || !equalEvidence(c.Pools, l.Request.Pools) || !equalEvidence(c.Ports, l.Request.Ports) || !c.Expires.After(v.Created) || !reviewRemaining(c, l, v) || v.Deadline.After(c.Expires) || c.QueuedDemand < 0 {
 				return fmt.Errorf("checkpoint captured lease/policy/context differs")
 			}
 			seen[c.Lease] = true
@@ -229,4 +229,21 @@ func (p *proofReader) readLeaseReviews() error {
 		// No p.block or accounting result is emitted from optional conversation state.
 		return nil
 	})
+}
+
+// reviewRemaining checks the captured entitlement shape. The Manager reads
+// Remaining from the lease's suspend-inclusive elapsed deadline, not from wall
+// arithmetic, so Expires-Created is only an audit projection and need not be
+// equal. The value stays closed: positive, within the elapsed deadline bound,
+// within the exact captured deadline span when that deadline is still the
+// lease's current one, and never shorter than the checkpoint reply deadline.
+// The value is informational and never contributes settlement or accounting.
+func reviewRemaining(c model.LeaseReviewContext, l model.Lease, v model.LeaseReview) bool {
+	if c.Remaining <= 0 || c.Remaining > 7*24*time.Hour || v.Deadline.After(v.Created.Add(c.Remaining)) {
+		return false
+	}
+	if d := l.Clock; d != nil && d.Wall.Equal(c.Expires) && c.Remaining > time.Duration(d.End-d.Anchor) {
+		return false
+	}
+	return true
 }

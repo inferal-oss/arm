@@ -601,6 +601,9 @@ func TestLeaseReviewLedgerRefusesAlteredSchemaAndEvidence(t *testing.T) {
 		"policy-generation":    `UPDATE lease_review_policies SET generation=generation+1`,
 		"context-generation":   `UPDATE lease_reviews SET data=json_set(data,'$.leases[0].policy_generation',9999)`,
 		"context-claims":       `UPDATE lease_reviews SET data=json_set(data,'$.leases[0].resources.cpu',9999)`,
+		"context-remaining-0":  `UPDATE lease_reviews SET data=json_set(data,'$.leases[0].remaining_ns',0)`,
+		"context-remaining-up": `UPDATE lease_reviews SET data=json_set(data,'$.leases[0].remaining_ns',json_extract(data,'$.leases[0].remaining_ns')+3600000000000)`,
+		"context-remaining-dl": `UPDATE lease_reviews SET data=json_set(data,'$.leases[0].remaining_ns',1)`,
 		"recipient-generation": `UPDATE lease_reviews SET registration='changed'`,
 		"delivery-native":      `UPDATE messages SET data=json_set(data,'$.deliveries.proof-review.mode','native') WHERE json_extract(data,'$.sender')='arm-lease-review'`,
 	}
