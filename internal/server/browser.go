@@ -157,6 +157,8 @@ func browserAllowedOperation(op string) bool {
 	switch op {
 	case "agent_status_list", "agent_status_read", "agent_status_request", "agent_status_collect", "agent_status_generate", "agent_status_cancel":
 		return true // Local operator presentation; config remains CLI-only.
+	case "mesh_operator_kubernetes_artifacts":
+		return true // Source-local trusted metadata only; no artifact import or execution.
 	case "runs", "run_inspect", "run_output":
 		return true // Read-only local execution observations.
 	case "name_list", "name_mutate":

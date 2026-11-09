@@ -14042,3 +14042,92 @@ Not established: PSI-based levels on a real kernel (parser and decision tests
 only), real sustained host pressure (the host was not loaded deliberately),
 desktop notification delivery, agent attribution against a live registered
 agent, and threshold suitability in field use.
+
+### Unified web Mesh discovery rebase
+
+The prior [component record](validation/unified-onboarding-ui-component-qualified.json)
+qualifies its original source. The rebase onto `0d94ef9f` was checked separately
+with the accepted vendored Semblance pin `0db58805`, the locked dependencies and
+the existing build overlay. The 634 tracked dashboard inputs have SHA-256
+`a5544e06a0bdfdc0141640df7977bf6cbb3236a4b069a139bf8ef89bddffc1cc`.
+
+- All 51 focused Node tests and three provenance tests passed. The shared
+  Semblance queue ran all three RDF/WAT projection tests successfully.
+- The server race run passed nine roots and 21 named cases, including the
+  embedded asset route. Server vet passed.
+- Two builds produced byte-identical WAT and all five embedded assets. The
+  WAT SHA-256 matches the accepted pin. The generated application bundle
+  SHA-256 is `d3e45987a4e215f148f9fdb451a416d385106a06d1767fc5585e822bfcb0b363`.
+  Two native builds were byte-identical. The rebuilt server returned all five
+  assets with the verified hashes.
+- Chromium exercised both dialogs at 1440×960 and 390×844. A controlled
+  WebSocket fixture supplied contexts and Nodes, empty and filter-empty
+  results, forbidden and unavailable responses, and delayed responses after
+  filter and transport changes. Preparation stayed disabled, no effect
+  requests reached the fixture, and switching back to SSH preserved the draft.
+  The initial harness failed its shutdown assertion after SIGTERM. The full
+  repeat completed with a normal daemon stop, joined process and closed listener.
+
+The browser matrix covers controlled wire responses and native asset delivery.
+Real-cluster behavior, Pod effects, runtime readiness and enrollment remain
+outside this validation.
+
+### Unified web Mesh review fixes
+
+The follow-up reran all 54 focused Node tests, three provenance tests, and
+three RDF/WAT tests. The added regressions exercise both SSH preparation locks
+with an unresolved original key and the Install panel's reconnect refresh.
+The server race run passed nine roots and 21 named cases, and server vet passed.
+Two builds matched byte for byte for WAT, all five embedded assets, and the
+native binary. The 634 dashboard inputs have SHA-256
+`eb38a66eac5629a04e5863d4273c124d3b913bd43960f6ccdd1a43987b1dd054`.
+The rebuilt application bundle has SHA-256
+`21a6c505dae1771df9615ded6a80ec1a3727f5d8efa2d32fac29b376edd3efa6`.
+
+Chromium repeated the inventory matrix in both dialogs at 1440×960 and
+390×844 using the rebuilt native server. After disconnect and reconnect,
+refresh restored the Node inventory and Install carrier metadata. Switching
+methods kept preparation locked both while the original synthetic SSH request
+was pending and after its unresolved reply. Each dialog sent only one SSH
+preparation request to the fixture and no Kubernetes preparation requests.
+The first fixture run timed out when reopening with a previously delayed
+filter. The repeat used one-shot delays and passed all four cases, verified
+all five served asset hashes, and joined the fixture backend with its
+listener closed.
+
+### Kubernetes first selection while offline
+
+The offline selection regression tests failed in both dialogs before the
+correction because refreshing after reconnect sent no inventory requests.
+All 56 focused Node tests and three provenance tests passed on the corrected
+source. The server race run passed nine roots and 21 named cases, and server
+vet passed. Two builds matched for WAT, all five embedded assets, and the
+native binary. The 634 dashboard inputs have SHA-256
+`74ccf4fddbc739fcbe1cbb3f7e73bbcc39bc05d772d3a4ccf7d214f4d1663279`.
+
+Both Chromium dialogs passed at 1440×960 and 390×844 with the rebuilt binary.
+First selecting Kubernetes offline displayed a connection notice and sent
+no Kubernetes inventory requests. The first refresh after reconnect loaded
+contexts and Nodes while preparation stayed disabled. The browser checked
+the earlier inventory and SSH preparation cases on this source, verified all
+five served assets, and joined the fixture backend with its listener closed.
+The separate focused RDF/WAT suite was still in the shared queue near the end
+of the validation lease and did not run on this source. The browser matrix
+exercised the rebuilt WAT-backed dashboard.
+
+### Unified web Mesh main composition
+
+The merge combines main at `1a4e1eff` with the reviewed onboarding branch at
+`e3556de1`. Dashboard and server sources for the feature match the reviewed
+branch. On the composed tree, 56 focused Node tests, three provenance tests,
+21 named server race cases across nine roots, and server vet passed. The two
+dashboard builds matched the reviewed assets, and the two composed native
+builds matched each other.
+
+The rebuilt native server returned all five embedded assets with their
+verified hashes. Chromium passed the full controlled matrix in both dialogs
+at 1440×960 and 390×844, including offline first selection, reconnect refresh,
+SSH preparation locking and disabled Kubernetes preparation. The fixture
+backend joined and its listener closed. The standalone RDF/WAT run on the
+earlier composition was released while waiting in the shared queue. The
+final Chromium matrix exercised the rebuilt WAT-backed dashboard.
