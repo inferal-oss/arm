@@ -137,7 +137,7 @@ func (m *dashboardModel) keepSelectionVisible() {
 	width := max(1, m.viewport.Width())
 	for _, line := range strings.Split(m.displayContent(), "\n") {
 		plain := ansi.Strip(line)
-		if strings.HasPrefix(plain, "> ") || strings.HasPrefix(plain, "╔═ > ") || strings.HasPrefix(plain, "╭─ > ") {
+		if strings.HasPrefix(plain, "> ") || strings.HasPrefix(plain, "╔═ > ") || strings.HasPrefix(plain, "╭─ > ") || m.view == viewGuardian && strings.HasPrefix(plain, "│ > ") {
 			if row < m.viewport.YOffset() {
 				m.viewport.SetYOffset(row)
 			} else if row >= m.viewport.YOffset()+m.viewport.Height() {
@@ -192,12 +192,21 @@ func (m *dashboardModel) selectionID() string {
 		if index < len(m.events) {
 			return fmt.Sprint(m.events[len(m.events)-1-index].Sequence)
 		}
+	case viewGuardian:
+		if a := m.guardianActions(); index < len(a) {
+			return a[index].ID
+		}
 	}
 	return ""
 }
 func (m *dashboardModel) applySnapshot(data snapshot) {
 	id := m.selectionID()
 	previous := m.selected
+	// The visible Guardian page owns guardian reads; an older or failed
+	// snapshot read must not replace its reading.
+	if m.view == viewGuardian && m.data.guardian != nil {
+		data.guardian = m.data.guardian
+	}
 	// A newly accepted status snapshot supersedes labels from earlier pool reads.
 	if m.poolUI != nil {
 		m.poolUI.names = renderLabels{}
@@ -279,6 +288,8 @@ func (m *dashboardModel) bodyText() string {
 		return m.meshText()
 	case 7:
 		return m.runsText()
+	case viewGuardian:
+		return m.guardianText()
 	}
 	return ""
 }
@@ -605,6 +616,8 @@ func (m *dashboardModel) itemCount() int {
 		return len(m.data.messages)
 	case 4:
 		return len(m.events)
+	case viewGuardian:
+		return max(1, len(m.guardianActions()))
 	}
 	return 1
 }
@@ -642,6 +655,13 @@ func (m *dashboardModel) currentRecord() any {
 	case 4:
 		if index < len(m.events) {
 			return m.events[len(m.events)-1-index]
+		}
+	case viewGuardian:
+		if a := m.guardianActions(); index < len(a) {
+			return a[index]
+		}
+		if m.data.guardian != nil {
+			return *m.data.guardian
 		}
 	}
 	return m.data.status

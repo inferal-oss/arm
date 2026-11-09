@@ -3,6 +3,7 @@ package tui
 import (
 	"crypto/sha256"
 	"fmt"
+	"strconv"
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
@@ -89,6 +90,10 @@ func (m *dashboardModel) baseControls() []mouseControl {
 		return m.meshControls()
 	case m.resourceID != "":
 		return []mouseControl{{"enter", "Open lease"}, {"i", "Record"}, {"esc", "Budgets"}}
+	case m.view == viewGuardian && m.guardianConfirm != nil:
+		return []mouseControl{{"y", "Undo action"}, {"n", "Keep unchanged"}}
+	case m.view == viewGuardian:
+		return []mouseControl{{"x", "Undo selected"}, {"enter", "Inspect"}, {"r", "Refresh"}, {"pgdown", "↓"}, {"?", "Help"}}
 	case m.view == 0:
 		return []mouseControl{{"d", "Disk"}, {"n", "Network"}, {"i", "Record"}, {"pgdown", "↓"}, {"?", "Help"}}
 	case m.view == 1 && !m.feedFocus:
@@ -197,10 +202,10 @@ func (m *dashboardModel) mouseRegions() []mouseRegion {
 	}
 	if !m.modal() && !m.pending {
 		x := 0
-		for i := range viewNames {
+		for _, i := range m.navViews() {
 			label := m.navigationLabel(i)
 			w := ansi.StringWidth(label) + 2
-			if m.width < 65 && i != m.view {
+			if m.width < 80 && i != m.view {
 				w -= 2
 			}
 			regions = append(regions, mouseRegion{x: x, y: 1, width: w, height: 1, key: fmt.Sprintf("nav%d", i), row: -1})
@@ -378,7 +383,16 @@ func (m *dashboardModel) acceptMouse(msg dashboardMouseMsg, frame string) tea.Cm
 		m.detail = nil
 		m.record = nil
 		m.resourceID = ""
-		return m.key(mouseKey(string(rune(r.key[len(r.key)-1] - '0' + '1'))))
+		view, _ := strconv.Atoi(strings.TrimPrefix(r.key, "nav"))
+		if view == viewGuardian && m.view == 6 {
+			// Mesh owns g; leave it as a number key would, then open Guardian.
+			leave := m.key(mouseKey("1"))
+			if m.view != 0 {
+				return leave
+			}
+			return tea.Batch(leave, m.key(mouseKey("g")))
+		}
+		return m.key(mouseKey(navShortcut(view)))
 	}
 	if r.key != "" {
 		return m.key(mouseKey(r.key))

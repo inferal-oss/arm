@@ -55,7 +55,7 @@ let storage,preferences;try{storage=sessionStorage;}catch{}try{preferences=local
 let hideInactive=readHideInactive(preferences),capacityFreshness=null;
 try{const remembered=preferences?.getItem('arm-semblance-theme');if(remembered&&app.store.match(f.namedNode(remembered),f.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),f.namedNode('https://semblance.dev/ns/style#Theme')).length)ui.put(ARM+'shell','https://semblance.dev/ns/style#theme',remembered,true);}catch{}
 try{const scheme=preferences?.getItem('arm-semblance-color-scheme');if(['Light','Dark','System'].some(x=>scheme==='https://semblance.dev/ns/style#'+x))ui.put(ARM+'shell','https://semblance.dev/ns/style#colorScheme',scheme,true);}catch{}
-const roots=Object.fromEntries(['monitor','resources','leases','messages','activity','host','mesh','screen','runs','agents'].map(name=>[name,ui.bind(name+'Content')]));
+const roots=Object.fromEntries(['monitor','guardian','resources','leases','messages','activity','host','mesh','screen','runs','agents'].map(name=>[name,ui.bind(name+'Content')]));
 const connectionBadge=ui.bind('connection','Badge'),hostLabel=ui.bind('host','Text'),noticeBox=ui.bind('notice','Alert'),freshness=ui.text('Waiting for first sample');
 ui.bind('statusline').append(freshness);
 let copyLoginGeneration=0,copyingLogin=false,loginDialog=null,loginInputs=null,paletteNodes=[],palettePools=[],paletteKubernetes=null,paletteRefreshBusy=false;
@@ -108,9 +108,9 @@ navigation=createDashboardHistory({location,history,onRoute:applyRoute});
 function applyRoute(route){
  const name=remoteDashboard&&!['resources','leases','host','screen'].includes(route.view)?'resources':route.view;
  const changingView=view!==name;view=name;ui.put(ARM+'shell',ARM+'view',ARM+({activity:'activityView',host:'hostView'}[name]??name),true);
- ui.bind('heading','Heading').set({label:({monitor:'Host monitor',resources:'Resource budgets',leases:'Leases',messages:'Operator messages',activity:'Activity',host:'Host & capabilities',mesh:'Mesh',screen:'Screen Sharing',runs:'Runs',agents:'Agents'})[name]});
+ ui.bind('heading','Heading').set({label:({monitor:'Host monitor',guardian:'Host guardian',resources:'Resource budgets',leases:'Leases',messages:'Operator messages',activity:'Activity',host:'Host & capabilities',mesh:'Mesh',screen:'Screen Sharing',runs:'Runs',agents:'Agents'})[name]});
  runsConsole?.setActive(name==='runs'&&!remoteDashboard);
- guardianPanel?.setVisible(name==='monitor'&&!remoteDashboard);
+ guardianPanel?.setVisible((name==='monitor'||name==='guardian')&&!remoteDashboard);
  agentsConsole.setActive(name==='agents'&&localOperator());
  if(name==='agents')agentsConsole.applyRoute(route);
  if(name!=='screen')screenViewer?.disconnect();else if(!screenViewer)screenViewer=createScreenViewer({ui,root:roots.screen,token:session?.token,context:session?.context??{local:true}});
@@ -121,10 +121,10 @@ function applyRoute(route){
 }
 function showLease(id){navigation.navigate({...navigation.current,view,lease:id});}
 installDashboardShortcuts({document,selectView:name=>navigation.navigate({view:name,lease:null})});
-function renderCurrent(){ui.batch(()=>{({monitor:renderMonitor,resources:renderResources,leases:renderLeases,messages:updateMessages,activity:renderActivity,host:renderHost,mesh:renderMesh,screen:()=>{},runs:()=>{},agents:()=>{}})[view]?.();});}
+function renderCurrent(){ui.batch(()=>{({monitor:renderMonitor,guardian:renderGuardian,resources:renderResources,leases:renderLeases,messages:updateMessages,activity:renderActivity,host:renderHost,mesh:renderMesh,screen:()=>{},runs:()=>{},agents:()=>{}})[view]?.();});}
 function updateMessages(){agentsConsole.update({leases:state.status?.leases??[],host:state.status?.host});messages.update({contacts:state.contacts,messages:state.messages,leases:state.status?.leases??[]});updatePalette();}
 function addEvent(event){const events=new Map(state.events.map(e=>[String(e.sequence),e]));events.set(String(event.sequence),event);state.events=[...events.values()].sort((a,b)=>a.sequence<b.sequence?-1:a.sequence>b.sequence?1:0).slice(-200);if(view==='activity')renderActivity();updateActivityFeed();}
-function acceptMonitor(page){state.history=mergeHistory(state.history,page,state.epoch);state.epoch=page.epoch;state.cursor=page.cursor;state.monitor=page;state.received=performance.now();if(view==='monitor')renderMonitor();scheduleRefresh();updateFreshness();}
+function acceptMonitor(page){state.history=mergeHistory(state.history,page,state.epoch);state.epoch=page.epoch;state.cursor=page.cursor;state.monitor=page;state.received=performance.now();if(view==='monitor')renderMonitor();else if(view==='guardian')renderGuardian();scheduleRefresh();updateFreshness();}
 function scheduleRefresh(){if(!refreshTimer)refreshTimer=setTimeout(()=>{refreshTimer=null;refresh();},200);}
 async function refresh(){if(refreshBusy){refreshAgain=true;return;}if(!state.connected)return;if(remoteDashboard){await remoteDashboard.refresh();return;}refreshBusy=true;const current=connection;try{
  const status=await current.call('status'),received=performance.now(),newMessages=await current.call('messages'),contacts=await current.call('agents');if(connection!==current)return;
@@ -173,7 +173,11 @@ function help(kind,options={}){
 }
 const GiB=1024**3;
 function series(get,{scale=1}={}){const cadence=Number(state.monitor?.cadence_ns??2e9)/1e6,rows=state.history.map(p=>{const v=numeric(get(p));return{id:String(p.sequence),x:Date.parse(p.at)/1000,value:v===null||!Number.isFinite(v)?null:v/scale,label:new Date(p.at).toLocaleTimeString()};});for(let i=0;i<rows.length-1;i++)rows[i].connectNext=Number.isFinite(rows[i].x)&&Number.isFinite(rows[i+1].x)&&rows[i+1].x>rows[i].x&&(rows[i+1].x-rows[i].x)*1000<=cadence*1.6;return rows;}
-let monitorModel=null,guardianPanel=null;
+let monitorModel=null;
+// One guardian panel serves the Monitor summary and the Guardian page.
+const guardianPanel=createGuardianPanel({ui,call:(...args)=>connection.call(...args),connected:()=>state.connected,onError:error=>notice(error.message),openGuardian:()=>navigation.navigate({view:'guardian',lease:null})});
+owned(roots.guardian,guardianPanel.page);guardianPanel.setVisible((view==='monitor'||view==='guardian')&&!remoteDashboard);
+function renderGuardian(){const sample=state.monitor?.latest;if(!sample)return;guardianPanel.updatePressure(sample,state.history,monitorStale(state.monitor,state.connected,performance.now()-state.received),series);}
 function initMonitor(){
  ui.put(monitorCards.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'MonitorSurface',true);
  const cpuValue=ui.stat('All-core activity','unavailable'),cores=ui.grid([],{columns:6,minWidth:'120px',gap:2}),cpuChart=ui.line('CPU activity over time',[],{min:0,max:100,unit:'%'}),cpuNote=ui.text('');
@@ -190,7 +194,6 @@ function initMonitor(){
   const card=ui.card(title,[quality,summary,rates,ui.grid([readChart,writeChart],{columns:2,minWidth:'140px',gap:2}),selector,ui.text('Reported counters may overlap. Unknown or reset counters leave gaps.')],{actions:[help(key)]});io[key]={summary,rates,readChart,writeChart,selectors,quality,deviceMap,card};
  }
  const gpu=ui.card('GPU monitoring',[ui.text('Unavailable in this build')],{actions:[help('gpu')]});
- guardianPanel=createGuardianPanel({ui,call:(...args)=>connection.call(...args),connected:()=>state.connected,onError:error=>notice(error.message)});guardianPanel.setVisible(view==='monitor'&&!remoteDashboard);
  owned(monitorCards,[ui.grid(guardianPanel.cards,{columns:2,minWidth:'320px',gap:2}),ui.grid([cpuValue,ramValue,diskValue],{columns:3,minWidth:'180px',gap:2}),ui.grid([cpuCard,ramCard,diskCard],{columns:3,minWidth:'220px',gap:2}),ui.grid([io.disk_io.card,io.network.card],{columns:2,minWidth:'320px',gap:2}),gpu]);
  monitorModel={cpuValue,cpuChart,cpuNote,cores,coreMap:new Map(),ramValue,ramChart,ramFacts,ramNote,diskValue,diskChart,diskFacts,diskNote,io};
 }

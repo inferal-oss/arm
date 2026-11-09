@@ -7011,7 +7011,8 @@ in `internal/observe/pressure*.go`, host-wide process inspection in
 `internal/manager/guardian.go`, server operations in
 `internal/server/guardian.go`, `arm guardian` in `internal/cli/guardian.go` (status and `--watch` in
 `guardian_watch.go`, ladder commands and editor in `guardian_ladder*.go`), the
-terminal pressure window in `internal/tui/guardian.go` and the web panel in
+terminal pressure window and Guardian page in `internal/tui/guardian.go` and
+the web Monitor cards and Guardian page in
 `internal/server/web/semblance/guardian.mjs`. Behavior, thresholds, safety rules
 and limits are in [HOST-GUARDIAN.md](HOST-GUARDIAN.md).
 
@@ -7030,7 +7031,8 @@ disabled-mode recovery, retried reverts, operator undo with sparing, and
 messaging outside the runtime lock; `arm guardian status --watch` as a live
 terminal view or JSON lines; and offline ladder management through
 `arm guardian ladder` commands and an interactive editor that rewrite only
-`[[guardian.ladder]]` tables under an expected-file guard.
+`[[guardian.ladder]]` tables under an expected-file guard; and a Guardian
+page beside Monitor in the web and terminal dashboards, with undo.
 
 Unsupported: acting as root, other users' processes, forced page-out on macOS,
 restoring Linux nice values without privilege, and race-free signalling on

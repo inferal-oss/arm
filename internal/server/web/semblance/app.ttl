@@ -39,11 +39,11 @@ arm:host a c:Text ; c:label "Local operator session" .
 arm:theme a c:Choice ; c:label "Theme" ; c:controls arm:shell ; c:property sty:theme .
 arm:shell arm:view arm:monitor .
 arm:navigation a c:Segmented ; c:label "Views" ; c:controls arm:shell ; c:property arm:view ; c:compactAs c:Picker ;
- c:options ( arm:monitor arm:resources arm:leases arm:agents arm:messages arm:activityView arm:hostView arm:mesh arm:screen arm:runs ) .
+ c:options ( arm:monitor arm:guardian arm:resources arm:leases arm:agents arm:messages arm:activityView arm:hostView arm:mesh arm:screen arm:runs ) .
 arm:heading a c:Heading ; c:level 2 ; c:label "Host monitor" .
 arm:notice a c:Alert ; c:label "Waiting for backend" ; c:hidden true .
 arm:content a c:Switch ; c:controls arm:shell ; c:property arm:view ;
- c:cases ( arm:monitorCase arm:resourcesCase arm:leasesCase arm:agentsCase arm:messagesCase arm:activityCase arm:hostCase arm:meshCase arm:screenCase arm:runsCase ) .
+ c:cases ( arm:monitorCase arm:guardianCase arm:resourcesCase arm:leasesCase arm:agentsCase arm:messagesCase arm:activityCase arm:hostCase arm:meshCase arm:screenCase arm:runsCase ) .
 arm:activity a c:AccordionItem ; c:label "Live activity" ; c:expanded false ; c:content arm:liveActivityContent .
 arm:liveActivityContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-2 .
 arm:desktop a c:Stack ; pos:direction pos:Column .
@@ -52,6 +52,9 @@ arm:desktop a c:Stack ; pos:direction pos:Column .
 arm:monitor rdfs:label "Monitor" .
 arm:monitorCase c:when arm:monitor ; c:content arm:monitorContent .
 arm:monitorContent a c:Stack ; sty:density sty:Compact ; pos:direction pos:Column ; pos:gap tok:space-2 .
+arm:guardian rdfs:label "Guardian" .
+arm:guardianCase c:when arm:guardian ; c:content arm:guardianContent .
+arm:guardianContent a c:Stack ; sty:density sty:Compact ; pos:direction pos:Column ; pos:gap tok:space-2 .
 arm:resources rdfs:label "Resources" .
 arm:resourcesCase c:when arm:resources ; c:content arm:resourcesContent .
 arm:resourcesContent a c:Stack ; pos:direction pos:Column ; pos:gap tok:space-4 .
@@ -488,6 +491,10 @@ arm:ResourceHelpFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug
 
 # Monitor hooks remain noninteractive; native controls and data stay unchanged.
 arm:MonitorSurface a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-monitor-surface" .
+# Guardian cards are stock Cards; the classes only name them for checks.
+arm:PressureCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-pressure-card" .
+arm:GuardianCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-guardian-card" .
+arm:GuardianStatusCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-guardian-status-card" .
 arm:MonitorDeviceSelectors a owl:Class ; rdfs:subClassOf c:Grid ; sem:slug "arm-monitor-device-selectors" .
 arm:MonitorHelpBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-monitor-help-body" .
 arm:MonitorHelpFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-monitor-help-facts" .

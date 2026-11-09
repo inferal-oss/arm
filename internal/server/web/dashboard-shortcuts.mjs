@@ -7,7 +7,7 @@ export function dashboardShortcut(event, blocked = false) {
   if (
     blocked || event.defaultPrevented || event.repeat || event.isComposing || event.keyCode === 229 ||
     event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
-    typeof event.key !== 'string' || event.key.length !== 1 || !/^[1-9]$/.test(event.key)
+    typeof event.key !== 'string' || event.key.length !== 1 || !/^[1-9g]$/.test(event.key)
   ) return null;
   const path = event.composedPath?.() ?? [event.target];
   for (const node of path) {
@@ -19,7 +19,8 @@ export function dashboardShortcut(event, blocked = false) {
       node?.getAttribute?.('contenteditable') === 'plaintext-only'
     ) return null;
   }
-  return dashboardViews[Number(event.key) - 1];
+  // Number keys keep their views; g opens the Guardian page beside Monitor.
+  return event.key === 'g' ? 'guardian' : dashboardViews[Number(event.key) - 1];
 }
 
 export function installDashboardShortcuts({document, selectView}) {

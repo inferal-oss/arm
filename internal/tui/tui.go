@@ -20,7 +20,37 @@ import (
 	"github.com/charmbracelet/colorprofile"
 )
 
-var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host", "Mesh", "Runs"}
+var viewNames = []string{"Monitor", "Resources", "Leases", "Messages", "Activity", "Host", "Mesh", "Runs", "Guardian"}
+
+// navOrder is the order of the navigation bar; Guardian sits beside Monitor.
+var navOrder = []int{0, viewGuardian, 1, 2, 3, 4, 5, 6, 7}
+
+// navKey returns the view a navigation key selects.
+func navKey(k string) (int, bool) {
+	if k == "g" {
+		return viewGuardian, true
+	}
+	if len(k) == 1 && k >= "1" && k <= "8" {
+		return int(k[0] - '1'), true
+	}
+	return 0, false
+}
+
+func navShortcut(view int) string {
+	if view == viewGuardian {
+		return "g"
+	}
+	return fmt.Sprint(view + 1)
+}
+
+// navViews are the views listed in the navigation bar. A remote node has no
+// guardian page.
+func (m *dashboardModel) navViews() []int {
+	if m.nodeUI != nil {
+		return []int{0, 1, 2, 3, 4, 5, 6, 7}
+	}
+	return navOrder
+}
 
 type dashboardModel struct {
 	runsUI                            *runsDashboard
@@ -78,6 +108,10 @@ type dashboardModel struct {
 	pendingMessage                    *manager.MessageRequest
 	messageOperation                  uint64
 	messageBusy                       string
+	guardianRead                      time.Time
+	guardianLoading                   bool
+	guardianErr                       string
+	guardianConfirm                   *model.GuardianAction
 }
 
 // Run owns only the terminal and its client connection. Exiting never releases
@@ -278,6 +312,8 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Reconnection is an authoritative journal snapshot. The database may
 		// have been replaced and sequence values may restart at this endpoint.
 		m.events = nil
+		m.guardianLoading = false
+		m.guardianConfirm = nil
 		m.applySnapshot(msg.data)
 		m.connected = true
 		m.retry = 0
@@ -313,6 +349,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		if msg.err != nil {
 			m.connected = false
+			m.guardianConfirm = nil
 			m.retirePeerRead()
 			if m.meshUI != nil {
 				m.meshUI.sequence++
@@ -379,12 +416,17 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.nodeUI != nil && m.nodeUI.connected && !m.nodeUI.loading && m.timeNow.Sub(m.nodeUI.lastRead) >= 2*time.Second {
 			return m, tea.Batch(clockTick(), m.refreshNode(""))
 		}
+		guardianRead := m.readGuardian(false)
 		if m.connected && m.dirty && !m.refreshing && m.timeNow.Sub(m.lastRefresh) >= time.Second {
 			m.refreshing = true
 			m.dirty = false
-			return m, tea.Batch(clockTick(), refresh(m.ctx, m.session), peerRead)
+			return m, tea.Batch(clockTick(), refresh(m.ctx, m.session), peerRead, guardianRead)
 		}
-		return m, tea.Batch(clockTick(), peerRead)
+		return m, tea.Batch(clockTick(), peerRead, guardianRead)
+	case guardianReadMsg:
+		m.acceptGuardianRead(msg)
+	case guardianUndoMsg:
+		return m, m.acceptGuardianUndo(msg)
 	case runsReadMsg:
 		return m, m.acceptRunsRead(msg)
 	case nameReadMsg:
@@ -445,6 +487,16 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	k := key.String()
+	// An armed undo applies only to the very next key on the Guardian page.
+	armed := m.guardianConfirm
+	m.guardianConfirm = nil
+	if armed != nil {
+		defer func() {
+			if m.guardianConfirm == nil && strings.HasPrefix(m.notice, "Undo ") {
+				m.notice = "Guardian action kept unchanged."
+			}
+		}()
+	}
 	if k == "ctrl+c" {
 		m.stopPeerReads()
 		m.retireRuns()
@@ -453,7 +505,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 	if m.nameUI != nil {
 		return m.nameKey(key)
 	}
-	if m.runFullscreen() && (k < "1" || k > "8") && k != "q" {
+	if _, nav := navKey(k); m.runFullscreen() && !nav && k != "q" {
 		return m.runKey(k)
 	}
 	if k == "ctrl+n" && m.inputMode == "" {
@@ -508,7 +560,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		return m.meshKey(k)
 	}
 	if m.poolUI != nil && m.record == nil && m.detail == nil {
-		if !m.poolModal() && k >= "1" && k <= "8" {
+		if _, nav := navKey(k); !m.poolModal() && nav {
 			m.poolUI.generation++
 			m.poolUI = nil
 			m.resourceID = ""
@@ -540,7 +592,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		return nil
 	}
 	if m.view == 7 && m.runsUI != nil && m.runsUI.selected != nil {
-		if k >= "1" && k <= "8" {
+		if _, nav := navKey(k); nav {
 			if m.runsUI.full {
 				m.setRunFullscreen(false)
 			}
@@ -626,9 +678,14 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		}
 		return nil
 	}
-	if k >= "1" && k <= "8" {
+	if m.view == viewGuardian && !m.feedFocus {
+		if cmd, handled := m.guardianKey(k, armed); handled {
+			return cmd
+		}
+	}
+	if view, nav := navKey(k); nav {
 		m.detailGeneration++
-		m.view = int(k[0] - '1')
+		m.view = view
 		m.selected = 0
 		m.filter = ""
 		m.feedFocus = false
@@ -639,6 +696,9 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 		}
 		if m.view == 6 {
 			return m.openMesh()
+		}
+		if m.view == viewGuardian {
+			return tea.Batch(m.readGuardian(true), m.readPeers(false))
 		}
 		return m.readPeers(false)
 	}
@@ -687,7 +747,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			m.viewport.GotoTop()
 		}
 	case "?":
-		m.record, _ = newRecord(map[string]any{"Keys": "1–8 navigate · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · h toggle inactive leases/runs in their lists · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "CPU": "New CPU claims follow recently idle processor time, up to an optional operator ceiling. Other work can shrink headroom. Full CPU promises remain charged: running ARM jobs reduce the idle reading and are subtracted again for now, so new work may wait. Missing/stale readings pause new grants. Reservations are cooperative, not OS limits; logical cores do not compare speed across architectures.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": map[string]string{"Live pool": "Reported space available to your user on ARM’s state filesystem.", "Promises": "Full outstanding promises stay charged, even after actual writes.", "Ceiling": "An optional operator ceiling bounds the live pool.", "Unknown": "New disk grants wait for fresh availability.", "Shared space": "APFS volumes can share one container; do not add their totals.", "Cleanup": "Snapshots and clones do not prove exclusive reclamation.", "Other mounts": "Other mounted filesystems may have separate limits."}, "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. Mesh [7] selects exact read-only peer contexts; remote monitor/messages/actions remain unavailable."}, "Dashboard help")
+		m.record, _ = newRecord(map[string]any{"Keys": "1–8 navigate · g guardian · ↑↓/jk select · Enter inspect · Tab live feed · f toggle compact feed · h toggle inactive leases/runs in their lists · / filter · i record · r refresh · q exit", "Observations": "Monitor shows reported host activity. Reservations are in Resources; capacity is not a performance guarantee.", "CPU": "New CPU claims follow recently idle processor time, up to an optional operator ceiling. Other work can shrink headroom. Full CPU promises remain charged: running ARM jobs reduce the idle reading and are subtracted again for now, so new work may wait. Missing/stale readings pause new grants. Reservations are cooperative, not OS limits; logical cores do not compare speed across architectures.", "Memory": "Available memory changes with host pressure. Existing reservations can exceed a falling budget; new grants wait.", "Storage": map[string]string{"Live pool": "Reported space available to your user on ARM’s state filesystem.", "Promises": "Full outstanding promises stay charged, even after actual writes.", "Ceiling": "An optional operator ceiling bounds the live pool.", "Unknown": "New disk grants wait for fresh availability.", "Shared space": "APFS volumes can share one container; do not add their totals.", "Cleanup": "Snapshots and clones do not prove exclusive reclamation.", "Other mounts": "Other mounted filesystems may have separate limits."}, "Disk and network": "Charts sum selected reported counters. Layered disks and virtual interfaces can overlap, so the sum is not exclusive physical traffic. Open [d]/[n] and [?] for selection, missing-counter and topology-gap details.", "Cleanup": "Release of managed storage can stop attached ARM-supervised work and reclaim managed files after safety checks.", "Authority": "Local native operator connection. Closing the dashboard leaves leases running. Mesh [7] selects exact read-only peer contexts; remote monitor/messages/actions remain unavailable."}, "Dashboard help")
 		m.viewport.GotoTop()
 	case "/":
 		m.inputMode = "filter"
@@ -729,7 +789,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			return nil
 		}
 		m.selected = min(max(0, m.itemCount()-1), m.selected+1)
-		if m.view != 7 || m.feedFocus {
+		if (m.view != 7 && m.view != viewGuardian) || m.feedFocus {
 			m.viewport.SetYOffset(max(0, m.selected*3-m.viewport.Height()+3))
 		}
 	case "k", "up":
@@ -738,7 +798,7 @@ func (m *dashboardModel) key(key tea.KeyPressMsg) tea.Cmd {
 			return nil
 		}
 		m.selected = max(0, m.selected-1)
-		if m.view != 7 || m.feedFocus {
+		if (m.view != 7 && m.view != viewGuardian) || m.feedFocus {
 			m.viewport.SetYOffset(min(m.viewport.YOffset(), m.selected*3))
 		}
 	case "enter":

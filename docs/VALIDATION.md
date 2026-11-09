@@ -1,5 +1,37 @@
 # Validation record
 
+## Guardian dashboard page — scoped evidence
+
+- Terminal: model tests cover navigation order and keys, mouse selection,
+  rendering of the verdict, ladder, incidents, programs and actions, the undo
+  confirmation and failure, polling only while visible, and the remote-node
+  navigation without Guardian. The full `internal/tui`, `internal/cli` and
+  `internal/model` suites pass. A pseudo-terminal run against a temporary
+  backend in observe mode opened the page with `g`.
+- Web: unit tests cover the verdict, ladder rows and the `g` shortcut; all web
+  module tests pass. The embedded bundle was rebuilt and the provenance check
+  passes. Headless Chromium against a temporary backend rendered the Guardian
+  page and the Monitor cards. That run found the Monitor's pressure and
+  guardian cards were never displayed, because they were typed with
+  undeclared classes; the classes are now declared.
+- An independent review found nine defects, none involving data loss or
+  security, and all are fixed:
+  - a Guardian tab click from Mesh ran Mesh's own `g` action;
+  - an armed undo outlived other keys and reconnects;
+  - `x` used the live-feed cursor;
+  - selection scrolled the selected action out of view;
+  - a read in flight during a reconnect stopped polling;
+  - the snapshot refresh could replace the page's reading;
+  - Monitor click targets were placed over the page;
+  - a failed web read blanked the page instead of marking it stale;
+  - Undo could be sent twice.
+
+  The terminal fixes have regression tests.
+- Not run: undo in a browser, and an operator session with real pressure.
+- `internal/server` has three failures that predate this change and also fail
+  on its base: two tests for module routes that the bundled dashboard no
+  longer serves, and a CSP check that predates the agent status style hash.
+
 ## Baseline test fixes — scoped evidence
 
 - macOS arm64: `internal/cli`, `internal/manager`, `internal/childowner` and

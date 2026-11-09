@@ -135,11 +135,18 @@ pressure, a frozen group is therefore no longer the culprit.
 - WebSocket operations `guardian_status` and `guardian_undo`, both allowed for
   the local dashboard. `guardian_status` stays available while a node is
   stopping.
-- The terminal dashboard's Monitor view starts with a pressure window and the
-  guardian's latest state.
-- The web dashboard's Monitor view shows a Host pressure card with level
-  history, and a Host guardian card with programs, incidents and actions with
-  Undo.
+- Both dashboards have a Guardian page beside Monitor, opened with `g`. The
+  number keys of the other views do not change. The page shows the same
+  verdict as `arm guardian status` (unknown is never reported as clear),
+  pressure, mode, role, hourly budget, the ladder, open incidents, the
+  heaviest programs and recent actions with undo. It reads the guardian every
+  two seconds while visible in the terminal and every four seconds in the
+  browser. A remote node's dashboard has no Guardian page.
+- In the terminal page, `↑↓` select an action, `Enter` inspects it, `x` asks to
+  undo it and `y` confirms; any other key keeps it.
+- The terminal Monitor view starts with a pressure window and the guardian's
+  latest state. The web Monitor view shows a Host pressure card with level
+  history and a Host guardian summary that opens the Guardian page.
 
 ## Limitations
 

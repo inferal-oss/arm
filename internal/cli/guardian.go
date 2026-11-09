@@ -71,43 +71,14 @@ func (a *app) guardianHuman(s model.GuardianStatus) error {
 
 // guardianVerdict summarizes how the host is doing in one line.
 func guardianVerdict(s model.GuardianStatus) (string, string) {
-	if s.Stale {
-		return "2", "Pressure unknown: observations are stale or unavailable"
-	}
-	worst, rank, under, unknown := model.PressureNormal, 0, []string{}, []string{}
-	for _, r := range []struct {
-		name string
-		p    model.PressureReading
-	}{{"CPU", s.Pressure.CPU}, {"memory", s.Pressure.Memory}, {"I/O", s.Pressure.IO}} {
-		n, ok := model.PressureRank(r.p.Level)
-		if !ok {
-			unknown = append(unknown, r.name)
-			continue
-		}
-		if n > 0 {
-			under = append(under, r.name+" "+r.p.Level)
-		}
-		if n > rank {
-			worst, rank = r.p.Level, n
-		}
-	}
-	// Unknown is never reported as clear.
-	text := "All clear: no resource is under pressure"
+	v := model.GuardianVerdictOf(s)
 	switch {
-	case len(under) > 0:
-		text = "Under pressure: " + strings.Join(under, ", ")
-	case len(unknown) == 3:
-		return "2", "Pressure unknown: no observations yet"
-	case len(unknown) > 0:
-		return "33", "No pressure detected; " + strings.Join(unknown, ", ") + " unknown"
+	case v.Level == model.PressureUnknown:
+		return "2", v.Text
+	case v.Partial:
+		return "33", v.Text
 	}
-	if len(under) > 0 && len(unknown) > 0 {
-		text += "; " + strings.Join(unknown, ", ") + " unknown"
-	}
-	if len(s.Incidents) > 0 {
-		text += fmt.Sprintf(" · %d open incident(s)", len(s.Incidents))
-	}
-	return map[string]string{model.PressureNormal: "1;32", model.PressureElevated: "1;33", model.PressureHigh: "1;33", model.PressureCritical: "1;31"}[worst], text
+	return map[string]string{model.PressureNormal: "1;32", model.PressureElevated: "1;33", model.PressureHigh: "1;33", model.PressureCritical: "1;31"}[v.Level], v.Text
 }
 
 func (a *app) guardianText(s model.GuardianStatus) string {
@@ -170,7 +141,7 @@ func (a *app) guardianText(s model.GuardianStatus) string {
 				break
 			}
 			undo := ""
-			if x.Reversible && x.RevertedAt == nil && (x.Outcome == model.GuardianApplied || x.Outcome == model.GuardianPartial) {
+			if model.GuardianUndoable(x) {
 				undo = a.paint("36", "  undo: arm guardian undo "+x.ID)
 			}
 			fmt.Fprintf(&b, "  %s %-12s %-9s %s — %s%s\n", x.At.Local().Format(time.TimeOnly), x.Step, x.Outcome, orDash(x.GroupName), x.Reason, undo)

@@ -1,5 +1,14 @@
 # ARM delivery plan
 
+## Guardian dashboard page — implemented, independently reviewed
+
+Owner: `claude/guardian-dashboards`. Adds a Guardian page beside Monitor in
+the web and terminal dashboards (`g`), with verdict, pressure, ladder,
+incidents, programs and actions with undo, and fixes the web Monitor's
+guardian cards, which were never displayed. Remaining gates: the three
+pre-existing `internal/server` test failures, and operator use under real
+pressure.
+
 ## Baseline test failures — fixed, reviewed
 
 Owner: `claude/fix-baseline-tests`, based on `3e4292e`. The macOS CLI, manager,

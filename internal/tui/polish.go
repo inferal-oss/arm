@@ -38,14 +38,18 @@ func brandMark() string {
 	return strong.Foreground(toneColor("accent", .85)).Render(" arm ")
 }
 func (m *dashboardModel) navigationLabel(index int) string {
-	if m.width >= 100 {
-		return fmt.Sprintf("%d %s", index+1, viewNames[index])
+	if m.width >= 110 {
+		return navShortcut(index) + " " + viewNames[index]
 	}
-	names := []string{"Mon", "Res", "Lse", "Msg", "Act", "Host", "Mesh", "Runs"}
-	if m.width < 55 {
-		return fmt.Sprintf("%d%s", index+1, names[index])
+	names := []string{"Mon", "Res", "Lse", "Msg", "Act", "Host", "Mesh", "Runs", "Grd"}
+	if m.width < 50 && index != m.view && len(m.navViews()) > 8 {
+		// Nine tabs do not fit with names; the current one keeps its name.
+		return navShortcut(index)
 	}
-	return fmt.Sprintf("%d %s", index+1, names[index])
+	if m.width < 60 {
+		return navShortcut(index) + names[index]
+	}
+	return navShortcut(index) + " " + names[index]
 }
 func leaseInk(l model.Lease) color.Color {
 	switch l.State {

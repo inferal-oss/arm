@@ -214,7 +214,7 @@ func (m *dashboardModel) pickerMouseRegions() []mouseRegion {
 	return regions
 }
 func (m *dashboardModel) monitorSelectorRegions() []mouseRegion {
-	if !m.monitorLayout() {
+	if !m.monitorLayout() || m.view != 0 {
 		return nil
 	}
 	var regions []mouseRegion

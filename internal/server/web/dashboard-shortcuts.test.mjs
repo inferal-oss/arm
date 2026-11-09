@@ -5,6 +5,7 @@ import {createDashboardHistory, dashboardViews} from './route.mjs';
 const event = (key, extra = {}) => ({key, target: {tagName:'BODY'}, ...extra});
 test('digits map to the same nine ordered views, never arbitrary keys or modifiers', () => {
   for (let index=0; index<9; index++) assert.equal(dashboardShortcut(event(String(index+1))),dashboardViews[index]);
+  assert.equal(dashboardShortcut(event('g')),'guardian');
   for (const key of ['0','!','Digit1','11','1\n','',undefined]) assert.equal(dashboardShortcut(event(key)),null);
   for (const flag of ['defaultPrevented','repeat','isComposing','altKey','ctrlKey','metaKey','shiftKey'])
     for (const key of ['1','8']) assert.equal(dashboardShortcut(event(key,{[flag]:true})),null,flag);

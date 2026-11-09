@@ -17,7 +17,7 @@ func (m *dashboardModel) modal() bool {
 	return m.nameUI != nil || m.meshModal() || m.poolModal() || m.ioPicker != nil || m.checkins != nil || m.review != nil || m.composer != nil || m.inputMode != ""
 }
 func (m *dashboardModel) monitorLayout() bool {
-	return m.nodeUI == nil && m.view == 0 && m.detail == nil && m.record == nil && !m.feedFocus && !m.modal()
+	return m.nodeUI == nil && (m.view == 0 || m.view == viewGuardian) && m.detail == nil && m.record == nil && !m.feedFocus && !m.modal()
 }
 func (m *dashboardModel) bodyHeight() int { return max(1, m.height-8) }
 func (m *dashboardModel) modalGeometry() (int, int) {
@@ -330,12 +330,12 @@ func (m *dashboardModel) View() tea.View {
 	}
 	header := align(brand+strong.Render(safe(host)), status+" ", m.width)
 	var nav []string
-	for index := range viewNames {
+	for _, index := range m.navViews() {
 		label := m.navigationLabel(index)
 		if m.view == index {
 			nav = append(nav, lipgloss.NewStyle().Bold(true).Foreground(colorAccent).Background(lipgloss.Color("#203630")).Render("["+label+"]"))
 		} else {
-			if m.width < 65 {
+			if m.width < 80 {
 				nav = append(nav, muted.Render(label))
 			} else {
 				nav = append(nav, muted.Render(" "+label+" "))
@@ -348,6 +348,9 @@ func (m *dashboardModel) View() tea.View {
 	}
 	if m.view == 1 {
 		section = "Resources · live budgets"
+	}
+	if m.view == viewGuardian {
+		section = "Host guardian · pressure, programs & actions"
 	}
 	if m.filter != "" {
 		section += " · filter " + short(m.filter, 20)

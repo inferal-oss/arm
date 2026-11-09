@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"fmt"
+	"strings"
+	"time"
+)
 
 // Host guardian wire types. Group and process usage are interval estimates
 // from non-atomic host inventories, not exclusive or attributable charges.
@@ -145,4 +149,58 @@ type GuardianSettings struct {
 	DesktopNotifications *bool              `json:"desktop_notifications,omitempty"`
 	Protect              []string           `json:"protect,omitempty"`
 	Ladder               []GuardianStepRule `json:"ladder,omitempty"`
+}
+
+// GuardianVerdict summarizes pressure for a status headline. Level is the
+// worst known level, or unknown when nothing is known; Partial reports that
+// some resources are unknown while none is under pressure. Unknown is never
+// reported as clear.
+type GuardianVerdict struct {
+	Level   string `json:"level"`
+	Partial bool   `json:"partial,omitempty"`
+	Text    string `json:"text"`
+}
+
+func GuardianVerdictOf(s GuardianStatus) GuardianVerdict {
+	if s.Stale {
+		return GuardianVerdict{Level: PressureUnknown, Text: "Pressure unknown: observations are stale or unavailable"}
+	}
+	worst, rank, under, unknown := PressureNormal, 0, []string{}, []string{}
+	for _, r := range []struct {
+		name string
+		p    PressureReading
+	}{{"CPU", s.Pressure.CPU}, {"memory", s.Pressure.Memory}, {"I/O", s.Pressure.IO}} {
+		n, ok := PressureRank(r.p.Level)
+		if !ok {
+			unknown = append(unknown, r.name)
+			continue
+		}
+		if n > 0 {
+			under = append(under, r.name+" "+r.p.Level)
+		}
+		if n > rank {
+			worst, rank = r.p.Level, n
+		}
+	}
+	text := "All clear: no resource is under pressure"
+	switch {
+	case len(under) > 0:
+		text = "Under pressure: " + strings.Join(under, ", ")
+		if len(unknown) > 0 {
+			text += "; " + strings.Join(unknown, ", ") + " unknown"
+		}
+	case len(unknown) == 3:
+		return GuardianVerdict{Level: PressureUnknown, Text: "Pressure unknown: no observations yet"}
+	case len(unknown) > 0:
+		return GuardianVerdict{Level: PressureNormal, Partial: true, Text: "No pressure detected; " + strings.Join(unknown, ", ") + " unknown"}
+	}
+	if len(s.Incidents) > 0 {
+		text += fmt.Sprintf(" · %d open incident(s)", len(s.Incidents))
+	}
+	return GuardianVerdict{Level: worst, Text: text}
+}
+
+// GuardianUndoable reports whether an action can still be reverted.
+func GuardianUndoable(a GuardianAction) bool {
+	return a.Reversible && a.RevertedAt == nil && (a.Outcome == GuardianApplied || a.Outcome == GuardianPartial)
 }
