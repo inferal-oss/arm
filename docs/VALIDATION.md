@@ -12598,3 +12598,24 @@ The coordinator independently checked the original command joins, stream
 hashes, official dependency authentication and unchanged inputs. Later changes
 are documentation only; no tests or binary were rerun for composition. Actual
 signing, Root handoff, public startup and live child continuity remain untested.
+
+
+### Current unified discovery composition: validation pending
+
+The [independently accepted component record](validation/unified-onboarding-ui-component-qualified.json)
+records the prior 51 Node and three RDF cases on their original source. Current
+UX annotations and proposed dependency changes prevent treating those results
+as fresh acceptance of this composition. The affected 51 Node and three RDF
+cases must run on the final composed dependency and fresh WAT image. No such
+rerun, current server test, build or browser check has run for this candidate.
+
+The proposed gate also checks eight selected server race roots with all 15 named
+RUN/PASS entries plus vet, two equal WAT and embedded-asset builds, two equal
+native CLI builds, and the compiled dashboard in controlled desktop and narrow
+browser views. The browser matrix covers contexts followed by Nodes, true empty
+and filter-empty states, forbidden/unavailable diagnostics, stale-response
+withdrawal and disabled Kubernetes preparation in both onboarding editors.
+Final source, dependency and fresh-WAT binding and executable-control review
+remain prerequisites. Fixtures use generic synthetic infrastructure; no real
+cluster, user backend, installation, runtime identity/catalog proof or mesh
+enrollment is included.

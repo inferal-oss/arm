@@ -154,6 +154,8 @@ func (s *Server) dashboardLoginLink(raw json.RawMessage) (model.BrowserLink, err
 
 func browserAllowedOperation(op string) bool {
 	switch op {
+	case "mesh_operator_kubernetes_artifacts":
+		return true // Source-local trusted metadata only; no artifact import or execution.
 	case "runs", "run_inspect", "run_output":
 		return true // Read-only local execution observations.
 	case "name_list", "name_mutate":

@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "status": "QUALIFIED_COMPONENT_VALIDATION_ACCEPTED",
+  "component": "Read-only Kubernetes inventory inside shared Connect and Install editors",
+  "source": {
+    "base_commit": "842f016501fa73843d20f53d9f0251b87e419e05",
+    "owned_paths": 13,
+    "patch_sha256": "b52ace7f3f357a2f97dbec492178477ad1ccb572eb0790a7624b607c5daf75dd",
+    "packet_sha256": "82fbdaa1df3dd478ddcd5f25b68256034bfeddbbeb3dd1dfd7daad7bd6274f84",
+    "independent_source_review_sha256": "4a55ebda94f9effdd2303bafe96dc4ce4c18e3ee72c55d0fdd3984c8d72679a9"
+  },
+  "actual_normal": {
+    "exit": 0,
+    "inner_stages": 4,
+    "node": {
+      "passed": 51,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "names": [
+        "Connect a node… keeps an unavailable cluster explicit inside the selected transport",
+        "Connect a node… shares Node discovery and fences unsupported effects",
+        "Install ARM on a host… keeps an unavailable cluster explicit inside the selected transport",
+        "Install ARM on a host… shares Node discovery and fences unsupported effects",
+        "Kubernetes accepts exact limit-truncated cardinality as positive inventory",
+        "Kubernetes explicit open is idempotent while reading contexts and the mesh API forwards accepted snapshots",
+        "Kubernetes inventory distinguishes filtered empty",
+        "Kubernetes inventory distinguishes inconsistent counts",
+        "Kubernetes inventory distinguishes malformed nodes",
+        "Kubernetes inventory distinguishes missing empty counts",
+        "Kubernetes inventory distinguishes true empty",
+        "Kubernetes inventory keeps kubernetes_cancelled separate from empty Nodes",
+        "Kubernetes inventory keeps kubernetes_forbidden separate from empty Nodes",
+        "Kubernetes inventory keeps kubernetes_not_found separate from empty Nodes",
+        "Kubernetes inventory keeps kubernetes_timeout separate from empty Nodes",
+        "Kubernetes inventory keeps kubernetes_unauthorized separate from empty Nodes",
+        "Kubernetes publication checks current field values as well as request versions",
+        "Kubernetes refuses changed cluster without retaining selection",
+        "Kubernetes refuses contradictory truncation without retaining selection",
+        "Kubernetes refuses duplicate UID without retaining selection",
+        "Kubernetes refuses empty positive filtered cardinality without publishing false empty inventory",
+        "Kubernetes refuses empty positive unfiltered cardinality without publishing false empty inventory",
+        "Kubernetes refuses malformed taints without retaining selection",
+        "Kubernetes refuses missing namespace UID without retaining selection",
+        "Kubernetes refuses missing positive counts without retaining selection",
+        "Kubernetes refuses short below limit cardinality without publishing false empty inventory",
+        "Kubernetes refuses short truncated at limit cardinality without publishing false empty inventory",
+        "Kubernetes refuses truthy cordon without retaining selection",
+        "Kubernetes refuses truthy readiness without retaining selection",
+        "Kubernetes snapshots clear synchronously and reject delayed responses across edit, close and disconnect boundaries",
+        "Kubernetes stock cards summarize quantities, retain all exact details and focus only matching accepted identity",
+        "Kubernetes technical rows stay bounded while full records and published data retain late extended fields",
+        "chosen node mounts advisory availability and closes its exact panel owner",
+        "embedded refresh recovers context discovery and never converts malformed contexts into empty inventory",
+        "exact Kubernetes selection preserves cluster groups and refuses missing or changed identity",
+        "graph Stop composition defaults to refusal and retains exact reviewed keys, target and no-choice focus",
+        "graph forwarding retains private token on uncertain start, requires acknowledgment, and sends only token digest",
+        "installation preserves two distinct decisions, exact software review and decline focus",
+        "late declaration cannot repopulate a disposed chosen node panel",
+        "leaving Kubernetes discards late carrier metadata and late Nodes while preserving SSH editor state",
+        "lost preparation retains original key and unavailable storage prevents stop preparation",
+        "mesh optional display names update without changing the exact selected host or supplied name",
+        "read-only Kubernetes selection expires across context edits and disconnect",
+        "roster uses stock cards, a responsive grid, description lists and named action toolbars",
+        "stale destination stop support disables entry and disconnect guards exact decisions",
+        "stock connect choices preserve directional grants and no automatic mutation on selection",
+        "stock node refresh retains a pending owner update across its panel replacement",
+        "uncertain Stop decision persists and reconnect never replays it",
+        "uncertain installation preparation or decision retains original exact-key data without resend",
+        "uncertain uninstall decision cannot be resent or implicitly finished after reconnect",
+        "uninstall renders exact original installation and retained data; finish requires fresh native lookup and separate decision"
+      ]
+    },
+    "rdf_wat_projection": {
+      "passed": 3,
+      "failed": 0,
+      "pending": 0,
+      "names": [
+        "renders discovered contexts and actual stock Node cards through WAT projection",
+        "uses synthetic inventory inside connection with no standalone Kubernetes area",
+        "uses synthetic inventory inside installation with no standalone Kubernetes area"
+      ]
+    },
+    "server_race": {
+      "roots": 8,
+      "named_run_pass": 15,
+      "failed": 0,
+      "skipped": 0,
+      "roots_roster": [
+        "TestBrowserMeshWorkflowHasClosedTypedExecutionInputs",
+        "TestKubernetesArtifactInventoryIsReadOnlyAndClosed",
+        "TestKubernetesArtifactInventoryRedactsNativeCatalogFailure",
+        "TestKubernetesInventoryEmbeddedAndBrowserScope",
+        "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics",
+        "TestKubernetesInventoryIsNotAdmittedDuringBackendStop",
+        "TestKubernetesInventoryTypeaheadReturnsCurrentResources",
+        "TestKubernetesWorkflowEffectsRemainBrowserFenced"
+      ],
+      "named_roster": [
+        "TestBrowserMeshWorkflowHasClosedTypedExecutionInputs",
+        "TestKubernetesArtifactInventoryIsReadOnlyAndClosed",
+        "TestKubernetesArtifactInventoryRedactsNativeCatalogFailure",
+        "TestKubernetesInventoryEmbeddedAndBrowserScope",
+        "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics",
+        "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/cancelled",
+        "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/deadline",
+        "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/forbidden",
+        "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/missing",
+        "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/server-timeout",
+        "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/transport-or-decode",
+        "TestKubernetesInventoryErrorClassesDoNotExposeServerDiagnostics/unauthorized",
+        "TestKubernetesInventoryIsNotAdmittedDuringBackendStop",
+        "TestKubernetesInventoryTypeaheadReturnsCurrentResources",
+        "TestKubernetesWorkflowEffectsRemainBrowserFenced"
+      ],
+      "package_passed": true
+    },
+    "targeted_server_vet_exit": 0,
+    "original_outer_command_waits": 8,
+    "original_inner_command_waits": 4,
+    "all_normal_original_exits_zero": true,
+    "quiet_log": {
+      "bytes": 26866,
+      "sha256": "4620ab21fec858bc12ebb5a7ad6bcc79fc07022710cb2fc653851a71f56674f3",
+      "untruncated": true,
+      "raw_log_matches_recorded_output": true
+    }
+  },
+  "cooperative_cancellation_controls": {
+    "qualified_expected_abort_controls": 2,
+    "normal_source_tests_executed_by_controls": 0,
+    "before": {
+      "outer_exit": 1,
+      "inner_exit": 130,
+      "inner_originals": 0,
+      "common_dispatch_attempted": true,
+      "marker_observed": true,
+      "later_sentinel_absent": true,
+      "only_expected_abort_diagnostic": true
+    },
+    "during": {
+      "outer_exit": 1,
+      "inner_exit": 130,
+      "inner_originals": 1,
+      "current_original_exit_zero_and_wait_returned": true,
+      "current_phase_completion_retained": true,
+      "marker_observed": true,
+      "later_sentinel_absent": true,
+      "only_expected_abort_diagnostic": true
+    },
+    "both": {
+      "outer_original_waits_each": 8,
+      "proxy_exit_expected_130": true,
+      "other_original_exits_zero": true,
+      "nonforced_ordinary_stop": true,
+      "original_foreground_exit_zero_and_pipes_closed": true,
+      "endpoint_removed_lock_released_listener_refusal_recorded": true
+    },
+    "classification": "Expected aborted controls are distinct from the passing normal source cohort."
+  },
+  "source_and_dependency_binding": {
+    "source_members": 2871,
+    "dependency_members": 2643,
+    "package_versions": 77,
+    "selected_inputs_per_case": 123,
+    "all_source_dependency_bytes_and_memberships_match_sealed_inputs": true,
+    "reviewed_before_final_pin_checks_completed": true
+  },
+  "cleanup": {
+    "all_cases_nonforced_ordinary_stop": true,
+    "all_cases_remaining_obligations_empty": true,
+    "all_cases_no_resource_leases": true,
+    "all_original_foreground_waits_zero_and_pipes_closed": true,
+    "all_cases_endpoint_removal_lock_release_listener_refusal_recorded": true,
+    "fallback_cancellation_used": false
+  },
+  "historical_failed_control": {
+    "status": "FAILED_PRESERVED",
+    "reason": "Earlier cancellation-control cleanup did not establish the original foreground wait. Supplemental endpoint closure is not substituted for that proof.",
+    "reclassified": false
+  },
+  "limits": [
+    "This accepts only the frozen source-base component tests and fixed cancellation controls; it does not validate a later current-main composition.",
+    "No dashboard asset build, native browser, live-cluster request, Pod installation/shipment/startup, runtime/catalog proof, mesh enrollment or connector activation is accepted.",
+    "Kubernetes preparation remains disabled and handler-fenced; selection and trusted artifact metadata grant no effects.",
+    "No full-suite, multi-platform, public-install, universal descendant-closure or hermetic-environment claim."
+  ]
+}

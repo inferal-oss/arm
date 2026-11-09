@@ -1,0 +1,50 @@
+{
+  "id": "kube_nodes",
+  "result": {
+    "cluster": {
+      "context": "fixture",
+      "server": "https://cluster.example:6443",
+      "ca_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "auth_subject": "fixture-user",
+      "auth_groups": [
+        "fixture-group"
+      ]
+    },
+    "namespace": {
+      "name": "default",
+      "uid": "namespace-uid"
+    },
+    "nodes": [
+      {
+        "name": "fixture-worker",
+        "uid": "node-uid",
+        "os": "linux",
+        "arch": "arm64",
+        "ready": true,
+        "unschedulable": false,
+        "allocatable_cpu": "4",
+        "allocatable_memory": "8Gi",
+        "allocatable_ephemeral": "20Gi",
+        "allocatable": {
+          "cpu": "4",
+          "memory": "8Gi",
+          "ephemeral-storage": "20Gi"
+        },
+        "capacity": {
+          "cpu": "4",
+          "memory": "8Gi",
+          "ephemeral-storage": "25Gi"
+        },
+        "conditions": [
+          "Ready=True"
+        ]
+      }
+    ],
+    "inventory": {
+      "matched": 1,
+      "total": 1,
+      "truncated": false
+    }
+  },
+  "version": 1
+}

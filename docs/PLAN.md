@@ -4840,3 +4840,16 @@ Next is the private Root parent/child protocol, retaining actual normal Start
 and original phase/context/entropy/current/fresh-commitment/no-pending facts.
 Parent reference retirement, workers and public startup remain later gates.
 Actual managed-job/proxy continuity across an upgrade remains unverified.
+
+
+### Current unified onboarding discovery composition candidate
+
+The reviewed shared SSH/Kubernetes Connect and Install discovery changes are
+composed with current node-card and dialog layout annotations. The historical
+[independently accepted component record](validation/unified-onboarding-ui-component-qualified.json)
+qualifies only its original scoped source; this composition has no fresh test,
+build or browser acceptance. New dependency bytes require the affected 51 Node
+and three RDF cases to run again, followed by current server, reproducible WAT,
+embedded-asset/native CLI and controlled desktop/narrow browser checks.
+Kubernetes preparation remains disabled and handler-fenced. The typed backend
+workflow, installation and enrollment remain unfinished.

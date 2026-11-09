@@ -6152,3 +6152,17 @@ evidence as `3a9f719`. Every qualified runtime, module and embedded input is
 identical to the reviewed snapshot. The official SQLite driver stays unchanged.
 This integration adds no Root caller or public startup activation and changes
 no running backend or managed child.
+
+
+### Current unified discovery composition candidate
+
+The reviewed shared SSH/Kubernetes Connect and Install discovery changes retain
+current node-roster, node-detail and Kubernetes layout annotations. Trusted
+carrier metadata remains read-only, inventory errors remain fixed/redacted, and
+exact returned Node cardinality must equal the smaller of matched count and
+requested limit. Kubernetes prepare controls remain disabled and handler-fenced;
+no typed worker, Pod effect, runtime readiness or pinned enrollment is activated.
+All pre-existing current source and documentation outside the focused onboarding
+changes is retained. This composition is source-only and has no fresh execution
+evidence. See [UNIFIED-ONBOARDING-API.md](UNIFIED-ONBOARDING-API.md) for remaining
+contracts.
