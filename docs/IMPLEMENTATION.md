@@ -1,5 +1,11 @@
 # Backend and CLI implementation
 
+## Status-page setup for repository-wide rollout
+
+Status setup includes `git-worktrees` bindings in its saved policy snapshot.
+They use the same Git-directory and identity validation as single-checkout
+bindings. The review digest covers the complete binding as saved by rollout.
+
 ## Bare Git repositories in project onboarding
 
 A repository-wide binding for a bare Git repository pins the bare directory

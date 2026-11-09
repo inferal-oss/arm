@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"unicode/utf8"
+
+	"getarm.org/internal/rollout"
 )
 
 func onboardingProjectID(id string) bool {
@@ -25,13 +27,19 @@ func onboardingScopeValid(scope OnboardingScope) bool {
 	}
 	previous := ""
 	for _, b := range scope.Bindings {
-		if b.Removed || b.Kind != "directory" && b.Kind != "git" || !filepath.IsAbs(b.Root) || len(b.Root) > 4096 || !utf8.ValidString(b.Root) || strings.ContainsAny(b.Root, "\x00\r\n") || b.Identity == "" || len(b.Identity) > 512 {
+		if b.Removed || !filepath.IsAbs(b.Root) || len(b.Root) > 4096 || !utf8.ValidString(b.Root) || strings.ContainsAny(b.Root, "\x00\r\n") || b.Identity == "" || len(b.Identity) > 512 {
 			return false
 		}
-		if b.Kind == "directory" && (b.GitDirectory != "" || b.GitIdentity != "") {
-			return false
-		}
-		if b.Kind == "git" && (!filepath.IsAbs(b.GitDirectory) || len(b.GitDirectory) > 4096 || b.GitIdentity == "" || len(b.GitIdentity) > 512) {
+		switch b.Kind {
+		case "directory":
+			if b.GitDirectory != "" || b.GitIdentity != "" {
+				return false
+			}
+		case "git", rollout.WorktreesKind:
+			if !filepath.IsAbs(b.GitDirectory) || len(b.GitDirectory) > 4096 || b.GitIdentity == "" || len(b.GitIdentity) > 512 {
+				return false
+			}
+		default:
 			return false
 		}
 		raw, _ := json.Marshal(b)

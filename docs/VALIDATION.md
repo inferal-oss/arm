@@ -1,5 +1,12 @@
 # Validation record
 
+## Status-page setup for repository-wide rollout
+
+The agent status suite and focused CLI status setup tests passed. A regression
+verifies plan, apply and readback with both bare and primary-checkout anchors
+and refuses a binding without its Git identity. A read-only CLI preview
+accepted a saved repository-wide policy with a bare anchor.
+
 ## Bare Git repositories in project onboarding
 
 The Git metadata, project discovery and rollout suites passed on macOS, along

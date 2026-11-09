@@ -1,5 +1,10 @@
 # ARM delivery plan
 
+## Status-page setup for repository-wide rollout
+
+Status setup accepts saved repository-wide Git bindings, including bare
+repository anchors, in its reviewed policy snapshot.
+
 ## Bare Git repositories in project onboarding
 
 Repository-wide rollout supports bare Git repositories with linked checkouts.

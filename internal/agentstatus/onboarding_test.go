@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -52,6 +53,32 @@ func TestOnboardingPreviewAndOriginalKeyReplay(t *testing.T) {
 		t.Fatal("key reused for changed setup")
 	}
 }
+
+func TestOnboardingStatusSetupPreservesRepositoryWorktreeBindings(t *testing.T) {
+	store, projects, change := onboardingFixture(t)
+	bindings := []rollout.Binding{
+		{Kind: rollout.WorktreesKind, Root: "/synthetic/bare.git", Identity: "bare", GitDirectory: "/synthetic/bare.git", GitIdentity: "bare"},
+		{Kind: rollout.WorktreesKind, Root: "/synthetic/primary", Identity: "primary", GitDirectory: "/synthetic/primary/.git", GitIdentity: "common"},
+	}
+	projects[0].Bindings = slices.Clone(bindings)
+	reader := func(context.Context) ([]rollout.Project, error) { return projects, nil }
+	plan, err := store.Plan(t.Context(), reader, change)
+	if err != nil || len(plan.Scopes) != 1 || !slices.Equal(plan.Scopes[0].Bindings, bindings) {
+		t.Fatal("preview did not preserve repository bindings", plan, err)
+	}
+	if record, err := store.Apply(t.Context(), reader, change, plan.Review); err != nil || record.State != "saved" {
+		t.Fatal("setup could not save the reviewed bindings", record, err)
+	}
+	record, err := store.Inspect(t.Context(), reader, change.Key)
+	if err != nil || record.State != "saved" || len(record.Scopes) != 1 || !slices.Equal(record.Scopes[0].Bindings, bindings) {
+		t.Fatal("saved repository bindings could not be read back", record, err)
+	}
+	projects[0].Bindings[0].GitIdentity = ""
+	if _, err := BuildOnboardingScopes(projects, change.Projects); err == nil {
+		t.Fatal("repository binding without a Git identity was accepted")
+	}
+}
+
 func TestOnboardingPolicyRaceAndUnknownPublication(t *testing.T) {
 	for _, unknown := range []bool{false, true} {
 		t.Run(map[bool]string{false: "stale", true: "unknown"}[unknown], func(t *testing.T) {
