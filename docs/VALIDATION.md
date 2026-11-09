@@ -20,6 +20,11 @@ without saved chats. A compiled CLI recovered saved-workspace evidence in a
 read-only discovery run and displayed the matching checkout in a terminal
 picker. Validation stopped before policy review and apply.
 
+The project discovery suite and focused CLI tests also cover choosing a saved
+Codex folder ahead of a linked checkout when there is no primary checkout.
+A terminal replay confirmed the saved project folder appears under the
+repository search result.
+
 ## Repository-wide worktree rollout
 
 On macOS, the Git metadata, rollout, project discovery and agent-session

@@ -12,6 +12,8 @@ shows the repository label before review. See
 The onboarding adapter reads current Codex desktop project roots within the
 existing total metadata budget. The picker searches every directory in a Git
 group and shows the matched directory when it differs from the display root.
+If the group lacks a verified primary checkout, the picker prefers a verified
+saved Codex project folder as its display root.
 See [scoped validation](VALIDATION.md#codex-project-discovery-and-picker-search).
 
 ## Repository-wide worktree rollout

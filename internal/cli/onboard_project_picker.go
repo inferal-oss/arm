@@ -896,34 +896,39 @@ func (m *projectOnboardModel) View() tea.View {
 		}
 		for index := start; index < end; index++ {
 			row := m.rows[index]
-			label, detail := "Choose another directory…", "Manual project-only selection"
+			width := max(20, m.width-4)
+			label, detail := "Choose another directory…", "  Manual project-only selection"
 			if row.group >= 0 {
 				group := m.tree.groups[row.group]
 				label = m.tree.title(row)
-				detail = terminalSafe(group.Directory)
 				if row.child < 0 {
-					if row.matchDirectory != "" {
-						detail = "Matched directory · " + terminalSafe(row.matchDirectory)
+					path, pathLabel := group.Directory, "  Directory · "
+					if group.Kind == "git" {
+						pathLabel = "  Checkout · "
 					}
+					if row.matchDirectory != "" {
+						path, pathLabel = row.matchDirectory, "  Matched directory · "
+					}
+					detail = pickerPathLine(pathLabel, path, width)
 					fold := "▸ "
 					if m.tree.expanded[group.Key] {
 						fold = "▾ "
 					}
 					label = fold + label
 				} else {
-					detail = "    " + terminalSafe(group.Sessions[row.child].Directory)
+					detail = pickerPathLine("      ", group.Sessions[row.child].Directory, width)
 				}
 			}
 			prefix := "  "
 			if index == m.cursor {
 				prefix = "> "
 			}
-			line := ansi.Truncate(prefix+label, max(20, m.width-4), "…")
+			line := ansi.Truncate(prefix+label, width, "…")
 			if index == m.cursor {
 				line = selected.Render(line)
 			}
 			fmt.Fprintln(&b, line)
-			fmt.Fprintln(&b, ansi.Truncate("  "+detail, max(20, m.width-4), "…"))
+			fmt.Fprintln(&b, ansi.Truncate(detail, width, "…"))
 		}
 		projects, chats := 0, 0
 		if m.tree != nil {

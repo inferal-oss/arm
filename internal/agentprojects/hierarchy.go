@@ -137,6 +137,7 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 	pathBudget := map[string]bool{}
 	members := map[string]gitmeta.Directory{}
 	legacyNames := map[string][]string{}
+	savedWorkspaces := map[string]bool{}
 	legacyNameCount := 0
 	addPath := func(path string) bool {
 		if paths[path] {
@@ -169,6 +170,12 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 			continue
 		}
 		members[project.Directory] = member
+		for _, evidence := range project.Evidence {
+			if evidence.Adapter == "codex" && evidence.Kind == "saved-workspace" {
+				savedWorkspaces[project.Directory] = true
+				break
+			}
+		}
 		for _, name := range project.Names {
 			if legacyNameCount >= agentsessions.Limit || len(name) > 64<<10 || !charge(name) {
 				out.Truncated = true
@@ -309,8 +316,19 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 	}
 	// Only this pass's exact canonical paths are probed/cached. Added Git roots
 	// count toward the same path bound, and are never recursively probed.
+	// Spend the probe budget on saved project folders before session-only paths.
 	infoByPath := map[string]gitmeta.Info{}
-	for attempt, path := range ordered {
+	probeOrder := slices.Clone(ordered)
+	slices.SortStableFunc(probeOrder, func(a, b string) int {
+		if savedWorkspaces[a] == savedWorkspaces[b] {
+			return 0
+		}
+		if savedWorkspaces[a] {
+			return -1
+		}
+		return 1
+	})
+	for attempt, path := range probeOrder {
 		if attempt >= gitmeta.MaxProbes || probe == nil || budget.Check() != nil {
 			warn("Git grouping is unavailable or exhausted; exact directory groups are shown where needed.")
 			break
@@ -389,10 +407,18 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 	byKey := map[string]int{}
 	pathGroup := map[string]string{}
 	primary := map[string]string{}
-	for path, info := range infoByPath {
+	savedCheckout := map[string]string{}
+	for _, path := range ordered {
+		info, ok := infoByPath[path]
+		if !ok {
+			continue
+		}
 		key := "git\x00" + info.Common.Path + "\x00" + info.Common.Identity
 		if info.Primary() {
 			primary[key] = info.Root.Path
+		}
+		if savedWorkspaces[path] && savedCheckout[key] == "" {
+			savedCheckout[key] = info.Root.Path
 		}
 		pathGroup[path] = key
 	}
@@ -407,6 +433,8 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 			directory = infoByPath[path].Root.Path
 			if primary[key] != "" {
 				directory = primary[key]
+			} else if savedCheckout[key] != "" {
+				directory = savedCheckout[key]
 			}
 		}
 		index, exists := byKey[key]
@@ -426,7 +454,7 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 			}
 			group := Group{Key: hex.EncodeToString(digest[:]), Kind: kind, Name: label, Directory: directory, Directories: []string{directory}, Sessions: []agentsessions.SavedSession{}}
 			if kind == "git" && primary[key] == "" {
-				group.Warnings = []string{"Primary checkout is unknown; the shown checkout is a display representative only."}
+				group.Warnings = []string{"Git has no verified primary checkout in this selection. The displayed checkout is a representative."}
 			}
 			index = len(out.Groups)
 			byKey[key] = index

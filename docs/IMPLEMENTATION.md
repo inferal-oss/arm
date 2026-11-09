@@ -25,6 +25,10 @@ canonical directories and evidence and ignores native project names and IDs.
 Onboarding searches member directories as well as the Git group's display
 root. When a member directory supplies the best project match, the picker
 shows it below the project row. Policy review uses the existing group scope.
+Git probing prioritizes saved Codex project folders. When a group has no
+verified primary checkout, its verified saved project folder takes precedence
+as the displayed checkout. Path labels preserve the checkout name in narrow
+terminals.
 
 ## Original Server binding and borrower validation — unconnected source
 

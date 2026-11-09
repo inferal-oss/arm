@@ -106,6 +106,28 @@ func TestHierarchyUnknownPrimaryDoesNotTrimCommonPath(t *testing.T) {
 	}
 }
 
+func TestHierarchyPrefersSavedCodexCheckoutOverEarlierWorktree(t *testing.T) {
+	base := hierarchyFixtureDir(t)
+	linked := projectDir(t, base, "a-client-worktree")
+	saved := projectDir(t, base, "z-project-folder")
+	common := gitmeta.Directory{Path: projectDir(t, base, "example.git"), Identity: "common"}
+	probe := &hierarchyFixtureProbe{infos: map[string]gitmeta.Info{
+		linked: {Root: gitmeta.Directory{Path: linked, Identity: "linked"}, Git: gitmeta.Directory{Path: projectDir(t, base, "linked-git"), Identity: "linked-git"}, Common: common},
+		saved:  {Root: gitmeta.Directory{Path: saved, Identity: "saved"}, Git: gitmeta.Directory{Path: projectDir(t, base, "saved-git"), Identity: "saved-git"}, Common: common},
+	}}
+	catalog := Catalog{Projects: []Project{
+		{Directory: linked},
+		{Directory: saved, Evidence: []Evidence{{Adapter: "codex", Kind: "saved-workspace"}}},
+	}}
+	out := hierarchyFixtureRun(t, catalog, nil, probe)
+	if len(out.Groups) != 1 || out.Groups[0].Directory != saved || out.Groups[0].Name != "example" || len(out.Groups[0].Memberships) != 2 {
+		t.Fatal(out)
+	}
+	if !slices.Equal(probe.calls, []string{saved, linked}) {
+		t.Fatal("saved workspace was not verified first", probe.calls)
+	}
+}
+
 func TestHierarchyCombinedChildLimitPreservesAdapterCoverage(t *testing.T) {
 	cwd, codexHome, claudeHome := hierarchyFixtureDir(t), hierarchyFixtureDir(t), hierarchyFixtureDir(t)
 	var codex []agentsessions.SavedSession

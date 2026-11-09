@@ -101,17 +101,21 @@ func (m *projectOnboardModel) viewSettings(b *strings.Builder, title lipgloss.St
 			}
 		}
 	}
-	path = terminalSafe(path)
-	if available := width - len(label); ansi.StringWidth(path) > available {
-		path = ansi.TruncateLeft(path, ansi.StringWidth(path)-available+1, "…")
-	}
-	line(label + path)
+	line(pickerPathLine(label, path, width))
 	fmt.Fprintln(b)
 	if len(m.settings) > 1 {
 		line("↑/↓ switch project")
 	}
 	line("i  ID   s  Coverage   p  Eligibility")
 	line("Enter  Review policy   Esc  Back")
+}
+
+func pickerPathLine(label, path string, width int) string {
+	path = terminalSafe(path)
+	if available, length := width-ansi.StringWidth(label), ansi.StringWidth(path); length > available {
+		path = ansi.TruncateLeft(path, length-available+1, "…")
+	}
+	return label + path
 }
 
 func (m *projectOnboardModel) viewSettingsChoice(b *strings.Builder, title, selected lipgloss.Style) {
