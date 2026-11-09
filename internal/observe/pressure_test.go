@@ -114,3 +114,44 @@ func TestMemoryStatusLevels(t *testing.T) {
 		}
 	}
 }
+
+func TestPressureReasonsShowValuesAndBoundaries(t *testing.T) {
+	now := time.Now()
+	raw := pressureFixture(now)
+	raw.pressure = pressureRaw{load: [3]float64{67, 0, 0}, loadMethod: "test", memoryMethod: "test", memLevel: 2}
+	raw.swap = memoryValues(1000, 140, "host-swap", "test", now)
+	v := pressureView(raw, pressureFixture(now.Add(-2*time.Second)))
+	if v.CPU.Reason != "Run queue per CPU (1m load) 16.7 (critical at ≥4)" {
+		t.Fatalf("cpu reason %q", v.CPU.Reason)
+	}
+	if got := pressureNumber(5.4, "percent") + " " + pressureNumber(1.256, "ratio") + " " + pressureNumber(4, "MiB/second"); got != "5.4% 1.26 4 MiB/s" {
+		t.Fatal("numbers", got)
+	}
+	if v.Memory.Level != model.PressureElevated || v.Memory.Reason != "Kernel memory pressure warn; Swap remaining 14% (elevated at ≤20%)" {
+		t.Fatalf("memory reason %q", v.Memory.Reason)
+	}
+	// Exhausted swap is capped at elevated and says so.
+	raw.swap = memoryValues(1000, 30, "host-swap", "test", now)
+	raw.pressure.memLevel = 1
+	if v := pressureView(raw, pressureFixture(now.Add(-2*time.Second))); v.Memory.Reason != "Swap remaining 3% (elevated at ≤20%)" {
+		t.Fatalf("capped swap reason %q", v.Memory.Reason)
+	}
+	// With PSI, load is forced normal: no threshold and not a reason.
+	raw.pressure.psi = map[string]psiLine{"cpu.some": {avg10: 30}}
+	v = pressureView(raw, pressureFixture(now.Add(-2*time.Second)))
+	for _, s := range v.CPU.Signals {
+		if s.ID == "load.per-cpu" && (s.Level != model.PressureNormal || s.Threshold != "") {
+			t.Fatal("forced-normal load kept a threshold", s)
+		}
+	}
+	if v.CPU.Reason != "CPU stall (some tasks, 10s) 30% (elevated at ≥25%)" {
+		t.Fatalf("psi reason %q", v.CPU.Reason)
+	}
+	// Rounding never shows a value on the next level's boundary.
+	if got := pressureReason(memoryAvailableLow.bound(pressureSignal("memory.available", "RAM available", 8.004, "percent", "test", model.PressureElevated, now), true)); got != "RAM available 8.01% (elevated at ≤15%)" {
+		t.Fatal(got)
+	}
+	if got := pressureReason(loadThreshold.bound(pressureSignal("load.per-cpu", "Load", 1.996, "ratio", "test", model.PressureElevated, now), false)); got != "Load 1.99 (elevated at ≥1.25)" {
+		t.Fatal(got)
+	}
+}

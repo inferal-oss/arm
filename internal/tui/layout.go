@@ -202,11 +202,8 @@ func (m *dashboardModel) selectionID() string {
 func (m *dashboardModel) applySnapshot(data snapshot) {
 	id := m.selectionID()
 	previous := m.selected
-	// The visible Guardian page owns guardian reads; an older or failed
-	// snapshot read must not replace its reading.
-	if m.view == viewGuardian && m.data.guardian != nil {
-		data.guardian = m.data.guardian
-	}
+	// Only the Guardian page reads the guardian; snapshots never carry it.
+	data.guardian = m.data.guardian
 	// A newly accepted status snapshot supersedes labels from earlier pool reads.
 	if m.poolUI != nil {
 		m.poolUI.names = renderLabels{}

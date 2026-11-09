@@ -110,7 +110,7 @@ function applyRoute(route){
  const changingView=view!==name;view=name;ui.put(ARM+'shell',ARM+'view',ARM+({activity:'activityView',host:'hostView'}[name]??name),true);
  ui.bind('heading','Heading').set({label:({monitor:'Host monitor',guardian:'Host guardian',resources:'Resource budgets',leases:'Leases',messages:'Operator messages',activity:'Activity',host:'Host & capabilities',mesh:'Mesh',screen:'Screen Sharing',runs:'Runs',agents:'Agents'})[name]});
  runsConsole?.setActive(name==='runs'&&!remoteDashboard);
- guardianPanel?.setVisible((name==='monitor'||name==='guardian')&&!remoteDashboard);
+ guardianPanel?.setVisible(name==='guardian'&&!remoteDashboard);
  agentsConsole.setActive(name==='agents'&&localOperator());
  if(name==='agents')agentsConsole.applyRoute(route);
  if(name!=='screen')screenViewer?.disconnect();else if(!screenViewer)screenViewer=createScreenViewer({ui,root:roots.screen,token:session?.token,context:session?.context??{local:true}});
@@ -174,9 +174,8 @@ function help(kind,options={}){
 const GiB=1024**3;
 function series(get,{scale=1}={}){const cadence=Number(state.monitor?.cadence_ns??2e9)/1e6,rows=state.history.map(p=>{const v=numeric(get(p));return{id:String(p.sequence),x:Date.parse(p.at)/1000,value:v===null||!Number.isFinite(v)?null:v/scale,label:new Date(p.at).toLocaleTimeString()};});for(let i=0;i<rows.length-1;i++)rows[i].connectNext=Number.isFinite(rows[i].x)&&Number.isFinite(rows[i+1].x)&&rows[i+1].x>rows[i].x&&(rows[i+1].x-rows[i].x)*1000<=cadence*1.6;return rows;}
 let monitorModel=null;
-// One guardian panel serves the Monitor summary and the Guardian page.
-const guardianPanel=createGuardianPanel({ui,call:(...args)=>connection.call(...args),connected:()=>state.connected,onError:error=>notice(error.message),openGuardian:()=>navigation.navigate({view:'guardian',lease:null})});
-owned(roots.guardian,guardianPanel.page);guardianPanel.setVisible((view==='monitor'||view==='guardian')&&!remoteDashboard);
+const guardianPanel=createGuardianPanel({ui,call:(...args)=>connection.call(...args),connected:()=>state.connected,onError:error=>notice(error.message)});
+owned(roots.guardian,guardianPanel.page);guardianPanel.setVisible(view==='guardian'&&!remoteDashboard);
 function renderGuardian(){const sample=state.monitor?.latest;if(!sample)return;guardianPanel.updatePressure(sample,state.history,monitorStale(state.monitor,state.connected,performance.now()-state.received),series);}
 function initMonitor(){
  ui.put(monitorCards.iri,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',ARM+'MonitorSurface',true);
@@ -194,14 +193,14 @@ function initMonitor(){
   const card=ui.card(title,[quality,summary,rates,ui.grid([readChart,writeChart],{columns:2,minWidth:'140px',gap:2}),selector,ui.text('Reported counters may overlap. Unknown or reset counters leave gaps.')],{actions:[help(key)]});io[key]={summary,rates,readChart,writeChart,selectors,quality,deviceMap,card};
  }
  const gpu=ui.card('GPU monitoring',[ui.text('Unavailable in this build')],{actions:[help('gpu')]});
- owned(monitorCards,[ui.grid(guardianPanel.cards,{columns:2,minWidth:'320px',gap:2}),ui.grid([cpuValue,ramValue,diskValue],{columns:3,minWidth:'180px',gap:2}),ui.grid([cpuCard,ramCard,diskCard],{columns:3,minWidth:'220px',gap:2}),ui.grid([io.disk_io.card,io.network.card],{columns:2,minWidth:'320px',gap:2}),gpu]);
+ owned(monitorCards,[ui.grid([cpuValue,ramValue,diskValue],{columns:3,minWidth:'180px',gap:2}),ui.grid([cpuCard,ramCard,diskCard],{columns:3,minWidth:'220px',gap:2}),ui.grid([io.disk_io.card,io.network.card],{columns:2,minWidth:'320px',gap:2}),gpu]);
  monitorModel={cpuValue,cpuChart,cpuNote,cores,coreMap:new Map(),ramValue,ramChart,ramFacts,ramNote,diskValue,diskChart,diskFacts,diskNote,io};
 }
 function updateDescriptions(handle,pairs){const stamp=JSON.stringify(pairs);if(handle.stamp===stamp)return;handle.stamp=stamp;handle.setPairs(pairs);}
 function renderMonitor(){if(paused)return;const sample=state.monitor?.latest;if(!sample)return;
  const stale=monitorStale(state.monitor,state.connected,performance.now()-state.received);lastMonitorStale=stale;
  ui.batch(()=>{if(!monitorModel)initMonitor();const m=monitorModel;
-  monitorFresh.set({label:(stale?'Stale observations':'Live host observations')+' · '+when(sample.at)});guardianPanel?.updatePressure(sample,state.history,stale,series);
+  monitorFresh.set({label:(stale?'Stale observations':'Live host observations')+' · '+when(sample.at)});
   m.cpuValue.set({value:percent(sample.cpu_busy_percent.value)});m.cpuNote.set({label:`${sample.cores?.length??0} logical cores · includes work outside ARM`});m.cpuChart.setSeries(series(p=>p.cpu_busy_percent),{min:0,max:100,unit:'%'});
   const ids=new Set();for(const core of sample.cores??[]){ids.add(core.id);let bar=m.coreMap.get(core.id);if(!bar){bar=ui.progress(core.id+' unavailable',null);m.coreMap.set(core.id,bar);}bar.set({label:core.id+' '+percent(core.busy_percent.value),value:core.busy_percent.value??0,active:core.busy_percent.value!==null});}
   for(const[id,bar]of m.coreMap)if(!ids.has(id)){m.coreMap.delete(id);bar.dispose();}m.cores.replace(...[...ids].map(id=>m.coreMap.get(id)));

@@ -491,10 +491,13 @@ arm:ResourceHelpFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug
 
 # Monitor hooks remain noninteractive; native controls and data stay unchanged.
 arm:MonitorSurface a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-monitor-surface" .
-# Guardian cards are stock Cards; the classes only name them for checks.
-arm:PressureCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-pressure-card" .
-arm:GuardianCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-guardian-card" .
+# The guardian status card is a stock Card; the class only names it for checks.
 arm:GuardianStatusCard a owl:Class ; rdfs:subClassOf c:Card ; sem:slug "arm-guardian-status-card" .
+# Commands shown in monospace; each button copies its command when clicked.
+arm:CommandRow a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-command-row" .
+[] a sty:StyleRule ; sty:appliesTo arm:CommandRow ; sty:part "[data-sem-c=\"button\"]" ;
+ sty:declares [ sty:property "font-family" ; sty:raw "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" ] ,
+              [ sty:property "font-size" ; sty:raw "0.875em" ] .
 arm:MonitorDeviceSelectors a owl:Class ; rdfs:subClassOf c:Grid ; sem:slug "arm-monitor-device-selectors" .
 arm:MonitorHelpBody a owl:Class ; rdfs:subClassOf c:Stack ; sem:slug "arm-monitor-help-body" .
 arm:MonitorHelpFacts a owl:Class ; rdfs:subClassOf c:DescriptionList ; sem:slug "arm-monitor-help-facts" .

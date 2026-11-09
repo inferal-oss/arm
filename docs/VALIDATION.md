@@ -1,5 +1,26 @@
 # Validation record
 
+## Guardian page polish and pressure numbers — scoped evidence
+
+- Monitor in both dashboards no longer shows pressure or guardian panels, and
+  terminal snapshots no longer read the guardian; a reconnect clears the
+  previous backend's guardian reading.
+- The Guardian page status summary (verdict badge, mode, role, hourly budget,
+  incidents; in the terminal also pressure and the ladder) renders at 130 and
+  70 columns and in headless Chrome against a temporary observe-mode backend.
+  In Chrome, clicking a monospace ladder command copied it to the clipboard
+  and showed a confirmation that cleared after two seconds.
+- Pressure reasons include values and the boundary reached, rounded away
+  from the next boundary; capped swap, forced-normal load under PSI and
+  macOS kernel level names are covered by tests.
+- macOS arm64: `internal/observe`, `internal/model`, `internal/guardian` and
+  `internal/tui` pass in full; the guardian, pressure and Monitor tests of
+  `internal/cli` and `internal/server` pass; 253 Semblance and 217 core web
+  cases pass, and the bundle was rebuilt.
+- An independent review found one medium issue (a reconnect kept the previous
+  backend's guardian reading) and four low ones (rounding onto a boundary,
+  two documentation statements, test coverage); all are fixed.
+
 ## Guardian dashboard page — scoped evidence
 
 - Terminal: model tests cover navigation order and keys, mouse selection,

@@ -314,6 +314,9 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.events = nil
 		m.guardianLoading = false
 		m.guardianConfirm = nil
+		// The backend may have changed; its guardian is read afresh.
+		m.data.guardian = nil
+		m.guardianErr = ""
 		m.applySnapshot(msg.data)
 		m.connected = true
 		m.retry = 0
@@ -326,7 +329,7 @@ func (m *dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.view == 6 && m.meshUI != nil {
 			return m, tea.Batch(waitStream(m.ctx, m.session), m.readMesh("list", ""))
 		}
-		return m, tea.Batch(waitStream(m.ctx, m.session), m.readPeers(false))
+		return m, tea.Batch(waitStream(m.ctx, m.session), m.readPeers(false), m.readGuardian(true))
 	case reconnectMsg:
 		if !m.connected && !m.connecting {
 			m.connecting = true

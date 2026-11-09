@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {pressureRows,worstRank,guardianView,activeReversible,verdictOf,ladderRows} from './guardian.mjs';
+import {pressureRows,worstRank,guardianView,activeReversible,verdictOf,ladderRows,verdictParts,statusFacts} from './guardian.mjs';
 
 test('pressure rows never present stale or missing levels as normal',()=>{
   const rows=pressureRows({cpu:{level:'critical',reason:'Run queue per CPU (1m load)'},memory:{level:'normal'},io:{}},false);
@@ -20,7 +20,11 @@ test('guardian view offers undo only for active reversible actions',()=>{
   assert.equal(activeReversible({...base,outcome:'planned'}),false);
   assert.equal(activeReversible({...base,outcome:'applied',reverted_at:'2026-11-08T00:01:00Z'}),false);
   const v=guardianView({mode:'act',role:'manned',budget:{used:2,limit:12},incidents:[],groups:[{name:'Chrome',cpu_cores:17.3,memory_bytes:2**31,disk_bytes_per_second:0,processes:190,protected:'',state:['deprioritize']}],actions:[{...base,outcome:'applied'}]});
-  assert.equal(v.headline,'Host guardian · act mode · manned host');
+  const facts=statusFacts({mode:'act',role:'manned',budget:{used:12,limit:12},incidents:[{}]});
+  assert.deepEqual(facts.map(f=>[f.label,f.value,f.tone]),[['Mode','act','success'],['Host','manned','neutral'],['Actions this hour','12 / 12','warning'],['Open incidents','1','warning']]);
+  assert.deepEqual(verdictParts({level:'high',tone:'warning',text:'Under pressure: CPU high · 1 open incident(s)'}),{label:'Under pressure',text:'CPU high · 1 open incident(s)'});
+  assert.deepEqual(verdictParts({level:'unknown',text:'Pressure unknown: no observations yet'}),{label:'Unknown',text:'No observations yet'});
+  assert.deepEqual(verdictParts({level:'normal',partial:true,text:'No pressure detected; I/O unknown'}).label,'Partly unknown');
   assert.equal(v.groups[0][1],'17.3');assert.equal(v.groups[0][5],'deprioritize');
   assert.equal(v.actions[0].undo,true);
   assert.equal(guardianView({mode:'off'}).off,true);

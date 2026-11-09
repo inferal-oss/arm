@@ -7011,9 +7011,8 @@ in `internal/observe/pressure*.go`, host-wide process inspection in
 `internal/manager/guardian.go`, server operations in
 `internal/server/guardian.go`, `arm guardian` in `internal/cli/guardian.go` (status and `--watch` in
 `guardian_watch.go`, ladder commands and editor in `guardian_ladder*.go`), the
-terminal pressure window and Guardian page in `internal/tui/guardian.go` and
-the web Monitor cards and Guardian page in
-`internal/server/web/semblance/guardian.mjs`. Behavior, thresholds, safety rules
+terminal Guardian page in `internal/tui/guardian.go` and the web Guardian
+page in `internal/server/web/semblance/guardian.mjs`. Behavior, thresholds, safety rules
 and limits are in [HOST-GUARDIAN.md](HOST-GUARDIAN.md).
 
 Implemented: pressure levels with unknown never treated as normal; app-bundle,

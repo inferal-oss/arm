@@ -72,11 +72,6 @@ func readSnapshot(ctx context.Context, session transport) (snapshot, error) {
 	if err := session.Call(ctx, "agents", nil, &data.contacts); err != nil {
 		return data, err
 	}
-	// Older backends lack the guardian; its panel then stays absent.
-	var g model.GuardianStatus
-	if session.Call(ctx, "guardian_status", nil, &g) == nil {
-		data.guardian = &g
-	}
 	if hasLeaseCheckins(data.status) {
 		if err := session.Call(ctx, "lease_review_list", model.LeaseReviewQuery{Pending: true}, &data.reviews); err != nil {
 			data.reviewError = err.Error()

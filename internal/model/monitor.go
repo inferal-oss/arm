@@ -66,6 +66,9 @@ type PressureSignal struct {
 	Value Measurement `json:"value"`
 	// Level is the level this signal alone indicates.
 	Level string `json:"level"`
+	// Threshold is the boundary of that level, such as "≥2" or "≤20%",
+	// when the level comes from a numeric threshold.
+	Threshold string `json:"threshold,omitempty"`
 }
 type PressureReading struct {
 	Level   string           `json:"level"`

@@ -13,6 +13,13 @@ monitor sample (`pressure` in `arm monitor --json`) and to its bounded history.
 Each resource has a level: `normal`, `elevated`, `high`, `critical`, or
 `unknown`. A reading reports the highest level among its known signals. A
 resource with no known signal is unknown, and unknown never causes action.
+Its reason names each signal at that level with its value and, for a
+numeric signal, the boundary it reached, such as `Swap remaining 5.4%
+(elevated at ≤20%)`; such a signal also carries that boundary as
+`threshold`. macOS kernel memory pressure has no number and reports its
+kernel level name, such as `Kernel memory pressure warn`. Values are rounded
+away from the next boundary, so a shown value never appears to reach a level
+it has not.
 
 | Resource | Linux | macOS |
 |---|---|---|
@@ -144,9 +151,13 @@ pressure, a frozen group is therefore no longer the culprit.
   browser. A remote node's dashboard has no Guardian page.
 - In the terminal page, `↑↓` select an action, `Enter` inspects it, `x` asks to
   undo it and `y` confirms; any other key keeps it.
-- The terminal Monitor view starts with a pressure window and the guardian's
-  latest state. The web Monitor view shows a Host pressure card with level
-  history and a Host guardian summary that opens the Guardian page.
+- The page opens with a status summary: a verdict badge and sentence, the
+  mode, host role, actions used of the hourly budget and open incidents. In
+  the terminal, pressure per resource and the ladder are part of it; in the
+  browser, pressure has its own card with level history, and the ladder card
+  shows its commands in monospace, each copied to the clipboard on click.
+- Monitor shows host measurements only; guardian state and pressure are on
+  the Guardian page, and dashboard snapshots no longer read the guardian.
 
 ## Limitations
 

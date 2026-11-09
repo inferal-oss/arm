@@ -51,7 +51,7 @@ func TestGuardianPageSitsBesideMonitorWithoutMovingNumberKeys(t *testing.T) {
 	}
 	drain(t, m, cmd)
 	text := ansi.Strip(m.View().Content)
-	for _, want := range []string{"Under pressure: CPU high", "1 open incident", "Mode act · manned host · 1 of 12", "notify high 15s → deprioritize high 30s", "Runaway.app", "INCIDENTS", "deprioritize", "[x] undo", "[g Guardian]"} {
+	for _, want := range []string{"UNDER PRESSURE", "CPU high · 1 open incident", "act · runs every step", "manned · operator present", "1/12 this hour", "HIGH · load 2.4 per CPU", "notify ≥high 15s › deprioritize ≥high 30s", "Runaway.app", "INCIDENTS", "deprioritize", "[x] undo", "[g Guardian]"} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("guardian page lacks %q:\n%s", want, text)
 		}
@@ -131,7 +131,7 @@ func TestGuardianPageReportsOffUnknownAndUnavailable(t *testing.T) {
 	m.data.guardian = &model.GuardianStatus{Mode: model.GuardianOff, Role: model.GuardianManned}
 	m.guardianErr = ""
 	text := ansi.Strip(m.View().Content)
-	if !strings.Contains(text, "Pressure unknown: no observations yet") || !strings.Contains(text, "Guardian off") || strings.Contains(text, "All clear") {
+	if !strings.Contains(text, "UNKNOWN") || !strings.Contains(text, "No observations yet") || !strings.Contains(text, "MODE    off") || !strings.Contains(text, "observes nothing and acts on nothing") || !strings.Contains(text, "arm config set guardian.enabled true") || strings.Contains(text, "ALL CLEAR") || strings.Contains(text, "LADDER") {
 		t.Fatal(text)
 	}
 	// The page polls only while visible and not more often than its period.
@@ -143,6 +143,34 @@ func TestGuardianPageReportsOffUnknownAndUnavailable(t *testing.T) {
 	m.timeNow = m.timeNow.Add(time.Minute)
 	if m.readGuardian(false) != nil {
 		t.Fatal("polled while hidden")
+	}
+}
+
+func TestMonitorLeavesGuardianToItsPage(t *testing.T) {
+	m, s := fixtureDashboard(t)
+	m.width, m.height = 130, 40
+	m.data.guardian = guardianFixture()
+	m.page.Latest = &model.MonitorSnapshot{Pressure: model.MonitorPressure{CPU: model.PressureReading{Level: model.PressureHigh}}}
+	text := ansi.Strip(m.monitorText())
+	for _, gone := range []string{"PRESSURE", "Guardian", "guardian"} {
+		if strings.Contains(text, gone) {
+			t.Fatalf("Monitor still shows %q:\n%s", gone, text)
+		}
+	}
+	// Snapshots never read the guardian, and keep the page's reading.
+	data, err := readSnapshot(m.ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, op := range s.operations {
+		if op == "guardian_status" {
+			t.Fatal("snapshot read the guardian")
+		}
+	}
+	kept := m.data.guardian
+	m.applySnapshot(data)
+	if m.data.guardian != kept {
+		t.Fatal("snapshot dropped the guardian reading")
 	}
 }
 
@@ -187,8 +215,16 @@ func TestGuardianReviewRegressions(t *testing.T) {
 	m.data.guardian = guardianFixture()
 	undone := 0
 	s.reply = func(op string, _ any, result any) error {
-		if op == "guardian_undo" {
+		switch op {
+		case "guardian_undo":
 			undone++
+		case "guardian_status":
+			g := guardianFixture()
+			if undone > 0 {
+				now := time.Now()
+				g.Actions[0].RevertedAt = &now
+			}
+			*result.(*model.GuardianStatus) = *g
 		}
 		return nil
 	}
@@ -232,11 +268,56 @@ func TestGuardianReviewRegressions(t *testing.T) {
 	}
 	m.feedFocus = false
 
-	// A reconnect retires an in-flight read so polling resumes.
+	// A reconnect retires an in-flight read and reads again at once.
 	m.guardianLoading = true
+	_, cmd := m.Update(connectedMsg{session: s, data: m.data})
+	// The batch also waits on the event stream, which never ends here.
+	for _, c := range cmd().(tea.BatchMsg) {
+		done := make(chan tea.Msg, 1)
+		go func() { done <- c() }()
+		select {
+		case msg := <-done:
+			if msg != nil {
+				m.Update(msg)
+			}
+		case <-time.After(200 * time.Millisecond):
+		}
+	}
+	if m.guardianLoading || m.data.guardian == nil {
+		t.Fatal("read stuck or reading lost after reconnect")
+	}
+
+	// A reconnect never shows the previous backend's reading, even when the
+	// new backend cannot report its guardian.
+	m.view = 0
 	m.Update(connectedMsg{session: s, data: m.data})
-	if m.guardianLoading {
-		t.Fatal("read stuck after reconnect")
+	if m.data.guardian != nil {
+		t.Fatal("reconnect kept the previous backend's guardian")
+	}
+	m.view = viewGuardian
+	s.reply = func(op string, _ any, _ any) error { return errors.New("unknown operation guardian_status") }
+	drain(t, m, m.readGuardian(true))
+	if text := ansi.Strip(m.View().Content); !strings.Contains(text, "Guardian status unavailable") || m.guardianConfirm != nil {
+		t.Fatal("reconnected page shows an old reading", text)
+	}
+	press(m, "x")
+	if m.guardianConfirm != nil {
+		t.Fatal("undo armed with no reading")
+	}
+	m.data.guardian = guardianFixture()
+	s.reply = func(op string, _ any, result any) error {
+		switch op {
+		case "guardian_undo":
+			undone++
+		case "guardian_status":
+			g := guardianFixture()
+			if undone > 0 {
+				now := time.Now()
+				g.Actions[0].RevertedAt = &now
+			}
+			*result.(*model.GuardianStatus) = *g
+		}
+		return nil
 	}
 
 	// A snapshot does not replace the visible page's reading.

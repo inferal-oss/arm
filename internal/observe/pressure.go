@@ -3,6 +3,7 @@ package observe
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 	"time"
 
@@ -82,6 +83,83 @@ func (t pressureThreshold) inverted(v float64) string {
 	return model.PressureNormal
 }
 
+// bound records the boundary of the signal's own level, so a reason can
+// say how far a value went, not only that it crossed a line.
+func (t pressureThreshold) bound(s model.PressureSignal, inverted bool) model.PressureSignal {
+	edge, ok := map[string]float64{model.PressureElevated: t.elevated, model.PressureHigh: t.high, model.PressureCritical: t.critical}[s.Level]
+	if !ok {
+		return s
+	}
+	op := "≥"
+	if inverted {
+		op = "≤"
+	}
+	s.Threshold = op + pressureNumber(edge, s.Value.Unit)
+	return s
+}
+
+// pressureNumber formats a signal value with its unit.
+func pressureNumber(v float64, unit string) string {
+	return pressureNumberToward(v, unit, 0)
+}
+
+// pressureNumberToward rounds down (toward < 0), up (> 0) or to nearest, so
+// a shown value never appears to reach a boundary it has not reached.
+func pressureNumberToward(v float64, unit string, toward int) string {
+	text := strconvFloat(v, toward)
+	switch unit {
+	case "percent":
+		return text + "%"
+	case "MiB/second":
+		return text + " MiB/s"
+	case "requests":
+		return text + " requests"
+	}
+	return text
+}
+
+func strconvFloat(v float64, toward int) string {
+	scale := 100.0
+	if math.Abs(v) >= 10 {
+		scale = 10
+	}
+	round := math.Round
+	if toward < 0 {
+		round = math.Floor
+	} else if toward > 0 {
+		round = math.Ceil
+	}
+	return strconv.FormatFloat(round(v*scale)/scale, 'f', -1, 64)
+}
+
+// pressureReason is one signal as evidence: its label, value and the
+// boundary it reached.
+func pressureReason(s model.PressureSignal) string {
+	text := s.Label
+	if v := s.Value.Value; v != nil {
+		if s.Value.Unit == "level" {
+			if name := darwinMemoryLevels[int(*v)]; name != "" {
+				text += " " + name
+			}
+		} else {
+			// A rising signal rounds down and a falling one up, so the
+			// value stays on its own side of the next level's boundary.
+			toward := -1
+			if strings.HasPrefix(s.Threshold, "≤") {
+				toward = 1
+			}
+			text += " " + pressureNumberToward(*v, s.Value.Unit, toward)
+		}
+	}
+	if s.Threshold != "" {
+		text += " (" + s.Level + " at " + s.Threshold + ")"
+	}
+	return text
+}
+
+// darwinMemoryLevels names kernel memory status levels.
+var darwinMemoryLevels = map[int]string{1: "normal", 2: "warn", 4: "critical"}
+
 func pressureSignal(id, label string, value float64, unit, method, level string, at time.Time) model.PressureSignal {
 	return model.PressureSignal{ID: id, Label: label, Value: monitorValue(value, unit, "host", method, at), Level: level}
 }
@@ -103,7 +181,7 @@ func combine(signals []model.PressureSignal) model.PressureReading {
 			best, reasons = rank, nil
 		}
 		if rank == best && rank > 0 {
-			reasons = append(reasons, s.Label)
+			reasons = append(reasons, pressureReason(s))
 		}
 	}
 	if best >= 0 {
@@ -123,7 +201,7 @@ func pressureView(raw, previous monitorRaw) model.MonitorPressure {
 	// CPU
 	if p.psiErr == nil && p.psi != nil {
 		if l, ok := p.psi["cpu.some"]; ok {
-			cpu = append(cpu, pressureSignal("psi.cpu.some", "CPU stall (some tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/cpu", psiCPUSome.level(l.avg10), at))
+			cpu = append(cpu, psiCPUSome.bound(pressureSignal("psi.cpu.some", "CPU stall (some tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/cpu", psiCPUSome.level(l.avg10), at), false))
 		}
 	}
 	if p.loadErr == nil && cpus > 0 {
@@ -134,7 +212,7 @@ func pressureView(raw, previous monitorRaw) model.MonitorPressure {
 			// uninterruptible I/O waits on Linux.
 			level = model.PressureNormal
 		}
-		cpu = append(cpu, pressureSignal("load.per-cpu", "Run queue per CPU (1m load)", ratio, "ratio", p.loadMethod, level, at))
+		cpu = append(cpu, loadThreshold.bound(pressureSignal("load.per-cpu", "Run queue per CPU (1m load)", ratio, "ratio", p.loadMethod, level, at), false))
 	} else {
 		detail := "load average unavailable"
 		if p.loadErr != nil {
@@ -145,10 +223,10 @@ func pressureView(raw, previous monitorRaw) model.MonitorPressure {
 	// Memory
 	if p.psiErr == nil && p.psi != nil {
 		if l, ok := p.psi["memory.some"]; ok {
-			memory = append(memory, pressureSignal("psi.memory.some", "Memory stall (some tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/memory", psiMemorySome.level(l.avg10), at))
+			memory = append(memory, psiMemorySome.bound(pressureSignal("psi.memory.some", "Memory stall (some tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/memory", psiMemorySome.level(l.avg10), at), false))
 		}
 		if l, ok := p.psi["memory.full"]; ok {
-			memory = append(memory, pressureSignal("psi.memory.full", "Memory stall (all tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/memory", psiMemoryFull.level(l.avg10), at))
+			memory = append(memory, psiMemoryFull.bound(pressureSignal("psi.memory.full", "Memory stall (all tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/memory", psiMemoryFull.level(l.avg10), at), false))
 		}
 	}
 	if p.memoryMethod != "" {
@@ -168,7 +246,7 @@ func pressureView(raw, previous monitorRaw) model.MonitorPressure {
 		}
 	}
 	if rate, ok := pageRate(p, previous.pressure, raw.at.Sub(previous.at)); ok {
-		memory = append(memory, pressureSignal("swap.rate", "Swap traffic", rate, "MiB/second", p.vmMethod, swapRateThreshold.level(rate), at))
+		memory = append(memory, swapRateThreshold.bound(pressureSignal("swap.rate", "Swap traffic", rate, "MiB/second", p.vmMethod, swapRateThreshold.level(rate), at), false))
 	} else if p.vmMethod != "" {
 		memory = append(memory, pressureUnknownSignal("swap.rate", "Swap traffic", "MiB/second", p.vmMethod, "two consecutive valid samples are required", at))
 	}
@@ -177,7 +255,7 @@ func pressureView(raw, previous monitorRaw) model.MonitorPressure {
 		// the remaining evidence. Darwin excludes compressible memory, so
 		// it is not used there.
 		pct := 100 * *a / *t
-		memory = append(memory, pressureSignal("memory.available", "RAM available", pct, "percent", raw.memory.Available.Method, memoryAvailableLow.inverted(pct), at))
+		memory = append(memory, memoryAvailableLow.bound(pressureSignal("memory.available", "RAM available", pct, "percent", raw.memory.Available.Method, memoryAvailableLow.inverted(pct), at), true))
 	}
 	if t, a := raw.swap.Total.Value, raw.swap.Available.Value; t != nil && a != nil && *t > 0 && *t-*a > 0 {
 		pct := 100 * *a / *t
@@ -186,15 +264,15 @@ func pressureView(raw, previous monitorRaw) model.MonitorPressure {
 			// Exhausted swap alone is not stalling; it limits headroom.
 			level = model.PressureElevated
 		}
-		memory = append(memory, pressureSignal("swap.remaining", "Swap remaining", pct, "percent", raw.swap.Available.Method, level, at))
+		memory = append(memory, swapRemainingLow.bound(pressureSignal("swap.remaining", "Swap remaining", pct, "percent", raw.swap.Available.Method, level, at), true))
 	}
 	// I/O
 	if p.psiErr == nil && p.psi != nil {
 		if l, ok := p.psi["io.some"]; ok {
-			io = append(io, pressureSignal("psi.io.some", "I/O stall (some tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/io", psiIOSome.level(l.avg10), at))
+			io = append(io, psiIOSome.bound(pressureSignal("psi.io.some", "I/O stall (some tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/io", psiIOSome.level(l.avg10), at), false))
 		}
 		if l, ok := p.psi["io.full"]; ok {
-			io = append(io, pressureSignal("psi.io.full", "I/O stall (all tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/io", psiIOFull.level(l.avg10), at))
+			io = append(io, psiIOFull.bound(pressureSignal("psi.io.full", "I/O stall (all tasks, 10s)", l.avg10, "percent", "proc:/proc/pressure/io", psiIOFull.level(l.avg10), at), false))
 		}
 	}
 	if depth, name, ok := diskQueue(raw, previous); ok {
@@ -202,7 +280,7 @@ func pressureView(raw, previous monitorRaw) model.MonitorPressure {
 		if len(io) > 0 {
 			level = model.PressureNormal
 		}
-		io = append(io, pressureSignal("disk.queue", "Busiest disk queue ("+name+")", depth, "requests", raw.diskMethod, level, at))
+		io = append(io, diskQueueThreshold.bound(pressureSignal("disk.queue", "Busiest disk queue ("+name+")", depth, "requests", raw.diskMethod, level, at), false))
 	} else if len(io) == 0 {
 		io = append(io, pressureUnknownSignal("disk.queue", "Busiest disk queue", "requests", raw.diskMethod, "disk service-time counters require two consecutive valid samples", at))
 	}

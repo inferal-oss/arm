@@ -8,6 +8,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"getarm.org/internal/model"
+	"github.com/charmbracelet/x/ansi"
 )
 
 // viewGuardian is the Guardian page. It is listed beside Monitor but keeps
@@ -57,49 +58,6 @@ func pressureTone(levels ...string) string {
 		return "warning"
 	}
 	return "accent"
-}
-
-// pressureWindow shows CPU, memory and I/O pressure levels with their
-// strongest evidence, and the host guardian's latest state.
-func (m *dashboardModel) pressureWindow(s *model.MonitorSnapshot, width int) string {
-	inner := width - 4
-	stale := m.monitorStale()
-	cells := []string{}
-	levels := []string{}
-	for _, r := range []struct {
-		name string
-		p    model.PressureReading
-	}{{"CPU", s.Pressure.CPU}, {"MEMORY", s.Pressure.Memory}, {"I/O", s.Pressure.IO}} {
-		level := r.p.Level
-		if level == "" || stale {
-			level = model.PressureUnknown
-		}
-		levels = append(levels, level)
-		cell := muted.Render(r.name+" ") + pressureStyle(level).Render(strings.ToUpper(level))
-		if r.p.Reason != "" && level != model.PressureUnknown && level != model.PressureNormal {
-			cell += muted.Render(" · " + r.p.Reason)
-		}
-		cells = append(cells, fitBlock(cell, inner/3, 1))
-	}
-	lines := []string{strings.Join(cells, "")}
-	g := m.data.guardian
-	switch {
-	case g == nil:
-	case g.Mode == model.GuardianOff:
-		lines = append(lines, muted.Render("Host guardian off · enable: arm config set guardian.enabled true"))
-	default:
-		line := fmt.Sprintf("Guardian %s · %s · %d/%d actions this hour", g.Mode, g.Role, g.Budget.Used, g.Budget.Limit)
-		if len(g.Incidents) > 0 {
-			i := g.Incidents[0]
-			line += fmt.Sprintf(" · %s incident since %s", i.Resource, i.Since.Local().Format("15:04:05"))
-		}
-		if len(g.Actions) > 0 {
-			a := g.Actions[0]
-			line += fmt.Sprintf(" · last: %s %s (%s)", a.Step, a.GroupName, a.Outcome)
-		}
-		lines = append(lines, fitBlock(line, inner, 1))
-	}
-	return window("PRESSURE", strings.Join(lines, "\n"), width, 0, false, pressureTone(levels...))
 }
 
 // readGuardian reads guardian status when the visible Guardian page is due.
@@ -232,15 +190,140 @@ func guardianRate(v *float64) string {
 	return fmt.Sprintf("%.1f MiB/s", *v/(1<<20))
 }
 
-func guardianLadderLine(ladder []model.GuardianStepRule) string {
+// guardianLadderLines shows the ladder as steps in order, each with its
+// minimum level and delay, wrapped to width.
+func guardianLadderLines(ladder []model.GuardianStepRule, width int) []string {
 	if len(ladder) == 0 {
-		return "no steps"
+		return []string{muted.Render("no steps")}
 	}
-	parts := make([]string, 0, len(ladder))
-	for _, r := range ladder {
-		parts = append(parts, fmt.Sprintf("%s %s %s", r.Step, r.Level, r.After.Round(time.Second)))
+	arrow := muted.Render(" › ")
+	lines, line := []string{}, ""
+	for i, r := range ladder {
+		step := strong.Render(r.Step) + " " + pressureStyle(r.Level).Render("≥"+r.Level) + muted.Render(" "+r.After.Round(time.Second).String())
+		if i < len(ladder)-1 {
+			step += arrow
+		}
+		if line != "" && ansi.StringWidth(line)+ansi.StringWidth(step) > width {
+			lines, line = append(lines, line), ""
+		}
+		line += step
 	}
-	return strings.Join(parts, " → ")
+	return append(lines, line)
+}
+
+func guardianTone(v model.GuardianVerdict) string {
+	switch {
+	case v.Level == model.PressureUnknown:
+		return ""
+	case v.Partial:
+		return "warning"
+	case v.Level != model.PressureNormal:
+		return pressureTone(v.Level)
+	}
+	return "accent"
+}
+
+// guardianBadge names the verdict in a reversed label, and returns the rest
+// of its sentence.
+func guardianBadge(v model.GuardianVerdict) (string, string) {
+	label, style := "ALL CLEAR", accent
+	switch {
+	case v.Level == model.PressureUnknown:
+		label, style = "UNKNOWN", muted
+	case v.Partial:
+		label, style = "PARTLY UNKNOWN", lipgloss.NewStyle().Foreground(colorWarning)
+	case v.Level != model.PressureNormal:
+		label, style = "UNDER PRESSURE", pressureStyle(v.Level)
+	}
+	text := v.Text
+	if _, rest, ok := strings.Cut(text, ": "); ok {
+		text = strings.ToUpper(rest[:1]) + rest[1:]
+	}
+	return style.Bold(true).Reverse(true).Render(" " + label + " "), text
+}
+
+var guardianModeHint = map[string]string{
+	model.GuardianObserve: "records steps, runs none",
+	model.GuardianAdvise:  "notifies and asks only",
+	model.GuardianAct:     "runs every step",
+}
+
+// guardianSummary is the status window: the verdict, the guardian's mode,
+// role and hourly budget, pressure per resource, and the ladder.
+func (m *dashboardModel) guardianSummary(g *model.GuardianStatus, inner int) string {
+	badge, text := guardianBadge(model.GuardianVerdictOf(*g))
+	updated := "updated " + g.At.Local().Format("15:04:05")
+	if g.At.IsZero() {
+		updated = "no reading yet"
+	}
+	warn := lipgloss.NewStyle().Foreground(colorWarning)
+	if m.guardianErr != "" {
+		updated = warn.Render("stale · " + short(m.guardianErr, 40))
+	} else {
+		updated = muted.Render(updated)
+	}
+	lines := []string{align(badge+"  "+strong.Render(text), updated, inner), ""}
+
+	// The guardian's facts sit beside pressure per resource; narrow
+	// windows stack them.
+	cell := func(label, value string, width int) string {
+		return fitBlock(muted.Render(fmt.Sprintf("%-8s", label))+value, width, 1)
+	}
+	mode := strong.Render(g.Mode)
+	if hint := guardianModeHint[g.Mode]; hint != "" {
+		mode += muted.Render(" · " + hint)
+	}
+	role := strong.Render(g.Role) + muted.Render(map[string]string{model.GuardianManned: " · operator present", model.GuardianUnmanned: " · unattended"}[g.Role])
+	used, limit := float64(g.Budget.Used), float64(g.Budget.Limit)
+	budget := bar(&used, &limit, 8, "") + fmt.Sprintf(" %d/%d", g.Budget.Used, g.Budget.Limit) + muted.Render(" this hour")
+	facts := [][2]string{{"MODE", mode}, {"HOST", role}, {"ACTIONS", budget}}
+	pressure := [][2]string{}
+	for _, r := range []struct {
+		name string
+		p    model.PressureReading
+	}{{"CPU", g.Pressure.CPU}, {"MEMORY", g.Pressure.Memory}, {"I/O", g.Pressure.IO}} {
+		level := r.p.Level
+		if level == "" || g.Stale {
+			level = model.PressureUnknown
+		}
+		value := pressureStyle(level).Render(strings.ToUpper(level))
+		if r.p.Reason != "" && level != model.PressureUnknown {
+			value += muted.Render(" · " + r.p.Reason)
+		}
+		pressure = append(pressure, [2]string{r.name, value})
+	}
+	if inner < 72 {
+		for _, c := range append(facts, pressure...) {
+			lines = append(lines, cell(c[0], c[1], inner))
+		}
+	} else {
+		left := inner / 2
+		for i := range facts {
+			lines = append(lines, cell(facts[i][0], facts[i][1], left-2)+"  "+cell(pressure[i][0], pressure[i][1], inner-left))
+		}
+	}
+	lines = append(lines, "")
+
+	if g.Mode == model.GuardianOff {
+		lines = append(lines, muted.Render("The guardian observes nothing and acts on nothing."), "Enable it: "+accent.Render("arm config set guardian.enabled true")+muted.Render(", then restart the backend."))
+	} else {
+		ladder := guardianLadderLines(g.Ladder, max(1, inner-8))
+		for i, l := range ladder {
+			label := "        "
+			if i == 0 {
+				label = muted.Render("LADDER  ")
+			}
+			lines = append(lines, label+l)
+		}
+		lines = append(lines, muted.Render("        change it with ")+accent.Render("arm guardian ladder edit"))
+	}
+	if g.Inventory != "" {
+		lines = append(lines, warn.Render(short("Inventory: "+g.Inventory, inner)))
+	}
+	if g.Stale || m.guardianErr != "" {
+		lines = append(lines, warn.Render("Pressure is stale or unavailable; the guardian holds all actions."))
+	}
+	return strings.Join(lines, "\n")
 }
 
 // guardianText is the Guardian page: a verdict, pressure, the guardian's
@@ -256,62 +339,7 @@ func (m *dashboardModel) guardianText() string {
 		}
 		return window("HOST GUARDIAN", body, width, 0, false, "")
 	}
-	stale := g.Stale || m.guardianErr != ""
-	v := model.GuardianVerdictOf(*g)
-	tone, style := "accent", accent.Bold(true)
-	switch {
-	case v.Level == model.PressureUnknown:
-		tone, style = "", muted
-	case v.Partial:
-		tone, style = "warning", lipgloss.NewStyle().Foreground(colorWarning)
-	case v.Level != model.PressureNormal:
-		tone, style = pressureTone(v.Level), pressureStyle(v.Level)
-	}
-	updated := "updated " + g.At.Local().Format("15:04:05")
-	if g.At.IsZero() {
-		updated = "no reading yet"
-	}
-	if m.guardianErr != "" {
-		updated = "stale · " + short(m.guardianErr, 40)
-	}
-	lines := []string{align(style.Render(v.Text), muted.Render(updated), inner)}
-	if g.Mode == model.GuardianOff {
-		lines = append(lines, muted.Render("Guardian off · it observes nothing and acts on nothing."), muted.Render("Enable: arm config set guardian.enabled true, then restart the backend."))
-	} else {
-		lines = append(lines, fmt.Sprintf("Mode %s · %s host · %d of %d process actions this hour", g.Mode, g.Role, g.Budget.Used, g.Budget.Limit))
-		if g.Mode == model.GuardianObserve {
-			lines = append(lines, muted.Render("Observe mode records steps as planned and runs none of them."))
-		}
-		lines = append(lines, muted.Render("Ladder ")+fitBlock(guardianLadderLine(g.Ladder), max(1, inner-7), 1))
-		lines = append(lines, muted.Render("Change it: arm guardian ladder edit"))
-	}
-	if g.Inventory != "" {
-		lines = append(lines, muted.Render("Inventory: "+short(g.Inventory, inner-11)))
-	}
-	if stale {
-		lines = append(lines, lipgloss.NewStyle().Foreground(colorWarning).Render("Pressure is stale or unavailable; the guardian holds all actions."))
-	}
-	sections := []string{window("HOST GUARDIAN", strings.Join(lines, "\n"), width, 0, false, tone)}
-
-	// Pressure comes from the guardian's own reading so the page agrees with
-	// its verdict even when the monitor stream is behind.
-	cells := []string{}
-	for _, r := range []struct {
-		name string
-		p    model.PressureReading
-	}{{"CPU", g.Pressure.CPU}, {"MEMORY", g.Pressure.Memory}, {"I/O", g.Pressure.IO}} {
-		level := r.p.Level
-		if level == "" || g.Stale {
-			level = model.PressureUnknown
-		}
-		cell := muted.Render(fmt.Sprintf("%-7s", r.name)) + pressureStyle(level).Render(strings.ToUpper(level))
-		if r.p.Reason != "" && level != model.PressureUnknown {
-			cell += muted.Render(" · " + r.p.Reason)
-		}
-		cells = append(cells, fitBlock(cell, inner, 1))
-	}
-	sections = append(sections, window("PRESSURE", strings.Join(cells, "\n"), width, 0, false, pressureTone(g.Pressure.CPU.Level, g.Pressure.Memory.Level, g.Pressure.IO.Level)))
-
+	sections := []string{window("HOST GUARDIAN", m.guardianSummary(g, inner), width, 0, false, guardianTone(model.GuardianVerdictOf(*g)))}
 	if len(g.Incidents) > 0 {
 		rows := []string{}
 		for _, i := range g.Incidents {

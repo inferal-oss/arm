@@ -8,6 +8,13 @@ incidents, programs and actions with undo, and fixes the web Monitor's
 guardian cards, which were never displayed. Remaining gate: operator use
 under real pressure.
 
+## Guardian page polish — implemented, independently reviewed
+
+Owner: `claude/guardian-page-polish`. Removes the duplicated guardian and
+pressure panels from Monitor, redesigns the Guardian status summary, makes
+ladder commands copyable on the web page, and adds values and boundaries to
+pressure reasons. Remaining gate: operator use under real pressure.
+
 ## Server asset tests — fixed
 
 Owner: `claude/server-test-fixes`. Three `internal/server` tests that still
