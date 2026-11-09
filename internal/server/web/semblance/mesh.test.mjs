@@ -619,6 +619,38 @@ test('refresh after reconnect reloads Nodes and trusted carriers and clears the 
  }
 });
 
+for (const [entry, label] of [
+ ['Install ARM on a host…','Prepare installation review'],
+ ['Connect a node…','Prepare connection review']
+]) {
+ test(`${entry} can refresh Kubernetes when it was first selected offline`, async () => {
+  const f = meshFixture();
+  f.intercept((name, q) => {
+   if (name === 'kube_contexts') return [{name:'fixture',namespace:'default',current:true}];
+   if (name === 'kube_nodes') return kubeData(q);
+   if (name === 'mesh_operator_kubernetes_artifacts') return [];
+  });
+  try {
+   await f.find(entry, 'button').fire('activate');
+   f.offline();
+   const method = f.find('Connection method', 'select');
+   method.value = '@kubernetes';
+   await method.fire('change');
+   await flush();
+   assert.equal(f.calls.some(([name]) => name.startsWith('kube_')), false);
+   const offlineNotice = f.text();
+   f.online();
+   await f.find('Refresh Kubernetes inventory', 'button').fire('activate');
+   assert.deepEqual(f.calls.map(([name]) => name).filter(name => name.startsWith('kube_')), ['kube_contexts', 'kube_nodes']);
+   assert.match(offlineNotice, /Connect to the local backend to browse Kubernetes Nodes/);
+   assert.ok(f.find('worker', 'card'));
+   assert.equal(f.find(label, 'button').disabled, true);
+  } finally {
+   f.console.dispose();
+  }
+ });
+}
+
 const cardinalityNodes = count => Array.from({length:count},(_,index)=>({...kubeData().nodes[0],name:`worker-${index}`,uid:`node-uid-${index}`}));
 for (const [name, returned, total, matched, query] of [
  ['empty positive unfiltered',0,3,3,''],

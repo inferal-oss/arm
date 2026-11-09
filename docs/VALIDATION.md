@@ -14038,3 +14038,23 @@ The first fixture run timed out when reopening with a previously delayed
 filter. The repeat used one-shot delays and passed all four cases, verified
 all five served asset hashes, and joined the fixture backend with its
 listener closed.
+
+### Kubernetes first selection while offline
+
+The offline selection regression tests failed in both dialogs before the
+correction because refreshing after reconnect sent no inventory requests.
+All 56 focused Node tests and three provenance tests passed on the corrected
+source. The server race run passed nine roots and 21 named cases, and server
+vet passed. Two builds matched for WAT, all five embedded assets, and the
+native binary. The 634 dashboard inputs have SHA-256
+`74ccf4fddbc739fcbe1cbb3f7e73bbcc39bc05d772d3a4ccf7d214f4d1663279`.
+
+Both Chromium dialogs passed at 1440×960 and 390×844 with the rebuilt binary.
+First selecting Kubernetes offline displayed a connection notice and sent
+no Kubernetes inventory requests. The first refresh after reconnect loaded
+contexts and Nodes while preparation stayed disabled. The browser checked
+the earlier inventory and SSH preparation cases on this source, verified all
+five served assets, and joined the fixture backend with its listener closed.
+The separate focused RDF/WAT suite was still in the shared queue near the end
+of the validation lease and did not run on this source. The browser matrix
+exercised the rebuilt WAT-backed dashboard.

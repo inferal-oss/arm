@@ -48,7 +48,7 @@ export function createKubernetesWorkflowPanel({ ui, call, connected, inventoryFa
     }
   });
   async function readInventory(read) {
-    if (disposed || !active || !connected()) return false;
+    if (disposed || !active) return false;
     const version = ++generation;
     status.set({ label: notice }); carriers.replace();
     const loaded = await read();
