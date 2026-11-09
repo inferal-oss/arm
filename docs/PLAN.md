@@ -5878,3 +5878,16 @@ activation/retirement, stable core reporting and API/UI/assets. Wire public
 real compatible A-to-B Docker upgrade that preserves active jobs and their
 original native child. Brief API reconnection is allowed; that live acceptance
 has not run and remains the completion gate.
+
+### Unified web Mesh discovery review
+
+The rebased web discovery candidate is ready for integration review. It retains
+the accepted Semblance pin, Node and dialog layouts, and newer browser
+operations. The regenerated bundle includes Kubernetes inventory in the
+existing Connect and Install dialogs. Fresh focused checks and the controlled
+desktop and narrow browser matrix are recorded in
+[validation](VALIDATION.md#unified-web-mesh-discovery-rebase).
+
+Kubernetes preparation remains disabled. The
+[typed workflow contract](UNIFIED-ONBOARDING-API.md) tracks Pod installation,
+recovery, verified runtime readiness and pinned enrollment as separate work.

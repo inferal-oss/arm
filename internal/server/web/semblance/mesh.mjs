@@ -9,7 +9,10 @@ import { validHostID, meshPreparationNotice, phaseLabel, operationAdvice, grantF
 import { mountNodeAvailability, availabilityObservation } from "./node-availability.mjs";
 import { createForwardConsole } from "./forward.mjs";
 import { formatKubeQuantity } from "./kube-quantity.mjs";
+import { kubernetesInventoryNotice, invalidKubernetesInventory } from "./kube-diagnostics.mjs";
+import { createKubernetesWorkflowPanel, exactKubernetesSelection } from "./mesh-kubernetes-workflow.mjs";
 const stopPolicyOptions = [{ value: "refuse", label: "Refuse while work remains" }, { value: "wait", label: "Wait for existing work" }, { value: "force", label: "Reclaim ARM-owned work" }];
+const kubernetesSource = "@kubernetes";
 const when = (value) => value ? new Date(value).toLocaleString() : "Not reported";
 function createMeshConsole({ ui: graph, root, call, connected, storage, openNode, onKubeInventory = () => {}, onActivity = () => {
 }, onChanged = onActivity }) {
@@ -33,7 +36,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
   ]);
   const nodes = graph.stack(), operations = graph.stack();
   root.replace(toolbar, message, nodes, operations);
-  const kube = createKubeInventory({ ui: graph, root, call, connected, onKubeInventory });
+  let kube = null;
   let rosterKey = "", operationsKey = "", roster = null, allOps = [], selectedHost = "", detail = null, dialog = null, opKey = "", opVersion = 0, renderedRevision = null, renderedSemantic = "", currentOperation = null, lookupVersion = 0, refreshBusy = false, refreshQueued = false, disposed = false;
   let forwardUI = null;
   const announce = (text) => {
@@ -401,18 +404,22 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     parent.append(box);
     return () => grantFromDraft({ mode: mode.value, cpu: cpu.value, memory: memory.value, disk: disk.value, ttl: ttl.value, messages: allow.checked, operatorInbox: inbox.checked, contacts: contacts.value, screenView: screen.checked });
   }
-  async function editProvision() {
+  async function editProvision(method = "") {
     if (provisionStoreInvalid) {
       announce("Inspect unreadable installation recovery data before another install.");
       return;
     }
     const ui = modal("Install ARM on a host", "MESH / USER-LEVEL INSTALLATION"), form = graph.stack(), error = graph.text("", { role: "alert" });
     error.set({ role: "alert" });
-    note(form, "ARM uses your verified SSH trust to inspect the account and platform, then selects a trusted local companion. Review the exact executable, paths and startup settings before any installation.");
-    const source = graph.select("Connection method", [{ value: "", label: "SSH destination" }], { value: "" });
+    note(form, "Choose how to reach the destination, then review its exact identity, payload and installation effects.");
+    const source = graph.select("Connection method", [{ value: "", label: "SSH destination" }, { value: kubernetesSource, label: "Kubernetes Pod" }], { value: method });
     form.append(source);
     const destination = field(form, "Verified SSH destination", { required: true, placeholder: "user@host or a configured SSH alias" }), reason = field(form, "Reason for installing ARM", { type: "textarea", required: true });
-    note(form, "Installation starts a user-level ARM node. Mesh trust and permissions require a separate review. No private keys are copied.");
+    const kubernetes = createKubernetesWorkflowPanel({ ui: graph, call, connected, storage, inventoryFactory: createKubeInventory, onKubeInventory, mode: "install" });
+    form.append(kubernetes.root);
+    kube = kubernetes;
+    ui.d.on("close", () => { kubernetes.dispose(); if (kube === kubernetes) kube = null; });
+    note(form, "SSH installation starts a user-level ARM node. Kubernetes creation and shipment retain separate runtime prerequisites. Mesh trust and permissions require a separate review. No private keys are copied.");
     form.append(error);
     ui.body.append(form);
     const keep = button("Keep host unchanged", () => ui.d.close()), prepare = button("Prepare installation review", () => {
@@ -422,15 +429,20 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     keep.focus();
     call("mesh_operator_connectors").then((profiles) => {
       if (dialog !== ui.d) return;
-      source.set({ options: [{ value: "", label: "SSH destination" }, ...(profiles ?? []).map((profile) => ({ value: profile.id, label: `${profile.id} \xB7 ${profile.ssh_destination}` }))] });
+      source.set({ options: [{ value: "", label: "SSH destination" }, { value: kubernetesSource, label: "Kubernetes Pod" }, ...(profiles ?? []).map((profile) => ({ value: profile.id, label: `SSH · ${profile.id} \xB7 ${profile.ssh_destination}` }))], value: source.value });
     }).catch((e) => {
       if (dialog === ui.d) note(form, `Reviewed connectors unavailable: ${e.message}`, "warning");
     });
     source.on("change", () => {
+      const selectedKubernetes = source.value === kubernetesSource;
       destination.disabled = Boolean(source.value);
+      destination.hidden = selectedKubernetes;
+      prepare.disabled = selectedKubernetes || !connected();
+      if (selectedKubernetes) kubernetes.open(); else kubernetes.close();
     });
     prepare.on("activate", async () => {
       if (dialog !== ui.d || !ui.d.open || prepare.disabled || !connected()) return;
+      if (source.value === kubernetesSource) return;
       prepare.disabled = true;
       let q;
       try {
@@ -457,12 +469,14 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
         renderOperations();
       }
     });
+    if (method === kubernetesSource) { destination.hidden = true; destination.disabled = prepare.disabled = true; return kubernetes.open(); }
   }
   async function editConnect(entry = null, installed = null) {
     if (installed && !provisionConfirmed(installed)) return;
     const ui = modal(installed ? "Connect the installed ARM node" : entry ? "Reconnect this exact node" : "Connect a node", entry ? "MESH / NEW ENROLLMENT" : "MESH / NEW CONNECTION"), form = graph.stack(), error = graph.text("", { role: "alert" });
     error.set({ role: "alert" });
-    note(form, meshPreparationNotice);
+    const preparationNotice = graph.text(meshPreparationNotice);
+    form.append(preparationNotice);
     if (entry) {
       const exact = graph.stack();
       row(exact, "Exact node", entry.display_name || entry.name || entry.host);
@@ -473,10 +487,11 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     }
     const target = graph.stack();
     target.append(graph.heading("1. Choose a destination", 3));
-    const source = graph.select("Connection method", [{ value: "", label: "SSH destination" }], { value: "" });
+    const source = graph.select("Connection method", [{ value: "", label: "SSH destination" }, ...!entry && !installed ? [{ value: kubernetesSource, label: "Kubernetes Pod" }] : []], { value: "" });
     target.append(source);
     const destination = field(target, entry ? "Replacement SSH destination (optional)" : "Verified SSH destination", { placeholder: entry ? "Blank uses the exact retained verified locator" : "user@host or a configured SSH alias", required: !entry });
-    note(target, "Uses your existing known_hosts trust. ARM must already be installed there; no credentials or private keys are copied.");
+    const sshNotice = graph.text("Uses your existing known_hosts trust. ARM must already be installed there; no credentials or private keys are copied.");
+    target.append(sshNotice);
     if (installed) {
       source.disabled = destination.disabled = true;
       destination.value = installed.review.request.ssh_destination;
@@ -487,16 +502,25 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
       note(target, "This connection uses the original verified installation. The backend rechecks its SSH pin, account and started node before preparing trust.");
     }
     const reason = field(target, "Reason for connecting", { type: "textarea", required: true, placeholder: "What will this connection be used for?" });
+    const kubernetes = createKubernetesWorkflowPanel({ ui: graph, call, connected, storage, inventoryFactory: createKubeInventory, onKubeInventory, mode: "connect" });
+    target.append(kubernetes.root);
+    kube = kubernetes;
+    ui.d.on("close", () => { kubernetes.dispose(); if (kube === kubernetes) kube = null; });
     form.append(target);
     call("mesh_operator_connectors").then((profiles) => {
       if (dialog !== ui.d) return;
-      source.set({ options: [{ value: "", label: "SSH destination" }, ...(profiles ?? []).map((profile) => ({ value: profile.id, label: `${profile.id} \xB7 ${profile.ssh_destination}` }))] });
+      source.set({ options: [{ value: "", label: "SSH destination" }, ...!entry && !installed ? [{ value: kubernetesSource, label: "Kubernetes Pod" }] : [], ...(profiles ?? []).map((profile) => ({ value: profile.id, label: `SSH · ${profile.id} \xB7 ${profile.ssh_destination}` }))], value: source.value });
     }).catch((e) => {
       if (dialog === ui.d) note(target, `Reviewed connectors unavailable: ${e.message}`, "warning");
     });
     source.on("change", () => {
       if (installed) return;
       destination.disabled = Boolean(source.value);
+      const selectedKubernetes = source.value === kubernetesSource;
+      destination.hidden = directions.hidden = sshNotice.hidden = preparationNotice.hidden = selectedKubernetes;
+      if (replace) replace.hidden = selectedKubernetes;
+      prepare.disabled = selectedKubernetes || !connected() || !contextReady;
+      if (selectedKubernetes) kubernetes.open(); else kubernetes.close();
     });
     const directions = graph.stack();
     directions.append(graph.heading("2. Set directional permissions", 3));
@@ -532,6 +556,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     }
     prepare.on("activate", async () => {
       error.set({ label: "" });
+      if (source.value === kubernetesSource) return;
       if (!contextReady) {
         error.set({ label: "Inspect and resolve the pending workflow before preparing a fresh reconnect." });
         return;
@@ -1383,11 +1408,11 @@ Executable SHA-256: ${q.sha256}`)]),
     }
   }
   renderOperations();
-  return { refresh, invalidate: () => refresh(), openKubernetesInventory: () => kube.open(), focusKubernetesNode: reference => kube.focusKubernetesNode(reference), updateConnection() {
+  return { refresh, invalidate: () => refresh(), openKubernetesInventory: () => editProvision(kubernetesSource), focusKubernetesNode: reference => kube?.inventory.focusKubernetesNode(reference) ?? false, updateConnection() {
     installButton.disabled = connectButton.disabled = refreshButton.disabled = forwardButton.disabled = !connected();
     forwardUI?.updateConnection();
     for (const parts of modalParts.values()) parts.availability?.updateConnection();
-    kube.updateConnection();
+    kube?.updateConnection();
     if (!connected()) {
       announce("Disconnected. Cached nodes and receipts may be stale. Reconnect performs reads only.");
       if (dialog?.open) {
@@ -1400,11 +1425,11 @@ Executable SHA-256: ${q.sha256}`)]),
     disposed = true;
     dialog?.close();
     forwardUI?.dispose();
-    kube.dispose();
+    kube?.dispose();
     root.replace();
   } };
 }
-function createKubeInventory({ ui, root, call, connected, onKubeInventory = () => {} }) {
+function createKubeInventory({ ui, root, call, connected, onKubeInventory = () => {}, onSelection = () => {}, embedded = false }) {
   let opened = false, disposed = false, sequence = 0, timer = null, selection = null, choices = [], opening = null;
   let snapshot = null, snapshotRequest = null, snapshotVersion = 0;
   const cardByUID = new Map();
@@ -1414,16 +1439,17 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
   const namespace = ui.field("Namespace", { placeholder: "Context namespace" });
   const query = ui.field("Find a Node", { placeholder: "Type a Node name, architecture, zone or instance type", maxLength: 128 });
   const content = ui.stack([ui.stack([context, namespace, query]), status, clusterDetails, cards, selected], { hidden: true });
-  const open = ui.button("Browse Kubernetes Nodes", () => opened ? closeInventory() : openInventory());
-  const inventoryCard = ui.card("Available Kubernetes Nodes", [
+  const open = ui.button(embedded ? "Refresh Kubernetes inventory" : "Browse Kubernetes Nodes", () => embedded ? refreshInventory() : opened ? closeInventory() : openInventory());
+  const inventoryCard = embedded ? ui.stack([open, content]) : ui.card("Available Kubernetes Nodes", [
     ui.text("Inspect schedulable resources before preparing a separate reviewed Pod plan."), open, content
   ]);
-  ui.put?.(inventoryCard.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#KubeInventoryCard", true);
+  if (!embedded) ui.put?.(inventoryCard.iri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://arm.local/ui#KubeInventoryCard", true);
   root.append(inventoryCard);
   function clear() {
     selection = null; snapshot = null; snapshotRequest = null; cardByUID.clear();
     selected.replace(); clusterDetails.hidden = true; clusterDetails.replace();
     onKubeInventory(null);
+    onSelection(null);
   }
   function current(request, version) {
     return !disposed && version === sequence && opened && connected() && context.value === request.context &&
@@ -1431,23 +1457,32 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
   }
   function closeInventory() {
     opened = false; ++sequence; clearTimeout(timer); timer = null;
-    clear(); cards.replace(); content.hidden = true; open.set({ label: "Browse Kubernetes Nodes" });
+    clear(); cards.replace(); content.hidden = true; open.set({ label: embedded ? "Refresh Kubernetes inventory" : "Browse Kubernetes Nodes" });
   }
   async function loadContexts(version) {
     status.set({ label: "Loading Kubernetes contexts…" });
     try {
       const loaded = await call("kube_contexts");
       if (disposed || version !== sequence || !opened || !connected()) return false;
-      choices = Array.isArray(loaded) ? loaded : [];
-      context.set({ options: choices.map(choice => ({ value: choice.name, label: `${choice.name} · ${choice.cluster_name}` })) });
-      const preferred = choices.find(choice => choice.current) ?? choices[0];
-      if (!preferred) { status.set({ label: "No Kubernetes contexts are available." }); return false; }
-      context.value = preferred.name; namespace.value = preferred.namespace ?? "";
+      if (!Array.isArray(loaded) || loaded.length > 128 || new Set(loaded.map(choice => choice?.name)).size !== loaded.length || loaded.some(choice => !choice || typeof choice.name !== "string" || !choice.name.trim() || choice.name.length > 253 || choice.namespace !== undefined && typeof choice.namespace !== "string" || choice.cluster_name !== undefined && typeof choice.cluster_name !== "string" || choice.current !== undefined && typeof choice.current !== "boolean")) throw invalidKubernetesInventory();
+      const previous = context.value, previousNamespace = namespace.value;
+      choices = structuredClone(loaded);
+      context.set({ options: choices.map(choice => ({ value: choice.name, label: choice.cluster_name ? `${choice.name} · ${choice.cluster_name}` : choice.name })) });
+      const preferred = choices.find(choice => choice.name === previous) ?? choices.find(choice => choice.current) ?? choices[0];
+      if (!preferred) { context.value = namespace.value = ""; status.set({ label: "No Kubernetes contexts are available." }); return false; }
+      context.value = preferred.name; namespace.value = preferred.name === previous ? previousNamespace : preferred.namespace ?? "";
       return await search();
     } catch (error) {
-      if (!disposed && version === sequence && opened) status.set({ label: `Kubernetes contexts unavailable: ${error.message}` });
+      if (!disposed && version === sequence && opened) { choices = []; context.set({options: [], value: ""}); status.set({ label: kubernetesInventoryNotice(error, "contexts") }); }
       return false;
     }
+  }
+  function refreshInventory() {
+    if (disposed || !opened) return false;
+    const version = ++sequence;
+    clearTimeout(timer); timer = null; clear(); cards.replace();
+    if (!connected()) { status.set({label: "Connect to the local backend to browse Kubernetes Nodes."}); return false; }
+    return loadContexts(version);
   }
   async function openInventory() {
     if (disposed) return false;
@@ -1456,7 +1491,7 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
     if (opened && context.value && choices.length) return search();
     opened = true; const version = ++sequence;
     clearTimeout(timer); timer = null; clear(); cards.replace(); content.hidden = false;
-    open.set({ label: "Hide Kubernetes Nodes" });
+    open.set({ label: embedded ? "Refresh Kubernetes inventory" : "Hide Kubernetes Nodes" });
     if (!connected()) { status.set({ label: "Connect to the local backend to browse Kubernetes Nodes." }); return false; }
     const pending = loadContexts(version); opening = pending;
     try { return await pending; } finally { if (opening === pending) opening = null; }
@@ -1487,19 +1522,28 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
       ui.json(node, "Exact Kubernetes Node record")]);
   }
   function render(data, request, version) {
-    const nodes = Array.isArray(data?.nodes) ? data.nodes : [];
-    if (!data?.namespace?.name || request.namespace && data.namespace.name !== request.namespace || data.cluster?.context && data.cluster.context !== request.context)
-      throw Error("Kubernetes inventory identity differs from the requested context or namespace.");
+    if (!Array.isArray(data?.nodes)) throw invalidKubernetesInventory();
+    const nodes = data.nodes;
+    const counts = data.inventory;
+    if (!counts || !Number.isSafeInteger(counts.total) || counts.total < 0 || !Number.isSafeInteger(counts.matched) || counts.matched < 0 || counts.matched > counts.total || nodes.length !== Math.min(counts.matched, request.limit) || typeof counts.truncated !== "boolean" || counts.truncated !== (counts.matched > nodes.length) || !request.query && counts.matched !== counts.total)
+      throw invalidKubernetesInventory();
+    const strings = values => Array.isArray(values) && values.every(value => typeof value === "string");
+    if (nodes.some(node => !node || typeof node.name !== "string" || !node.name || typeof node.uid !== "string" || !node.uid || typeof node.ready !== "boolean" || node.unschedulable !== undefined && typeof node.unschedulable !== "boolean" || typeof node.os !== "string" || typeof node.arch !== "string" || node.taints !== undefined && !strings(node.taints) || node.conditions !== undefined && !strings(node.conditions)) || new Set(nodes.map(node => node.uid)).size !== nodes.length) throw invalidKubernetesInventory();
+    if (typeof data.namespace?.name !== "string" || !data.namespace.name || typeof data.namespace?.uid !== "string" || !data.namespace.uid || request.namespace && data.namespace.name !== request.namespace || data.cluster?.context !== request.context)
+      throw Object.assign(Error("Kubernetes selection changed"), {code:"kubernetes_identity_changed"});
     const accepted = structuredClone({ context: request.context, namespace: data.namespace, cluster: data.cluster ?? null, nodes });
     ui.batch(() => {
-      status.set({ label: `${nodes.length} matching Nodes in ${data.namespace.name}. CPU, memory and storage are Kubernetes allocatable figures, not live ARM admission.` });
+      const summary = !nodes.length ? data.inventory?.total === 0 ? "The cluster reports no Nodes." : request.query ? "No Nodes match this filter. Clear the filter to inspect the cluster inventory." : "No Nodes were returned by the complete inventory read." : `${nodes.length} matching Nodes${data.inventory?.truncated ? ` shown of ${data.inventory.matched}` : ""}.`;
+      status.set({ label: `${summary} Nodes are cluster scoped; ${data.namespace.name} is the installation namespace. CPU, memory and storage are Kubernetes allocatable figures, not live ARM admission.` });
       clusterDetails.replace(ui.descriptions([["Context", request.context], ["Namespace", data.namespace.name], ["Namespace UID", raw(data.namespace.uid)]]), ui.json(data.cluster ?? null, "Exact cluster identity"));
       clusterDetails.hidden = false;
       cards.replace(...nodes.map(node => {
-        const selectable = node.ready && !node.unschedulable && node.uid && node.os === "linux" && ["amd64", "arm64"].includes(node.arch) && !node.taints?.length;
+        let selectable = false;
+        try { exactKubernetesSelection({context: request.context, cluster: data.cluster, namespace: data.namespace, node}); selectable = true; } catch { /* Inspection can succeed without a reviewable destination. */ }
         const choose = ui.button("Select this Node", () => {
           if (!selectable || !current(request, version)) return;
-          selection = { context: request.context, namespace: data.namespace, node };
+          selection = structuredClone({ context: request.context, cluster: data.cluster, namespace: data.namespace, node });
+          onSelection(structuredClone(selection));
           selected.replace(ui.heading("Selected Node", 3), ui.descriptions([["Context", request.context], ["Namespace", data.namespace.name], ["Name", raw(node.name)], ...primary(node)]), technical(node),
             ui.text("Use this context, namespace, Node name and UID in a separate current Pod plan. Selection alone creates nothing."));
         }, { disabled: !selectable });
@@ -1526,7 +1570,7 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
       if (!current(request, version)) return false;
       return render(data, request, version);
     } catch (error) {
-      if (!disposed && version === sequence) { cards.replace(); status.set({ label: `Node inventory unavailable: ${error.message}` }); }
+      if (!disposed && version === sequence) { cards.replace(); status.set({ label: kubernetesInventoryNotice(error) }); }
       return false;
     }
   }
@@ -1545,7 +1589,7 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
     const card = cardByUID.get(uid); if (!card) return false;
     card.focus(); return true;
   }
-  return { getSelection: () => selection, refresh: search, open: openInventory, focusKubernetesNode, updateConnection() {
+  return { getSelection: () => selection && snapshot && current(snapshotRequest, snapshotVersion) ? structuredClone(selection) : null, refresh: search, open: openInventory, close: closeInventory, focusKubernetesNode, updateConnection() {
     if (!connected()) { ++sequence; clear(); cards.replace(); clearTimeout(timer); timer = null;
       status.set({ label: "Disconnected. Refresh the exact Kubernetes context before selecting a Node." }); }
   }, dispose() {

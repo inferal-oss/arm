@@ -7055,3 +7055,16 @@ Unsupported: acting as root, other users' processes, forced page-out on macOS,
 restoring Linux nice values without privilege, and race-free signalling on
 macOS. Thresholds are heuristics and are not yet tuned from field use.
 
+### Unified web Mesh discovery
+
+The web Mesh Connect and Install dialogs share the read-only Kubernetes Node
+picker. Changing the connection method preserves the SSH draft. Changing
+context, namespace, filter, or connection clears the current Node selection and
+rejects delayed responses. Empty cluster and filter results are distinct from
+fixed, redacted access and transport diagnostics. The returned Node count must
+match the smaller of the match count and the requested limit.
+
+Install can inspect trusted Linux carrier metadata. Kubernetes preparation
+remains disabled in both controls and handlers. See the
+[remaining workflow contracts](UNIFIED-ONBOARDING-API.md) and
+[composed validation](VALIDATION.md#unified-web-mesh-discovery-rebase).

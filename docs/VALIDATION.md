@@ -13986,3 +13986,32 @@ Not established: PSI-based levels on a real kernel (parser and decision tests
 only), real sustained host pressure (the host was not loaded deliberately),
 desktop notification delivery, agent attribution against a live registered
 agent, and threshold suitability in field use.
+
+### Unified web Mesh discovery rebase
+
+The prior [component record](validation/unified-onboarding-ui-component-qualified.json)
+qualifies its original source. The rebase onto `0d94ef9f` was checked separately
+with the accepted vendored Semblance pin `0db58805`, the locked dependencies and
+the existing build overlay. The 634 tracked dashboard inputs have SHA-256
+`a5544e06a0bdfdc0141640df7977bf6cbb3236a4b069a139bf8ef89bddffc1cc`.
+
+- All 51 focused Node tests and three provenance tests passed. The shared
+  Semblance queue ran all three RDF/WAT projection tests successfully.
+- The server race run passed nine roots and 21 named cases, including the
+  embedded asset route. Server vet passed.
+- Two builds produced byte-identical WAT and all five embedded assets. The
+  WAT SHA-256 matches the accepted pin. The generated application bundle
+  SHA-256 is `d3e45987a4e215f148f9fdb451a416d385106a06d1767fc5585e822bfcb0b363`.
+  Two native builds were byte-identical. The rebuilt server returned all five
+  assets with the verified hashes.
+- Chromium exercised both dialogs at 1440×960 and 390×844. A controlled
+  WebSocket fixture supplied contexts and Nodes, empty and filter-empty
+  results, forbidden and unavailable responses, and delayed responses after
+  filter and transport changes. Preparation stayed disabled, no effect
+  requests reached the fixture, and switching back to SSH preserved the draft.
+  The initial harness failed its shutdown assertion after SIGTERM. The full
+  repeat completed with a normal daemon stop, joined process and closed listener.
+
+The browser matrix covers controlled wire responses and native asset delivery.
+Real-cluster behavior, Pod effects, runtime readiness and enrollment remain
+outside this validation.

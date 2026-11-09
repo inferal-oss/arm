@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"getarm.org/internal/buildinfo"
@@ -153,6 +154,22 @@ func (s *Server) meshOperatorOperation(ctx context.Context, operation string, ra
 		return out, nil
 	}
 	switch operation {
+	case "mesh_operator_kubernetes_artifacts":
+		trimmed := bytes.TrimSpace(raw)
+		if len(raw) > 1024 || len(trimmed) != 0 && string(trimmed) != "{}" {
+			return nil, model.Err("invalid_request", "artifact inventory takes no selectors")
+		}
+		all, err := mesh.Artifacts(s.home)
+		if err != nil {
+			return nil, model.Err("artifact_unavailable", "native trusted artifact inventory unavailable")
+		}
+		out := []map[string]any{}
+		for _, artifact := range all {
+			if artifact.OS == "linux" {
+				out = append(out, map[string]any{"sha256": artifact.SHA256, "size_bytes": artifact.Size, "os": artifact.OS, "arch": artifact.Arch, "expected_arm_version": artifact.Version, "expected_lifecycle_protocol": artifact.Protocol})
+			}
+		}
+		return out, nil
 	case "mesh_operator_get":
 		var q struct {
 			Key string `json:"key"`

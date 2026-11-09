@@ -2,6 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createMeshConsole,createKubeInventory} from './mesh.mjs';
 import {createForwardConsole} from './forward.mjs';
+import {exactKubernetesSelection} from './mesh-kubernetes-workflow.mjs';
 
 // An effect-boundary double: this suite checks domain requests and lifecycle
 // behavior. The parent integration separately checks real RDF/DOM/event output.
@@ -147,7 +148,7 @@ test('read-only Kubernetes selection expires across context edits and disconnect
   const f=graphFixture(),calls=[];let live=true;
   const inventory=createKubeInventory({ui:f.graph,root:f.root,connected:()=>live,call:async(name,q)=>{
     calls.push([name,q]);if(name==='kube_contexts')return[{name:'fixture',cluster_name:'private',namespace:'default',current:true}];
-    return{namespace:{name:'default'},nodes:[{name:'build-node',uid:'exact-uid',os:'linux',arch:'arm64',ready:true,allocatable_cpu:'4',allocatable_memory:'8Gi',allocatable_ephemeral:'20Gi',capacity:{cpu:'4'}}]};
+    const data=kubeData(q);data.nodes[0].uid='exact-uid';return data;
   }});
   await f.find('Browse Kubernetes Nodes','button').fire('activate');await f.find('Select this Node','button').fire('activate');
   assert.equal(inventory.getSelection().node.uid,'exact-uid');
@@ -156,11 +157,41 @@ test('read-only Kubernetes selection expires across context edits and disconnect
   assert.ok(calls.every(([name])=>['kube_contexts','kube_nodes'].includes(name)));inventory.dispose();
 });
 
-const kubeData=(request={context:'fixture',namespace:'default'})=>({cluster:{context:request.context,server:'https://cluster.example:6443',ca_sha256:'a'.repeat(64)},namespace:{name:request.namespace,uid:'namespace-uid'},nodes:[{name:'worker',uid:'node-uid',os:'linux',arch:'arm64',ready:true,allocatable_cpu:'180000000000n',allocatable_memory:'535328752Ki',allocatable_ephemeral:'20Gi',capacity:{cpu:'192',memory:'512Gi','ephemeral-storage':'25Gi'},allocatable:Object.fromEntries(Array.from({length:14},(_,i)=>['vendor.example/resource-'+i,String(i)])),conditions:['Ready=True'],zone:'west',instance_type:'large'}]});
+const kubeData=(request={context:'fixture',namespace:'default'})=>({cluster:{context:request.context,server:'https://cluster.example:6443',ca_sha256:'a'.repeat(64),auth_subject:'fixture-user',auth_groups:['authenticated']},inventory:{total:1,matched:1,truncated:false},namespace:{name:request.namespace,uid:'namespace-uid'},nodes:[{name:'worker',uid:'node-uid',os:'linux',arch:'arm64',ready:true,allocatable_cpu:'180000000000n',allocatable_memory:'535328752Ki',allocatable_ephemeral:'20Gi',capacity:{cpu:'192',memory:'512Gi','ephemeral-storage':'25Gi'},allocatable:Object.fromEntries(Array.from({length:14},(_,i)=>['vendor.example/resource-'+i,String(i)])),conditions:['Ready=True'],zone:'west',instance_type:'large'}]});
+
+for (const [entry, primary] of [['Install ARM on a host…', 'Prepare installation review'], ['Connect a node…', 'Prepare connection review']]) {
+ test(`${entry} shares Node discovery and fences unsupported effects`, async () => {
+  const f=meshFixture();
+  f.intercept((name,q)=>name==='kube_contexts'?[{name:'fixture',namespace:'default',current:true}]:name==='kube_nodes'?kubeData(q):name==='mesh_operator_kubernetes_artifacts'?[]:undefined);
+  try {
+   assert.equal(f.find('Available Kubernetes Nodes','card'),undefined);
+   await f.find(entry,'button').fire('activate');await flush();
+   const method=f.find('Connection method','select');method.value='@kubernetes';await method.fire('change');await flush();
+   assert.equal(f.find('Verified SSH destination','field').hidden,true);
+   await f.find('Select this Node','button').fire('activate');
+   assert.match(f.text(),/reviews are unavailable in this build/);
+   assert.equal(f.find(primary,'button').disabled,true);
+   await f.find(primary,'button').fire('activate');
+   assert.equal(f.calls.some(([name])=>['mesh_operator_prepare','mesh_operator_provision_prepare','mesh_operator_kubernetes_prepare','mesh_operator_decide'].includes(name)),false);
+   assert.equal(f.saved.has('arm-mesh-kubernetes-pending'),false);
+   method.value='';await method.fire('change');
+   assert.equal(f.find('Verified SSH destination','field').hidden,false);
+   assert.equal(f.find(primary,'button').disabled,false);
+   assert.equal(f.calls.filter(([name])=>name==='kube_nodes').length,1);
+  } finally { f.console.dispose(); }
+ });
+}
+
+test('exact Kubernetes selection preserves cluster groups and refuses missing or changed identity',()=>{
+ const data=kubeData();Object.assign(data.cluster,{auth_subject:'operator',auth_groups:['authenticated']});
+ const selection={context:'fixture',cluster:data.cluster,namespace:data.namespace,node:data.nodes[0]};
+ const exact=exactKubernetesSelection(selection);assert.deepEqual(exact.cluster.auth_groups,['authenticated']);exact.cluster.auth_groups.push('changed');assert.deepEqual(selection.cluster.auth_groups,['authenticated']);
+ for(const changed of [{cluster:{...data.cluster,context:'other'}},{cluster:{...data.cluster,server:'http://cluster.example'}},{cluster:{...data.cluster,auth_groups:null}},{namespace:{name:'default'}},{node:{...selection.node,uid:''}},{node:{...selection.node,taints:['dedicated=other:NoSchedule']}}])assert.throws(()=>exactKubernetesSelection({...selection,...changed}));
+});
 
 test('Kubernetes stock cards summarize quantities, retain all exact details and focus only matching accepted identity',async()=>{
   const f=graphFixture(),published=[],calls=[];
-  const inventory=createKubeInventory({ui:f.graph,root:f.root,connected:()=>true,onKubeInventory:value=>published.push(value),call:async(name,q)=>{calls.push([name,q]);if(name==='kube_contexts')return[{name:'fixture',cluster_name:'cluster',namespace:'default',current:true}];const data=kubeData(q);data.nodes.push({...data.nodes[0],name:'tainted-worker',uid:'tainted-uid',taints:['dedicated=other:NoSchedule']});return data;}});
+  const inventory=createKubeInventory({ui:f.graph,root:f.root,connected:()=>true,onKubeInventory:value=>published.push(value),call:async(name,q)=>{calls.push([name,q]);if(name==='kube_contexts')return[{name:'fixture',cluster_name:'cluster',namespace:'default',current:true}];const data=kubeData(q);data.nodes.push({...data.nodes[0],name:'tainted-worker',uid:'tainted-uid',taints:['dedicated=other:NoSchedule']});data.inventory.total=data.inventory.matched=2;return data;}});
   assert.equal(await inventory.open(),true);const snapshot=published.at(-1),card=f.find('worker','card');
   assert.equal(card.parent.kind,'grid');assert.equal(card.parent.columns,2);
   const facts=card.children.find(c=>c.kind==='descriptions').pairs;
@@ -399,4 +430,154 @@ test('mesh optional display names update without changing the exact selected hos
  f.node.display_name='';f.node.name='Chosen node';await f.console.refresh();assert.ok(f.text().includes('Chosen node'));
  await f.open();assert.ok(f.calls.some(([name,p])=>name==='node_inspect'&&p.host===f.node.host));
  assert.equal(f.calls.some(([,p])=>p?.host==='readable-peer'||p?.host==='updated-peer'),false);
+});
+
+for(const mode of ['Install ARM on a host…','Connect a node…']){
+  test(`${mode} keeps an unavailable cluster explicit inside the selected transport`,async()=>{
+    const f=meshFixture(),reads=[];
+    f.intercept((name,q)=>{
+      if(name==='kube_contexts'){reads.push(name);return[{name:'fixture',cluster_name:'synthetic',namespace:'default',current:true}];}
+      if(name==='kube_nodes'){reads.push(name);throw Object.assign(Error('private API diagnostic'),{code:'kubernetes_unavailable'});}
+      if(name==='mesh_operator_kubernetes_artifacts')return[];
+    });
+    await f.find(mode,'button').fire('activate');await flush();
+    const method=f.find('Connection method','select');
+    assert.ok(method.options.some(o=>o.label==='SSH destination'));
+    assert.ok(method.options.some(o=>o.label==='Kubernetes Pod'));
+    method.value='@kubernetes';await method.fire('change');await flush();
+    assert.deepEqual(reads,['kube_contexts','kube_nodes'],'the actual inventory request must complete before checking its unavailable state');
+    assert.match(f.text(),/Cluster unavailable\. Could not load Nodes/);
+    assert.doesNotMatch(f.text(),/The cluster reports no Nodes|No Nodes match this filter/);
+    assert.equal(f.find('Select this Node','button'),undefined);
+    assert.equal(f.find('Available Kubernetes Nodes','card'),undefined);
+    assert.deepEqual(reads,['kube_contexts','kube_nodes']);
+    assert.equal(f.calls.some(([name])=>['mesh_operator_prepare','mesh_operator_kubernetes_prepare','mesh_operator_decide'].includes(name)),false);
+    method.value='';await method.fire('change');
+    assert.equal(f.find('Verified SSH destination','field').hidden,false);
+    f.console.dispose();
+  });
+}
+
+for(const [code,notice] of [['kubernetes_forbidden','Access denied.'],['kubernetes_unauthorized','Credentials were not accepted.'],['kubernetes_not_found','no longer exists.'],['kubernetes_timeout','took too long'],['kubernetes_cancelled','read was cancelled.']]){
+ test(`Kubernetes inventory keeps ${code} separate from empty Nodes`,async()=>{
+  const f=graphFixture();
+  const inventory=createKubeInventory({ui:f.graph,root:f.root,connected:()=>true,call:async name=>{
+    if(name==='kube_contexts')return[{name:'fixture',namespace:'default',current:true}];
+    throw Object.assign(Error('private API endpoint credential diagnostic'),{code});
+  }});
+  try{assert.equal(await inventory.open(),false);assert.ok(f.text().includes(notice));assert.doesNotMatch(f.text(),/private API|The cluster reports no Nodes|No Nodes match/);assert.equal(inventory.getSelection(),null);}
+  finally{inventory.dispose();}
+ });
+}
+
+for(const [name,data,query,expected]of[
+ ['true empty',{nodes:[],inventory:{total:0,matched:0,truncated:false}},'','The cluster reports no Nodes.'],
+ ['filtered empty',{nodes:[],inventory:{total:3,matched:0,truncated:false}},'missing','No Nodes match this filter.'],
+ ['malformed nodes',{nodes:null,inventory:{total:0,matched:0,truncated:false}},'','Could not use the Node inventory returned by Kubernetes.'],
+ ['missing empty counts',{nodes:[]},'','Could not use the Node inventory returned by Kubernetes.'],
+ ['inconsistent counts',{nodes:[],inventory:{total:3,matched:0,truncated:false}},'','Could not use the Node inventory returned by Kubernetes.']
+]){
+ test(`Kubernetes inventory distinguishes ${name}`,async()=>{
+  const f=graphFixture();let response=kubeData();
+  const inventory=createKubeInventory({ui:f.graph,root:f.root,connected:()=>true,call:async name=>name==='kube_contexts'?[{name:'fixture',namespace:'default',current:true}]:response});
+  try{
+   assert.equal(await inventory.open(),true);await f.find('Select this Node','button').fire('activate');assert.ok(inventory.getSelection());
+   response={...kubeData(),...data};f.find('Find a Node','field').value=query;
+   await inventory.refresh();assert.ok(f.text().includes(expected),f.text());assert.equal(inventory.getSelection(),null);assert.equal(f.find('Select this Node','button'),undefined);
+   if(name.includes('malformed')||name.includes('counts'))assert.doesNotMatch(f.text(),/The cluster reports no Nodes|No Nodes match this filter/);
+  }finally{inventory.dispose();}
+ });
+}
+
+for (const [name, mutate] of [
+ ['truthy readiness', d=>d.nodes[0].ready='true'],
+ ['truthy cordon', d=>d.nodes[0].unschedulable='false'],
+ ['malformed taints', d=>d.nodes[0].taints='none'],
+ ['duplicate UID', d=>{d.nodes.push({...d.nodes[0]});d.inventory.total=d.inventory.matched=2;}],
+ ['missing namespace UID', d=>delete d.namespace.uid],
+ ['changed cluster', d=>d.cluster.context='replacement'],
+ ['missing positive counts', d=>delete d.inventory],
+ ['contradictory truncation', d=>d.inventory.truncated=true]
+]) {
+ test(`Kubernetes refuses ${name} without retaining selection`, async()=>{
+  const f=graphFixture();let data=kubeData();
+  const inventory=createKubeInventory({ui:f.graph,root:f.root,connected:()=>true,call:async name=>name==='kube_contexts'?[{name:'fixture',namespace:'default',current:true}]:data});
+  try {
+   assert.equal(await inventory.open(),true);await f.find('Select this Node','button').fire('activate');
+   data=structuredClone(data);mutate(data);assert.equal(await inventory.refresh(),false);
+   assert.equal(inventory.getSelection(),null);assert.equal(f.find('Select this Node','button'),undefined);
+   assert.doesNotMatch(f.text(),/The cluster reports no Nodes|No Nodes match this filter/);
+  } finally {inventory.dispose();}
+ });
+}
+
+test('embedded refresh recovers context discovery and never converts malformed contexts into empty inventory',async()=>{
+ const f=graphFixture(),calls=[];let fail=true;
+ const inventory=createKubeInventory({ui:f.graph,root:f.root,embedded:true,connected:()=>true,call:async(name,q)=>{
+  calls.push(name);
+  if(name==='kube_contexts'){if(fail)return {private:'credential helper output'};return[{name:'fixture',namespace:'default',current:true}];}
+  return kubeData(q);
+ }});
+ try{
+  assert.equal(await inventory.open(),false);assert.match(f.text(),/Could not use the Kubernetes contexts/);
+  assert.doesNotMatch(f.text(),/credential helper|No Kubernetes contexts are available/);
+  fail=false;await f.find('Refresh Kubernetes inventory','button').fire('activate');
+  assert.deepEqual(calls,['kube_contexts','kube_contexts','kube_nodes']);assert.ok(f.find('worker','card'));
+ }finally{inventory.dispose();}
+});
+
+test('leaving Kubernetes discards late carrier metadata and late Nodes while preserving SSH editor state',async()=>{
+ const f=meshFixture();let release;
+ const late=new Promise(resolve=>release=resolve);
+ f.intercept((name,q)=>name==='kube_contexts'?[{name:'fixture',namespace:'default',current:true}]:name==='kube_nodes'?kubeData(q):name==='mesh_operator_kubernetes_artifacts'?late:undefined);
+ try{
+  await f.find('Install ARM on a host…','button').fire('activate');await flush();
+  f.find('Verified SSH destination','field').value='fixture-host';
+  f.find('Reason for installing ARM','area').value='Reviewed fixture';
+  const method=f.find('Connection method','select');method.value='@kubernetes';
+  const opening=method.fire('change');await flush();method.value='';await method.fire('change');
+  release([{sha256:'f'.repeat(64),size_bytes:1024,os:'linux',arch:'arm64',expected_arm_version:'fixture',expected_lifecycle_protocol:1}]);await opening;await flush();
+  assert.equal(f.find('Verified SSH destination','field').value,'fixture-host');
+  assert.equal(f.find('Reason for installing ARM','area').value,'Reviewed fixture');
+  assert.equal(f.find('Trusted Linux carriers','heading'),undefined);
+  assert.equal(f.find('Prepare installation review','button').disabled,false);
+  assert.equal(f.calls.some(([name])=>name==='mesh_operator_provision_prepare'),false);
+ }finally{f.console.dispose();}
+});
+
+const cardinalityNodes = count => Array.from({length:count},(_,index)=>({...kubeData().nodes[0],name:`worker-${index}`,uid:`node-uid-${index}`}));
+for (const [name, returned, total, matched, query] of [
+ ['empty positive unfiltered',0,3,3,''],
+ ['empty positive filtered',0,5,3,'worker'],
+ ['short below limit',1,3,3,''],
+ ['short truncated at limit',49,60,60,'']
+]) {
+ test(`Kubernetes refuses ${name} cardinality without publishing false empty inventory`,async()=>{
+  const f=graphFixture(),published=[];let response=kubeData();
+  const inventory=createKubeInventory({ui:f.graph,root:f.root,connected:()=>true,onKubeInventory:value=>published.push(value),call:async name=>name==='kube_contexts'?[{name:'fixture',namespace:'default',current:true}]:response});
+  try{
+   assert.equal(await inventory.open(),true);await f.find('Select this Node','button').fire('activate');assert.ok(inventory.getSelection());
+   response={...kubeData(),nodes:cardinalityNodes(returned),inventory:{total,matched,truncated:true}};
+   f.find('Find a Node','field').value=query;
+   assert.equal(await inventory.refresh(),false);assert.equal(published.at(-1),null);assert.equal(inventory.getSelection(),null);
+   assert.equal(f.find('Select this Node','button'),undefined);
+   assert.match(f.text(),/Could not use the Node inventory returned by Kubernetes/);
+   assert.doesNotMatch(f.text(),/The cluster reports no Nodes|No Nodes match this filter|No Nodes were returned/);
+  }finally{inventory.dispose();}
+ });
+}
+
+test('Kubernetes accepts exact limit-truncated cardinality as positive inventory',async()=>{
+ const f=graphFixture(),published=[];
+ const response={...kubeData(),nodes:cardinalityNodes(50),inventory:{total:60,matched:60,truncated:true}};
+ const inventory=createKubeInventory({ui:f.graph,root:f.root,connected:()=>true,onKubeInventory:value=>published.push(value),call:async(name,request)=>{
+  if(name==='kube_contexts')return[{name:'fixture',namespace:'default',current:true}];
+  assert.equal(request.limit,50);return response;
+ }});
+ try{
+  assert.equal(await inventory.open(),true);assert.equal(published.at(-1).nodes.length,50);
+  assert.match(f.text(),/50 matching Nodes shown of 60/);
+  assert.doesNotMatch(f.text(),/The cluster reports no Nodes|No Nodes match this filter|Could not use the Node inventory/);
+  await f.find('Select this Node','button').fire('activate');assert.equal(inventory.getSelection().node.uid,'node-uid-0');
+ }finally{inventory.dispose();}
 });
