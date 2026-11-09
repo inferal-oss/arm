@@ -487,6 +487,13 @@ reviewed files. Successful CLI installation prints a guided project-onboarding
 command. Suggestions omit `--home` when it resolves to the effective CLI default
 and quote explicit custom homes.
 
+`arm install --repair` previews identity changes at recorded client roots.
+An exact managed block is required at each changed root. The review pins
+directory identities and file contents, then rechecks them under the
+integration lock before atomically updating the manifest. The original
+manifest is backed up. Instruction files, project bindings and policy are
+preserved.
+
 `rollout status` renders instruction readiness, project policies, scope and
 session participation as human-readable terminal text. Pipes and `--json` keep
 structured output. Readiness inspects only bounded, recorded installation

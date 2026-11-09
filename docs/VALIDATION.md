@@ -1,5 +1,13 @@
 # Validation record
 
+## Managed instruction root repair
+
+The macOS installer suite covers a former symlink replaced by a directory,
+an edited managed block, a file changed after review, a byte-identical
+manifest backup, and a repeat repair with no work. The compiled CLI passed
+preview, noninteractive confirmation refusal, confirmed repair, and
+restored instruction readiness using isolated state and client roots.
+
 ## Guardian page polish and pressure numbers — scoped evidence
 
 - Monitor in both dashboards no longer shows pressure or guardian panels, and

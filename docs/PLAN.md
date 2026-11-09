@@ -1,5 +1,12 @@
 # ARM delivery plan
 
+## Managed instruction root repair
+
+Owner: `codex/installer-root-repair`. Add reviewed manifest repair after
+client-root identity changes, with an exact managed-block check and original
+manifest backup. See [scoped validation](VALIDATION.md#managed-instruction-root-repair).
+Rollout project bindings retain their separate review workflow.
+
 ## Guardian dashboard page — implemented, independently reviewed
 
 Owner: `claude/guardian-dashboards`. Adds a Guardian page beside Monitor in

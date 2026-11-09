@@ -1231,13 +1231,25 @@ func (a *app) integration(action string, args []string) error {
 	yes := f.Bool("yes", false, "apply without prompting (required for scripts/agents)")
 	f.BoolVar(&a.showDiff, "diff", false, "show unified file diffs in a terminal (JSON always includes them)")
 	codexRoot, claudeRoot := new(string), new(string)
+	repair := false
 	if action == "install" {
 		f.StringVar(codexRoot, "codex-home", "", "explicit Codex integration `directory`")
 		f.StringVar(claudeRoot, "claude-home", "", "explicit Claude integration `directory`")
+		f.BoolVar(&repair, "repair", false, "review and repair changed identities of recorded instruction roots")
 	}
 	f.Bool("json", false, "force JSON output (default: automatic)")
 	if e := a.parse(f, args, false); e != nil {
 		return e
+	}
+	if repair {
+		if *codexRoot != "" || *claudeRoot != "" {
+			return model.Err("invalid_request", "--repair uses saved instruction paths; omit --codex-home and --claude-home")
+		}
+		plan, e := install.PreviewRepair(a.home)
+		if e != nil {
+			return e
+		}
+		return a.finishInstall(plan, *dry, *yes)
 	}
 	if action == "install" {
 		userHome, e := os.UserHomeDir()
@@ -1277,29 +1289,7 @@ func (a *app) integration(action string, args []string) error {
 		if e != nil {
 			return e
 		}
-		if *dry {
-			return a.print(plan.Report)
-		}
-		if e = a.approve(plan, *yes); e != nil {
-			return e
-		}
-		report, e := plan.Apply()
-		if e != nil {
-			if report.BackupDirectory != "" {
-				report.Complete = false
-				if outErr := a.print(report); outErr != nil {
-					return outErr
-				}
-			}
-			return e
-		}
-		if report.Complete {
-			report.NextCommand = installNextCommand(a.home, "rollout project onboard")
-		}
-		if e = a.print(report); e != nil {
-			return e
-		}
-		return a.recommendGuardian()
+		return a.finishInstall(plan, *dry, *yes)
 	}
 	if e := a.uninstallGuard(true); e != nil {
 		return e
@@ -1364,6 +1354,36 @@ func (a *app) integration(action string, args []string) error {
 		return model.Err("uninstall_incomplete", "edited integrations were preserved; see report")
 	}
 	return nil
+}
+
+func (a *app) finishInstall(plan *install.Plan, dry, yes bool) error {
+	if dry {
+		return a.print(plan.Report)
+	}
+	if e := a.approve(plan, yes); e != nil {
+		return e
+	}
+	report, e := plan.Apply()
+	if e != nil {
+		if report.BackupDirectory != "" {
+			report.Complete = false
+			if outErr := a.print(report); outErr != nil {
+				return outErr
+			}
+		}
+		return e
+	}
+	if report.Complete {
+		next := "rollout project onboard"
+		if report.Repair {
+			next = "rollout status"
+		}
+		report.NextCommand = installNextCommand(a.home, next)
+	}
+	if e = a.print(report); e != nil || report.Repair {
+		return e
+	}
+	return a.recommendGuardian()
 }
 
 func (a *app) uninstallGuard(dry bool) error {

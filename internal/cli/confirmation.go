@@ -137,6 +137,8 @@ func (a *app) installationReport(report install.Report) error {
 	verb := "Install"
 	if a.commandName == "uninstall" {
 		verb = "Uninstall"
+	} else if report.Repair {
+		verb = "Instruction root repair"
 	}
 	if report.DryRun {
 		verb += " preview"
@@ -149,7 +151,7 @@ func (a *app) installationReport(report install.Report) error {
 	if report.Adoption != "" {
 		fmt.Fprintln(&b, terminalSafe(report.Adoption))
 	}
-	if report.DryRun {
+	if report.DryRun && !report.Repair {
 		fmt.Fprintln(&b, "Review the instruction-file changes below. Nothing has been changed.")
 	}
 	explanations := map[string]string{
@@ -159,6 +161,7 @@ func (a *app) installationReport(report install.Report) error {
 		"upgrade-managed-instructions": "Update only the verified ARM instruction block",
 		"resume-upgrade":               "Finish an interrupted instruction upgrade",
 		"resume-install":               "Finish an interrupted instruction installation",
+		"repair-root-identity":         "Update the saved directory identity",
 		"unchanged":                    "Already up to date; preserve this file",
 		"already-absent":               "ARM instructions are already absent",
 		"preserved":                    "Keep this edited file; manual resolution is needed",
@@ -205,7 +208,9 @@ func (a *app) installationReport(report install.Report) error {
 		}
 	}
 	if len(report.Actions) == 0 {
-		if report.Complete {
+		if report.Repair && report.Complete {
+			fmt.Fprintln(&b, "\nAll recorded directory identities already match.")
+		} else if report.Complete {
 			fmt.Fprintln(&b, "\nNo managed instruction files to change.")
 		} else {
 			fmt.Fprintln(&b, "\nNo instruction files were changed before the operation stopped.")

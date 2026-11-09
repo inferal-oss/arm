@@ -19,6 +19,7 @@ type Plan struct {
 	home     string
 	targets  []Target
 	remove   bool
+	repair   *Manifest
 	snapshot *snapshot
 }
 type pathState struct {
@@ -106,6 +107,9 @@ func preview(home string, targets []Target, remove bool) (*Plan, error) {
 }
 func (p *Plan) Check() error { return p.snapshot.check(p.home, false) }
 func (p *Plan) Apply() (Report, error) {
+	if p.repair != nil {
+		return p.applyRepair()
+	}
 	if p.remove {
 		return uninstall(p.home, false, p.snapshot)
 	}

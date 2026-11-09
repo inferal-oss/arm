@@ -289,6 +289,8 @@ The agent must consume watcher output and forward warnings to its main task, or 
 
 Re-running `arm install` upgrades only an unchanged managed instruction block, preserving surrounding edits and file permissions. Interrupted upgrades retain both exact expected versions in the recovery manifest so installation or uninstall can resume safely. The installed instructions describe polling and watcher limitations.
 
+After a remount or directory migration, ARM may report that an instruction root identity changed. Run `arm install --repair --dry-run` to review the old and current identities at the recorded paths, then run `arm install --repair` to confirm. Repair requires the exact recorded managed blocks, backs up the original installation manifest, and updates the saved identities. It preserves instruction files and rollout policy. Review stale project bindings separately in `arm rollout status`.
+
 ## Direct-peer hosts
 
 Mesh access is opt-in and separate from the loopback dashboard/API. With a compatible ARM executable installed on both nodes and an already verified direct SSH destination, connect without separately starting backends or configuring identities/listeners:

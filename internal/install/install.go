@@ -49,6 +49,7 @@ type Action struct {
 type Report struct {
 	Adoption        string        `json:"adoption,omitempty"`
 	NextCommand     string        `json:"next_command,omitempty"`
+	Repair          bool          `json:"repair,omitempty"`
 	DryRun          bool          `json:"dry_run"`
 	Complete        bool          `json:"complete"`
 	Actions         []Action      `json:"actions"`
@@ -495,7 +496,7 @@ func checkRoot(root *os.Root, expected []string) error {
 		return e
 	}
 	if fileIdentity(info) != expected[0] {
-		return model.Err("unsafe_path", "agent root was replaced; refusing to modify a different directory")
+		return model.Err("unsafe_path", "agent root identity changed; review with `arm install --repair --dry-run`")
 	}
 	return nil
 }

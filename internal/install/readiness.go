@@ -53,14 +53,9 @@ func InspectInstructions(home string) InstructionReadiness {
 	if e != nil {
 		return unknown(e)
 	}
-	var manifest Manifest
-	decoder := json.NewDecoder(bytes.NewReader(b))
-	decoder.DisallowUnknownFields()
-	if e = decoder.Decode(&manifest); e != nil {
+	manifest, e := decodeInstructionManifest(b)
+	if e != nil {
 		return unknown(e)
-	}
-	if decoder.Decode(new(any)) != io.EOF || manifest.Version != 1 || len(manifest.Entries) > 128 {
-		return unknown(fmt.Errorf("unsupported or invalid installation record"))
 	}
 	if len(manifest.Entries) == 0 {
 		return out
@@ -127,6 +122,19 @@ func InspectInstructions(home string) InstructionReadiness {
 		out.Summary = "ARM-managed instructions are installed and match this build. Session acknowledgment is still required."
 	}
 	return out
+}
+
+func decodeInstructionManifest(b []byte) (Manifest, error) {
+	var manifest Manifest
+	decoder := json.NewDecoder(bytes.NewReader(b))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&manifest); err != nil {
+		return Manifest{}, err
+	}
+	if decoder.Decode(new(any)) != io.EOF || manifest.Version != 1 || len(manifest.Entries) > 128 {
+		return Manifest{}, fmt.Errorf("unsupported or invalid installation record")
+	}
+	return manifest, nil
 }
 
 func readReadinessFile(root, name, identity string, limit int) ([]byte, error) {
