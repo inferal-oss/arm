@@ -41,7 +41,9 @@ func TestRepositoryScopeCoversRegisteredFutureWorktrees(t *testing.T) {
 	if len(after.Bindings) != 1 || after.Bindings[0].Root != primary || after.Mode != "all" {
 		t.Fatal("repository binding did not replace the primary checkout binding", plan)
 	}
-	future := filepath.Join(t.TempDir(), "later worktree")
+	outer := t.TempDir()
+	f.change(Change{Action: "onboard", Project: "outer", Binding: &Binding{Kind: "directory", Root: outer}, Mode: "all"})
+	future := filepath.Join(outer, "later worktree")
 	git(t, f.root, "worktree", "add", "--quiet", "--detach", future)
 	nested := filepath.Join(future, "subdir")
 	if err := os.Mkdir(nested, 0700); err != nil {
@@ -86,7 +88,9 @@ func TestRepositoryScopeCoversRegisteredFutureWorktrees(t *testing.T) {
 	}
 	check(redirect, false)
 	git(t, nested, "init", "--quiet")
-	check(nested, false)
+	if d := check(nested, false); d.Project == nil || d.Project.ID != "demo" || !strings.Contains(d.Why, "nested Git repository") {
+		t.Fatal("foreign nested repository fell through the worktree boundary", d)
+	}
 	if err = os.RemoveAll(filepath.Join(nested, ".git")); err != nil {
 		t.Fatal(err)
 	}

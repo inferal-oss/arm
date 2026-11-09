@@ -137,7 +137,11 @@ func (s *snapshot) backup(home string) (entries []BackupEntry, err error) {
 			hash := sha256.New()
 			e = saved.Chmod(0600)
 			if e == nil {
-				_, e = io.Copy(io.MultiWriter(saved, hash), file)
+				var input io.Reader = file
+				if limit := s.fileLimit(filepath.Base(path)); limit > 0 {
+					input = io.LimitReader(file, limit+1)
+				}
+				_, e = io.Copy(io.MultiWriter(saved, hash), input)
 			}
 			after, se := file.Stat()
 			ce := file.Close()

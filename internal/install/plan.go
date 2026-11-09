@@ -33,6 +33,7 @@ type snapshot struct {
 	files                     map[string]pathState
 	backupID, backupOperation string
 	changes                   map[string]FileChange
+	maxFileBytes              int64
 }
 
 func PreviewInstall(home string, targets []Target) (*Plan, error) {
@@ -62,7 +63,7 @@ func preview(home string, targets []Target, remove bool) (*Plan, error) {
 		}
 		seen[path] = true
 	}
-	before, err := capture(home, targets)
+	before, err := capture(home, targets, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -115,8 +116,8 @@ func (p *Plan) Apply() (Report, error) {
 	}
 	return install(p.home, p.targets, false, p.snapshot)
 }
-func capture(home string, targets []Target) (*snapshot, error) {
-	s := &snapshot{dirs: map[string]pathState{}, files: map[string]pathState{}}
+func capture(home string, targets []Target, maxFileBytes int64) (*snapshot, error) {
+	s := &snapshot{dirs: map[string]pathState{}, files: map[string]pathState{}, maxFileBytes: maxFileBytes}
 	targets = append(append([]Target{}, targets...), Target{Root: home, Name: "install.json"})
 	for _, target := range targets {
 		root := filepath.Clean(target.Root)
@@ -136,7 +137,7 @@ func capture(home string, targets []Target) (*snapshot, error) {
 				return nil, fmt.Errorf("no existing ancestor for integration root")
 			}
 		}
-		state, err := fileState(root, target.Name)
+		state, err := boundedFileState(root, target.Name, s.fileLimit(target.Name))
 		if err != nil {
 			return nil, err
 		}
@@ -162,6 +163,10 @@ func directoryState(path string) (pathState, error) {
 	return pathState{Exists: true, Identity: fileIdentity(info) + "/" + fileIdentity(target), Mode: info.Mode()}, nil
 }
 func fileState(root, name string) (pathState, error) {
+	return boundedFileState(root, name, 0)
+}
+
+func boundedFileState(root, name string, maxBytes int64) (pathState, error) {
 	r, err := os.OpenRoot(root)
 	if os.IsNotExist(err) {
 		return pathState{}, nil
@@ -186,8 +191,19 @@ func fileState(root, name string) (pathState, error) {
 		return pathState{}, model.Err("unsafe_path", "instruction/manifest target must be a regular file")
 	}
 	hash := sha256.New()
-	if _, err = io.Copy(hash, f); err != nil {
+	var input io.Reader = f
+	if maxBytes > 0 {
+		if before.Size() > maxBytes {
+			return pathState{}, model.Err("unsafe_path", "instruction or manifest exceeds the repair read limit")
+		}
+		input = io.LimitReader(f, maxBytes+1)
+	}
+	n, err := io.Copy(hash, input)
+	if err != nil {
 		return pathState{}, err
+	}
+	if maxBytes > 0 && n > maxBytes {
+		return pathState{}, model.Err("unsafe_path", "instruction or manifest exceeds the repair read limit")
 	}
 	after, err := f.Stat()
 	if err != nil {
@@ -216,7 +232,8 @@ func (s *snapshot) check(home string, allowHomeCreation bool) error {
 		}
 	}
 	for path, want := range s.files {
-		got, err := fileState(filepath.Dir(path), filepath.Base(path))
+		name := filepath.Base(path)
+		got, err := boundedFileState(filepath.Dir(path), name, s.fileLimit(name))
 		if err != nil {
 			return err
 		}
@@ -225,6 +242,13 @@ func (s *snapshot) check(home string, allowHomeCreation bool) error {
 		}
 	}
 	return nil
+}
+
+func (s *snapshot) fileLimit(name string) int64 {
+	if s.maxFileBytes > 0 && name != "install.json" {
+		return min(s.maxFileBytes, 1<<20)
+	}
+	return s.maxFileBytes
 }
 func startsParent(path string) bool {
 	return len(path) > 3 && path[:3] == ".."+string(filepath.Separator)

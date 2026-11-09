@@ -12,6 +12,10 @@ reviewed apply, the disabled default for a new project, and eligibility and
 boundary status after adding a future worktree. Vet passed for the affected
 packages.
 
+Integration review added a real Git regression in which a foreign repository
+inside a registered linked worktree is denied even when a broader directory
+policy would otherwise grant enrollment. The full rollout package passed.
+
 ## Managed instruction root repair
 
 The macOS installer suite covers a former symlink replaced by a directory,
@@ -19,6 +23,10 @@ an edited managed block, a file changed after review, a byte-identical
 manifest backup, and a repeat repair with no work. The compiled CLI passed
 preview, noninteractive confirmation refusal, confirmed repair, and
 restored instruction readiness using isolated state and client roots.
+
+Integration review added an oversized-file refusal regression to verify the
+repair snapshot limit. The full installer package passed after the limit and
+directory-anchored manifest write changes.
 
 ## Guardian page polish and pressure numbers — scoped evidence
 

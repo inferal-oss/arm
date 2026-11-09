@@ -8,7 +8,7 @@ import (
 )
 
 func TestRepairChangedInstructionRoot(t *testing.T) {
-	for _, change := range []string{"intact", "edited", "changed-after-review"} {
+	for _, change := range []string{"intact", "edited", "oversized", "changed-after-review"} {
 		t.Run(change, func(t *testing.T) {
 			base := t.TempDir()
 			home := filepath.Join(base, "state")
@@ -52,13 +52,18 @@ func TestRepairChangedInstructionRoot(t *testing.T) {
 				instructions = bytes.Replace(instructions, []byte("Installation alone"), []byte("Installation"), 1)
 			}
 			write(path, instructions)
+			if change == "oversized" {
+				if err := os.Truncate(path, 2<<20); err != nil {
+					t.Fatal(err)
+				}
+			}
 			if _, err := PreviewInstall(home, targets); err == nil {
 				t.Fatal("ordinary installation accepted changed root")
 			}
 			plan, err := PreviewRepair(home)
-			if change == "edited" {
+			if change == "edited" || change == "oversized" {
 				if err == nil {
-					t.Fatal("repair accepted changed managed block")
+					t.Fatal("repair accepted an edited or oversized instruction file")
 				}
 				return
 			}

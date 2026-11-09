@@ -1,7 +1,9 @@
 package install
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -33,7 +35,7 @@ func PreviewRepair(home string) (*Plan, error) {
 		seen[path] = true
 		targets = append(targets, entry.Target)
 	}
-	before, err := capture(home, targets)
+	before, err := capture(home, targets, readinessBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -107,8 +109,28 @@ func (p *Plan) applyRepair() (Report, error) {
 		return report, err
 	}
 	report.BackupComplete = true
+	root, err := os.OpenRoot(p.home)
+	if err != nil {
+		return report, err
+	}
+	defer root.Close()
+	_, expected, _ := strings.Cut(p.snapshot.dirs[filepath.Clean(p.home)].Identity, "/")
+	info, err := root.Stat(".")
+	if err != nil || expected == "" || fileIdentity(info) != expected {
+		return report, model.Err("plan_changed", "installation state directory changed after repair review")
+	}
 	if err = p.Check(); err != nil {
 		return report, err
 	}
-	return report, save(p.home, *p.repair)
+	data, err := json.MarshalIndent(p.repair, "", "  ")
+	if err != nil {
+		return report, err
+	}
+	if err = writeRootFile(root, "install.json", append(data, '\n'), 0600); err != nil {
+		return report, err
+	}
+	if err = syncRoot(root); err != nil {
+		return report, model.Err("repair_outcome_unknown", "the manifest was replaced but its directory sync failed; inspect rollout status: "+err.Error())
+	}
+	return report, nil
 }

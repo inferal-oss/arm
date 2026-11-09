@@ -4,14 +4,18 @@
 
 Owner: `codex/rollout-worktree-scope`. Add a reviewed repository scope to
 interactive onboarding and the direct rollout CLI. Scope includes future
-registered worktrees and uses one binding. See
+registered worktrees and uses one binding. Integration review addressed
+scope fallback for foreign Git repositories nested in a registered worktree
+and prioritized explicit roots within the native discovery limit. See
 [scoped validation](VALIDATION.md#repository-wide-worktree-rollout).
 
 ## Managed instruction root repair
 
 Owner: `codex/installer-root-repair`. Add reviewed manifest repair after
 client-root identity changes, with an exact managed-block check and original
-manifest backup. See [scoped validation](VALIDATION.md#managed-instruction-root-repair).
+manifest backup. Integration review added bounded repair snapshots and
+anchored manifest replacement to the reviewed state directory. See
+[scoped validation](VALIDATION.md#managed-instruction-root-repair).
 Rollout project bindings retain their separate review workflow.
 
 ## Guardian dashboard page — implemented, independently reviewed

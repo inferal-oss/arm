@@ -483,10 +483,13 @@ remain unsupported. See the scoped rollout design and validation record.
 The onboarding picker and `rollout project --kind git-worktrees` support a
 single binding to a verified primary checkout and its Git common directory.
 The rollout check verifies Git's registered worktree paths, including future
-worktrees. A narrower explicit binding can still govern a checkout. Removing
+worktrees. A narrower explicit binding can still govern a checkout. A foreign
+Git repository nested in a registered worktree cannot fall through that
+boundary to a broader directory policy. Removing
 a repository-wide binding revokes retained sessions in its project, including
 those whose worktrees are missing. Codex discovery queries up to 16 verified
-roots at once and accepts an explicit working directory for further queries.
+roots at once, prioritizes explicitly bound roots and accepts an explicit
+working directory for further queries.
 
 Interactive install/uninstall confirmation offers `[y/N/diff]`. `d`/`diff`
 displays the bound patch and returns to the same default-no question; checking
@@ -497,10 +500,10 @@ and quote explicit custom homes.
 
 `arm install --repair` previews identity changes at recorded client roots.
 An exact managed block is required at each changed root. The review pins
-directory identities and file contents, then rechecks them under the
-integration lock before atomically updating the manifest. The original
-manifest is backed up. Instruction files, project bindings and policy are
-preserved.
+directory identities and bounded file contents, then rechecks them under the
+integration lock before atomically updating the manifest in the reviewed state
+directory. The original manifest is backed up. Instruction files, project
+bindings and policy are preserved.
 
 `rollout status` renders instruction readiness, project policies, scope and
 session participation as human-readable terminal text. Pipes and `--json` keep

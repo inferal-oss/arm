@@ -118,6 +118,10 @@ func write(root, name string, b []byte, expected ...string) error {
 		}
 		mode = info.Mode().Perm()
 	}
+	return writeRootFile(r, name, b, mode)
+}
+
+func writeRootFile(r *os.Root, name string, b []byte, mode os.FileMode) error {
 	tmp := ".arm-" + local.ID()
 	f, e := r.OpenFile(tmp, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
 	if e != nil {

@@ -2,6 +2,8 @@ package rollout
 
 import (
 	"context"
+	"path/filepath"
+	"slices"
 
 	"getarm.org/internal/gitmeta"
 )
@@ -41,8 +43,9 @@ func worktreesBinding(resolver *gitmeta.Resolver, info gitmeta.Info) (Binding, e
 }
 
 type worktreeEvidence struct {
-	info  gitmeta.Info
-	roots []gitmeta.Directory
+	info   gitmeta.Info
+	roots  []gitmeta.Directory
+	nested bool
 }
 
 func readWorktreeEvidence(ctx context.Context, path string, bindings []string) worktreeEvidence {
@@ -52,18 +55,22 @@ func readWorktreeEvidence(ctx context.Context, path string, bindings []string) w
 	if err != nil {
 		return worktreeEvidence{}
 	}
-	info, err := resolver.Resolve(path)
-	if err != nil {
-		return worktreeEvidence{}
-	}
-	evidence := worktreeEvidence{info: info}
-	for _, common := range bindings {
-		if info.Common.Path == common {
-			evidence.roots, _ = resolver.Worktrees(info)
-			break
+	// If the nearest checkout is foreign, look for an enclosing registered
+	// worktree so it can still block fallback to a broader directory grant.
+	for nested := false; ; nested = true {
+		info, err := resolver.Resolve(path)
+		if err != nil {
+			return worktreeEvidence{}
+		}
+		if slices.Contains(bindings, info.Common.Path) {
+			roots, _ := resolver.Worktrees(info)
+			return worktreeEvidence{info: info, roots: roots, nested: nested}
+		}
+		path = filepath.Dir(info.Root.Path)
+		if path == info.Root.Path {
+			return worktreeEvidence{}
 		}
 	}
-	return evidence
 }
 
 func (e worktreeEvidence) verifies(b Binding) bool {
@@ -75,6 +82,9 @@ func (e worktreeEvidence) match(b Binding, path string) (root, why string) {
 	if e.info.Common.Path == b.GitDirectory {
 		if !e.verifies(b) {
 			return e.info.Root.Path, "Git worktree registration or repository identity could not be verified; review the binding"
+		}
+		if e.nested {
+			return e.info.Root.Path, "working directory belongs to a nested Git repository; no adoption authorized"
 		}
 		return e.info.Root.Path, ""
 	}

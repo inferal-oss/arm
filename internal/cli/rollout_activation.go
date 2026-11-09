@@ -121,15 +121,17 @@ func (a *app) discoverSessions(project string, sources []agentsessions.Source) (
 		if native, ok := source.(agentsessions.Codex); ok {
 			explicit := len(native.Roots) > 0
 			if len(native.Roots) == 0 {
+				var worktreeRoots []string
 				for _, b := range out.Project.Bindings {
 					if !b.Removed {
 						if b.Kind == rollout.WorktreesKind {
-							native.Roots = append(native.Roots, rollout.RegisteredWorktreeRoots(ctx, b)...)
+							worktreeRoots = append(worktreeRoots, rollout.RegisteredWorktreeRoots(ctx, b)...)
 						} else {
 							native.Roots = append(native.Roots, b.Root)
 						}
 					}
 				}
+				native.Roots = append(native.Roots, worktreeRoots...)
 				out.Warnings = append(out.Warnings, "Codex discovery queries exact bound working directories; use --codex-cwd for a session working in a nested directory.")
 			}
 			verified := []string{}
