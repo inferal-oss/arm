@@ -21,6 +21,15 @@ If the group lacks a verified primary checkout, the picker prefers a verified
 saved Codex project folder as its display root.
 See [scoped validation](VALIDATION.md#codex-project-discovery-and-picker-search).
 
+## Interactive login service
+
+Owner `codex/login-service`. Feature commit `713b1549` adds the per-user
+LaunchAgent and systemd login setup. Review follow-up `0857e262` covers systemd
+workload ownership and unit search paths, legacy unit upgrades, service
+environment guidance and temporary executables. Native login-session
+acceptance and automatic crash recovery remain separate gates. See
+[scoped validation](VALIDATION.md#interactive-login-service).
+
 ## Repository-wide worktree rollout
 
 Owner: `codex/rollout-worktree-scope`. Add a reviewed repository scope to

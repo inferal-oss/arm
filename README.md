@@ -184,6 +184,54 @@ Revocation stops only attached supervised work. An occupied or uncertain binding
 
 `arm run` streams combined command output, preserves its exit status, and returns 124 on lease expiry. With `--json`, command output goes to stderr and stdout contains the final lease JSON. Execution is noninteractive; commands receive no interactive stdin. Foreground daemon mode is `arm serve`.
 
+## Start at login
+
+Interactive `arm start` and `arm daemon start` offer to install a per-user
+service after confirming the backend is running. Enter `y` to enable it or
+press Enter to skip setup for this invocation. The prompt shows the executable,
+ARM state directory and service files. The service runs `arm serve` with that
+state directory and uses its `config.toml` and defaults. Startup flags such as
+`--cpu` apply to the current invocation only. Use ARM from a permanent
+installation so the executable remains available after logout.
+
+- **macOS.** The LaunchAgent in `~/Library/LaunchAgents` runs at the next
+  graphical login. Inspect the printed plist for its label and log path. To
+  disable future launches, remove that plist. If the agent is currently loaded,
+  stop ARM with `arm stop` for the same state directory before unloading it
+  with `launchctl bootout gui/$(id -u)/LABEL`.
+- **Linux with systemd.** The user unit runs the next time the user manager
+  starts, normally at login. Setup uses `busctl` to check that the user manager
+  searches the selected configuration directory. If you set `XDG_CONFIG_HOME`
+  only in your shell, match the manager's setting and use `--home DIR` to keep
+  the same ARM state directory. Use `systemctl --user status UNIT` to inspect
+  the unit, `journalctl --user -u UNIT` to read logs, and
+  `systemctl --user disable UNIT` to disable future starts. ARM manages workload
+  cleanup when systemd signals the daemon. For an older ARM-generated unit,
+  accept the offered shutdown policy update and run `systemctl --user
+  daemon-reload` to apply it to the current user manager before stopping it.
+
+If a previous definition points to a missing executable, disable that service
+and remove the definition shown in the setup warning before enabling login
+startup from the installed binary.
+
+The service and its workloads inherit the native manager's environment. For
+tools that depend on shell settings, configure an explicit `PATH` or `JAVA_HOME`
+for the service:
+
+- On macOS, add an `EnvironmentVariables` dictionary to the printed plist
+  with string entries such as `PATH` and `JAVA_HOME`. ARM preserves the edited
+  plist and reports that it differs from the generated definition.
+- On Linux, use `systemctl --user edit UNIT` to add a `[Service]` drop-in with
+  entries such as `Environment="PATH=/opt/tools/bin:/usr/bin:/bin"` and
+  `Environment="JAVA_HOME=/opt/jdk"`.
+
+Use `arm start` for ordinary manual startup. After a crash, an unreachable
+`endpoint.json` can make `arm start` report `startup_outcome_unknown`. Check
+the backend or service logs. Once you confirm the previous daemon has exited,
+start it through the service manager or run `arm --home DIR serve` with the same
+ARM state directory. `serve` takes the authority lock and checks stopped intent
+before recovery.
+
 ## Custom resource pools
 
 Agents and operators can define counted resources for arbitrary coordination:
@@ -247,7 +295,7 @@ arm uninstall --dry-run
 arm uninstall
 ```
 
-The installer discovers Codex and Claude, including Claude in the per-user binary directory. Explicit `--codex-home DIR` and `--claude-home DIR` targets support isolated setups. Managed instructions include the actual ARM executable and state-directory prefix. Installation currently manages instruction blocks; daemon startup is separate, and native service registration is pending.
+The installer discovers Codex and Claude, including Claude in the per-user binary directory. Explicit `--codex-home DIR` and `--claude-home DIR` targets support isolated setups. Managed instructions include the actual ARM executable and state-directory prefix. Use interactive `arm start` for the [start-at-login offer](#start-at-login).
 
 Install and uninstall show the proposed changes and ask for confirmation in a terminal. Empty replies, EOF and Ctrl-C cancel. `--dry-run` only previews; use `arm install --yes` or `arm uninstall --yes` in scripts and agents. Noninteractive calls without `--yes` return a JSON preview and `confirmation_required`. Approval does not bypass edited-file or active-lease safeguards, and changes made while reviewing a preview require a fresh approval.
 

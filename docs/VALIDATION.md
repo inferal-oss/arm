@@ -32,6 +32,30 @@ Codex folder ahead of a linked checkout when there is no primary checkout.
 A terminal replay confirmed the saved project folder appears under the
 repository search result.
 
+## Interactive login service
+
+The macOS run of `go test -count=10 ./internal/loginservice` passed. The
+tests cover exact LaunchAgent argument encoding, native `plutil` validation,
+systemd argument escaping and enable links, interrupted Linux setup,
+conflicting files and links, and concurrent installation. An isolated CLI
+prompt harness passed acceptance, decline, empty response, incomplete input,
+JSON and redirected stream cases, plus a repeat invocation after enablement.
+Full CLI integration and actual login activation on macOS and Linux remain
+pending.
+
+The review follow-up passed 20 runs of `./internal/loginservice` on macOS and
+10 runs of the isolated CLI prompt harness. Added checks cover the generated
+Linux shutdown mode, consent before a legacy unit upgrade, preservation of the
+original unit, refusal when the reviewed setup changes, exact user-manager
+search-path matching, and temporary and Go-cache executable paths. The prompt
+fixture also checks the environment notice. The package's Linux arm64 test
+binary compiled. Live login, native systemd shutdown and full CLI integration
+remain pending.
+
+The combined `main` candidate retained the reviewed login-service source
+byte for byte alongside the onboarding changes. The login-service package
+passed 10 runs on macOS after resolving the documentation conflicts.
+
 ## Repository-wide worktree rollout
 
 On macOS, the Git metadata, rollout, project discovery and agent-session

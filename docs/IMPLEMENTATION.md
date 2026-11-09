@@ -36,6 +36,23 @@ verified primary checkout, its verified saved project folder takes precedence
 as the displayed checkout. Path labels preserve the checkout name in narrow
 terminals.
 
+## Interactive login service
+
+`arm start` and `arm daemon start` offer to register a per-user service after
+confirming the selected backend is ready. The default response skips setup.
+JSON, redirected input or output, dry-run, `--yes` and pinned-config startup
+skip the offer. Each canonical ARM home gets a stable native service name.
+macOS uses a LaunchAgent with `RunAtLoad`. Linux with systemd uses a user unit
+linked into `default.target.wants` after verifying the directory against the
+user manager's `UnitPath`. The unit uses `KillMode=process` so ARM retains
+workload cleanup. Exact older units can receive a separately reviewed shutdown
+policy drop-in. Both platforms require a permanent executable and use the
+normal foreground `serve` path with config loaded at launch, including its
+authority lock and stopped intent check. Setup uses exclusive publication,
+preserves conflicting files, and can complete a matching Linux unit left by
+interrupted enablement. The offer explains native environment inheritance and
+the README describes per-service overrides.
+
 ## Original Server binding and borrower validation — unconnected source
 
 The private pending Server retains its actual object before native claim,
@@ -1261,7 +1278,7 @@ On an ordinary Linux login, a same-user service may deny `/proc` activity access
 
 Installation modifies only managed blocks in the selected Codex `AGENTS.md` and Claude `CLAUDE.md` files. It records the original content fingerprint, the exact installed block, creation status, and the device/inode identity of the containing root. Writes are atomic and preserve existing file permissions. A persisted intention can be resumed if interrupted before writing the block.
 
-Uninstall refuses outstanding allocations, protects the backend authority boundary, and removes only unchanged managed blocks. It preserves unrelated later edits and reports edited managed blocks as incomplete. It rejects symlink instruction targets and replaced root directories. State and the recovery manifest remain; executable removal, purging, native service registration, and interactive drain/cancel workflows are not implemented.
+Uninstall refuses outstanding allocations, protects the backend authority boundary, and removes only unchanged managed blocks. It preserves unrelated later edits and reports edited managed blocks as incomplete. It rejects symlink instruction targets and replaced root directories. State and the recovery manifest remain; executable removal, purging, and interactive drain/cancel workflows are not implemented. Interactive startup manages the optional login-service offer separately.
 
 Integration mutations are serialized with a separate lock. Daemon stop waits for the authority lock to be released, including database closure, before reporting completion. Existing shared or symlink state roots are rejected without changing their permissions.
 
@@ -1375,7 +1392,7 @@ This remains a partial operator interface. Browser automation is now available; 
 - Optional agentic lease reviews with contention-aware scheduling, bounded/coalesced agent invocations, durable exact-recipient delivery and responses, and explicit renew/resize/release actions. This is planned behavior; a conversational reply will not itself change entitlement or enforcement deadlines.
 - Configurable/adopted storage, shared-cache ownership, verified physical reclamation and complete Cargo configuration resolution.
 - Additional knowledge cards and code-based workload adapters beyond the initial owned Gradle services; web/TUI card search and discovery.
-- Native daemon services, stronger permissions, durable history retention, and richer recovery diagnostics.
+- Native daemon crash recovery, stronger permissions, durable history retention, and richer recovery diagnostics.
 - Broader rendered acceptance and remaining web/TUI mutation controls, dedicated storage/incidents, large-scope pagination and full interface parity. Current browser navigation, lease actions, messaging, history visibility and help have focused rendered acceptance; GPU telemetry and the remaining interfaces are planned.
 - Broader Linux/filesystem/hardware acceptance, remote queue/provider coverage, interface host selection/subscriptions and distributed pool/placement coordination beyond the initial direct-peer mesh.
 
