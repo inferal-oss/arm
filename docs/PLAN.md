@@ -1,5 +1,12 @@
 # ARM delivery plan
 
+## Repository-wide worktree rollout
+
+Owner: `codex/rollout-worktree-scope`. Add a reviewed repository scope to
+interactive onboarding and the direct rollout CLI. Scope includes future
+registered worktrees and uses one binding. See
+[scoped validation](VALIDATION.md#repository-wide-worktree-rollout).
+
 ## Managed instruction root repair
 
 Owner: `codex/installer-root-repair`. Add reviewed manifest repair after

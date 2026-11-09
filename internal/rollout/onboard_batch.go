@@ -91,7 +91,7 @@ func (o *onboardOperation) normalize(request OnboardBatch) (OnboardBatch, error)
 		}
 		modes[change.Project] = change.Mode
 		input := *change.Binding
-		if (input.Kind != "directory" && input.Kind != "git") || !filepath.IsAbs(input.Root) || len(input.Root) > 4096 || strings.ContainsFunc(input.Root, func(r rune) bool { return r < 32 || r == 127 }) {
+		if (input.Kind != "directory" && input.Kind != "git" && input.Kind != WorktreesKind) || !filepath.IsAbs(input.Root) || len(input.Root) > 4096 || strings.ContainsFunc(input.Root, func(r rune) bool { return r < 32 || r == 127 }) {
 			return OnboardBatch{}, fail("unsupported onboarding scope")
 		}
 		if input.Kind == "directory" && (input.GitDirectory != "" || input.GitIdentity != "") {
@@ -107,7 +107,7 @@ func (o *onboardOperation) normalize(request OnboardBatch) (OnboardBatch, error)
 		key := input.Kind + "\x00" + root
 		binding, exists := cache[key]
 		if !exists {
-			if input.Kind == "git" {
+			if input.Kind != "directory" {
 				gitInputs[root] = true
 				if len(gitInputs) > gitmeta.MaxGitBindings {
 					return OnboardBatch{}, fail("onboarding batch exceeds 32 distinct requested Git scopes")
@@ -123,6 +123,12 @@ func (o *onboardOperation) normalize(request OnboardBatch) (OnboardBatch, error)
 					return OnboardBatch{}, err
 				}
 				binding = Binding{Kind: "git", Root: info.Root.Path, Identity: info.Root.Identity, GitDirectory: info.Git.Path, GitIdentity: info.Git.Identity}
+				if input.Kind == WorktreesKind {
+					binding, err = worktreesBinding(o.resolver, info)
+					if err != nil {
+						return OnboardBatch{}, err
+					}
+				}
 			} else {
 				identity, err := directoryIdentity(root)
 				if err != nil {

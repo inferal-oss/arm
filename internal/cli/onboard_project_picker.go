@@ -373,11 +373,8 @@ func (m *projectOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 			case "s":
 				setting := &m.settings[m.cursor]
 				if m.group(setting.Group).Kind == "git" {
-					if setting.Kind == "git" {
-						setting.Kind = "directory"
-					} else {
-						setting.Kind = "git"
-					}
+					scopes := []string{"git", "directory", rollout.WorktreesKind}
+					setting.Kind = scopes[(slices.Index(scopes, setting.Kind)+1)%len(scopes)]
 					m.generation++
 					m.plan = rollout.OnboardBatchPlan{}
 				}
@@ -664,8 +661,18 @@ func (m *projectOnboardModel) beginSettings() tea.Cmd {
 				continue
 			}
 			for _, binding := range project.Bindings {
-				if !binding.Removed && binding.Root == group.Directory {
+				matches := binding.Root == group.Directory
+				if (binding.Kind == "git" || binding.Kind == rollout.WorktreesKind) && group.Kind == "git" {
+					for _, member := range group.Memberships {
+						checkout := member.Checkout
+						matches = matches || checkout != nil && checkout.Common.Path == binding.GitDirectory && checkout.Common.Identity == binding.GitIdentity
+					}
+				}
+				if !binding.Removed && matches {
 					setting.Project, setting.Mode = project.ID, project.Mode
+					if binding.Kind == rollout.WorktreesKind && group.Kind == "git" {
+						setting.Kind = rollout.WorktreesKind
+					}
 					found = true
 					break
 				}
@@ -761,12 +768,15 @@ func (m *projectOnboardModel) policyReview() string {
 			if binding.Removed {
 				state = " (removed; blocks broader fallback)"
 			}
-			fmt.Fprintf(&b, "    %s%s · %s\n", binding.Kind, state, terminalSafe(binding.Root))
+			fmt.Fprintf(&b, "    %s%s · %s\n", pickerScopeLabel(binding.Kind), state, terminalSafe(binding.Root))
 		}
 	}
-	fmt.Fprintln(&b, "\nExact requested bindings (each includes its descendants):")
+	fmt.Fprintln(&b, "\nRequested scope:")
 	for _, change := range m.plan.Request.Changes {
-		fmt.Fprintf(&b, "  %s · %s · %s\n", change.Project, change.Binding.Kind, terminalSafe(change.Binding.Root))
+		fmt.Fprintf(&b, "  %s · %s · %s\n", change.Project, pickerScopeLabel(change.Binding.Kind), terminalSafe(change.Binding.Root))
+		if change.Binding.Kind == rollout.WorktreesKind {
+			fmt.Fprintf(&b, "    Git common directory: %s\n", terminalSafe(change.Binding.GitDirectory))
+		}
 		for _, group := range m.selection.Groups {
 			var setting pickerSetting
 			for _, candidate := range m.selection.Settings {
@@ -790,6 +800,10 @@ func (m *projectOnboardModel) policyReview() string {
 						if change.Binding.Kind == "git" && membership.Checkout != nil {
 							root = membership.Checkout.Root.Path
 							covered = covered || root == change.Binding.Root
+						}
+						if change.Binding.Kind == rollout.WorktreesKind && membership.Checkout != nil {
+							common := membership.Checkout.Common
+							covered = common.Path == change.Binding.GitDirectory && common.Identity == change.Binding.GitIdentity
 						}
 					}
 				}
@@ -820,6 +834,13 @@ func (m *projectOnboardModel) policyReview() string {
 	}
 	fmt.Fprintf(&b, "\nReason: %s\nReview: %s\n%s\n", terminalSafe(m.reason), m.plan.Review, m.plan.Effect)
 	return b.String()
+}
+
+func pickerScopeLabel(kind string) string {
+	if kind == rollout.WorktreesKind {
+		return "All Git worktrees (including future worktrees)"
+	}
+	return kind
 }
 func (m *projectOnboardModel) activationGuide(index int) string {
 	if index < 0 || index >= len(m.selection.Checked) {
@@ -935,7 +956,7 @@ func (m *projectOnboardModel) View() tea.View {
 				prefix = "> "
 			}
 			fmt.Fprintln(&b, ansi.Truncate(prefix+group.Name+" → "+setting.Project, max(20, m.width-4), "…"))
-			fmt.Fprintf(&b, "    %s · %s\n", setting.Kind, setting.Mode)
+			fmt.Fprintln(&b, ansi.Truncate("    "+pickerScopeLabel(setting.Kind)+" · "+setting.Mode, max(20, m.width-4), "…"))
 			fmt.Fprintln(&b, ansi.Truncate("    "+terminalSafe(group.Directory), max(20, m.width-4), "…"))
 		}
 		fmt.Fprintln(&b, "↑/↓ project · i edit ID · s boundary · p policy")

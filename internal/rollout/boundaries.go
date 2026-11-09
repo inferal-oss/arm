@@ -72,6 +72,14 @@ func inspectBoundary(ctx context.Context, b Binding) BoundaryStatus {
 			return v
 		}
 	}
+	if b.Kind == WorktreesKind && len(RegisteredWorktreeRoots(ctx, b)) == 0 {
+		if ctx.Err() != nil {
+			v.State, v.Detail = "unknown", "Git boundary inspection interrupted or its time budget was exhausted."
+		} else {
+			v.Detail = "Primary checkout or registered worktree repository identity cannot be verified. Explicit review is required."
+		}
+		return v
+	}
 	v.State, v.Detail = "ready", "Recorded filesystem identities match; session identification and acknowledgment remain separate."
 	return v
 }

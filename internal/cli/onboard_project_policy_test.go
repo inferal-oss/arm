@@ -86,6 +86,15 @@ func TestProjectPickerExplicitNestedRootsAndUncheckedCoverage(t *testing.T) {
 	}
 }
 
+func TestProjectPickerRepositoryScopeProducesOneBinding(t *testing.T) {
+	selection, probe, _ := pickerNestedFixture(t)
+	selection.Settings[0].Kind = rollout.WorktreesKind
+	request, err := pickerRequest(t.Context(), selection, "Repository scope", func(*gitmeta.Budget) (pickerGitProbe, error) { return probe, nil })
+	if err != nil || len(request.Changes) != 1 || request.Changes[0].Binding.Kind != rollout.WorktreesKind || len(probe.calls) != 2 {
+		t.Fatal(request, err, probe.calls)
+	}
+}
+
 func TestProjectPickerRevalidatesUncheckedNestedMembershipBeforeApply(t *testing.T) {
 	selection, probe, home := pickerNestedFixture(t)
 	// Initially both exact member cwds belong to the outer checkout. Only the

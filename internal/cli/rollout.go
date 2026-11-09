@@ -61,8 +61,8 @@ func (a *app) rollout(args []string) error {
 	mutation := action == "project" || action == "bind" || action == "policy" || action == "pause" || action == "resume" || action == "invite" || action == "revoke" || action == "remove-project" || action == "remove-binding"
 	if mutation {
 		if action == "project" {
-			f.StringVar(&kind, "kind", "directory", "directory or git checkout binding")
-			f.StringVar(&root, "path", "", "explicit scope directory; git selects its checkout root")
+			f.StringVar(&kind, "kind", "directory", "directory, git checkout, or git-worktrees for all registered worktrees")
+			f.StringVar(&root, "path", "", "scope directory or a checkout of the selected repository")
 		}
 		if action == "policy" {
 			f.StringVar(&mode, "mode", "", "disabled, observe, new-sessions (suggested), or all")
@@ -304,6 +304,8 @@ func (a *app) rolloutStatusHuman(status rolloutStatus) error {
 			kind := "Directory"
 			if binding.Kind == "git" {
 				kind = "Git checkout"
+			} else if binding.Kind == rollout.WorktreesKind {
+				kind = "All Git worktrees (including future worktrees)"
 			}
 			label := ""
 			if binding.Removed || project.Removed {

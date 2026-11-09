@@ -22,6 +22,8 @@ type Codex struct {
 	IncludeAppServer bool
 }
 
+const MaxCodexRoots = 16
+
 func (Codex) Name() string { return "codex" }
 func (c Codex) Discover(ctx context.Context) Result {
 	return c.discover(ctx, nil)
@@ -52,7 +54,7 @@ func (c Codex) discover(ctx context.Context, names map[string]string) Result {
 	if fi, e := os.Stat(c.Home); e != nil || !fi.IsDir() || !filepath.IsAbs(c.Home) || !filepath.IsAbs(c.Binary) {
 		return fail()
 	}
-	if len(c.Roots) == 0 || len(c.Roots) > 16 {
+	if len(c.Roots) == 0 || len(c.Roots) > MaxCodexRoots {
 		return fail()
 	}
 	for _, root := range c.Roots {

@@ -208,28 +208,11 @@ func (r *Resolver) Resolve(path string) (Info, error) {
 	if err = r.budget.probe(); err != nil {
 		return Info{}, err
 	}
-	ctx, cancel := context.WithTimeout(r.budget.Context(), ProbeTimeout)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, r.binary, "-c", "core.fsmonitor=false", "-c", "core.hooksPath="+os.DevNull, "-C", selected.Path, "rev-parse", "--path-format=absolute", "--show-toplevel", "--absolute-git-dir", "--git-common-dir")
-	cmd.Dir = selected.Path
-	cmd.Env = environment()
-	stdout := &boundedOutput{budget: r.budget, limit: 16 << 10, cancel: cancel}
-	stderr := &boundedOutput{budget: r.budget, limit: 4 << 10, cancel: cancel}
-	cmd.Stdout, cmd.Stderr = stdout, stderr
-	cmd.WaitDelay = 100 * time.Millisecond
-	// Run owns and joins the original process and os/exec's two copy goroutines.
-	// WaitDelay/stream/cancellation errors refuse the result; none prove EOF.
-	runErr := cmd.Run()
-	if runErr != nil || stdout.err != nil || stderr.err != nil {
-		return Info{}, errors.Join(ErrUnsupported, stdout.err, stderr.err, ctx.Err(), r.budget.Check())
-	}
-	if cmd.ProcessState == nil || !cmd.ProcessState.Success() {
-		return Info{}, ErrUnsupported
-	}
-	if err = r.budget.Check(); err != nil {
+	data, err := r.run(selected.Path, 16<<10, "rev-parse", "--path-format=absolute", "--show-toplevel", "--absolute-git-dir", "--git-common-dir")
+	if err != nil {
 		return Info{}, err
 	}
-	lines := strings.Split(strings.TrimSuffix(stdout.data.String(), "\n"), "\n")
+	lines := strings.Split(strings.TrimSuffix(data, "\n"), "\n")
 	if len(lines) != 3 {
 		return Info{}, ErrUnsupported
 	}
@@ -253,4 +236,88 @@ func (r *Resolver) Resolve(path string) (Info, error) {
 		return Info{}, err
 	}
 	return Info{Root: root, Git: git, Common: common}, nil
+}
+
+func (r *Resolver) run(path string, limit int, args ...string) (string, error) {
+	ctx, cancel := context.WithTimeout(r.budget.Context(), ProbeTimeout)
+	defer cancel()
+	args = append([]string{"-c", "core.fsmonitor=false", "-c", "core.hooksPath=" + os.DevNull, "-C", path}, args...)
+	cmd := exec.CommandContext(ctx, r.binary, args...)
+	cmd.Dir = path
+	cmd.Env = environment()
+	stdout := &boundedOutput{budget: r.budget, limit: limit, cancel: cancel}
+	stderr := &boundedOutput{budget: r.budget, limit: 4 << 10, cancel: cancel}
+	cmd.Stdout, cmd.Stderr = stdout, stderr
+	cmd.WaitDelay = 100 * time.Millisecond
+	// Run joins the original process and os/exec's copy goroutines.
+	if err := cmd.Run(); err != nil || stdout.err != nil || stderr.err != nil {
+		return "", errors.Join(ErrUnsupported, stdout.err, stderr.err, ctx.Err(), r.budget.Check())
+	}
+	return stdout.data.String(), r.budget.Check()
+}
+
+// Worktrees returns the primary checkout followed by the other registered,
+// accessible checkouts. The list and Resolve must agree on the selected root.
+func (r *Resolver) Worktrees(info Info) ([]Directory, error) {
+	common, _, err := inspect(info.Common.Path)
+	if err != nil || common != info.Common {
+		return nil, ErrChanged
+	}
+	if err := r.budget.probe(); err != nil {
+		return nil, err
+	}
+	data, err := r.run(info.Root.Path, MaxOutputBytes, "--git-dir="+info.Common.Path, "worktree", "list", "--porcelain", "-z")
+	if err != nil {
+		return nil, err
+	}
+	body, ok := strings.CutSuffix(data, "\x00\x00")
+	if !ok || body == "" {
+		return nil, ErrUnsupported
+	}
+	records := strings.Split(body, "\x00\x00")
+	if len(records) > 512 {
+		return nil, ErrBudget
+	}
+	roots := []Directory{}
+	seen := map[string]bool{}
+	selected := false
+	for i, record := range records {
+		fields := strings.Split(record, "\x00")
+		path, ok := strings.CutPrefix(fields[0], "worktree ")
+		if !ok {
+			return nil, ErrUnsupported
+		}
+		skip := false
+		for _, field := range fields[1:] {
+			if field == "bare" || field == "prunable" || strings.HasPrefix(field, "prunable ") {
+				skip = true
+			}
+		}
+		root, _, err := inspect(path)
+		// Git records absolute physical paths. A redirected registered path
+		// must not authorize the symlink's new destination.
+		if skip || err != nil || root.Path != path {
+			if i == 0 {
+				return nil, ErrUnsupported
+			}
+			continue
+		}
+		if seen[root.Path] {
+			return nil, ErrUnsupported
+		}
+		seen[root.Path] = true
+		roots = append(roots, root)
+		selected = selected || root == info.Root
+	}
+	if !selected {
+		return nil, ErrUnsupported
+	}
+	current, err := r.Resolve(info.Root.Path)
+	if err != nil {
+		return nil, err
+	}
+	if current != info {
+		return nil, ErrChanged
+	}
+	return roots, r.budget.Check()
 }

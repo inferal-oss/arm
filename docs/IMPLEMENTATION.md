@@ -480,6 +480,14 @@ remain unsupported. See the scoped rollout design and validation record.
 
 ## Project-scoped gradual agent adoption — CLI milestone
 
+The onboarding picker and `rollout project --kind git-worktrees` support a
+single binding to a verified primary checkout and its Git common directory.
+The rollout check verifies Git's registered worktree paths, including future
+worktrees. A narrower explicit binding can still govern a checkout. Removing
+a repository-wide binding revokes retained sessions in its project, including
+those whose worktrees are missing. Codex discovery queries up to 16 verified
+roots at once and accepts an explicit working directory for further queries.
+
 Interactive install/uninstall confirmation offers `[y/N/diff]`. `d`/`diff`
 displays the bound patch and returns to the same default-no question; checking
 the diff never applies changes or creates backups. Acceptance rechecks the

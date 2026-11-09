@@ -37,6 +37,17 @@ Nested repositories and unbound worktrees cannot inherit a Git checkout grant.
 Repeat an explicitly reviewed project binding to add a chosen worktree to the
 same ARM project. Shared remote URLs never group repositories automatically.
 
+Choose **All Git worktrees (including future worktrees)** in onboarding with
+`s` on the project settings screen to cover a local repository. The CLI
+equivalent is `--kind git-worktrees`. The review pins the verified primary
+checkout and local Git common directory. Each check verifies the current
+checkout against Git's worktree registry and the pinned repository identity.
+Existing and future registered checkouts share one binding. Independent
+clones, unrelated nested repositories and redirected worktree paths cannot claim this
+binding. Explicit checkout and directory boundaries take precedence at the
+same worktree root. A Git registry read is limited to 512 records and requires
+a verifiable primary checkout. Earlier binaries reject the new binding kind.
+
 The most-specific root takes precedence. Disabled nested projects contain
 enabled ancestors. Equal roots across projects are refused; replaced or
 ambiguous roots fail closed. Reapplying a binding can explicitly review a
@@ -180,6 +191,17 @@ Repeat the identical command without `--dry-run`, adding
 operator mutation below follows that preview/apply convention. `--kind directory`
 selects a subtree; repeated `project` commands explicitly add other roots.
 
+To expand an existing primary checkout binding to the whole local repository,
+preview the change. The reviewed apply preserves the current project policy.
+
+```sh
+arm rollout project --project demo --kind git-worktrees --path /work/project \
+  --reason "Include all registered Git worktrees" --dry-run
+```
+
+Apply the identical request with `--expect REVIEW_SHA256 --yes` after reviewing
+the new scope. A registered linked worktree can also serve as the input path.
+
 ```sh
 arm rollout bind --project demo --adapter codex --client-project CLIENT_PROJECT \
   --reason "Associate this client project" --dry-run
@@ -281,6 +303,8 @@ Generic native sources initially include:
   `useStateDbOnly`, archived exclusion and exact bound-root `cwd` filters. It
   never starts/resumes a thread/server or requests turns. A nested working
   directory needs explicit `--codex-cwd` within the same verified boundary.
+  Repository-wide bindings contribute registered roots up to the 16-root
+  native query limit. Use `--codex-cwd` for another verified worktree.
   Unused native preview/title fields are discarded and never returned/persisted.
 - Claude: small regular `sessions/*.json` markers with recognized UUID/cwd fields;
   transcript, prompt-history and credential files are excluded. Native process

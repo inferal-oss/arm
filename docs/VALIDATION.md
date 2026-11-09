@@ -1,5 +1,17 @@
 # Validation record
 
+## Repository-wide worktree rollout
+
+On macOS, the Git metadata, rollout, project discovery and agent-session
+packages passed in full with a canonical temporary directory. Focused CLI
+onboarding, rollout and picker tests passed. An isolated real Git repository
+verified reviewed onboarding, a future worktree, explicit checkout precedence,
+revocation after removal, and refusal of a nested repository, a copied Git
+pointer and a redirected worktree path. A compiled CLI smoke test passed
+reviewed apply, the disabled default for a new project, and eligibility and
+boundary status after adding a future worktree. Vet passed for the affected
+packages.
+
 ## Managed instruction root repair
 
 The macOS installer suite covers a former symlink replaced by a directory,

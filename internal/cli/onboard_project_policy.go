@@ -78,7 +78,7 @@ func pickerRequest(ctx context.Context, selection pickerSelection, reason string
 	}
 	settings := map[string]pickerSetting{}
 	for _, setting := range selection.Settings {
-		if settings[setting.Group].Group != "" || !pickerValidID(setting.Project) || (setting.Kind != "git" && setting.Kind != "directory") || !slices.Contains([]string{"new-sessions", "all", "observe", "disabled"}, setting.Mode) {
+		if settings[setting.Group].Group != "" || !pickerValidID(setting.Project) || (setting.Kind != "git" && setting.Kind != "directory" && setting.Kind != rollout.WorktreesKind) || !slices.Contains([]string{"new-sessions", "all", "observe", "disabled"}, setting.Mode) {
 			return rollout.OnboardBatch{}, fmt.Errorf("unsupported project settings")
 		}
 		settings[setting.Group] = setting
@@ -112,6 +112,7 @@ func pickerRequest(ctx context.Context, selection pickerSelection, reason string
 			return rollout.OnboardBatch{}, fmt.Errorf("project has no explicit reviewed member mapping; refresh the picker")
 		}
 		rootInEvidence := false
+		var repository gitmeta.Directory
 		seenMembers := map[string]bool{}
 		for _, expected := range group.Memberships {
 			if err := budget.Check(); err != nil {
@@ -151,13 +152,23 @@ func pickerRequest(ctx context.Context, selection pickerSelection, reason string
 			if actual.Checkout != nil && actual.Checkout.Root.Path == group.Directory {
 				rootInEvidence = true
 			}
-			if setting.Kind == "git" {
+			switch setting.Kind {
+			case "git", rollout.WorktreesKind:
 				if actual.Checkout == nil {
 					return rollout.OnboardBatch{}, fmt.Errorf("Git checkout proof is missing")
 				}
 				root = actual.Checkout.Root.Path
-			} else if root == group.Directory {
-				rootInEvidence = true
+				if setting.Kind == rollout.WorktreesKind {
+					if repository != (gitmeta.Directory{}) && repository != actual.Checkout.Common {
+						return rollout.OnboardBatch{}, fmt.Errorf("selected worktrees do not share a local Git repository")
+					}
+					repository = actual.Checkout.Common
+					root = group.Directory
+				}
+			case "directory":
+				if root == group.Directory {
+					rootInEvidence = true
+				}
 			}
 			binding := rollout.Binding{Kind: setting.Kind, Root: root}
 			change := rollout.Change{Action: "onboard", Project: setting.Project, Mode: setting.Mode, Reason: reason, Binding: &binding}

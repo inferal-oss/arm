@@ -172,6 +172,9 @@ func gitDirectoryContext(parent context.Context, path, selector string) (string,
 }
 func gitRoot(path string) (string, error) { return gitDirectory(path, "--show-toplevel") }
 func NewBinding(kind, path string) (Binding, error) {
+	if kind == WorktreesKind {
+		return newWorktreesBinding(path)
+	}
 	p, e := canonical(path)
 	if e != nil {
 		return Binding{}, e
@@ -182,7 +185,7 @@ func NewBinding(kind, path string) (Binding, error) {
 			return Binding{}, e
 		}
 	} else if kind != "directory" {
-		return Binding{}, fail("binding kind must be directory or git")
+		return Binding{}, fail("binding kind must be directory, git, or git-worktrees")
 	}
 	id, e := directoryIdentity(p)
 	if e != nil {
@@ -269,7 +272,7 @@ func validate(st State) error {
 			return fail("removed project must remain disabled")
 		}
 		for _, b := range p.Bindings {
-			if (b.Kind != "directory" && b.Kind != "git") || !filepath.IsAbs(b.Root) || filepath.Clean(b.Root) != b.Root || b.Identity == "" || b.Kind == "git" && (!filepath.IsAbs(b.GitDirectory) || b.GitIdentity == "") {
+			if (b.Kind != "directory" && b.Kind != "git" && b.Kind != WorktreesKind) || !filepath.IsAbs(b.Root) || filepath.Clean(b.Root) != b.Root || b.Identity == "" || (b.Kind == "git" || b.Kind == WorktreesKind) && (!filepath.IsAbs(b.GitDirectory) || b.GitIdentity == "") {
 				return fail("invalid project boundary")
 			}
 		}
@@ -395,33 +398,54 @@ func resolveContext(ctx context.Context, st State, q Query) (*Project, string, e
 	blocked := ""
 	depth := -1
 	selectedRemoved := false
+	selectedExact := false
+	var commonPaths []string
+	for _, p := range st.Projects {
+		for _, b := range p.Bindings {
+			if b.Kind == WorktreesKind {
+				commonPaths = append(commonPaths, b.GitDirectory)
+			}
+		}
+	}
+	var evidence worktreeEvidence
+	if len(commonPaths) != 0 {
+		evidence = readWorktreeEvidence(ctx, path, commonPaths)
+	}
 	for _, p := range st.Projects {
 		for _, b := range p.Bindings {
 			if e := ctx.Err(); e != nil {
 				return nil, "", e
 			}
-			if !within(b.Root, path) {
+			root, why := b.Root, ""
+			exact := b.Kind != WorktreesKind
+			if !exact {
+				root, why = evidence.match(b, path)
+			}
+			if root == "" || !within(root, path) {
 				continue
 			}
+			moreSpecific := len(root) > depth || len(root) == depth && exact && !selectedExact
+			sameRank := len(root) == depth && exact == selectedExact
 			removed := p.Removed || b.Removed
 			if removed {
-				if len(b.Root) > depth {
+				if moreSpecific {
 					copy := p
-					selected, depth, selectedRemoved = &copy, len(b.Root), true
+					selected, depth, selectedRemoved, selectedExact = &copy, len(root), true, exact
 					blocked = "project or boundary was removed; no adoption authorized"
 				}
 				continue
 			}
-			actual, e := canonical(b.Root)
-			if e != nil || actual != b.Root {
-				return nil, "", fail("scope boundary changed; review project %s", p.ID)
-			}
-			id, e := directoryIdentity(b.Root)
-			if e != nil || id != b.Identity {
-				return nil, "", fail("scope directory identity changed; review project %s", p.ID)
+			if exact {
+				actual, e := canonical(b.Root)
+				if e != nil || actual != b.Root {
+					return nil, "", fail("scope boundary changed; review project %s", p.ID)
+				}
+				id, e := directoryIdentity(b.Root)
+				if e != nil || id != b.Identity {
+					return nil, "", fail("scope directory identity changed; review project %s", p.ID)
+				}
 			}
 			// An unmapped client label cannot fall back to a broader grant.
-			why := ""
 			if q.ClientProject != "" && !slices.Contains(p.Clients, ClientBinding{Adapter: q.Adapter, ID: q.ClientProject}) {
 				why = "client project is not explicitly bound; no adoption authorized"
 			}
@@ -437,13 +461,14 @@ func resolveContext(ctx context.Context, st State, q Query) (*Project, string, e
 					}
 				}
 			}
-			if len(b.Root) > depth || len(b.Root) == depth && selectedRemoved {
+			if moreSpecific || sameRank && selectedRemoved {
 				copy := p
 				selected = &copy
-				depth = len(b.Root)
+				depth = len(root)
 				blocked = why
 				selectedRemoved = false
-			} else if len(b.Root) == depth && selected != nil && selected.ID != p.ID {
+				selectedExact = exact
+			} else if sameRank && selected != nil && selected.ID != p.ID {
 				return nil, "", fail("ambiguous project boundary; no adoption authorized")
 			}
 		}
@@ -664,6 +689,7 @@ func digest(st State, c Change) string {
 }
 func transition(st *State, c Change, at time.Time) (Plan, error) {
 	plan := Plan{Revision: st.Revision, Change: c, Affected: []Session{}, Effect: "Adoption only. No jobs, contacts, leases, resource admission or cleanup obligations are changed. Entering new-sessions establishes a cutoff at apply time; retaining that mode preserves its existing cutoff."}
+	removedWorktrees := false
 	p := find(st, c.Project)
 	if p != nil {
 		if p.Removed {
@@ -692,9 +718,13 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 				if b.Removed && other.ID != p.ID {
 					continue
 				}
-				if b.Root == c.Binding.Root {
+				sameRepository := b.Kind == WorktreesKind && c.Binding.Kind == WorktreesKind && b.GitDirectory == c.Binding.GitDirectory
+				if b.Root == c.Binding.Root || sameRepository {
 					if other.ID != p.ID || b == *c.Binding && c.Action != "onboard" {
 						return plan, fail("root already bound to project %s", other.ID)
+					}
+					if replaced {
+						return plan, fail("more than one existing binding matches; review the overlapping bindings first")
 					}
 					p.Bindings[i] = *c.Binding
 					replaced = true
@@ -734,6 +764,7 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 			if c.Binding != nil {
 				for i, b := range p.Bindings {
 					if b.Root == c.Binding.Root && !b.Removed {
+						removedWorktrees = b.Kind == WorktreesKind
 						p.Bindings[i].Removed, found = true, true
 					}
 				}
@@ -750,6 +781,9 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 				return plan, fail("selected binding does not exist or was already removed")
 			}
 			plan.Effect = "Remove the selected binding from active rollout. Removed filesystem boundaries deny broader fallback until explicitly rebound. Retain session/audit history; affected participation is revoked. Existing jobs, contacts, leases, ownership and cleanup obligations are unchanged."
+			if removedWorktrees {
+				plan.Effect += " Removing a repository-wide binding revokes all retained session participation in this project, including sessions whose worktrees are no longer available."
+			}
 		case "bind":
 			if c.Client == nil {
 				return plan, fail("bind requires client identity")
@@ -811,7 +845,7 @@ func transition(st *State, c Change, at time.Time) (Plan, error) {
 		for i := range st.Sessions {
 			x := &st.Sessions[i]
 			if x.Project == p.ID {
-				if c.Action == "remove-project" || c.Action == "remove-binding" && (c.Binding != nil && within(c.Binding.Root, x.CWD) || c.Client != nil && x.Adapter == c.Client.Adapter && x.ClientProject == c.Client.ID) {
+				if c.Action == "remove-project" || c.Action == "remove-binding" && (removedWorktrees || c.Binding != nil && within(c.Binding.Root, x.CWD) || c.Client != nil && x.Adapter == c.Client.Adapter && x.ClientProject == c.Client.ID) {
 					x.State = "revoked"
 				}
 				plan.Affected = append(plan.Affected, *x)

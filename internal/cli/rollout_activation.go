@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -122,13 +123,24 @@ func (a *app) discoverSessions(project string, sources []agentsessions.Source) (
 			if len(native.Roots) == 0 {
 				for _, b := range out.Project.Bindings {
 					if !b.Removed {
-						native.Roots = append(native.Roots, b.Root)
+						if b.Kind == rollout.WorktreesKind {
+							native.Roots = append(native.Roots, rollout.RegisteredWorktreeRoots(ctx, b)...)
+						} else {
+							native.Roots = append(native.Roots, b.Root)
+						}
 					}
 				}
 				out.Warnings = append(out.Warnings, "Codex discovery queries exact bound working directories; use --codex-cwd for a session working in a nested directory.")
 			}
 			verified := []string{}
 			for _, root := range native.Roots {
+				if slices.Contains(verified, root) {
+					continue
+				}
+				if len(verified) == agentsessions.MaxCodexRoots {
+					out.Warnings = append(out.Warnings, "Codex discovery is limited to 16 roots per query; use --codex-cwd to inspect another worktree.")
+					break
+				}
 				p, blocked, e := rollout.ResolveScopeContext(ctx, st, rollout.Query{CWD: root, Adapter: "codex"})
 				if e != nil || p == nil || p.ID != project || blocked != "" {
 					if explicit {
