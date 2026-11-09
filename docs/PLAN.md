@@ -1,5 +1,12 @@
 # ARM delivery plan
 
+## Interactive login service
+
+Owner `codex/login-service`. Interactive startup offers a per-user LaunchAgent
+or systemd user unit for the selected ARM home. Native login-session acceptance
+and automatic crash recovery remain separate gates. See
+[scoped validation](VALIDATION.md#interactive-login-service).
+
 ## Repository-wide worktree rollout
 
 Owner: `codex/rollout-worktree-scope`. Add a reviewed repository scope to

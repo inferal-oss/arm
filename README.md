@@ -184,6 +184,28 @@ Revocation stops only attached supervised work. An occupied or uncertain binding
 
 `arm run` streams combined command output, preserves its exit status, and returns 124 on lease expiry. With `--json`, command output goes to stderr and stdout contains the final lease JSON. Execution is noninteractive; commands receive no interactive stdin. Foreground daemon mode is `arm serve`.
 
+## Start at login
+
+Interactive `arm start` and `arm daemon start` offer to install a per-user
+service after confirming the backend is running. Enter `y` to enable it or
+press Enter to skip setup for this invocation. The prompt shows the executable,
+ARM state directory and service files. The service runs `arm serve` with that
+state directory and uses its `config.toml` and defaults. Startup flags such as
+`--cpu` apply to the current invocation only.
+
+- **macOS.** The LaunchAgent in `~/Library/LaunchAgents` runs at the next
+  graphical login. Inspect the printed plist for its label and log path. To
+  disable future launches, remove that plist. If the agent is currently loaded,
+  stop ARM with `arm stop` for the same state directory before unloading it
+  with `launchctl bootout gui/$(id -u)/LABEL`.
+- **Linux with systemd.** The user unit runs the next time the user manager
+  starts, normally at login. Use `systemctl --user status UNIT` to inspect it,
+  `journalctl --user -u UNIT` to read logs, and `systemctl --user disable UNIT`
+  to disable future starts. Use the unit name shown in the prompt.
+
+Use `arm start` for manual startup on any supported host, including after an
+unexpected backend exit during the current login session.
+
 ## Custom resource pools
 
 Agents and operators can define counted resources for arbitrary coordination:
@@ -247,7 +269,7 @@ arm uninstall --dry-run
 arm uninstall
 ```
 
-The installer discovers Codex and Claude, including Claude in the per-user binary directory. Explicit `--codex-home DIR` and `--claude-home DIR` targets support isolated setups. Managed instructions include the actual ARM executable and state-directory prefix. Installation currently manages instruction blocks; daemon startup is separate, and native service registration is pending.
+The installer discovers Codex and Claude, including Claude in the per-user binary directory. Explicit `--codex-home DIR` and `--claude-home DIR` targets support isolated setups. Managed instructions include the actual ARM executable and state-directory prefix. Use interactive `arm start` for the [start-at-login offer](#start-at-login).
 
 Install and uninstall show the proposed changes and ask for confirmation in a terminal. Empty replies, EOF and Ctrl-C cancel. `--dry-run` only previews; use `arm install --yes` or `arm uninstall --yes` in scripts and agents. Noninteractive calls without `--yes` return a JSON preview and `confirmation_required`. Approval does not bypass edited-file or active-lease safeguards, and changes made while reviewing a preview require a fresh approval.
 

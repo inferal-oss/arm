@@ -1,5 +1,16 @@
 # Validation record
 
+## Interactive login service
+
+The macOS run of `go test -count=10 ./internal/loginservice` passed. The
+tests cover exact LaunchAgent argument encoding, native `plutil` validation,
+systemd argument escaping and enable links, interrupted Linux setup,
+conflicting files and links, and concurrent installation. An isolated CLI
+prompt harness passed acceptance, decline, empty response, incomplete input,
+JSON and redirected stream cases, plus a repeat invocation after enablement.
+Full CLI integration and actual login activation on macOS and Linux remain
+pending.
+
 ## Repository-wide worktree rollout
 
 On macOS, the Git metadata, rollout, project discovery and agent-session

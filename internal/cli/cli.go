@@ -1005,8 +1005,19 @@ func (a *app) daemon(command string, args []string) (int, error) {
 	if e != nil {
 		return 1, e
 	}
+	reportStarted := func(result map[string]any) (int, error) {
+		if err := a.print(result); err != nil {
+			return 1, err
+		}
+		if !*restartDry && !*restartYes && *expectConfig == "" {
+			if err := a.offerLoginService(); err != nil {
+				return 1, err
+			}
+		}
+		return 0, nil
+	}
 	if running {
-		return 0, a.print(map[string]any{"running": true, "host": existing.Host})
+		return reportStarted(map[string]any{"running": true, "host": existing.Host})
 	}
 	if handled, err := a.reviewStoppedRestart(*restartReason, *restartYes, *restartDry); handled || err != nil {
 		if err != nil {
@@ -1041,7 +1052,7 @@ func (a *app) daemon(command string, args []string) (int, error) {
 	if e != nil {
 		return 1, e
 	}
-	return 0, a.print(map[string]any{"running": true, "host": existing.Host, "home": a.home})
+	return reportStarted(map[string]any{"running": true, "host": existing.Host, "home": a.home})
 }
 
 func (a *app) agent(args []string) error {
