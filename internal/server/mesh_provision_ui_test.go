@@ -54,13 +54,13 @@ func TestProvisionModuleUsesClosedExactAssetRoute(t *testing.T) {
 	for _, c := range []struct {
 		method, host, path string
 		status             int
-	}{{"GET", s.authority, "/mesh-provision.mjs", 200}, {"HEAD", s.authority, "/mesh-provision.mjs", 200}, {"POST", s.authority, "/mesh-provision.mjs", 405}, {"GET", "foreign.invalid", "/mesh-provision.mjs", 403}, {"GET", s.authority, "/mesh-provision.mjs/extra", 404}} {
+	}{{"GET", s.authority, "/assets/arm.mjs", 200}, {"HEAD", s.authority, "/assets/arm.mjs", 200}, {"POST", s.authority, "/assets/arm.mjs", 405}, {"GET", "foreign.invalid", "/assets/arm.mjs", 403}, {"GET", s.authority, "/assets/arm.mjs/extra", 404}} {
 		w := httptest.NewRecorder()
 		mux.ServeHTTP(w, httptest.NewRequest(c.method, "http://"+c.host+c.path, nil))
 		if w.Code != c.status {
 			t.Fatal(c, w.Code)
 		}
-		if c.method == "GET" && c.status == 200 && !strings.Contains(w.Body.String(), "provision") {
+		if c.method == "GET" && c.status == 200 && !strings.Contains(w.Body.String(), "mesh_operator_provision_prepare") {
 			t.Fatal("missing module")
 		}
 	}

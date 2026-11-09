@@ -28,9 +28,22 @@
 
   The terminal fixes have regression tests.
 - Not run: undo in a browser, and an operator session with real pressure.
-- `internal/server` has three failures that predate this change and also fail
-  on its base: two tests for module routes that the bundled dashboard no
-  longer serves, and a CSP check that predates the agent status style hash.
+- `internal/server` had three failures that predate this change and also
+  failed on its base: two tests for module routes that the bundled dashboard
+  no longer serves, and a CSP check that predates the agent status style hash.
+  They are fixed below.
+
+## Server asset test fixes — scoped evidence
+
+- The provisioning and peer-poll tests now check the bundled
+  `/assets/arm.mjs` route (host, method and exact-path refusals unchanged) and
+  that the bundle contains the operations those modules use
+  (`mesh_operator_provision_prepare`, `peers_status`). Minification renames
+  exported functions, so names such as `createPeerPollGate` are not checked.
+- The embedded asset CSP check expects `style-src 'self'` plus exactly the
+  agent status style hash, and still refuses `'unsafe-inline'` and
+  `'unsafe-eval'`.
+- macOS arm64: the complete `internal/server` package passes at `-p 1`.
 
 ## Baseline test fixes — scoped evidence
 

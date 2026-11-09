@@ -31,10 +31,10 @@ func TestPeerPollModuleEmbeddedAndServed(t *testing.T) {
 	s := &Server{authority: "127.0.0.1:12345"}
 	mux := http.NewServeMux()
 	s.registerBrowser(mux)
-	request := httptest.NewRequest("GET", "http://"+s.authority+"/peer-poll.mjs", nil)
+	request := httptest.NewRequest("GET", "http://"+s.authority+"/assets/arm.mjs", nil)
 	response := httptest.NewRecorder()
 	mux.ServeHTTP(response, request)
-	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "createPeerPollGate") {
-		t.Fatalf("new dashboard import is not served: status=%d", response.Code)
+	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "peers_status") {
+		t.Fatalf("bundled peer poll is not served: status=%d", response.Code)
 	}
 }

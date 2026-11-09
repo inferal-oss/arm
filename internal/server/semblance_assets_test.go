@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"getarm.org/internal/agentstatus"
 )
 
 func TestSemblanceEmbeddedAssets(t *testing.T) {
@@ -38,7 +40,7 @@ func TestSemblanceEmbeddedAssets(t *testing.T) {
 					t.Fatalf("%s %s: %d %v", method, path, w.Code, w.Header())
 				}
 				csp := w.Header().Get("Content-Security-Policy")
-				if !strings.Contains(csp, "script-src 'self' 'wasm-unsafe-eval'") || !strings.Contains(csp, "style-src 'self';") || strings.Contains(csp, "'unsafe-inline'") || strings.Contains(csp, "'unsafe-eval'") {
+				if !strings.Contains(csp, "script-src 'self' 'wasm-unsafe-eval'") || !strings.Contains(csp, "style-src 'self' '"+agentstatus.StyleHash()+"';") || strings.Contains(csp, "'unsafe-inline'") || strings.Contains(csp, "'unsafe-eval'") {
 					t.Fatal("unexpected CSP", csp)
 				}
 				if strings.HasSuffix(path, ".mjs") && !strings.HasPrefix(w.Header().Get("Content-Type"), "text/javascript") {

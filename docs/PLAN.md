@@ -5,9 +5,14 @@
 Owner: `claude/guardian-dashboards`. Adds a Guardian page beside Monitor in
 the web and terminal dashboards (`g`), with verdict, pressure, ladder,
 incidents, programs and actions with undo, and fixes the web Monitor's
-guardian cards, which were never displayed. Remaining gates: the three
-pre-existing `internal/server` test failures, and operator use under real
-pressure.
+guardian cards, which were never displayed. Remaining gate: operator use
+under real pressure.
+
+## Server asset tests — fixed
+
+Owner: `claude/server-test-fixes`. Three `internal/server` tests that still
+expected per-module web routes and the old CSP now check the bundled dashboard
+and the current style hash; the package passes in full.
 
 ## Baseline test failures — fixed, reviewed
 
