@@ -191,7 +191,8 @@ service after confirming the backend is running. Enter `y` to enable it or
 press Enter to skip setup for this invocation. The prompt shows the executable,
 ARM state directory and service files. The service runs `arm serve` with that
 state directory and uses its `config.toml` and defaults. Startup flags such as
-`--cpu` apply to the current invocation only.
+`--cpu` apply to the current invocation only. Use ARM from a permanent
+installation so the executable remains available after logout.
 
 - **macOS.** The LaunchAgent in `~/Library/LaunchAgents` runs at the next
   graphical login. Inspect the printed plist for its label and log path. To
@@ -199,12 +200,37 @@ state directory and uses its `config.toml` and defaults. Startup flags such as
   stop ARM with `arm stop` for the same state directory before unloading it
   with `launchctl bootout gui/$(id -u)/LABEL`.
 - **Linux with systemd.** The user unit runs the next time the user manager
-  starts, normally at login. Use `systemctl --user status UNIT` to inspect it,
-  `journalctl --user -u UNIT` to read logs, and `systemctl --user disable UNIT`
-  to disable future starts. Use the unit name shown in the prompt.
+  starts, normally at login. Setup uses `busctl` to check that the user manager
+  searches the selected configuration directory. If you set `XDG_CONFIG_HOME`
+  only in your shell, match the manager's setting and use `--home DIR` to keep
+  the same ARM state directory. Use `systemctl --user status UNIT` to inspect
+  the unit, `journalctl --user -u UNIT` to read logs, and
+  `systemctl --user disable UNIT` to disable future starts. ARM manages workload
+  cleanup when systemd signals the daemon. For an older ARM-generated unit,
+  accept the offered shutdown policy update and run `systemctl --user
+  daemon-reload` to apply it to the current user manager before stopping it.
 
-Use `arm start` for manual startup on any supported host, including after an
-unexpected backend exit during the current login session.
+If a previous definition points to a missing executable, disable that service
+and remove the definition shown in the setup warning before enabling login
+startup from the installed binary.
+
+The service and its workloads inherit the native manager's environment. For
+tools that depend on shell settings, configure an explicit `PATH` or `JAVA_HOME`
+for the service:
+
+- On macOS, add an `EnvironmentVariables` dictionary to the printed plist
+  with string entries such as `PATH` and `JAVA_HOME`. ARM preserves the edited
+  plist and reports that it differs from the generated definition.
+- On Linux, use `systemctl --user edit UNIT` to add a `[Service]` drop-in with
+  entries such as `Environment="PATH=/opt/tools/bin:/usr/bin:/bin"` and
+  `Environment="JAVA_HOME=/opt/jdk"`.
+
+Use `arm start` for ordinary manual startup. After a crash, an unreachable
+`endpoint.json` can make `arm start` report `startup_outcome_unknown`. Check
+the backend or service logs. Once you confirm the previous daemon has exited,
+start it through the service manager or run `arm --home DIR serve` with the same
+ARM state directory. `serve` takes the authority lock and checks stopped intent
+before recovery.
 
 ## Custom resource pools
 

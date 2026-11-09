@@ -4,7 +4,9 @@
 
 Owner `codex/login-service`. Interactive startup offers a per-user LaunchAgent
 or systemd user unit for the selected ARM home. Native login-session acceptance
-and automatic crash recovery remain separate gates. See
+and automatic crash recovery remain separate gates. The review follow-up
+covers systemd workload ownership and unit search paths, legacy unit upgrades,
+service environment guidance and temporary executables. See
 [scoped validation](VALIDATION.md#interactive-login-service).
 
 ## Repository-wide worktree rollout

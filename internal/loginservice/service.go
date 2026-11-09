@@ -3,6 +3,7 @@ package loginservice
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/xml"
 	"fmt"
@@ -24,10 +25,11 @@ type Service struct {
 	Executable string
 	Home       string
 	definition []byte
+	native     bool
 }
 
 // ForUser returns nil on hosts without a supported login service manager.
-func ForUser(executable, home string) (*Service, error) {
+func ForUser(ctx context.Context, executable, home string) (*Service, error) {
 	var dir string
 	var err error
 	switch runtime.GOOS {
@@ -47,11 +49,63 @@ func ForUser(executable, home string) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := checkExecutable(executable); err != nil {
+		return nil, err
+	}
 	home, err = filepath.EvalSymlinks(home)
 	if err != nil {
 		return nil, err
 	}
-	return newService(runtime.GOOS, dir, executable, home)
+	s, err := newService(runtime.GOOS, dir, executable, home)
+	if err != nil {
+		return nil, err
+	}
+	if s.EnableLink != "" {
+		if err := checkSystemdUnitDirectory(ctx, dir); err != nil {
+			return nil, err
+		}
+	}
+	s.native = true
+	return s, nil
+}
+
+func checkExecutable(executable string) error {
+	resolved, err := filepath.EvalSymlinks(executable)
+	if err != nil {
+		return err
+	}
+	info, err := os.Stat(resolved)
+	if err != nil {
+		return err
+	}
+	if !info.Mode().IsRegular() || info.Mode().Perm()&0111 == 0 {
+		return fmt.Errorf("login setup requires an installed ARM executable")
+	}
+	parent, err := filepath.EvalSymlinks(filepath.Dir(executable))
+	if err != nil {
+		return err
+	}
+	entry := filepath.Join(parent, filepath.Base(executable))
+	// Recent Go versions can also run executables from the build cache.
+	roots := []string{os.TempDir(), os.Getenv("GOTMPDIR"), os.Getenv("GOCACHE"), os.Getenv("XDG_RUNTIME_DIR"), "/tmp", "/var/tmp", "/run", "/dev/shm"}
+	if cache, err := os.UserCacheDir(); err == nil {
+		roots = append(roots, filepath.Join(cache, "go-build"))
+	}
+	for _, root := range roots {
+		if !filepath.IsAbs(root) {
+			continue
+		}
+		dir, err := filepath.EvalSymlinks(root)
+		if err != nil {
+			continue
+		}
+		for _, path := range []string{entry, resolved} {
+			if relative, err := filepath.Rel(dir, path); err == nil && filepath.IsLocal(relative) {
+				return fmt.Errorf("login setup requires an installed ARM executable. Run arm start from a permanent installation")
+			}
+		}
+	}
+	return nil
 }
 
 func newService(platform, dir, executable, home string) (*Service, error) {
@@ -106,29 +160,72 @@ func launchAgent(name, executable, home string) []byte {
 func systemdUnit(executable, home string) []byte {
 	escape := strings.NewReplacer(`\`, `\\`, `"`, `\"`, "%", "%%")
 	// The colon prefix disables systemd environment substitution for the argv.
+	// Only signal the daemon. ARM owns cancellation and settlement of workloads.
 	return fmt.Appendf(nil, `[Unit]
 Description=ARM resource manager
 
 [Service]
 Type=exec
 ExecStart=":%s" --home "%s" serve
-KillMode=mixed
+KillMode=process
 
 [Install]
 WantedBy=default.target
 `, escape.Replace(executable), escape.Replace(home))
 }
 
-// Enabled recognizes only the exact definition and, for systemd, its enable
-// link. Existing conflicting files and symlinks are left to the operator.
-func (s *Service) Enabled() (bool, error) {
-	present, err := s.definitionPresent()
-	if err != nil || s.EnableLink == "" {
-		return present, err
+// Setup contains only the writes described to the operator before consent.
+type Setup struct {
+	service        *Service
+	definition     bool
+	enableLink     bool
+	PolicyOverride string
+}
+
+const workloadOwnership = "[Service]\nKillMode=process\n"
+
+// Review returns nil when the current definition is already set up. An exact
+// legacy Linux unit can be upgraded without overwriting it or its other drop-ins.
+func (s *Service) Review() (*Setup, error) {
+	plan := &Setup{service: s}
+	data, err := readDefinition(s.Path, len(s.definition))
+	if err != nil {
+		return nil, err
 	}
+	switch {
+	case data == nil:
+		plan.definition = true
+	case bytes.Equal(data, s.definition):
+	case s.EnableLink != "" && bytes.Equal(data, bytes.Replace(s.definition, []byte("\nKillMode=process\n"), []byte("\nKillMode=mixed\n"), 1)):
+		path := filepath.Join(s.Path+".d", "10-arm-workload-ownership.conf")
+		override, err := readDefinition(path, len(workloadOwnership))
+		if err != nil {
+			return nil, err
+		}
+		if override == nil {
+			plan.PolicyOverride = path
+		} else if string(override) != workloadOwnership {
+			return nil, fmt.Errorf("existing shutdown policy differs at %s", path)
+		}
+	default:
+		return nil, fmt.Errorf("login service definition already exists with different content: %s", s.Path)
+	}
+	if s.EnableLink != "" {
+		plan.enableLink, err = s.missingEnableLink()
+		if err != nil {
+			return nil, err
+		}
+	}
+	if !plan.definition && !plan.enableLink && plan.PolicyOverride == "" {
+		return nil, nil
+	}
+	return plan, nil
+}
+
+func (s *Service) missingEnableLink() (bool, error) {
 	target, err := os.Readlink(s.EnableLink)
 	if os.IsNotExist(err) {
-		return false, nil
+		return true, nil
 	}
 	if err != nil {
 		return false, err
@@ -139,73 +236,94 @@ func (s *Service) Enabled() (bool, error) {
 	if filepath.Clean(target) != s.Path {
 		return false, fmt.Errorf("login service link already points elsewhere: %s", s.EnableLink)
 	}
-	return present, nil
+	return false, nil
 }
 
-func (s *Service) definitionPresent() (bool, error) {
-	info, err := os.Lstat(s.Path)
+func readDefinition(path string, limit int) ([]byte, error) {
+	info, err := os.Lstat(path)
 	if os.IsNotExist(err) {
-		return false, nil
+		return nil, nil
 	}
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	if info.Mode().IsRegular() && info.Size() == int64(len(s.definition)) {
-		f, err := os.OpenFile(s.Path, os.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
-		if err != nil {
-			return false, err
-		}
-		defer f.Close()
-		opened, err := f.Stat()
-		if err != nil {
-			return false, err
-		}
-		if !os.SameFile(info, opened) {
-			return false, fmt.Errorf("login service definition changed during inspection: %s", s.Path)
-		}
-		data, err := io.ReadAll(io.LimitReader(f, int64(len(s.definition))+1))
-		if err != nil {
-			return false, err
-		}
-		if bytes.Equal(data, s.definition) {
-			return true, nil
-		}
+	if !info.Mode().IsRegular() || info.Size() > int64(limit) {
+		return nil, fmt.Errorf("unexpected login service file at %s", path)
 	}
-	return false, fmt.Errorf("login service definition already exists with different content: %s", s.Path)
+	f, err := os.OpenFile(path, os.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	opened, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	if !os.SameFile(info, opened) {
+		return nil, fmt.Errorf("login service file changed during inspection: %s", path)
+	}
+	return io.ReadAll(io.LimitReader(f, int64(limit)+1))
 }
 
-// Enable registers the definition for the next login without starting a new
-// backend. A matching unit left by an interrupted enable can be reused.
-func (s *Service) Enable() error {
-	if enabled, err := s.Enabled(); enabled || err != nil {
-		return err
-	}
-	present, err := s.definitionPresent()
-	if err != nil {
-		return err
-	}
-	if !present {
-		if err := writeDefinition(s.Path, s.definition); err != nil && !os.IsExist(err) {
+// Apply registers or upgrades the reviewed definition for the next login.
+func (p *Setup) Apply(ctx context.Context) error {
+	s := p.service
+	if s.native {
+		if err := checkExecutable(s.Executable); err != nil {
 			return err
 		}
-		if present, err := s.definitionPresent(); err != nil {
-			return err
-		} else if !present {
-			return fmt.Errorf("login service definition disappeared: %s", s.Path)
+		if s.EnableLink != "" {
+			if err := checkSystemdUnitDirectory(ctx, filepath.Dir(s.Path)); err != nil {
+				return err
+			}
 		}
 	}
-	if s.EnableLink != "" {
+	current, err := s.Review()
+	if err != nil || current == nil {
+		return err
+	}
+	if current.definition && !p.definition || current.enableLink && !p.enableLink || current.PolicyOverride != "" && current.PolicyOverride != p.PolicyOverride {
+		return fmt.Errorf("login service changed during review. Run arm start to review it again")
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if current.definition {
+		if err := publishReviewedFile(s.Path, s.definition); err != nil {
+			return err
+		}
+	}
+	if current.PolicyOverride != "" {
+		if err := publishReviewedFile(current.PolicyOverride, []byte(workloadOwnership)); err != nil {
+			return err
+		}
+	}
+	if current.enableLink {
 		if err := os.MkdirAll(filepath.Dir(s.EnableLink), 0700); err != nil {
 			return err
 		}
-		if err := os.Symlink(filepath.Join("..", s.Name), s.EnableLink); err != nil && !os.IsExist(err) {
+		if err := os.Symlink(s.Path, s.EnableLink); err != nil && !os.IsExist(err) {
 			return err
 		}
 	}
-	if enabled, err := s.Enabled(); err != nil {
+	if remaining, err := s.Review(); err != nil {
 		return err
-	} else if !enabled {
-		return fmt.Errorf("login service could not be confirmed: %s", s.Path)
+	} else if remaining != nil {
+		return fmt.Errorf("login service setup could not be confirmed: %s", s.Path)
+	}
+	return nil
+}
+
+func publishReviewedFile(path string, data []byte) error {
+	if err := writeDefinition(path, data); err != nil && !os.IsExist(err) {
+		return err
+	}
+	actual, err := readDefinition(path, len(data))
+	if err != nil {
+		return err
+	}
+	if !bytes.Equal(actual, data) {
+		return fmt.Errorf("login service file changed during setup: %s", path)
 	}
 	return nil
 }

@@ -11,6 +11,15 @@ JSON and redirected stream cases, plus a repeat invocation after enablement.
 Full CLI integration and actual login activation on macOS and Linux remain
 pending.
 
+The review follow-up passed 20 runs of `./internal/loginservice` on macOS and
+10 runs of the isolated CLI prompt harness. Added checks cover the generated
+Linux shutdown mode, consent before a legacy unit upgrade, preservation of the
+original unit, refusal when the reviewed setup changes, exact user-manager
+search-path matching, and temporary and Go-cache executable paths. The prompt
+fixture also checks the environment notice. The package's Linux arm64 test
+binary compiled. Live login, native systemd shutdown and full CLI integration
+remain pending.
+
 ## Repository-wide worktree rollout
 
 On macOS, the Git metadata, rollout, project discovery and agent-session

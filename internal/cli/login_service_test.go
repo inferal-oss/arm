@@ -13,6 +13,7 @@ func TestLoginServicePromptRequiresInteractiveConsent(t *testing.T) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("requires a supported login manager without a live user session")
 	}
+	installed := func() (string, error) { return "/bin/sh", nil }
 	for _, tc := range []struct {
 		name, input                  string
 		stdin, stdout, json          bool
@@ -32,11 +33,14 @@ func TestLoginServicePromptRequiresInteractiveConsent(t *testing.T) {
 			var out, stderr bytes.Buffer
 			a := app{ctx: t.Context(), home: t.TempDir(), in: strings.NewReader(tc.input), out: &out, err: &stderr,
 				inputTTY: tc.stdin, outputTTY: tc.stdout, forceJSON: tc.json}
-			if err := a.offerLoginService(); err != nil || stderr.Len() != 0 {
+			if err := a.offerLoginService(installed); err != nil || stderr.Len() != 0 {
 				t.Fatal(err, stderr.String())
 			}
 			if strings.Contains(out.String(), "Enable start at login? [y/N]") != tc.wantPrompt {
 				t.Fatalf("unexpected output %q", out.String())
+			}
+			if tc.wantPrompt && !strings.Contains(out.String(), "inherit the service manager's environment") {
+				t.Fatalf("prompt omitted the environment change: %q", out.String())
 			}
 			dir := filepath.Join(user, "Library", "LaunchAgents")
 			if !tc.wantRegistration {
@@ -49,7 +53,7 @@ func TestLoginServicePromptRequiresInteractiveConsent(t *testing.T) {
 				t.Fatalf("expected exactly one launch agent, got %v %v", files, err)
 			}
 			out.Reset()
-			if err := a.offerLoginService(); err != nil || out.Len() != 0 || stderr.Len() != 0 {
+			if err := a.offerLoginService(installed); err != nil || out.Len() != 0 || stderr.Len() != 0 {
 				t.Fatal("repeat start prompted or failed", err, out.String(), stderr.String())
 			}
 		})

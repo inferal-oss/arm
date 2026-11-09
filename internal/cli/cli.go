@@ -1010,7 +1010,7 @@ func (a *app) daemon(command string, args []string) (int, error) {
 			return 1, err
 		}
 		if !*restartDry && !*restartYes && *expectConfig == "" {
-			if err := a.offerLoginService(); err != nil {
+			if err := a.offerLoginService(os.Executable); err != nil {
 				return 1, err
 			}
 		}

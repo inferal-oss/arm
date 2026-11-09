@@ -7,10 +7,15 @@ confirming the selected backend is ready. The default response skips setup.
 JSON, redirected input or output, dry-run, `--yes` and pinned-config startup
 skip the offer. Each canonical ARM home gets a stable native service name.
 macOS uses a LaunchAgent with `RunAtLoad`. Linux with systemd uses a user unit
-linked into `default.target.wants`. Both run the normal foreground `serve`
-path with config loaded at launch, including its authority lock and stopped
-intent check. Setup uses exclusive publication, preserves conflicting files,
-and can complete a matching Linux unit left by interrupted enablement.
+linked into `default.target.wants` after verifying the directory against the
+user manager's `UnitPath`. The unit uses `KillMode=process` so ARM retains
+workload cleanup. Exact older units can receive a separately reviewed shutdown
+policy drop-in. Both platforms require a permanent executable and use the
+normal foreground `serve` path with config loaded at launch, including its
+authority lock and stopped intent check. Setup uses exclusive publication,
+preserves conflicting files, and can complete a matching Linux unit left by
+interrupted enablement. The offer explains native environment inheritance and
+the README describes per-service overrides.
 
 ## Original Server binding and borrower validation — unconnected source
 
