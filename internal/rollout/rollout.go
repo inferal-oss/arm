@@ -884,10 +884,6 @@ func (s Store) Preview(c Change) (Plan, error) {
 	return p, e
 }
 func (s Store) Apply(c Change, expect string) (Plan, error) {
-	c, e := normalize(c)
-	if e != nil {
-		return Plan{}, e
-	}
 	// Validate and compare before creating even the lock or state directory.
 	preview, e := s.Preview(c)
 	if e != nil {

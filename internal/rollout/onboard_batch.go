@@ -118,16 +118,17 @@ func (o *onboardOperation) normalize(request OnboardBatch) (OnboardBatch, error)
 						return OnboardBatch{}, err
 					}
 				}
-				info, err := o.resolver.Resolve(root)
-				if err != nil {
-					return OnboardBatch{}, err
-				}
-				binding = Binding{Kind: "git", Root: info.Root.Path, Identity: info.Root.Identity, GitDirectory: info.Git.Path, GitIdentity: info.Git.Identity}
 				if input.Kind == WorktreesKind {
-					binding, err = worktreesBinding(o.resolver, info)
+					binding, err = worktreesBinding(o.resolver, root)
 					if err != nil {
 						return OnboardBatch{}, err
 					}
+				} else {
+					info, err := o.resolver.Resolve(root)
+					if err != nil {
+						return OnboardBatch{}, err
+					}
+					binding = Binding{Kind: "git", Root: info.Root.Path, Identity: info.Root.Identity, GitDirectory: info.Git.Path, GitIdentity: info.Git.Identity}
 				}
 			} else {
 				identity, err := directoryIdentity(root)

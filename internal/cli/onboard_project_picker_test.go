@@ -437,7 +437,12 @@ func TestProjectPickerSettingsSurviveFilterBackAndInvalidatePreview(t *testing.T
 	m.editor.SetValue("chosen-project")
 	pickerKey(m, "enter")
 	pickerKey(m, "p")
+	pickerKey(m, "down")
+	pickerKey(m, "enter")
 	setting := m.settings[0]
+	if setting.Mode != "all" {
+		t.Fatal("policy choice was not saved in settings", setting)
+	}
 	generation := m.generation
 	pickerKey(m, "esc")
 	if m.rows[m.cursor].child != 1 {
@@ -446,6 +451,25 @@ func TestProjectPickerSettingsSurviveFilterBackAndInvalidatePreview(t *testing.T
 	pickerKey(m, "enter")
 	if m.settings[0] != setting || m.generation <= generation || m.plan.Review != "" {
 		t.Fatal(m.settings, m.generation, generation, m.plan)
+	}
+}
+
+func TestProjectPickerSettingsChoicesKeepChangesPendingUntilEnter(t *testing.T) {
+	m, _ := pickerFixture(t, false)
+	pickerKey(m, "enter")
+	pickerKey(m, "s")
+	if m.stage != pickerScope || !strings.Contains(m.View().Content, "Exact directories") || strings.Contains(m.View().Content, "All registered worktrees") {
+		t.Fatal("directory scope offered an unrelated Git choice", m.View().Content)
+	}
+	pickerKey(m, "esc")
+	pickerKey(m, "p")
+	pickerKey(m, "down")
+	if m.stage != pickerPolicy || !strings.Contains(m.View().Content, "Existing and future sessions") || m.settings[0].Mode != "new-sessions" {
+		t.Fatal("eligibility was changed before choosing it", m.View().Content)
+	}
+	pickerKey(m, "esc")
+	if m.stage != pickerSettings || m.settings[0].Mode != "new-sessions" {
+		t.Fatal("cancel changed the policy", m.settings)
 	}
 }
 

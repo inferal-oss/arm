@@ -31,6 +31,8 @@ const (
 	pickerResolving
 	pickerSettings
 	pickerID
+	pickerScope
+	pickerPolicy
 	pickerPreparing
 	pickerReview
 	pickerApplying
@@ -81,6 +83,7 @@ type projectOnboardModel struct {
 	hierarchy                         agentprojects.Hierarchy
 	catalog                           agentprojects.Catalog
 	settings                          []pickerSetting
+	choice                            int
 	selection                         pickerSelection
 	plan                              rollout.OnboardBatchPlan
 	readiness                         install.InstructionReadiness
@@ -277,7 +280,7 @@ func (m *projectOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		m.cancelOperation()
 		if msg.err != nil {
 			m.stage = pickerSettings
-			m.notice = "Preview refused: " + msg.err.Error()
+			m.notice = "Review unavailable. " + msg.err.Error()
 			return m, nil
 		}
 		m.selection, m.plan = msg.selection, msg.plan
@@ -351,6 +354,9 @@ func (m *projectOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 				m.notice = ""
 				return m, nil
 			}
+		case pickerScope, pickerPolicy:
+			m.updateSettingsChoice(key)
+			return m, nil
 		case pickerSettings:
 			switch key {
 			case "esc", "q":
@@ -371,21 +377,10 @@ func (m *projectOnboardModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 				m.stage = pickerID
 				return m, m.editor.Focus()
 			case "s":
-				setting := &m.settings[m.cursor]
-				if m.group(setting.Group).Kind == "git" {
-					scopes := []string{"git", "directory", rollout.WorktreesKind}
-					setting.Kind = scopes[(slices.Index(scopes, setting.Kind)+1)%len(scopes)]
-					m.generation++
-					m.plan = rollout.OnboardBatchPlan{}
-				}
+				m.openSettingsChoice(pickerScope)
 				return m, nil
 			case "p":
-				modes := []string{"new-sessions", "all", "observe", "disabled"}
-				setting := &m.settings[m.cursor]
-				index := slices.Index(modes, setting.Mode)
-				setting.Mode = modes[(index+1)%len(modes)]
-				m.generation++
-				m.plan = rollout.OnboardBatchPlan{}
+				m.openSettingsChoice(pickerPolicy)
 				return m, nil
 			case "enter":
 				return m, m.prepare()
@@ -607,13 +602,16 @@ func (m *projectOnboardModel) resolveManual(path string) tea.Cmd {
 			if info, e := probe.Resolve(member.Path); e == nil {
 				group.Kind = "git"
 				group.Directory = info.Root.Path
+				group.Name = agentprojects.CheckoutName(info)
 				group.Memberships[0].Checkout = &info
 				if !slices.Contains(group.Directories, info.Root.Path) {
 					group.Directories = append(group.Directories, info.Root.Path)
 				}
 			}
 		}
-		group.Name = agentprojects.SanitizeTitle(filepath.Base(group.Directory))
+		if group.Name == "" {
+			group.Name = agentprojects.SanitizeTitle(filepath.Base(group.Directory))
+		}
 		digest := sha256.Sum256([]byte("manual:v1\x00" + member.Path + "\x00" + member.Identity))
 		group.Key = hex.EncodeToString(digest[:])
 		return pickerManualMsg{generation, group, ctx.Err()}
@@ -650,6 +648,9 @@ func (m *projectOnboardModel) beginSettings() tea.Cmd {
 	}
 	for _, group := range groups {
 		setting := pickerSetting{Group: group.Key, Project: onboardProjectID(group.Directory), Kind: group.Kind, Mode: "new-sessions"}
+		if group.Kind == "git" && group.Name != "" {
+			setting.Project = onboardProjectID(group.Name)
+		}
 		if retained, ok := previous[group.Key]; ok {
 			m.settings = append(m.settings, retained)
 			used[retained.Project] = true
@@ -751,12 +752,12 @@ func (m *projectOnboardModel) policyReview() string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "Projects: %d · checked chats: %d\n", len(m.plan.Projects), len(m.selection.Checked))
 	for _, project := range m.plan.Projects {
-		fmt.Fprintf(&b, "\n%s: %s", project.After.ID, project.After.Mode)
+		fmt.Fprintf(&b, "\n%s · %s", project.After.ID, pickerChoice(pickerPolicies, project.After.Mode).title)
 		if project.Unchanged {
 			fmt.Fprint(&b, " (unchanged)")
 		}
 		if project.Before != nil {
-			fmt.Fprintf(&b, "; previous %s", project.Before.Mode)
+			fmt.Fprintf(&b, " · previous policy %s", pickerChoice(pickerPolicies, project.Before.Mode).title)
 		}
 		fmt.Fprintln(&b)
 		if project.After.Paused {
@@ -774,8 +775,10 @@ func (m *projectOnboardModel) policyReview() string {
 	fmt.Fprintln(&b, "\nRequested scope:")
 	for _, change := range m.plan.Request.Changes {
 		fmt.Fprintf(&b, "  %s · %s · %s\n", change.Project, pickerScopeLabel(change.Binding.Kind), terminalSafe(change.Binding.Root))
-		if change.Binding.Kind == rollout.WorktreesKind {
+		if change.Binding.Kind == rollout.WorktreesKind && change.Binding.Root != change.Binding.GitDirectory {
 			fmt.Fprintf(&b, "    Git common directory: %s\n", terminalSafe(change.Binding.GitDirectory))
+		} else if change.Binding.Kind == rollout.WorktreesKind {
+			fmt.Fprintln(&b, "    Bare Git repository · policy applies to registered checkouts")
 		}
 		for _, group := range m.selection.Groups {
 			var setting pickerSetting
@@ -836,12 +839,6 @@ func (m *projectOnboardModel) policyReview() string {
 	return b.String()
 }
 
-func pickerScopeLabel(kind string) string {
-	if kind == rollout.WorktreesKind {
-		return "All Git worktrees (including future worktrees)"
-	}
-	return kind
-}
 func (m *projectOnboardModel) activationGuide(index int) string {
 	if index < 0 || index >= len(m.selection.Checked) {
 		return "No checked chats."
@@ -948,23 +945,9 @@ func (m *projectOnboardModel) View() tea.View {
 	case pickerResolving:
 		fmt.Fprintln(&b, "Inspecting the explicit directory and checkout…")
 	case pickerSettings:
-		fmt.Fprintln(&b, "Review project IDs, boundaries and policies")
-		visible := max(1, (m.height-12)/3)
-		start := max(0, m.cursor-visible+1)
-		for i := start; i < min(len(m.settings), start+visible); i++ {
-			setting := m.settings[i]
-			group := m.group(setting.Group)
-			prefix := "  "
-			if i == m.cursor {
-				prefix = "> "
-			}
-			fmt.Fprintln(&b, ansi.Truncate(prefix+group.Name+" → "+setting.Project, max(20, m.width-4), "…"))
-			fmt.Fprintln(&b, ansi.Truncate("    "+pickerScopeLabel(setting.Kind)+" · "+setting.Mode, max(20, m.width-4), "…"))
-			fmt.Fprintln(&b, ansi.Truncate("    "+terminalSafe(group.Directory), max(20, m.width-4), "…"))
-		}
-		fmt.Fprintln(&b, "↑/↓ project · i edit ID · s boundary · p policy")
-		fmt.Fprintln(&b, "new-sessions / all / observe / disabled")
-		fmt.Fprintln(&b, "Enter prepares exact review · Esc back")
+		m.viewSettings(&b, title)
+	case pickerScope, pickerPolicy:
+		m.viewSettingsChoice(&b, title, selected)
 	case pickerID:
 		fmt.Fprintln(&b, "Edit ARM project ID")
 		fmt.Fprintln(&b, m.editor.View())
@@ -972,7 +955,7 @@ func (m *projectOnboardModel) View() tea.View {
 	case pickerPreparing:
 		fmt.Fprintln(&b, "Revalidating all member checkouts and preparing review…")
 	case pickerReview:
-		fmt.Fprintln(&b, title.Render("Review policy coverage and activation selection"))
+		fmt.Fprintln(&b, title.Render("Review before saving"))
 		fmt.Fprintln(&b, m.review.View())
 		fmt.Fprintln(&b, "↑/↓ scroll · b back · Save policy? [y/N]")
 	case pickerApplying:
@@ -1007,7 +990,7 @@ func (m *projectOnboardModel) View() tea.View {
 		fmt.Fprintln(&b, "Inspect: `"+terminalSafe(installNextCommand(m.home, "rollout status"))+"`")
 	}
 	if m.notice != "" {
-		fmt.Fprintln(&b, "\n"+terminalSafe(m.notice))
+		fmt.Fprintln(&b, "\n"+ansi.Wrap(terminalSafe(m.notice), max(20, m.width-4), ""))
 	}
 	return tea.NewView(lipgloss.NewStyle().Padding(1, 1).Width(max(20, m.width-2)).Render(b.String()))
 }

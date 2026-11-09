@@ -2,6 +2,7 @@ package rollout
 
 import (
 	"context"
+	"errors"
 	"path/filepath"
 	"slices"
 
@@ -17,35 +18,41 @@ func newWorktreesBinding(path string) (Binding, error) {
 	if err != nil {
 		return Binding{}, err
 	}
-	info, err := resolver.Resolve(path)
-	if err != nil {
-		return Binding{}, err
-	}
-	return worktreesBinding(resolver, info)
+	return worktreesBinding(resolver, path)
 }
 
-func worktreesBinding(resolver *gitmeta.Resolver, info gitmeta.Info) (Binding, error) {
-	roots, err := resolver.Worktrees(info)
+func worktreesBinding(resolver *gitmeta.Resolver, path string) (Binding, error) {
+	info, err := resolver.Resolve(path)
+	var registry gitmeta.WorktreeRegistry
+	switch {
+	case err == nil:
+		registry, err = resolver.Worktrees(info)
+	case errors.Is(err, gitmeta.ErrUnsupported):
+		registry, err = resolver.BareWorktrees(path)
+		info.Common = registry.Anchor
+	}
 	if err != nil {
-		return Binding{}, fail("cannot verify registered worktrees and the primary checkout: %v", err)
+		return Binding{}, fail("cannot verify the Git worktree registry: %v", err)
 	}
-	main := info
-	if roots[0] != info.Root {
-		main, err = resolver.Resolve(roots[0].Path)
-	}
-	if err != nil || !main.Primary() || main.Root != roots[0] || main.Common != info.Common {
-		return Binding{}, fail("primary checkout does not match the selected local repository")
+	if !registry.Bare {
+		main := info
+		if registry.Anchor != info.Root {
+			main, err = resolver.Resolve(registry.Anchor.Path)
+		}
+		if err != nil || !main.Primary() || main.Root != registry.Anchor || main.Common != info.Common {
+			return Binding{}, fail("primary checkout does not match the selected local repository")
+		}
 	}
 	return Binding{
-		Kind: WorktreesKind, Root: main.Root.Path, Identity: main.Root.Identity,
-		GitDirectory: main.Common.Path, GitIdentity: main.Common.Identity,
+		Kind: WorktreesKind, Root: registry.Anchor.Path, Identity: registry.Anchor.Identity,
+		GitDirectory: info.Common.Path, GitIdentity: info.Common.Identity,
 	}, nil
 }
 
 type worktreeEvidence struct {
-	info   gitmeta.Info
-	roots  []gitmeta.Directory
-	nested bool
+	info     gitmeta.Info
+	registry gitmeta.WorktreeRegistry
+	nested   bool
 }
 
 func readWorktreeEvidence(ctx context.Context, path string, bindings []string) worktreeEvidence {
@@ -63,8 +70,11 @@ func readWorktreeEvidence(ctx context.Context, path string, bindings []string) w
 			return worktreeEvidence{}
 		}
 		if slices.Contains(bindings, info.Common.Path) {
-			roots, _ := resolver.Worktrees(info)
-			return worktreeEvidence{info: info, roots: roots, nested: nested}
+			registry, err := resolver.Worktrees(info)
+			if err != nil {
+				registry = gitmeta.WorktreeRegistry{}
+			}
+			return worktreeEvidence{info: info, registry: registry, nested: nested}
 		}
 		path = filepath.Dir(info.Root.Path)
 		if path == info.Root.Path {
@@ -74,7 +84,8 @@ func readWorktreeEvidence(ctx context.Context, path string, bindings []string) w
 }
 
 func (e worktreeEvidence) verifies(b Binding) bool {
-	return len(e.roots) > 0 && e.roots[0].Path == b.Root && e.roots[0].Identity == b.Identity &&
+	return e.registry.Bare == (b.Root == b.GitDirectory) &&
+		e.registry.Anchor.Path == b.Root && e.registry.Anchor.Identity == b.Identity &&
 		e.info.Common.Path == b.GitDirectory && e.info.Common.Identity == b.GitIdentity
 }
 
@@ -97,16 +108,32 @@ func (e worktreeEvidence) match(b Binding, path string) (root, why string) {
 // RegisteredWorktreeRoots supplies candidate metadata roots. The caller must
 // still resolve each root against the full project policy before querying it.
 func RegisteredWorktreeRoots(ctx context.Context, b Binding) []string {
-	if b.Kind != WorktreesKind || b.Removed {
+	registry, ok := registeredWorktreeRegistry(ctx, b)
+	if !ok {
 		return nil
 	}
-	evidence := readWorktreeEvidence(ctx, b.Root, []string{b.GitDirectory})
-	if !evidence.verifies(b) {
-		return nil
-	}
-	roots := make([]string, 0, len(evidence.roots))
-	for _, root := range evidence.roots {
+	roots := make([]string, 0, len(registry.Roots))
+	for _, root := range registry.Roots {
 		roots = append(roots, root.Path)
 	}
 	return roots
+}
+
+func registeredWorktreeRegistry(ctx context.Context, b Binding) (gitmeta.WorktreeRegistry, bool) {
+	if b.Kind != WorktreesKind || b.Removed {
+		return gitmeta.WorktreeRegistry{}, false
+	}
+	if b.Root == b.GitDirectory {
+		budget := gitmeta.NewBudget(ctx)
+		defer budget.Close()
+		resolver, err := gitmeta.NewResolver(budget)
+		if err != nil {
+			return gitmeta.WorktreeRegistry{}, false
+		}
+		registry, err := resolver.BareWorktrees(b.Root)
+		evidence := worktreeEvidence{info: gitmeta.Info{Common: registry.Anchor}, registry: registry}
+		return registry, err == nil && evidence.verifies(b)
+	}
+	evidence := readWorktreeEvidence(ctx, b.Root, []string{b.GitDirectory})
+	return evidence.registry, evidence.verifies(b)
 }

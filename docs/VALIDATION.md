@@ -1,5 +1,16 @@
 # Validation record
 
+## Bare Git repositories in project onboarding
+
+The Git metadata, project discovery and rollout suites passed on macOS, along
+with focused CLI rollout and onboarding tests. A disposable bare repository
+exercised reviewed apply, registry inspection with every checkout removed,
+later checkout eligibility and refusal after replacing the bare directory.
+Read-only CLI previews verified the same anchor when started from a linked
+checkout or the bare directory. A terminal replay selected coverage and
+eligibility, reached the default-no review for a bare-backed checkout, then
+cancelled.
+
 ## Codex project discovery and picker search
 
 The project discovery suite and focused CLI onboarding and rollout tests passed

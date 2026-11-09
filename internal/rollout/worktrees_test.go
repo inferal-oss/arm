@@ -111,3 +111,67 @@ func TestRepositoryScopeCoversRegisteredFutureWorktrees(t *testing.T) {
 		t.Fatal("replacing a removed scope restored participation", d, err)
 	}
 }
+
+func TestBareRepositoryScopeSurvivesCheckoutRemoval(t *testing.T) {
+	if _, err := exec.LookPath("git"); err != nil {
+		t.Skip("git unavailable")
+	}
+	f := setup(t)
+	git(t, f.root, "init", "--quiet")
+	git(t, f.root, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "--allow-empty", "-qm", "Fixture")
+	base, err := canonical(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	bare, first, future := filepath.Join(base, "repository.git"), filepath.Join(base, "first"), filepath.Join(base, "future")
+	git(t, f.root, "clone", "--quiet", "--bare", f.root, bare)
+	git(t, bare, "worktree", "add", "--quiet", "--detach", first)
+	batch := OnboardBatch{
+		Version: 1, Context: OnboardReviewContext{Version: 1, Digest: strings.Repeat("a", 64)},
+		Changes: []Change{{Action: "onboard", Project: "demo", Mode: "all", Reason: "Review the bare repository", Binding: &Binding{Kind: WorktreesKind, Root: first}}},
+	}
+	preview, err := f.PreviewOnboardBatch(t.Context(), batch)
+	if err != nil {
+		t.Fatal(err)
+	}
+	applied, err := f.ApplyOnboardBatch(t.Context(), batch, preview.Review)
+	if err != nil {
+		t.Fatal(err)
+	}
+	binding := applied.Projects[0].After.Bindings[0]
+	if binding.Root != bare || binding.GitDirectory != bare || binding.Identity != binding.GitIdentity {
+		t.Fatal("scope was not anchored to the bare repository", binding)
+	}
+	if direct := f.change(batch.Changes[0]); !direct.Unchanged || direct.Change.Binding.Root != bare {
+		t.Fatal("direct review did not preserve the binding", direct)
+	}
+	check := func(path string, eligible bool) {
+		t.Helper()
+		decision, err := f.Check(Query{CWD: path})
+		if err != nil || decision.Eligible != eligible {
+			t.Fatal(decision, err)
+		}
+	}
+	check(first, true)
+	check(bare, false)
+	git(t, bare, "worktree", "remove", first)
+	if roots := RegisteredWorktreeRoots(t.Context(), binding); roots == nil || len(roots) != 0 {
+		t.Fatal("expected a verified empty registry", roots)
+	}
+	if status := inspectBoundary(t.Context(), binding); status.State != "ready" {
+		t.Fatal(status)
+	}
+	git(t, bare, "worktree", "add", "--quiet", "--detach", future)
+	check(future, true)
+	if roots := RegisteredWorktreeRoots(t.Context(), binding); !slices.Equal(roots, []string{future}) {
+		t.Fatal("registry included a stale checkout or the bare directory", roots)
+	}
+	if err := os.Rename(bare, bare+"-old"); err != nil {
+		t.Fatal(err)
+	}
+	git(t, f.root, "clone", "--quiet", "--bare", f.root, bare)
+	if status := inspectBoundary(t.Context(), binding); status.State != "stale" {
+		t.Fatal("replacement Git directory retained the binding", status)
+	}
+	check(future, false)
+}

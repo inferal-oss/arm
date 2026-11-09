@@ -1,5 +1,19 @@
 # Backend and CLI implementation
 
+## Bare Git repositories in project onboarding
+
+A repository-wide binding for a bare Git repository pins the bare directory
+identity as its anchor. Git's registry must identify that directory as bare.
+Only verified registered checkout paths participate in rollout and saved-chat
+discovery. The binding remains inspectable with an empty worktree registry and
+covers checkouts registered later.
+
+The terminal settings screen shows project ID, coverage and eligibility
+separately. Coverage and eligibility open keyboard-navigable choices with
+descriptions and an explicit selection step. Linked checkouts can use a
+repository label derived from the Git common directory. Final review shows the
+verified anchor and keeps the default-no save prompt.
+
 ## Codex project discovery and picker search
 
 Codex desktop discovery reads `local-projects` entries' `rootPaths` as saved
@@ -493,7 +507,8 @@ remain unsupported. See the scoped rollout design and validation record.
 ## Project-scoped gradual agent adoption — CLI milestone
 
 The onboarding picker and `rollout project --kind git-worktrees` support a
-single binding to a verified primary checkout and its Git common directory.
+single binding to a verified primary checkout and its Git common directory,
+or to a verified bare Git directory.
 The rollout check verifies Git's registered worktree paths, including future
 worktrees. A narrower explicit binding can still govern a checkout. A foreign
 Git repository nested in a registered worktree cannot fall through that

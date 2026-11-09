@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"syscall"
@@ -256,68 +257,105 @@ func (r *Resolver) run(path string, limit int, args ...string) (string, error) {
 	return stdout.data.String(), r.budget.Check()
 }
 
-// Worktrees returns the primary checkout followed by the other registered,
-// accessible checkouts. The list and Resolve must agree on the selected root.
-func (r *Resolver) Worktrees(info Info) ([]Directory, error) {
-	common, _, err := inspect(info.Common.Path)
-	if err != nil || common != info.Common {
-		return nil, ErrChanged
+type WorktreeRegistry struct {
+	Anchor Directory // primary checkout or bare Git directory
+	Bare   bool
+	Roots  []Directory // accessible, registered checkouts
+}
+
+// Worktrees verifies that the selected checkout is in its repository's registry.
+func (r *Resolver) Worktrees(info Info) (WorktreeRegistry, error) {
+	registry, err := r.worktreeRegistry(info.Root.Path, info.Common)
+	if err != nil {
+		return WorktreeRegistry{}, err
+	}
+	if !slices.Contains(registry.Roots, info.Root) {
+		return WorktreeRegistry{}, ErrUnsupported
+	}
+	current, err := r.Resolve(info.Root.Path)
+	if err != nil {
+		return WorktreeRegistry{}, err
+	}
+	if current != info {
+		return WorktreeRegistry{}, ErrChanged
+	}
+	return registry, r.budget.Check()
+}
+
+// BareWorktrees verifies a bare repository directly, including when all
+// linked checkouts have been removed.
+func (r *Resolver) BareWorktrees(path string) (WorktreeRegistry, error) {
+	common, _, err := inspect(path)
+	if err != nil {
+		return WorktreeRegistry{}, err
+	}
+	registry, err := r.worktreeRegistry(common.Path, common)
+	if err == nil && !registry.Bare {
+		err = ErrUnsupported
+	}
+	return registry, err
+}
+
+func (r *Resolver) worktreeRegistry(cwd string, common Directory) (WorktreeRegistry, error) {
+	var registry WorktreeRegistry
+	current, _, err := inspect(common.Path)
+	if err != nil || current != common {
+		return registry, ErrChanged
 	}
 	if err := r.budget.probe(); err != nil {
-		return nil, err
+		return registry, err
 	}
-	data, err := r.run(info.Root.Path, MaxOutputBytes, "--git-dir="+info.Common.Path, "worktree", "list", "--porcelain", "-z")
+	data, err := r.run(cwd, MaxOutputBytes, "--git-dir="+common.Path, "worktree", "list", "--porcelain", "-z")
 	if err != nil {
-		return nil, err
+		return registry, err
 	}
 	body, ok := strings.CutSuffix(data, "\x00\x00")
 	if !ok || body == "" {
-		return nil, ErrUnsupported
+		return registry, ErrUnsupported
 	}
 	records := strings.Split(body, "\x00\x00")
 	if len(records) > 512 {
-		return nil, ErrBudget
+		return registry, ErrBudget
 	}
-	roots := []Directory{}
 	seen := map[string]bool{}
-	selected := false
 	for i, record := range records {
 		fields := strings.Split(record, "\x00")
 		path, ok := strings.CutPrefix(fields[0], "worktree ")
 		if !ok {
-			return nil, ErrUnsupported
+			return WorktreeRegistry{}, ErrUnsupported
 		}
-		skip := false
+		bare, prunable := false, false
 		for _, field := range fields[1:] {
-			if field == "bare" || field == "prunable" || strings.HasPrefix(field, "prunable ") {
-				skip = true
-			}
+			bare = bare || field == "bare"
+			prunable = prunable || field == "prunable" || strings.HasPrefix(field, "prunable ")
 		}
 		root, _, err := inspect(path)
 		// Git records absolute physical paths. A redirected registered path
 		// must not authorize the symlink's new destination.
-		if skip || err != nil || root.Path != path {
+		if prunable || err != nil || root.Path != path {
 			if i == 0 {
-				return nil, ErrUnsupported
+				return WorktreeRegistry{}, ErrUnsupported
 			}
 			continue
 		}
 		if seen[root.Path] {
-			return nil, ErrUnsupported
+			return WorktreeRegistry{}, ErrUnsupported
 		}
 		seen[root.Path] = true
-		roots = append(roots, root)
-		selected = selected || root == info.Root
+		if i == 0 {
+			registry.Anchor, registry.Bare = root, bare
+		}
+		if bare {
+			if i != 0 || root != common {
+				return WorktreeRegistry{}, ErrUnsupported
+			}
+			continue
+		}
+		registry.Roots = append(registry.Roots, root)
 	}
-	if !selected {
-		return nil, ErrUnsupported
+	current, _, err = inspect(common.Path)
+	if err != nil || current != common {
+		return WorktreeRegistry{}, ErrChanged
 	}
-	current, err := r.Resolve(info.Root.Path)
-	if err != nil {
-		return nil, err
-	}
-	if current != info {
-		return nil, ErrChanged
-	}
-	return roots, r.budget.Check()
+	return registry, r.budget.Check()
 }

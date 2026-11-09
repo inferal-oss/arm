@@ -418,6 +418,9 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 			}
 			digest := sha256.Sum256([]byte(key))
 			label := SanitizeTitle(filepath.Base(directory))
+			if kind == "git" && primary[key] == "" {
+				label = CheckoutName(infoByPath[path])
+			}
 			if len(label) > 1024 {
 				label = string([]rune(label)[:255])
 			}
@@ -516,4 +519,19 @@ func discoverHierarchy(parent context.Context, budget *gitmeta.Budget, catalog C
 		}
 	}
 	return out
+}
+
+// CheckoutName gives linked checkouts a repository label when Git metadata
+// uses a conventional repository directory name.
+func CheckoutName(info gitmeta.Info) string {
+	if !info.Primary() {
+		base := filepath.Base(info.Common.Path)
+		if base == ".git" {
+			return SanitizeTitle(filepath.Base(filepath.Dir(info.Common.Path)))
+		}
+		if name, ok := strings.CutSuffix(base, ".git"); ok && name != "" {
+			return SanitizeTitle(name)
+		}
+	}
+	return SanitizeTitle(filepath.Base(info.Root.Path))
 }

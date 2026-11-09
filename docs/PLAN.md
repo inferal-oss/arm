@@ -1,5 +1,12 @@
 # ARM delivery plan
 
+## Bare Git repositories in project onboarding
+
+Repository-wide rollout supports bare Git repositories with linked checkouts.
+The terminal picker separates checkout coverage from session eligibility and
+shows the repository label before review. See
+[scoped validation](VALIDATION.md#bare-git-repositories-in-project-onboarding).
+
 ## Codex project discovery and picker search
 
 The onboarding adapter reads current Codex desktop project roots within the
