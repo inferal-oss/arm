@@ -5888,6 +5888,10 @@ existing Connect and Install dialogs. Fresh focused checks and the controlled
 desktop and narrow browser matrix are recorded in
 [validation](VALIDATION.md#unified-web-mesh-discovery-rebase).
 
+The follow-up addresses both review findings, preserving the SSH preparation
+lock across method changes and restoring Kubernetes panel state on refresh
+after reconnect.
+
 Kubernetes preparation remains disabled. The
 [typed workflow contract](UNIFIED-ONBOARDING-API.md) tracks Pod installation,
 recovery, verified runtime readiness and pinned enrollment as separate work.

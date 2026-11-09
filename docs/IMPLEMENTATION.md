@@ -7064,6 +7064,11 @@ rejects delayed responses. Empty cluster and filter results are distinct from
 fixed, redacted access and transport diagnostics. The returned Node count must
 match the smaller of the match count and the requested limit.
 
+An SSH preparation keeps its original key and blocks another submission in the
+same dialog while pending or awaiting lookup, even after a change of method.
+Kubernetes refresh after reconnect clears the disconnected notice and reloads
+both Node inventory and the Install panel's carrier metadata.
+
 Install can inspect trusted Linux carrier metadata. Kubernetes preparation
 remains disabled in both controls and handlers. See the
 [remaining workflow contracts](UNIFIED-ONBOARDING-API.md) and

@@ -14015,3 +14015,26 @@ the existing build overlay. The 634 tracked dashboard inputs have SHA-256
 The browser matrix covers controlled wire responses and native asset delivery.
 Real-cluster behavior, Pod effects, runtime readiness and enrollment remain
 outside this validation.
+
+### Unified web Mesh review fixes
+
+The follow-up reran all 54 focused Node tests, three provenance tests, and
+three RDF/WAT tests. The added regressions exercise both SSH preparation locks
+with an unresolved original key and the Install panel's reconnect refresh.
+The server race run passed nine roots and 21 named cases, and server vet passed.
+Two builds matched byte for byte for WAT, all five embedded assets, and the
+native binary. The 634 dashboard inputs have SHA-256
+`eb38a66eac5629a04e5863d4273c124d3b913bd43960f6ccdd1a43987b1dd054`.
+The rebuilt application bundle has SHA-256
+`21a6c505dae1771df9615ded6a80ec1a3727f5d8efa2d32fac29b376edd3efa6`.
+
+Chromium repeated the inventory matrix in both dialogs at 1440×960 and
+390×844 using the rebuilt native server. After disconnect and reconnect,
+refresh restored the Node inventory and Install carrier metadata. Switching
+methods kept preparation locked both while the original synthetic SSH request
+was pending and after its unresolved reply. Each dialog sent only one SSH
+preparation request to the fixture and no Kubernetes preparation requests.
+The first fixture run timed out when reopening with a previously delayed
+filter. The repeat used one-shot delays and passed all four cases, verified
+all five served asset hashes, and joined the fixture backend with its
+listener closed.

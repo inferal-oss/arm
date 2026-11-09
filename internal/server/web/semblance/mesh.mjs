@@ -424,6 +424,8 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     ui.body.append(form);
     const keep = button("Keep host unchanged", () => ui.d.close()), prepare = button("Prepare installation review", () => {
     }, "primary");
+    let preparationLocked = false;
+    const updatePrepare = () => { prepare.disabled = preparationLocked || source.value === kubernetesSource || !connected(); };
     keep.localDismiss = true;
     ui.foot.append(keep, prepare);
     keep.focus();
@@ -437,27 +439,35 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
       const selectedKubernetes = source.value === kubernetesSource;
       destination.disabled = Boolean(source.value);
       destination.hidden = selectedKubernetes;
-      prepare.disabled = selectedKubernetes || !connected();
+      updatePrepare();
       if (selectedKubernetes) kubernetes.open(); else kubernetes.close();
     });
     prepare.on("activate", async () => {
-      if (dialog !== ui.d || !ui.d.open || prepare.disabled || !connected()) return;
+      if (dialog !== ui.d || !ui.d.open || preparationLocked || prepare.disabled || !connected()) return;
       if (source.value === kubernetesSource) return;
-      prepare.disabled = true;
+      const sshMethod = source.value;
+      preparationLocked = true;
+      updatePrepare();
       let q;
       try {
-        q = await provisionDraft(crypto.randomUUID(), { ...source.value ? { connector: source.value } : { destination: destination.value.trim() }, reason: reason.value });
+        q = await provisionDraft(crypto.randomUUID(), { ...sshMethod ? { connector: sshMethod } : { destination: destination.value.trim() }, reason: reason.value });
         if (dialog !== ui.d || !ui.d.open) return;
+        if (!connected() || source.value !== sshMethod) {
+          preparationLocked = false;
+          updatePrepare();
+          return;
+        }
         retainProvision("prepares", q.key, q);
       } catch (e) {
         error.set({ label: e.message });
-        prepare.disabled = false;
+        preparationLocked = false;
+        updatePrepare();
         return;
       }
       try {
         const op = assertProvisionPreparation(await call("mesh_operator_provision_prepare", q), q);
         settleProvision(op);
-        if (dialog === ui.d) {
+        if (dialog === ui.d && source.value === sshMethod) {
           ui.d.close();
           showOperation(op);
         } else {
@@ -469,7 +479,8 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
         renderOperations();
       }
     });
-    if (method === kubernetesSource) { destination.hidden = true; destination.disabled = prepare.disabled = true; return kubernetes.open(); }
+    updatePrepare();
+    if (method === kubernetesSource) { destination.hidden = destination.disabled = true; return kubernetes.open(); }
   }
   async function editConnect(entry = null, installed = null) {
     if (installed && !provisionConfirmed(installed)) return;
@@ -519,7 +530,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
       const selectedKubernetes = source.value === kubernetesSource;
       destination.hidden = directions.hidden = sshNotice.hidden = preparationNotice.hidden = selectedKubernetes;
       if (replace) replace.hidden = selectedKubernetes;
-      prepare.disabled = selectedKubernetes || !connected() || !contextReady;
+      updatePrepare();
       if (selectedKubernetes) kubernetes.open(); else kubernetes.close();
     });
     const directions = graph.stack();
@@ -534,9 +545,10 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
     }, "primary");
     ui.foot.append(cancel, prepare);
     cancel.focus();
-    let contextReady = !entry;
+    let contextReady = !entry, preparationLocked = false;
+    const updatePrepare = () => { prepare.disabled = preparationLocked || source.value === kubernetesSource || !connected() || !contextReady; };
+    updatePrepare();
     if (entry) {
-      prepare.disabled = true;
       call("mesh_operator_reconnect_context", { host: entry.host }).then((context) => {
         if (dialog !== ui.d) return;
         if (context.host !== entry.host || !Array.isArray(context.blockers)) throw Error("Exact reconnect context unavailable");
@@ -548,7 +560,7 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
           }
         } else {
           contextReady = true;
-          prepare.disabled = false;
+          updatePrepare();
         }
       }).catch((e) => {
         if (dialog === ui.d) error.set({ label: e.message });
@@ -569,7 +581,8 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
         error.set({ label: "A destination and a meaningful reason are required." });
         return;
       }
-      if (prepare.disabled || dialog !== ui.d || !ui.d.open) return;
+      if (preparationLocked || prepare.disabled || dialog !== ui.d || !ui.d.open) return;
+      const sshMethod = source.value;
       let q;
       try {
         validateMeshReason(reason.value);
@@ -588,12 +601,13 @@ function createMeshConsole({ ui: graph, root, call, connected, storage, openNode
         error.set({ label: e.message });
         return;
       }
-      prepare.disabled = true;
+      preparationLocked = true;
+      updatePrepare();
       try {
         const op = await call("mesh_operator_prepare", q);
         if (installed && (op.kind !== "connect" || op.key !== q.key)) throw Error("The connection receipt differs from the original installation key.");
         if (op.kind === "provision") assertProvisionCurrent(op, op.key);
-        if (dialog === ui.d) {
+        if (dialog === ui.d && source.value === sshMethod) {
           ui.d.close();
           showOperation(op);
         } else {
@@ -1429,7 +1443,7 @@ Executable SHA-256: ${q.sha256}`)]),
     root.replace();
   } };
 }
-function createKubeInventory({ ui, root, call, connected, onKubeInventory = () => {}, onSelection = () => {}, embedded = false }) {
+function createKubeInventory({ ui, root, call, connected, onKubeInventory = () => {}, onSelection = () => {}, onRefresh, embedded = false }) {
   let opened = false, disposed = false, sequence = 0, timer = null, selection = null, choices = [], opening = null;
   let snapshot = null, snapshotRequest = null, snapshotVersion = 0;
   const cardByUID = new Map();
@@ -1439,7 +1453,7 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
   const namespace = ui.field("Namespace", { placeholder: "Context namespace" });
   const query = ui.field("Find a Node", { placeholder: "Type a Node name, architecture, zone or instance type", maxLength: 128 });
   const content = ui.stack([ui.stack([context, namespace, query]), status, clusterDetails, cards, selected], { hidden: true });
-  const open = ui.button(embedded ? "Refresh Kubernetes inventory" : "Browse Kubernetes Nodes", () => embedded ? refreshInventory() : opened ? closeInventory() : openInventory());
+  const open = ui.button(embedded ? "Refresh Kubernetes inventory" : "Browse Kubernetes Nodes", () => embedded ? (onRefresh ?? refreshInventory)() : opened ? closeInventory() : openInventory());
   const inventoryCard = embedded ? ui.stack([open, content]) : ui.card("Available Kubernetes Nodes", [
     ui.text("Inspect schedulable resources before preparing a separate reviewed Pod plan."), open, content
   ]);
@@ -1589,7 +1603,7 @@ function createKubeInventory({ ui, root, call, connected, onKubeInventory = () =
     const card = cardByUID.get(uid); if (!card) return false;
     card.focus(); return true;
   }
-  return { getSelection: () => selection && snapshot && current(snapshotRequest, snapshotVersion) ? structuredClone(selection) : null, refresh: search, open: openInventory, close: closeInventory, focusKubernetesNode, updateConnection() {
+  return { getSelection: () => selection && snapshot && current(snapshotRequest, snapshotVersion) ? structuredClone(selection) : null, refresh: search, reload: refreshInventory, open: openInventory, close: closeInventory, focusKubernetesNode, updateConnection() {
     if (!connected()) { ++sequence; clear(); cards.replace(); clearTimeout(timer); timer = null;
       status.set({ label: "Disconnected. Refresh the exact Kubernetes context before selecting a Node." }); }
   }, dispose() {

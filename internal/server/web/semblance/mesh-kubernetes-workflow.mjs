@@ -37,6 +37,7 @@ export function createKubernetesWorkflowPanel({ ui, call, connected, inventoryFa
   const status = ui.text(notice, { role: 'status' });
   const root = ui.stack([inventoryRoot, status, details, carriers], { hidden: true });
   const inventory = inventoryFactory({ ui, root: inventoryRoot, call, connected, embedded: true, onKubeInventory,
+    onRefresh: () => readInventory(inventory.reload),
     onSelection(selection) {
       details.replace();
       if (!selection) return;
@@ -46,12 +47,11 @@ export function createKubernetesWorkflowPanel({ ui, call, connected, inventoryFa
       } catch { status.set({ label: 'This Node does not have the exact identity required for a future review. Refresh the inventory.' }); }
     }
   });
-  async function open() {
-    if (disposed) return false;
-    active = true; root.hidden = false;
+  async function readInventory(read) {
+    if (disposed || !active || !connected()) return false;
     const version = ++generation;
     status.set({ label: notice }); carriers.replace();
-    const loaded = await inventory.open();
+    const loaded = await read();
     if (disposed || !active || version !== generation || !connected()) return false;
     if (mode === 'install') {
       try {
@@ -64,6 +64,11 @@ export function createKubernetesWorkflowPanel({ ui, call, connected, inventoryFa
     }
     return loaded;
   }
+  function open() {
+    if (disposed) return false;
+    active = true; root.hidden = false;
+    return readInventory(inventory.open);
+  }
   function close() {
     active = false; ++generation; root.hidden = true;
     inventory.close(); details.replace(); carriers.replace();
@@ -71,7 +76,13 @@ export function createKubernetesWorkflowPanel({ ui, call, connected, inventoryFa
   return { root, inventory, open, close,
     updateConnection() {
       inventory.updateConnection();
-      if (!connected()) { ++generation; details.replace(); carriers.replace(); status.set({ label: 'Disconnected. Refresh the exact Kubernetes selection after reconnecting. ' + notice }); }
+      if (!active) return;
+      if (connected()) {
+        status.set({ label: notice });
+      } else {
+        ++generation; details.replace(); carriers.replace();
+        status.set({ label: 'Disconnected. Refresh the exact Kubernetes selection after reconnecting. ' + notice });
+      }
     },
     dispose() {
       if (disposed) return;

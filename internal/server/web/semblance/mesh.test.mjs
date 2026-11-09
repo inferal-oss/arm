@@ -545,6 +545,80 @@ test('leaving Kubernetes discards late carrier metadata and late Nodes while pre
  }finally{f.console.dispose();}
 });
 
+for (const [entry, label, reason, operation] of [
+ ['Install ARM on a host…','Prepare installation review','Reason for installing ARM','mesh_operator_provision_prepare'],
+ ['Connect a node…','Prepare connection review','Reason for connecting','mesh_operator_prepare']
+]) {
+ test(`${entry} keeps the SSH preparation locked across method changes`, async () => {
+  const f = meshFixture();
+  const started = Promise.withResolvers(), reply = Promise.withResolvers();
+  f.intercept((name, q) => {
+   if (name === operation) {
+    started.resolve(q);
+    return reply.promise;
+   }
+   if (name === 'kube_contexts') return [{name:'fixture',namespace:'default',current:true}];
+   if (name === 'kube_nodes') return kubeData(q);
+   if (name === 'mesh_operator_kubernetes_artifacts') return [];
+  });
+  try {
+   await f.find(entry, 'button').fire('activate');
+   f.find('Verified SSH destination', 'field').value = 'fixture-host';
+   f.find(reason, 'area').value = 'Inspect the fixture host';
+   const button = f.find(label, 'button'), method = f.find('Connection method', 'select');
+   const roundTrip = async () => {
+    method.value = '@kubernetes';
+    await method.fire('change');
+    method.value = '';
+    await method.fire('change');
+    assert.equal(button.disabled, true);
+    await button.fire('activate');
+   };
+   const preparing = button.fire('activate');
+   const original = await started.promise;
+   await roundTrip();
+   reply.reject(Error('Preparation reply lost'));
+   await preparing;
+   await roundTrip();
+   assert.deepEqual(f.calls.filter(([name]) => name === operation).map(([, q]) => q.key), [original.key]);
+   assert.match(f.text(), new RegExp(original.key));
+  } finally {
+   reply.resolve(null);
+   f.console.dispose();
+  }
+ });
+}
+
+test('refresh after reconnect reloads Nodes and trusted carriers and clears the disconnected notice', async () => {
+ const f = meshFixture();
+ f.intercept((name, q) => {
+  if (name === 'kube_contexts') return [{name:'fixture',namespace:'default',current:true}];
+  if (name === 'kube_nodes') return kubeData(q);
+  if (name === 'mesh_operator_kubernetes_artifacts') return [];
+ });
+ try {
+  await f.find('Install ARM on a host…', 'button').fire('activate');
+  const method = f.find('Connection method', 'select');
+  method.value = '@kubernetes';
+  await method.fire('change');
+  await flush();
+  await f.find('Select this Node', 'button').fire('activate');
+  f.offline();
+  assert.match(f.text(), /Disconnected\. Refresh the exact Kubernetes selection/);
+  assert.equal(f.find('Selected Node', 'heading'), undefined);
+  assert.equal(f.find('Trusted Linux carriers', 'heading'), undefined);
+  f.online();
+  await f.find('Refresh Kubernetes inventory', 'button').fire('activate');
+  assert.ok(f.find('worker', 'card'));
+  assert.ok(f.find('Trusted Linux carriers', 'heading'));
+  assert.doesNotMatch(f.text(), /Disconnected\. Refresh the exact Kubernetes selection/);
+  assert.equal(f.find('Prepare installation review', 'button').disabled, true);
+  assert.equal(f.calls.filter(([name]) => name === 'mesh_operator_kubernetes_artifacts').length, 2);
+ } finally {
+  f.console.dispose();
+ }
+});
+
 const cardinalityNodes = count => Array.from({length:count},(_,index)=>({...kubeData().nodes[0],name:`worker-${index}`,uid:`node-uid-${index}`}));
 for (const [name, returned, total, matched, query] of [
  ['empty positive unfiltered',0,3,3,''],
