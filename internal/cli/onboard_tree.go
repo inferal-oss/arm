@@ -13,10 +13,11 @@ import (
 )
 
 type onboardTreeRow struct {
-	group       int
-	child       int // -1 denotes a project parent
-	contextOnly bool
-	rank        int
+	group          int
+	child          int // -1 denotes a project parent
+	contextOnly    bool
+	rank           int
+	matchDirectory string
 }
 
 type onboardRecipient struct {
@@ -233,10 +234,8 @@ func (t *onboardTree) selectedRecipients() []onboardRecipient {
 func (t *onboardTree) rows(query string) []onboardTreeRow {
 	var targets []string
 	var all []onboardTreeRow
-	parentSlot := make([]int, len(t.groups))
 	childSlots := make([][]int, len(t.groups))
 	for index, group := range t.groups {
-		parentSlot[index] = len(all)
 		all = append(all, onboardTreeRow{group: index, child: -1})
 		parentTarget := agentprojects.SanitizeTitle(group.Name) + " " + group.Directory
 		// Legacy names remain searchable when no native children are available.
@@ -247,23 +246,34 @@ func (t *onboardTree) rows(query string) []onboardTreeRow {
 			}
 		}
 		targets = append(targets, parentTarget)
+		if query != "" {
+			for _, directory := range group.Directories {
+				if directory != group.Directory {
+					all = append(all, onboardTreeRow{group: index, child: -1, matchDirectory: directory})
+					targets = append(targets, directory)
+				}
+			}
+		}
 		for child, session := range group.Sessions {
 			childSlots[index] = append(childSlots[index], len(all))
 			all = append(all, onboardTreeRow{group: index, child: child})
 			targets = append(targets, agentprojects.SanitizeTitle(session.Name)+" "+session.Directory+" "+session.Ref.Adapter+" "+session.Ref.ID)
 		}
 	}
-	parentMatch := make([]bool, len(t.groups))
+	parentMatches := map[int]onboardTreeRow{}
 	childMatch := map[int]bool{}
 	anyChild := make([]bool, len(t.groups))
 	ranks := map[int]int{}
 	if query != "" {
 		for relevance, rank := range list.DefaultFilter(query, targets) {
-			ranks[rank.Index] = relevance
 			row := all[rank.Index]
 			if row.child < 0 {
-				parentMatch[row.group] = true
+				if _, found := parentMatches[row.group]; !found {
+					row.rank = relevance
+					parentMatches[row.group] = row
+				}
 			} else {
+				ranks[rank.Index] = relevance
 				childMatch[rank.Index] = true
 				anyChild[row.group] = true
 			}
@@ -271,15 +281,12 @@ func (t *onboardTree) rows(query string) []onboardTreeRow {
 	}
 	var rows []onboardTreeRow
 	for index, group := range t.groups {
-		if query != "" && !parentMatch[index] && !anyChild[index] {
+		parent, matched := parentMatches[index]
+		if query != "" && !matched && !anyChild[index] {
 			continue
 		}
-		parent := onboardTreeRow{group: index, child: -1, contextOnly: query != "" && !parentMatch[index]}
-		if query != "" {
-			parent.rank = -1
-			if relevance, ok := ranks[parentSlot[index]]; ok {
-				parent.rank = relevance
-			}
+		if !matched {
+			parent = onboardTreeRow{group: index, child: -1, contextOnly: query != ""}
 		}
 		rows = append(rows, parent)
 		if !t.expanded[group.Key] && query == "" {
@@ -294,7 +301,7 @@ func (t *onboardTree) rows(query string) []onboardTreeRow {
 					row.rank = relevance
 				}
 			}
-			if query == "" || parentMatch[index] || childMatch[slot] {
+			if query == "" || matched || childMatch[slot] {
 				rows = append(rows, row)
 			}
 		}

@@ -219,13 +219,17 @@ func (c Codex) Discover(ctx context.Context) Result {
 		s.warn("Codex metadata home must be absolute.")
 		return s.result
 	}
-	// Optional desktop cache hints are version-dependent. Only known root arrays
-	// are interpreted; selection is never labeled as live execution.
-	b, at, e := s.read(filepath.Join(c.Home, ".codex-global-state.json"), 1<<20)
+	// Reserve room for config.toml within the shared metadata budget. Only
+	// directory fields from the version-dependent desktop cache are used.
+	const configLimit = 1 << 20
+	b, at, e := s.read(filepath.Join(c.Home, ".codex-global-state.json"), maxBytes-configLimit)
 	if e == nil {
 		var state struct {
 			Saved  []string `json:"saved-workspace-roots"`
 			Active []string `json:"active-workspace-roots"`
+			Local  map[string]struct {
+				Roots []string `json:"rootPaths"`
+			} `json:"local-projects"`
 		}
 		if json.Unmarshal(b, &state) != nil {
 			s.warn("Codex saved-workspace metadata is unsupported; configured directories remain available.")
@@ -236,11 +240,16 @@ func (c Codex) Discover(ctx context.Context) Result {
 			for _, path := range state.Saved {
 				s.add(path, "saved-workspace", at)
 			}
+			for _, id := range slices.Sorted(maps.Keys(state.Local)) {
+				for _, path := range state.Local[id].Roots {
+					s.add(path, "saved-workspace", at)
+				}
+			}
 		}
 	} else if !os.IsNotExist(e) {
 		s.warn("Codex saved-workspace metadata is unavailable or exceeds the metadata limit.")
 	}
-	b, at, e = s.read(filepath.Join(c.Home, "config.toml"), 1<<20)
+	b, at, e = s.read(filepath.Join(c.Home, "config.toml"), configLimit)
 	if e == nil {
 		var config struct{ Projects map[string]struct{} }
 		if _, e = toml.Decode(string(b), &config); e != nil {

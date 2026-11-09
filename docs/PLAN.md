@@ -1,5 +1,12 @@
 # ARM delivery plan
 
+## Codex project discovery and picker search
+
+The onboarding adapter reads current Codex desktop project roots within the
+existing total metadata budget. The picker searches every directory in a Git
+group and shows the matched directory when it differs from the display root.
+See [scoped validation](VALIDATION.md#codex-project-discovery-and-picker-search).
+
 ## Repository-wide worktree rollout
 
 Owner: `codex/rollout-worktree-scope`. Add a reviewed repository scope to

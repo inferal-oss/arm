@@ -92,6 +92,51 @@ func TestNativeProjectDiscoveryMergesDirectoriesWithoutPrivateContent(t *testing
 	}
 }
 
+func TestCodexDiscoveryReadsLocalProjectRootsFromLargerDesktopCache(t *testing.T) {
+	base := t.TempDir()
+	home := projectDir(t, base, "codex")
+	first := projectDir(t, base, "first")
+	second := projectDir(t, base, "second")
+	configured := projectDir(t, base, "configured")
+	if err := os.WriteFile(filepath.Join(home, "config.toml"), fmt.Appendf(nil, "[projects.%q]\n", configured), 0600); err != nil {
+		t.Fatal(err)
+	}
+	cache := filepath.Join(home, ".codex-global-state.json")
+	writeJSON(t, cache, map[string]any{
+		"local-projects": map[string]any{
+			"PRIVATE_PROJECT_ID": map[string]any{
+				"name":      "PRIVATE_PROJECT_NAME",
+				"rootPaths": []string{first, second},
+			},
+		},
+		"unrelated": strings.Repeat("x", 1<<20),
+	})
+
+	result := (Codex{Home: home}).Discover(t.Context())
+	if len(result.Warnings) != 0 || len(result.Projects) != 3 {
+		t.Fatal(result)
+	}
+	want := map[string]string{first: "saved-workspace", second: "saved-workspace", configured: "configured-project"}
+	for _, p := range result.Projects {
+		if len(p.Evidence) != 1 || p.Evidence[0].Kind != want[p.Directory] {
+			t.Fatal(p)
+		}
+		delete(want, p.Directory)
+	}
+	b, _ := json.Marshal(result)
+	if strings.Contains(string(b), "PRIVATE_") {
+		t.Fatal("private project metadata was returned", string(b))
+	}
+
+	if err := os.Truncate(cache, (3<<20)+1); err != nil {
+		t.Fatal(err)
+	}
+	result = (Codex{Home: home}).Discover(t.Context())
+	if len(result.Warnings) != 1 || len(result.Projects) != 1 || result.Projects[0].Directory != configured {
+		t.Fatal(result)
+	}
+}
+
 func TestDiscoveryMissingUnsafeAndUnsupportedMetadataIsReadOnly(t *testing.T) {
 	base := t.TempDir()
 	missing := filepath.Join(base, "absent")

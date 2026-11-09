@@ -905,6 +905,9 @@ func (m *projectOnboardModel) View() tea.View {
 				label = m.tree.title(row)
 				detail = terminalSafe(group.Directory)
 				if row.child < 0 {
+					if row.matchDirectory != "" {
+						detail = "Matched directory · " + terminalSafe(row.matchDirectory)
+					}
 					fold := "▸ "
 					if m.tree.expanded[group.Key] {
 						fold = "▾ "

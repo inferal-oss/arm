@@ -1,5 +1,14 @@
 # Validation record
 
+## Codex project discovery and picker search
+
+The project discovery suite and focused CLI onboarding and rollout tests passed
+on macOS. Regressions cover a desktop cache larger than 1 MiB, multiple roots,
+the upper size bound and configuration fallback, and a linked-directory match
+without saved chats. A compiled CLI recovered saved-workspace evidence in a
+read-only discovery run and displayed the matching checkout in a terminal
+picker. Validation stopped before policy review and apply.
+
 ## Repository-wide worktree rollout
 
 On macOS, the Git metadata, rollout, project discovery and agent-session

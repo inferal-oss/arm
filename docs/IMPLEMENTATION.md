@@ -1,5 +1,17 @@
 # Backend and CLI implementation
 
+## Codex project discovery and picker search
+
+Codex desktop discovery reads `local-projects` entries' `rootPaths` as saved
+workspace suggestions alongside the older saved and active root arrays. The
+adapter allows up to 3 MiB for the desktop cache and reserves 1 MiB for
+`config.toml` within its 4 MiB total budget. The desktop adapter returns
+canonical directories and evidence and ignores native project names and IDs.
+
+Onboarding searches member directories as well as the Git group's display
+root. When a member directory supplies the best project match, the picker
+shows it below the project row. Policy review uses the existing group scope.
+
 ## Original Server binding and borrower validation — unconnected source
 
 The private pending Server retains its actual object before native claim,

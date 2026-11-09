@@ -146,6 +146,24 @@ func TestOnboardTreeUncheckedChatsPreserveProjectOnlySelection(t *testing.T) {
 	}
 }
 
+func TestOnboardTreeFindsProjectByLinkedDirectoryWithoutChats(t *testing.T) {
+	groups := onboardTreeFixture()[:1]
+	groups[0].Sessions = nil
+	const linked = "/worktrees/distinct-checkout"
+	groups[0].Directories[1] = linked
+	tree, err := newOnboardTree(groups)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := tree.rows("distinct-checkout")
+	if len(rows) != 1 || rows[0].child != -1 || rows[0].contextOnly || rows[0].matchDirectory != linked {
+		t.Fatal("linked directory did not find its project", rows)
+	}
+	if !tree.choose(rows, firstOnboardTreeRow(rows)) || tree.selectedGroups()[0].Directory != groups[0].Directory {
+		t.Fatal("search changed the selected project boundary")
+	}
+}
+
 func TestOnboardTreeEnterUsesLatestMatchedChildAndExplicitSets(t *testing.T) {
 	tree := mustOnboardTree(t)
 	tree.rows("Duplicate title") // An older query is intentionally not selected.
